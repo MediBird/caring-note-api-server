@@ -42,10 +42,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder builder) throws Exception {
-        return builder.authenticationProvider(jwtAuthProvider).build();
-    }
+//    @Bean
+//    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder builder) throws Exception {
+//        return builder.authenticationProvider(jwtAuthProvider).build();
+//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
