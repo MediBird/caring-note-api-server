@@ -1,9 +1,26 @@
 # 베이스 이미지 설정
+FROM gradle:8.10.2-jdk21 as build
+ENV APP_HOME=/apps
+WORKDIR $APP_HOME
+COPY build.gradle settings.gradle gradlew $APP_HOME
+COPY gradle $APP_HOME/gradle
+
+RUN chmod +x gradlew
+RUN ./gradlew build || return 0
+COPY src $APP_HOME/src
+RUN ./gradlew clean build
+
+
 FROM amazoncorretto:21.0.4
+ENV APP_HOME=/apps
+ARG ARTIFACT_NAME=app.jar
+ARG JAR_FILE_PATH=build/libs/api-0.0.1-SNAPSHOT.jar
 
-WORKDIR /app
-# 애플리케이션 JAR 파일을 복사
-COPY build/libs/*.jar app.jar
+WORKDIR $APP_HOME
 
-# 애플리케이션 실행 명령
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+#COPY --from=build /apps/build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build $APP_HOME/$JAR_FILE_PATH $ARTIFACT_NAME
+
+EXPOSE 8080
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
