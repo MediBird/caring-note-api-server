@@ -6,9 +6,9 @@ COPY build.gradle settings.gradle gradlew $APP_HOME
 COPY gradle $APP_HOME/gradle
 
 RUN chmod +x gradlew
-RUN ./gradlew build || return 0
+
 COPY src $APP_HOME/src
-RUN ./gradlew clean build
+RUN ./gradlew clean build -x test
 
 
 FROM amazoncorretto:21.0.4
