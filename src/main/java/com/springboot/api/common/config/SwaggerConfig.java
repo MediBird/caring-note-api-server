@@ -1,4 +1,4 @@
-package com.springboot.api.config;
+package com.springboot.api.common.config;
 
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.Components;

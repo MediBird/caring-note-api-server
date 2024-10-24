@@ -1,4 +1,4 @@
-package com.springboot.api.util;
+package com.springboot.api.common.util;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

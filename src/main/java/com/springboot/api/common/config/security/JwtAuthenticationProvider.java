@@ -1,6 +1,6 @@
-package com.springboot.api.config.security;
+package com.springboot.api.common.config.security;
 
-import com.springboot.api.util.JwtUtil;
+import com.springboot.api.common.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
