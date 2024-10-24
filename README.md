@@ -88,10 +88,7 @@ To run the project:
 
 This project includes a Dockerfile and a docker-compose.yml file for containerization.
 
-* To build and run the Docker image:
-    ```bash
-    ./gradlew clean bootBuildImage --imageName=springboot/boilerplate:0.0.1
-    ```
+
 
 * To start the application and database in Docker containers:
     ```bash
