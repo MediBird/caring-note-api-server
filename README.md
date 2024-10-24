@@ -26,12 +26,12 @@ This is a boilerplate project using **Spring Boot 3.3.4**, **Java 21**, and **In
 ## Tech Stack
 
 - **Backend**: Spring Boot 3.3.4
-- **Database**: PostgreSQL (via Docker)
+- **Database**: PostgreSQL 16 (via Docker)
 - **Build Tool**: Gradle
 - **Authentication**: JWT (JSON Web Token)
 - **Containerization**: Docker & Docker Compose
 - **API Documentation**: Swagger (springdoc-openapi)
-- **Java Version**: Java 21
+- **Java Version**: Java 21.0.4
 
 ## Requirements
 
