@@ -10,6 +10,7 @@ services:
       - 'SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/mydatabase'  # Postgres에 연결
       - 'SPRING_DATASOURCE_USERNAME=myuser'
       - 'SPRING_DATASOURCE_PASSWORD=secret'
+      - 'TZ=Asia/Seoul'
     depends_on:
       - postgres
   postgres:
@@ -18,5 +19,6 @@ services:
       - 'POSTGRES_DB=mydatabase'
       - 'POSTGRES_PASSWORD=secret'
       - 'POSTGRES_USER=myuser'
+      - 'TZ=Asia/Seoul'
     ports:
       - '5430:5432'
