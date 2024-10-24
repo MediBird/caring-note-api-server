@@ -84,7 +84,7 @@ To run the project:
 ```bash
 ./gradlew bootRun
 ```
-Docker
+## Docker
 
 This project includes a Dockerfile and a docker-compose.yml file for containerization.
 
@@ -100,13 +100,13 @@ This project includes a Dockerfile and a docker-compose.yml file for containeriz
 
 * Access the application at http://localhost:8081.
 
-Swagger
+## Swagger
 
 Swagger UI is available to explore the API:
 
 * URL: http://localhost:8081/swagger-ui.html
 
-Testing
+## Testing
 
 * To run unit and integration tests:
     ```bash
@@ -115,7 +115,7 @@ Testing
 
 * Test reports will be available in the build/reports/tests/test/index.html.
 
-Contributing
+## Contributing
 
 If you’d like to contribute, please fork the repository and make changes as you’d like. Contributions are welcome!
 
