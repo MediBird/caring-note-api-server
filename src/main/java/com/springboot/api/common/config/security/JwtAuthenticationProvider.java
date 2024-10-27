@@ -25,10 +25,10 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
         String jwtToken = (String) authentication.getCredentials();
 
         // JWT에서 사용자 이름 추출
-        String email = jwtUtil.extractUsername(jwtToken);
+        String id = jwtUtil.extractUsername(jwtToken);
 
         // UserDetailsService를 통해 사용자 정보 로드
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+        UserDetails userDetails = userDetailsService.loadUserByUsername(id);
 
         // JWT 토큰이 유효한지 검증
         if (jwtUtil.validateToken(jwtToken, userDetails)) {

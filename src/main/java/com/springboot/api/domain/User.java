@@ -1,13 +1,11 @@
 package com.springboot.api.domain;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,6 +13,9 @@ import java.util.stream.Collectors;
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor  // JPA 기본 생성자
+@AllArgsConstructor
 public class User implements UserDetails {
 
     @Id
@@ -25,7 +26,9 @@ public class User implements UserDetails {
     private String email;
 
     private String username;
+
     private String password;
+
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
