@@ -3,6 +3,8 @@ package com.springboot.api.controller;
 import com.springboot.api.common.util.JwtUtil;
 import com.springboot.api.dto.user.AddUserReq;
 import com.springboot.api.dto.user.AddUserRes;
+import com.springboot.api.dto.user.LoginReq;
+import com.springboot.api.dto.user.LoginRes;
 import com.springboot.api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -49,10 +51,18 @@ public class UserController {
 
     }
 
-//    @GetMapping("/login")
-//    public String login(){
-//
-//    }
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginReq loginReq){
+
+        LoginRes loginRes = userService.login(loginReq);
+
+        String token = jwtUtil.generateToken(loginRes.getId(), loginRes.getRoles());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        return new ResponseEntity<>(null, headers, HttpStatus.CREATED);
+
+    }
 
 
 }
