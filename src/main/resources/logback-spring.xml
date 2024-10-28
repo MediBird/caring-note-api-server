@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- Spring 프로파일에 따라 다른 설정을 적용할 수 있는 방법 -->
+    <springProfile name="local">
+        <property name="LOG_LEVEL" value="DEBUG" />
+    </springProfile>
+    <springProfile name="dev">
+        <property name="LOG_LEVEL" value="DEBUG" />
+    </springProfile>
+    <springProfile name="prod">
+        <property name="LOG_LEVEL" value="INFO" />
+    </springProfile>
+
+    <!-- 로깅 레벨 설정 -->
+    <logger name="com.springboot.api" level="${LOG_LEVEL}" />
+
+    <!-- Console에 로깅 설정 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 파일에 로그 저장 설정 -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!-- 로그 파일 위치와 파일 이름 지정 -->
+        <file>logs/application.log</file>
+
+        <!-- 롤링 정책 설정 (파일 이름 형식 및 보관 규칙) -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 로그 파일 이름에 날짜 형식을 추가 -->
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 로그 파일 보관 기간 설정 (예: 최근 30일간의 로그 보관) -->
+            <maxHistory>30</maxHistory>
+            <!-- 총 로그 파일 사이즈 제한 (예: 10GB 이상인 경우 오래된 로그 파일 삭제) -->
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <!-- 프레임워크 또는 특정 패키지 로그 레벨 설정 -->
+    <logger name="org.springframework" level="WARN" />  <!-- Spring 관련 로그 최소화 -->
+    <logger name="org.hibernate" level="WARN" />         <!-- Hibernate 관련 로그 최소화 -->
+    <logger name="org.apache" level="WARN" />            <!-- Apache Commons 등 관련 로그 최소화 -->
+    <!-- 로깅 레벨 설정: Console과 File에 모두 로깅 -->
+    <root level="${LOG_LEVEL}">
+        <appender-ref ref="CONSOLE" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
