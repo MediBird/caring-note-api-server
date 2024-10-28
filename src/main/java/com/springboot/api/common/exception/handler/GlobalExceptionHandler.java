@@ -2,7 +2,6 @@ package com.springboot.api.common.exception.handler;
 
 import com.springboot.api.common.dto.ErrorRes;
 import com.springboot.api.common.message.HttpMessages;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -25,7 +24,7 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorRes> handleValidationException(MethodArgumentNotValidException ex) {
         String message = Objects.requireNonNull(ex.getBindingResult().getFieldError()).getDefaultMessage();
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, HttpMessages.BAD_REQUEST);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, HttpMessages.INVALID_REQUEST_BODY);
     }
 
     // 잘못된 요청 파라미터 처리
@@ -34,11 +33,6 @@ public class GlobalExceptionHandler extends CommonHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, HttpMessages.BAD_REQUEST_PARAMETER);
     }
 
-    // Constraint Validation 실패
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<ErrorRes> handleConstraintViolation(ConstraintViolationException ex) {
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, HttpMessages.INVALID_REQUEST_BODY);
-    }
 
     // 500 - 서버 에러 처리
     @ExceptionHandler(Exception.class)

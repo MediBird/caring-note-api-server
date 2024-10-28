@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,7 @@ public class UserController {
     @PostMapping("/signup")
     public ResponseEntity<?> addUser(
             @Parameter(description = "User details for the new user to be added", required = true)
-            @RequestBody AddUserReq addUserReq) throws RuntimeException{
+            @RequestBody @Valid AddUserReq addUserReq) throws RuntimeException{
 
 
         AddUserRes addUserRes = userService.addUser(addUserReq);
@@ -52,7 +53,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginReq loginReq){
+    public ResponseEntity<?> login(@RequestBody @Valid LoginReq loginReq){
 
         LoginRes loginRes = userService.login(loginReq);
 
