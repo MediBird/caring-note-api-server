@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,10 +19,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        long id = Long.getLong(username);
-
-        return userRepository.findById(id)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + id));
+        long id = Long.parseLong(username);
+        return  userRepository.findById(id).orElseThrow(() -> new UsernameNotFoundException(ExceptionMessages.USER_NOT_FOUND));
 
     }
 

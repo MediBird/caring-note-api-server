@@ -1,11 +1,13 @@
 package com.springboot.api.common.util;
 
+import com.springboot.api.domain.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.security.core.GrantedAuthority;
+
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Date;
@@ -58,7 +60,15 @@ public class JwtUtil {
 
     public boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+
+        if (userDetails instanceof User user)
+        {
+            return username.equals(user.getId().toString()) && !isTokenExpired(token);
+        }
+        else {
+            return false;
+        }
+
     }
 
     public String extractUsername(String token) {
