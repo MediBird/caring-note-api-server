@@ -6,9 +6,9 @@ import com.springboot.api.common.exception.InvalidPasswordException;
 import com.springboot.api.common.message.ExceptionMessages;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
@@ -16,19 +16,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UserExceptionHandler extends CommonHandler{
 
     @ExceptionHandler(UsernameNotFoundException.class)
-    public ResponseEntity<ErrorRes> handleUsernameNotFound(UsernameNotFoundException ex) {
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorRes handleUsernameNotFound(UsernameNotFoundException ex) {
 
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ExceptionMessages.USER_NOT_FOUND);
+        return buildErrorResponse(ExceptionMessages.USER_NOT_FOUND);
     }
 
     @ExceptionHandler(DuplicatedEmailException.class)
-    public ResponseEntity<ErrorRes> handleDuplicatedEmail(DuplicatedEmailException ex) {
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorRes handleDuplicatedEmail(DuplicatedEmailException ex) {
 
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, ExceptionMessages.DUPLICATED_USER_EMAIL);
+        return buildErrorResponse(ExceptionMessages.DUPLICATED_USER_EMAIL);
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
-    public ResponseEntity<ErrorRes> handleInvalidPassword(InvalidPasswordException ex) {
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ExceptionMessages.INVALID_PASSWORD);
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorRes handleInvalidPassword(InvalidPasswordException ex) {
+        return buildErrorResponse(ExceptionMessages.INVALID_PASSWORD);
     }
 }
