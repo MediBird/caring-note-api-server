@@ -28,7 +28,7 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)  // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/**","/swagger-ui/**", "/v3/api-docs/**","/swagger-ui.html").permitAll()  // 인증 없이 접근 가능
+                        .requestMatchers("/user/**","/swagger-ui/**", "/v1/api-docs/**","/swagger-ui.html").permitAll()  // 인증 없이 접근 가능
                         .anyRequest().authenticated()  // 나머지 요청은 인증 필요
                 )
                 .sessionManagement(session -> session
@@ -40,10 +40,6 @@ public class SecurityConfig {
         return http.build();
     }
 
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationManagerBuilder builder) throws Exception {
-//        return builder.authenticationProvider(jwtAuthProvider).build();
-//    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
