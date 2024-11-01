@@ -43,7 +43,9 @@
     <!-- 프레임워크 또는 특정 패키지 로그 레벨 설정 -->
     <logger name="org.springframework" level="WARN" />  <!-- Spring 관련 로그 최소화 -->
     <logger name="org.hibernate" level="WARN" />         <!-- Hibernate 관련 로그 최소화 -->
-    <logger name="org.apache" level="WARN" />            <!-- Apache Commons 등 관련 로그 최소화 -->
+    <logger name="org.apache" level="WARN" />
+    <logger name="com.zaxxer.hikari" level="WARN" />
+    <!-- Apache Commons 등 관련 로그 최소화 -->ㄹ
     <!-- 로깅 레벨 설정: Console과 File에 모두 로깅 -->
     <root level="${LOG_LEVEL}">
         <appender-ref ref="CONSOLE" />
