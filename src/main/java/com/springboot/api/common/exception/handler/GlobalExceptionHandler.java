@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.nio.file.AccessDeniedException;
 
 @RestControllerAdvice
 @Slf4j
@@ -31,6 +34,19 @@ public class GlobalExceptionHandler extends CommonHandler {
     public ErrorRes handleBadRequest(Exception ex) {
         return buildErrorResponse(HttpMessages.BAD_REQUEST_PARAMETER);
     }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorRes handleNotFound(Exception ex) {
+        return buildErrorResponse(HttpMessages.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorRes handleAccessDenied(Exception ex) {
+        return buildErrorResponse(HttpMessages.UNAUTHORIZED);
+    }
+
 
 
     // 500 - 서버 에러 처리
