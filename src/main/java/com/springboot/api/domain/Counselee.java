@@ -1,8 +1,6 @@
+package com.springboot.api.domain;
 import java.time.LocalDate;
 import java.util.List;
-
-import javax.persistence.*;
-import javax.validation.constraints.*;
 
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.CascadeType;

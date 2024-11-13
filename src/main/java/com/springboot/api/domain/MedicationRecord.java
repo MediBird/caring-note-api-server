@@ -31,7 +31,7 @@ public class MedicationRecord {
 
     @ManyToOne
     @JoinColumn(name = "counselee_id", nullable = false)
-    private Patient patient;
+    private Counselee counselee;
 
     @ManyToOne
     @JoinColumn(name = "medication_id", nullable = false)
