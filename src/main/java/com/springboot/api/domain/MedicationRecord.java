@@ -23,12 +23,10 @@ public class MedicationRecord {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // 환자 엔티티와의 관계 매핑 (다대일)
     @ManyToOne
     @JoinColumn(name = "counselee_id", nullable = false)
     private Patient patient;
 
-    // 의약품 엔티티와의 관계 매핑 (다대일)
     @ManyToOne
     @JoinColumn(name = "medication_id", nullable = false)
     private Medication medication;
@@ -39,7 +37,6 @@ public class MedicationRecord {
 
     private String routeOfAdministration;
 
-    // 의사 엔티티와의 관계 매핑 (옵션)
     @ManyToOne
     @JoinColumn(name = "prescribing_counselor_id")
     private Counselor prescribingCounselor;
