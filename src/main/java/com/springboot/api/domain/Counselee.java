@@ -60,6 +60,9 @@ public class Counselee {
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<MedicationRecord> medicationRecords;
 
+    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
+    private List<CounselSchedule> counselSchedules;
+
     @PrePersist
     protected void onCreate() {
         if (this.id == null) {

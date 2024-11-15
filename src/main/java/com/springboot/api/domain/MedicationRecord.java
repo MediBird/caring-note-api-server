@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -48,9 +46,6 @@ public class MedicationRecord {
     private User prescribingCounselor;
 
     private String notes;
-
-    @Enumerated(EnumType.STRING)
-    private AdministrationStatus status;
 
     @Column(updatable = false)
     private LocalDateTime createdDate;

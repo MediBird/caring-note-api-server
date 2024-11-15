@@ -66,8 +66,6 @@ public class Counselor {
     @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
     private int participationDays;
 
-    // 상담 일정 (예: "월, 수, 금 10:00~18:00")
-    private String counselingSchedule;
 
     // 구글 SSO 식별자
     @Column(unique = true)
