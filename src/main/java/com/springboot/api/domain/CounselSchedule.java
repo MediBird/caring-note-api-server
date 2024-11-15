@@ -58,6 +58,7 @@ public class CounselSchedule extends BaseEntity {
     private ScheduleStatus status;
 
     @PrePersist
+    @Override
     protected void onCreate() {
         super.onCreate();
         if (this.status == null) {

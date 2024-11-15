@@ -23,6 +23,7 @@ public class CounselingSession extends BaseEntity {
 
     // 엔티티가 저장되기 전에 호출되어 ID 설정
     @PrePersist
+    @Override
     protected void onCreate() {
         super.onCreate();
     }

@@ -66,6 +66,7 @@ public class Counselee extends BaseEntity {
     private List<CounselSchedule> counselSchedules;
 
     @PrePersist
+    @Override
     protected void onCreate() {
         super.onCreate();
         registrationDate = LocalDate.now();

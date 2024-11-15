@@ -62,6 +62,7 @@ public class MedicationRecord extends BaseEntity {
     private int remainingQuantity;
 
     @PrePersist
+    @Override
     protected void onCreate() {
         super.onCreate();
         createdDate = LocalDateTime.now();

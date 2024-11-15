@@ -100,6 +100,7 @@ public class Counselor extends BaseEntity {
 
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist
+    @Override
     protected void onCreate() {
         super.onCreate();
         registrationDate = LocalDate.now();
