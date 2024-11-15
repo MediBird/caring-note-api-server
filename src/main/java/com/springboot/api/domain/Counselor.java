@@ -1,0 +1,114 @@
+package com.springboot.api.domain;
+
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import com.springboot.enums.CounselorStatus;
+
+import de.huxhorn.sulky.ulid.ULID;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+
+@Entity
+@Table(name = "counselors")
+@Data
+public class Counselor {
+     // ULID: 상담자의 고유 식별자
+    @Id
+    @Column(length = 26)
+    private String id;
+
+    // 이름
+    @Column(nullable = false)
+    @NotBlank(message = "이름은 필수 입력 항목입니다.")
+    private String name;
+
+    // 이메일
+    @Column(nullable = false, unique = true)
+    @Email(message = "유효한 이메일 주소를 입력해주세요.")
+    private String email;
+
+    // 전화번호
+    @Column(unique = true)
+    @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
+    private String phoneNumber;
+
+    // 프로필 사진 URL
+    private String profileImageUrl;
+
+    // 복약 상담 횟수
+    @Min(value = 0, message = "복약 상담 횟수는 0 이상이어야 합니다.")
+    private int medicationCounselingCount;
+
+    // 상담한 내담자 수
+    @Min(value = 0, message = "상담한 내담자 수는 0 이상이어야 합니다.")
+    private int counseledCounseleeCount;
+
+    // 참여 일수
+    @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
+    private int participationDays;
+
+    // 상담 일정 (예: "월, 수, 금 10:00~18:00")
+    private String counselingSchedule;
+
+    // 구글 SSO 식별자
+    @Column(unique = true)
+    private String googleSsoId;
+
+    // 애플 SSO 식별자
+    @Column(unique = true)
+    private String appleSsoId;
+
+    // 등록 날짜
+    @Column(updatable = false)
+    private LocalDate registrationDate;
+
+    // 상태 (활성, 비활성)
+    @Enumerated(EnumType.STRING)
+    private CounselorStatus status;
+
+    // 권한
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "counselor_roles", joinColumns = @JoinColumn(name = "counselor_id"))
+    @Column(name = "role")
+    private Set<String> roles = new HashSet<>();
+
+    // 상담자가 참여한 상담 세션들
+    @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
+    private List<CounselingSession> counselingSessions;
+
+    @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
+    private List<CounselSchedule> counselSchedules;
+
+    // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            ULID ulid = new ULID();
+            this.id = ulid.nextULID();
+        }
+        registrationDate = LocalDate.now();
+        if (status == null) {
+            status = CounselorStatus.ACTIVE;
+        }
+    }
+    
+}
