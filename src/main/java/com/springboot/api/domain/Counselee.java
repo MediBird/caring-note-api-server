@@ -1,30 +1,32 @@
 package com.springboot.api.domain;
+
 import java.time.LocalDate;
 import java.util.List;
 
-import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
-@Table(name = "counselees")
+@Table(name = "counselees", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"name", "dateOfBirth", "phoneNumber"})
+})
 @Data
-public class Counselee {
-
-    @Id
-    @Column(length = 26)
-    private String id;
+@EqualsAndHashCode(callSuper = true, exclude = {"counselingSessions", "medicationRecords", "counselSchedules"})
+@ToString(callSuper = true, exclude = {"counselingSessions", "medicationRecords", "counselSchedules"})
+public class Counselee extends BaseEntity {
 
     @Column(nullable = false)
     @NotBlank(message = "이름은 필수 입력 항목입니다.")
@@ -65,10 +67,7 @@ public class Counselee {
 
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            ULID ulid = new ULID();
-            this.id = ulid.nextULID();
-        }
+        super.onCreate();
         registrationDate = LocalDate.now();
     }
 }

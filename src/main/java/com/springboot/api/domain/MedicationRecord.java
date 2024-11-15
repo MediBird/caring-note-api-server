@@ -5,9 +5,6 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
@@ -18,14 +15,15 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
-@Table(name="medication_records")
+@Table(name = "medication_records")
 @Data
-public class MedicationRecord {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@EqualsAndHashCode(callSuper = true, exclude = {"counselee", "medication", "prescribingCounselor"})
+@ToString(callSuper = true, exclude = {"counselee", "medication", "prescribingCounselor"})
+public class MedicationRecord extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "counselee_id", nullable = false)
@@ -65,6 +63,7 @@ public class MedicationRecord {
 
     @PrePersist
     protected void onCreate() {
+        super.onCreate();
         createdDate = LocalDateTime.now();
     }
 
@@ -72,5 +71,5 @@ public class MedicationRecord {
     protected void onUpdate() {
         updatedDate = LocalDateTime.now();
     }
-    
+
 }

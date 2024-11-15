@@ -1,29 +1,34 @@
 package com.springboot.api.domain;
+
 import java.time.LocalDateTime;
 
 import com.springboot.enums.ScheduleStatus;
 
-import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
-@Table(name = "counselor_schedules")
-public class CounselSchedule {
-
-    @Id
-    @Column(length = 26)
-    private String id;
+@Table(name = "counsel_schedules", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"counselor_id", "scheduled_start_datetime", "scheduled_end_datetime"}),
+    @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime", "scheduled_end_datetime"})
+})
+@Data
+@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee", "counselingSession"})
+@ToString(callSuper = true, exclude = {"counselor", "counselee", "counselingSession"})
+public class CounselSchedule extends BaseEntity {
 
     @OneToOne(mappedBy = "counselSchedule", cascade = CascadeType.ALL)
     private CounselingSession counselingSession;
@@ -54,10 +59,7 @@ public class CounselSchedule {
 
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            ULID ulid = new ULID();
-            this.id = ulid.nextULID();
-        }
+        super.onCreate();
         if (this.status == null) {
             this.status = ScheduleStatus.SCHEDULED;
         }

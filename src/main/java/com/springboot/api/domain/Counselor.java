@@ -6,34 +6,36 @@ import java.util.Set;
 
 import com.springboot.enums.CounselorStatus;
 
-import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
-@Table(name = "counselors")
+@Table(name = "counselors", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"email"}),
+    @UniqueConstraint(columnNames = {"phoneNumber"})
+})
 @Data
-public class Counselor {
-     // ULID: 상담자의 고유 식별자
-    @Id
-    @Column(length = 26)
-    private String id;
+@EqualsAndHashCode(callSuper = true, exclude = {"roles", "counselingSessions", "counselSchedules"})
+@ToString(callSuper = true, exclude = {"roles", "counselingSessions", "counselSchedules"})
+public class Counselor extends BaseEntity {
 
     // 이름
     @Column(nullable = false)
@@ -64,7 +66,6 @@ public class Counselor {
     // 참여 일수
     @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
     private int participationDays;
-
 
     // 구글 SSO 식별자
     @Column(unique = true)
@@ -100,14 +101,11 @@ public class Counselor {
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist
     protected void onCreate() {
-        if (this.id == null) {
-            ULID ulid = new ULID();
-            this.id = ulid.nextULID();
-        }
+        super.onCreate();
         registrationDate = LocalDate.now();
         if (status == null) {
             status = CounselorStatus.ACTIVE;
         }
     }
-    
+
 }
