@@ -1,7 +1,6 @@
 package com.springboot.api.domain;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -9,15 +8,15 @@ import com.springboot.enums.CounselorStatus;
 
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -83,11 +82,13 @@ public class Counselor {
     @Enumerated(EnumType.STRING)
     private CounselorStatus status;
 
-    // 권한
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "counselor_roles", joinColumns = @JoinColumn(name = "counselor_id"))
-    @Column(name = "role")
-    private Set<String> roles = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "counselor_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Role> roles;
 
     // 상담자가 참여한 상담 세션들
     @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
