@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import com.springboot.enums.ScheduleStatus;
 
 import de.huxhorn.sulky.ulid.ULID;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,6 +12,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
@@ -22,6 +24,9 @@ public class CounselSchedule {
     @Id
     @Column(length = 26)
     private String id;
+
+    @OneToOne(mappedBy = "counselSchedule", cascade = CascadeType.ALL)
+    private CounselingSession counselingSession;
 
     @ManyToOne
     @JoinColumn(name = "counselor_id", nullable = false)

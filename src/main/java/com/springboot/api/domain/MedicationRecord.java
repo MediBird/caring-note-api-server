@@ -43,7 +43,7 @@ public class MedicationRecord {
 
     @ManyToOne
     @JoinColumn(name = "prescribing_counselor_id")
-    private User prescribingCounselor;
+    private Counselor prescribingCounselor;
 
     private String notes;
 
