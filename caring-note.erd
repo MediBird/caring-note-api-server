@@ -4,8 +4,8 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": 0,
-    "scrollLeft": -17,
+    "scrollTop": -140.7693,
+    "scrollLeft": -564,
     "zoomLevel": 1,
     "show": 431,
     "database": 4,
@@ -1816,7 +1816,7 @@
         "tableId": "SMhmUu1tYFPz_UPLAD2k2",
         "name": "counsel_need_state",
         "comment": "상담 필요 상태",
-        "dataType": "",
+        "dataType": "VARCHAR",
         "default": "",
         "options": 0,
         "ui": {
@@ -1827,7 +1827,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731689106061,
+          "updateAt": 1731689989683,
           "createAt": 1731688942108
         }
       },
@@ -1916,7 +1916,7 @@
         "tableId": "6sGVJFDJGxI-d-bAtL2mM",
         "name": "name",
         "comment": "성분명/ 제품명",
-        "dataType": "",
+        "dataType": "VARCHAR",
         "default": "",
         "options": 0,
         "ui": {
@@ -1927,7 +1927,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731689366223,
+          "updateAt": 1731689995233,
           "createAt": 1731689328491
         }
       },
@@ -1936,7 +1936,7 @@
         "tableId": "6sGVJFDJGxI-d-bAtL2mM",
         "name": "unit",
         "comment": "단위",
-        "dataType": "",
+        "dataType": "VARCHAR",
         "default": "",
         "options": 0,
         "ui": {
@@ -1947,7 +1947,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731689388038,
+          "updateAt": 1731689997200,
           "createAt": 1731689367842
         }
       },
@@ -1956,7 +1956,7 @@
         "tableId": "6sGVJFDJGxI-d-bAtL2mM",
         "name": "disposal_reason",
         "comment": "폐기 원인",
-        "dataType": "",
+        "dataType": "VARCHAR",
         "default": "",
         "options": 0,
         "ui": {
@@ -1967,7 +1967,7 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731689459781,
+          "updateAt": 1731689998701,
           "createAt": 1731689368285
         }
       },
@@ -3472,7 +3472,8 @@
       -1,
       {
         "name": 1731689098760,
-        "comment": 1731689106060
+        "comment": 1731689106060,
+        "dataType": 1731689989683
       }
     ],
     "mjF-9G33WaurxwTQoUb19": [
@@ -3523,7 +3524,8 @@
       -1,
       {
         "name": 1731689357372,
-        "comment": 1731689366223
+        "comment": 1731689366223,
+        "dataType": 1731689995233
       }
     ],
     "xdnRSHs1ySyTHsgJXPbii": [
@@ -3532,7 +3534,8 @@
       -1,
       {
         "name": 1731689385667,
-        "comment": 1731689388037
+        "comment": 1731689388037,
+        "dataType": 1731689997200
       }
     ],
     "GwztEqHm_iGZeS89ofrPp": [
@@ -3541,7 +3544,8 @@
       -1,
       {
         "name": 1731689448448,
-        "comment": 1731689459781
+        "comment": 1731689459781,
+        "dataType": 1731689998700
       }
     ],
     "ahnaU8ivMoze4SitwayoN": [
