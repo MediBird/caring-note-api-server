@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
@@ -42,6 +43,21 @@ public class CounselSession extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ScheduleStatus status;
+
+    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    private CounselCard counselCard;
+
+    @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    private List<MedicationRecordHist> medicationRecordHists;
+
+    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    private MedicationCounsel medicationCounsel;
+
+    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    private WasteMedicationDisposal wasteMedicationDisposal;
+
+    @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    private List<WasteMedicationRecord> wasteMedicationRecords;
 
     @PrePersist
     @Override
