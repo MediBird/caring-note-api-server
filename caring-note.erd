@@ -4,8 +4,8 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -75,
-    "scrollLeft": -800,
+    "scrollTop": -326,
+    "scrollLeft": -696,
     "zoomLevel": 1,
     "show": 431,
     "database": 16,
@@ -291,7 +291,7 @@
       },
       "SMhmUu1tYFPz_UPLAD2k2": {
         "id": "SMhmUu1tYFPz_UPLAD2k2",
-        "name": " medication_counsel",
+        "name": " medication_counsels",
         "comment": "복약 상담",
         "columnIds": [
           "mjF-9G33WaurxwTQoUb19",
@@ -310,12 +310,12 @@
           "x": 1094,
           "y": 577,
           "zIndex": 280,
-          "widthName": 118,
+          "widthName": 125,
           "widthComment": 60,
           "color": ""
         },
         "meta": {
-          "updateAt": 1731689131024,
+          "updateAt": 1731755693205,
           "createAt": 1731508327556
         }
       },
@@ -3008,7 +3008,7 @@
       -1,
       {
         "comment": 1731508334465,
-        "name": 1731508594018
+        "name": 1731755693203
       }
     ],
     "6sGVJFDJGxI-d-bAtL2mM": [
