@@ -1,37 +1,23 @@
 package com.springboot.api.domain;
 
-import java.time.LocalDateTime;
-
 import com.springboot.enums.ScheduleStatus;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "counsel_schedules", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"counselor_id", "scheduled_start_datetime", "scheduled_end_datetime"}),
-    @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime", "scheduled_end_datetime"})
+@Table(name = "counsel_sessions", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"counselor_id", "scheduled_start_datetime", "scheduled_end_datetime"}),
+        @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime", "scheduled_end_datetime"})
 })
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee", "counselingSession"})
-@ToString(callSuper = true, exclude = {"counselor", "counselee", "counselingSession"})
-public class CounselSchedule extends BaseEntity {
-
-    @OneToOne(mappedBy = "counselSchedule", cascade = CascadeType.ALL)
-    private CounselingSession counselingSession;
+@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee"})
+@ToString(callSuper = true, exclude = {"counselor", "counselee"})
+public class CounselSession extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "counselor_id", nullable = false)
@@ -65,4 +51,5 @@ public class CounselSchedule extends BaseEntity {
             this.status = ScheduleStatus.SCHEDULED;
         }
     }
+
 }

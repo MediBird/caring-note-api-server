@@ -1,24 +1,7 @@
 package com.springboot.api.domain;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-
 import com.springboot.enums.CounselorStatus;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +9,10 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
@@ -93,10 +80,7 @@ public class Counselor extends BaseEntity {
 
     // 상담자가 참여한 상담 세션들
     @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
-    private List<CounselingSession> counselingSessions;
-
-    @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
-    private List<CounselSchedule> counselSchedules;
+    private List<CounselSession> counselSessions;
 
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist

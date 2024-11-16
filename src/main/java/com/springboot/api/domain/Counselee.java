@@ -1,16 +1,6 @@
 package com.springboot.api.domain;
 
-import java.time.LocalDate;
-import java.util.List;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Lob;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,6 +8,9 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
@@ -57,13 +50,11 @@ public class Counselee extends BaseEntity {
     private String notes;
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
-    private List<CounselingSession> counselingSessions;
+    private List<CounselSession> counselSessions;
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<MedicationRecord> medicationRecords;
 
-    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
-    private List<CounselSchedule> counselSchedules;
 
     @PrePersist
     @Override
