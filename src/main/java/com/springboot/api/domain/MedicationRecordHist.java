@@ -25,7 +25,7 @@ public class MedicationRecordHist extends BaseEntity{
     private MedicationDivision medicationDivision;
 
     @ManyToOne
-    @JoinColumn(name = "medication_id", nullable = true)
+    @JoinColumn(name = "medication_id")
     private Medication medication;
 
     private String name;
