@@ -4,9 +4,9 @@
   "settings": {
     "width": 2000,
     "height": 2000,
-    "scrollTop": -613.0184,
-    "scrollLeft": -289.6215,
-    "zoomLevel": 0.43,
+    "scrollTop": -75,
+    "scrollLeft": -800,
+    "zoomLevel": 1,
     "show": 431,
     "database": 16,
     "databaseName": "",
@@ -110,7 +110,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1731752334152,
+          "updateAt": 1731754914737,
           "createAt": 1731507449143
         }
       },
@@ -212,7 +212,7 @@
           "4Qvz5Ogey0Sopk6LdZpAZ"
         ],
         "ui": {
-          "x": 63,
+          "x": 64,
           "y": 825,
           "zIndex": 260,
           "widthName": 84,
@@ -220,7 +220,7 @@
           "color": ""
         },
         "meta": {
-          "updateAt": 1731751098385,
+          "updateAt": 1731755583140,
           "createAt": 1731508248311
         }
       },
@@ -321,7 +321,7 @@
       },
       "6sGVJFDJGxI-d-bAtL2mM": {
         "id": "6sGVJFDJGxI-d-bAtL2mM",
-        "name": "disposal_medication_record",
+        "name": "waste_medication_records",
         "comment": "폐의약품 기록",
         "columnIds": [
           "ukZ8D3M4bT8r7UQ390WmW",
@@ -343,18 +343,18 @@
           "x": 1249,
           "y": 328.2389,
           "zIndex": 325,
-          "widthName": 162,
+          "widthName": 154,
           "widthComment": 68,
           "color": ""
         },
         "meta": {
-          "updateAt": 1731689500346,
+          "updateAt": 1731755326939,
           "createAt": 1731508598309
         }
       },
       "fow-t9njMyV4fU6I0m2YV": {
         "id": "fow-t9njMyV4fU6I0m2YV",
-        "name": "disposal_medication_disposal",
+        "name": "waste_medication_disposals",
         "comment": "폐의약품 처리",
         "columnIds": [
           "b5AR0IWBvzG4Fvp-pSqvi",
@@ -367,15 +367,15 @@
           "Z0ueD87_ATOhz1xzO3YQE"
         ],
         "ui": {
-          "x": 1055,
-          "y": 44.774,
+          "x": 1134.0698,
+          "y": 107.5647,
           "zIndex": 460,
-          "widthName": 172,
+          "widthName": 164,
           "widthComment": 68,
           "color": ""
         },
         "meta": {
-          "updateAt": 1731689497364,
+          "updateAt": 1731755324013,
           "createAt": 1731509221581
         }
       },
@@ -1438,28 +1438,8 @@
       "Nj97lBzmUhfxhZqNm9ieb": {
         "id": "Nj97lBzmUhfxhZqNm9ieb",
         "tableId": "qR-xWXPDixs0AkBjdI4N4",
-        "name": "base_info_json",
+        "name": "base_infomation",
         "comment": "기본 정보",
-        "dataType": "JSON",
-        "default": "",
-        "options": 0,
-        "ui": {
-          "keys": 0,
-          "widthName": 88,
-          "widthComment": 60,
-          "widthDataType": 60,
-          "widthDefault": 60
-        },
-        "meta": {
-          "updateAt": 1731687859017,
-          "createAt": 1731687628418
-        }
-      },
-      "0FuBiukFE7ERFagZhOX6n": {
-        "id": "0FuBiukFE7ERFagZhOX6n",
-        "tableId": "qR-xWXPDixs0AkBjdI4N4",
-        "name": "health_info_json",
-        "comment": "건강 정보",
         "dataType": "JSON",
         "default": "",
         "options": 0,
@@ -1471,27 +1451,47 @@
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731687863798,
+          "updateAt": 1731755582342,
+          "createAt": 1731687628418
+        }
+      },
+      "0FuBiukFE7ERFagZhOX6n": {
+        "id": "0FuBiukFE7ERFagZhOX6n",
+        "tableId": "qR-xWXPDixs0AkBjdI4N4",
+        "name": "health_infomation",
+        "comment": "건강 정보",
+        "dataType": "JSON",
+        "default": "",
+        "options": 0,
+        "ui": {
+          "keys": 0,
+          "widthName": 104,
+          "widthComment": 60,
+          "widthDataType": 60,
+          "widthDefault": 60
+        },
+        "meta": {
+          "updateAt": 1731755584110,
           "createAt": 1731687628948
         }
       },
       "4Qvz5Ogey0Sopk6LdZpAZ": {
         "id": "4Qvz5Ogey0Sopk6LdZpAZ",
         "tableId": "qR-xWXPDixs0AkBjdI4N4",
-        "name": "living_info_json",
+        "name": "living_information",
         "comment": "생활 정보",
         "dataType": "JSON",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
-          "widthName": 91,
+          "widthName": 103,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731687869338,
+          "updateAt": 1731755585946,
           "createAt": 1731687629281
         }
       },
@@ -1718,20 +1718,20 @@
       "LJLPSu2AeVCCSv-_qCK9i": {
         "id": "LJLPSu2AeVCCSv-_qCK9i",
         "tableId": "h5o_JLBf5xw9QOuyo1JtZ",
-        "name": "prescription_day_num",
+        "name": "prescription_days",
         "comment": "처방 일수",
         "dataType": "INT",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
-          "widthName": 127,
+          "widthName": 103,
           "widthComment": 60,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731688881179,
+          "updateAt": 1731755570073,
           "createAt": 1731688725514
         }
       },
@@ -1878,20 +1878,20 @@
       "Z0ueD87_ATOhz1xzO3YQE": {
         "id": "Z0ueD87_ATOhz1xzO3YQE",
         "tableId": "fow-t9njMyV4fU6I0m2YV",
-        "name": "disposal_info_json",
+        "name": "disposal_infomation",
         "comment": "폐의약품 처리 정보",
         "dataType": "JSON",
         "default": "",
         "options": 0,
         "ui": {
           "keys": 0,
-          "widthName": 108,
+          "widthName": 116,
           "widthComment": 92,
           "widthDataType": 60,
           "widthDefault": 60
         },
         "meta": {
-          "updateAt": 1731689300878,
+          "updateAt": 1731755577619,
           "createAt": 1731689268684
         }
       },
@@ -2436,8 +2436,8 @@
           "columnIds": [
             "HCWSfP_lBy37davhVRBZE"
           ],
-          "x": 1055,
-          "y": 108.774,
+          "x": 1134.0698,
+          "y": 171.56470000000002,
           "direction": 1
         },
         "meta": {
@@ -2604,7 +2604,7 @@
           "columnIds": [
             "SHqt7S4DjibdL-49kWtKN"
           ],
-          "x": 272,
+          "x": 273,
           "y": 825,
           "direction": 4
         },
@@ -2632,7 +2632,7 @@
           "columnIds": [
             "WwdRL3v8ZXLqMj5TjznaI"
           ],
-          "x": 863,
+          "x": 856.5,
           "y": 826,
           "direction": 4
         },
@@ -2660,7 +2660,7 @@
           "columnIds": [
             "zWigIXMETzg8MacMzza14"
           ],
-          "x": 863,
+          "x": 856.5,
           "y": 1122,
           "direction": 8
         },
@@ -3016,7 +3016,7 @@
       1731508598308,
       -1,
       {
-        "name": 1731689500346,
+        "name": 1731755326937,
         "comment": 1731509217030
       }
     ],
@@ -3188,7 +3188,7 @@
       1731509221579,
       -1,
       {
-        "name": 1731689497363,
+        "name": 1731755324013,
         "comment": 1731509442126
       }
     ],
@@ -3471,7 +3471,7 @@
       1731687628416,
       -1,
       {
-        "name": 1731687727757,
+        "name": 1731755582342,
         "dataType": 1731687758335,
         "comment": 1731687859017
       }
@@ -3481,7 +3481,7 @@
       1731687628948,
       -1,
       {
-        "name": 1731687737625,
+        "name": 1731755584110,
         "dataType": 1731687748406,
         "comment": 1731687863797
       }
@@ -3491,7 +3491,7 @@
       1731687629280,
       -1,
       {
-        "name": 1731687780875,
+        "name": 1731755585946,
         "dataType": 1731687786205,
         "comment": 1731687869338
       }
@@ -3629,7 +3629,7 @@
       1731688725513,
       -1,
       {
-        "name": 1731688821745,
+        "name": 1731755570072,
         "comment": 1731688833326,
         "dataType": 1731688881179
       }
@@ -3703,7 +3703,7 @@
       1731689268684,
       -1,
       {
-        "name": 1731689283432,
+        "name": 1731755577618,
         "dataType": 1731689288296,
         "comment": 1731689300878
       }
