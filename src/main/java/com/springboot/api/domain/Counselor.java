@@ -1,6 +1,7 @@
 package com.springboot.api.domain;
 
 import com.springboot.enums.CounselorStatus;
+import com.springboot.enums.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
@@ -12,16 +13,15 @@ import lombok.ToString;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"email"}),
-    @UniqueConstraint(columnNames = {"phoneNumber"})
+    @UniqueConstraint(columnNames = {"phone_number"})
 })
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"roles", "counselingSessions", "counselSchedules"})
-@ToString(callSuper = true, exclude = {"roles", "counselingSessions", "counselSchedules"})
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSessions"})
+@ToString(callSuper = true, exclude = {"counselSessions"})
 public class Counselor extends BaseEntity {
 
     // 이름
@@ -62,7 +62,6 @@ public class Counselor extends BaseEntity {
     @Column(unique = true)
     private String appleSsoId;
 
-    // 등록 날짜
     @Column(updatable = false)
     private LocalDate registrationDate;
 
@@ -70,13 +69,10 @@ public class Counselor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CounselorStatus status;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "counselor_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles;
+    // Admin, User
+    @Enumerated(EnumType.STRING)
+    private RoleType roleType;
+
 
     // 상담자가 참여한 상담 세션들
     @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
@@ -87,7 +83,6 @@ public class Counselor extends BaseEntity {
     @Override
     protected void onCreate() {
         super.onCreate();
-        registrationDate = LocalDate.now();
         if (status == null) {
             status = CounselorStatus.ACTIVE;
         }
