@@ -10,9 +10,14 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
@@ -22,7 +27,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSessions"})
 @ToString(callSuper = true, exclude = {"counselSessions"})
-public class Counselor extends BaseEntity {
+public class Counselor extends BaseEntity implements UserDetails {
 
     // 이름
     @Column(nullable = false)
@@ -34,6 +39,8 @@ public class Counselor extends BaseEntity {
     @Email(message = "유효한 이메일 주소를 입력해주세요.")
     private String email;
 
+    private String password;
+
     // 전화번호
     @Column(unique = true)
     @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
@@ -41,18 +48,6 @@ public class Counselor extends BaseEntity {
 
     // 프로필 사진 URL
     private String profileImageUrl;
-
-    // 복약 상담 횟수
-    @Min(value = 0, message = "복약 상담 횟수는 0 이상이어야 합니다.")
-    private int medicationCounselingCount;
-
-    // 상담한 내담자 수
-    @Min(value = 0, message = "상담한 내담자 수는 0 이상이어야 합니다.")
-    private int counseledCounseleeCount;
-
-    // 참여 일수
-    @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
-    private int participationDays;
 
     // 구글 SSO 식별자
     @Column(unique = true)
@@ -73,6 +68,18 @@ public class Counselor extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoleType roleType;
 
+    // 복약 상담 횟수
+    @Min(value = 0, message = "복약 상담 횟수는 0 이상이어야 합니다.")
+    private int medicationCounselingCount;
+
+    // 상담한 내담자 수
+    @Min(value = 0, message = "상담한 내담자 수는 0 이상이어야 합니다.")
+    private int counseledCounseleeCount;
+
+    // 참여 일수
+    @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
+    private int participationDays;
+
 
     // 상담자가 참여한 상담 세션들
     @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
@@ -86,6 +93,36 @@ public class Counselor extends BaseEntity {
         if (status == null) {
             status = CounselorStatus.ACTIVE;
         }
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Set.of(new SimpleGrantedAuthority(getRoleType().name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return getId();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return getStatus().equals(CounselorStatus.ACTIVE);  // 계정이 만료되지 않았음
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return getStatus().equals(CounselorStatus.ACTIVE);  // 계정이 잠기지 않음
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;  // 비밀번호가 만료되지 않음
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return getStatus().equals(CounselorStatus.ACTIVE);  // 계정이 활성화됨
     }
 
 }

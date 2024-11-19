@@ -1,5 +1,6 @@
 package com.springboot.api.common.util;
 
+import com.springboot.api.domain.Counselor;
 import com.springboot.api.domain.User;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -43,6 +44,10 @@ public class JwtUtil {
         if (userDetails instanceof User user)
         {
             return username.equals(user.getId().toString()) && !isTokenExpired(token);
+        }
+        else if(userDetails instanceof Counselor counselor)
+        {
+            return username.equals(counselor.getUsername()) && !isTokenExpired(token);
         }
         else {
             return false;
