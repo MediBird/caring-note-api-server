@@ -1,22 +1,14 @@
 package com.springboot.api.domain;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
@@ -81,5 +73,11 @@ public class Medication extends BaseEntity{
         inverseJoinColumns = @JoinColumn(name = "contraindicated_medication_id")
     )
     private Set<Medication> contraindications = new HashSet<>();
+
+    @PrePersist
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+    }
 
 }
