@@ -1,4 +1,4 @@
-package com.springboot.api.domain;
+package com.springboot.enums;
 
 public enum RoleType {
     ADMIN, USER

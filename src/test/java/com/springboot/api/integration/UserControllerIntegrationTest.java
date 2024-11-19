@@ -2,11 +2,9 @@ package com.springboot.api.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.ApiApplication;
-import com.springboot.api.domain.RoleType;
+import com.springboot.enums.RoleType;
 import com.springboot.api.dto.user.AddUserReq;
 
-import com.springboot.api.dto.user.AddUserRes;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
