@@ -7,9 +7,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,6 +23,9 @@ import java.util.Set;
     @UniqueConstraint(columnNames = {"phone_number"})
 })
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSessions"})
 @ToString(callSuper = true, exclude = {"counselSessions"})
 public class Counselor extends BaseEntity implements UserDetails {
@@ -85,6 +86,7 @@ public class Counselor extends BaseEntity implements UserDetails {
     @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
     private List<CounselSession> counselSessions;
 
+
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist
     @Override
@@ -93,6 +95,7 @@ public class Counselor extends BaseEntity implements UserDetails {
         if (status == null) {
             status = CounselorStatus.ACTIVE;
         }
+        registrationDate = LocalDate.now();
     }
 
     @Override

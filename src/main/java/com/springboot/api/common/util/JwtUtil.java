@@ -2,6 +2,7 @@ package com.springboot.api.common.util;
 
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.domain.User;
+import com.springboot.enums.RoleType;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +33,20 @@ public class JwtUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(String.valueOf(id))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(String id, RoleType roleType ) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roleType);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(id)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
