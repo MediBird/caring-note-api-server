@@ -28,7 +28,7 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)  // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/user/**","/counselor/*/add","/swagger-ui/**", "/v1/api-docs/**","/swagger-ui.html").permitAll()  // 인증 없이 접근 가능
+                        .requestMatchers("/user/**","/api/*/counselor/signup","/api/*/counselor/login" ,"/swagger-ui/**", "/v1/api-docs/**","/swagger-ui.html").permitAll()  // 인증 없이 접근 가능
                         .anyRequest().authenticated()  // 나머지 요청은 인증 필요
                 )
                 .sessionManagement(session -> session
