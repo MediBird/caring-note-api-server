@@ -12,6 +12,8 @@ public interface CounselorRepository extends JpaRepository<Counselor, String> {
 
     boolean existsByEmail(String Email);
 
+    Optional<Counselor> findByEmail(String email);
+
     Counselor save(Counselor counselor);
 
 }

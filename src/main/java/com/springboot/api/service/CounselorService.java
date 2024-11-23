@@ -1,11 +1,16 @@
 package com.springboot.api.service;
 
 import com.springboot.api.common.exception.DuplicatedEmailException;
+import com.springboot.api.common.exception.InvalidPasswordException;
+import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselor.AddCounselorReq;
 import com.springboot.api.dto.counselor.AddCounselorRes;
+import com.springboot.api.dto.counselor.LoginCounselorReq;
+import com.springboot.api.dto.counselor.LoginCounselorRes;
 import com.springboot.api.repository.CounselorRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +47,20 @@ public class CounselorService {
         Counselor savedCounselor = counselorRepository.save(counselor);
 
         return new AddCounselorRes(savedCounselor.getId(), savedCounselor.getRoleType());
+
+    }
+
+    public LoginCounselorRes loginCounselor(LoginCounselorReq loginCounselorReq) {
+
+        Counselor counselor = counselorRepository.findByEmail(loginCounselorReq.getEmail()).orElseThrow(
+                ()-> new UsernameNotFoundException(ExceptionMessages.USER_NOT_FOUND));
+
+
+        if (!passwordEncoder.matches(loginCounselorReq.getPassword(), counselor.getPassword())) {
+            throw new InvalidPasswordException();
+        }
+
+        return new LoginCounselorRes(counselor.getId(), counselor.getRoleType());
 
     }
 
