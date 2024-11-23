@@ -22,3 +22,21 @@ services:
       - 'TZ=Asia/Seoul'
     ports:
       - '5430:5432'
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: keycloak
+    command:
+      - start-dev
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_DATABASE: keycloak # 데이터베이스 이름
+      KC_DB_USERNAME: myuser # DB 사용자 이름
+      KC_DB_PASSWORD: secret # DB 비밀번호
+      KEYCLOAK_ADMIN: admin # Keycloak 관리자 계정 사용자 이름
+      KEYCLOAK_ADMIN_PASSWORD: admin # Keycloak 관리자 계정 비밀번호
+    ports:
+      - 8082:8080
+    depends_on:
+      - postgres

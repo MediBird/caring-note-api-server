@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name", "dateOfBirth", "phoneNumber"})
+    @UniqueConstraint(columnNames = {"name", "date_of_birth", "phone_number"})
 })
 @Data
 @EqualsAndHashCode(callSuper = true, exclude = {"counselingSessions", "medicationRecords", "counselSchedules"})
@@ -41,7 +41,6 @@ public class Counselee extends BaseEntity {
     // 마지막 상담 날짜
     private LocalDate lastCounselingDate;
 
-    // 등록 날짜
     @Column(updatable = false)
     private LocalDate registrationDate;
 
@@ -60,6 +59,5 @@ public class Counselee extends BaseEntity {
     @Override
     protected void onCreate() {
         super.onCreate();
-        registrationDate = LocalDate.now();
     }
 }

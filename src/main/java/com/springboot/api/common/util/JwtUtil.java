@@ -1,9 +1,14 @@
 package com.springboot.api.common.util;
 
+import com.springboot.api.domain.Counselor;
 import com.springboot.api.domain.User;
+import com.springboot.enums.RoleType;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -37,12 +42,30 @@ public class JwtUtil {
                 .compact();
     }
 
+    public String generateToken(String id, RoleType roleType ) {
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roles", roleType);
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(id)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .signWith(secretKey, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
     public boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUsername(token);
 
         if (userDetails instanceof User user)
         {
             return username.equals(user.getId().toString()) && !isTokenExpired(token);
+        }
+        else if(userDetails instanceof Counselor counselor)
+        {
+            return username.equals(counselor.getUsername()) && !isTokenExpired(token);
         }
         else {
             return false;
@@ -71,4 +94,18 @@ public class JwtUtil {
                 .getBody()
                 .getExpiration();
     }
+
+
+    public ResponseEntity<Void> createTokenResponse(String id, RoleType roleType) {
+        // 토큰 생성
+        String token = generateToken(id, roleType);
+
+        // 헤더 설정
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+
+        // ResponseEntity 반환
+        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+    }
+
 }

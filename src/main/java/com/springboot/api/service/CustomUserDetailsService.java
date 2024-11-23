@@ -2,12 +2,15 @@ package com.springboot.api.service;
 
 import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.repository.UserRepository;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+
 @Service
+@ConditionalOnProperty(name = "api.userdetails.implementation", havingValue = "customUserDetailsService")
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;

@@ -12,7 +12,7 @@ import com.springboot.api.common.exception.DuplicatedEmailException;
 import com.springboot.api.common.exception.InvalidPasswordException;
 import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.domain.Role;
-import com.springboot.api.domain.RoleType;
+import com.springboot.enums.RoleType;
 import com.springboot.api.domain.User;
 import com.springboot.api.dto.user.AddUserReq;
 import com.springboot.api.dto.user.AddUserRes;
