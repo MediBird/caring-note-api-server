@@ -54,7 +54,6 @@ public class CounselorController {
     })
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.CREATED)
-    @Deprecated
     public ResponseEntity<Void> login(@RequestBody @Valid LoginCounselorReq loginCounselorReq) throws RuntimeException{
 
         LoginCounselorRes loginCounselorRes = counselorService.loginCounselor(loginCounselorReq);
