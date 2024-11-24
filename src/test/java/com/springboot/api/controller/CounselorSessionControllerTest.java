@@ -64,11 +64,15 @@ public class CounselorSessionControllerTest {
         requestBody.put("status", "SCHEDULED");
 
         // POST 요청 실행
-        mockMvc.perform(post("/api/v1/counsel/session")
+         mockMvc.perform(post("/api/v1/counsel/session")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(requestBody)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andDo(handler ->{
+                    System.out.println(handler.getResponse().getContentAsString());
+                });
+
     }
 
 }
