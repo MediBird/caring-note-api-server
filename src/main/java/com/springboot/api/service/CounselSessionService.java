@@ -4,9 +4,11 @@ import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
-import com.springboot.api.dto.counselsession.*;
+import com.springboot.api.dto.counselsession.AddCounselSessionReq;
+import com.springboot.api.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,6 +25,7 @@ public class CounselSessionService {
     }
 
 
+    @Transactional
     public AddCounselSessionRes addCounselSession(String id, AddCounselSessionReq addCounselSessionReq) throws RuntimeException
     {
         Counselor proxyCounselor = entityManager.getReference(Counselor.class, id);
