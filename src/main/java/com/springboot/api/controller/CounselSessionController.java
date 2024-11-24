@@ -7,6 +7,7 @@ import com.springboot.api.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.service.CounselSessionService;
 import com.springboot.enums.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/counsel/session")
+@Tag(name = "CounselSessionController", description = "상담 세션 관련 API를 제공하는 Controller")
 public class CounselSessionController {
 
     private final CounselSessionService counselSessionService;
@@ -27,7 +29,7 @@ public class CounselSessionController {
     }
 
     //TODO 상담일정 등록
-    @Operation(summary = "상담세션(일정) 추가",tags = "관리자 프로세스")
+    @Operation(summary = "상담세션(일정) 추가",tags = {"관리자 화면"})
     @PostMapping
     @RoleSecured(RoleType.ADMIN)
     public ResponseEntity<AddCounselSessionRes> addCounselSession(@AuthenticationPrincipal UserDetails userDetails

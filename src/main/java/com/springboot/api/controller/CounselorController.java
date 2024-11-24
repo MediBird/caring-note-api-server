@@ -9,13 +9,16 @@ import com.springboot.api.service.CounselorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/v1/counselor")
+@Tag(name = "CounselorController", description = "유저 관리 API를 제공하는 Controller")
 public class CounselorController {
 
     private final CounselorService counselorService;
