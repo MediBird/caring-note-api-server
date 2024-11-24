@@ -22,7 +22,7 @@ public class AddCounselSessionReq {
     private String scheduledStartDateTime;
 
     @Schema(description = "상담 상태(SCHEDULED, COMPLETED, CANCELED)",
-            example = "2024-11-23 14:30")
+            example = "SCHEDULED")
 
     @ValidEnum(enumClass = ScheduleStatus.class)
     private ScheduleStatus status;
