@@ -50,11 +50,33 @@ public class CounselSessionService {
         return new AddCounselSessionRes(savedCounselSession.getId());
     }
 
-//    public SelectCounselSessionRes selectCounselSession()
-//    {
-//
-//    }
-//
+    public SelectCounselSessionRes selectCounselSession(String id) throws RuntimeException
+    {
+        CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
+                ResourceNotFoundException::new
+        );
+
+        return SelectCounselSessionRes
+                .builder()
+                .id(counselSession.getId())
+                .scheduledTime(counselSession.getScheduledStartDateTime().toLocalDate().toString())
+                .scheduledDate(counselSession.getScheduledStartDateTime().toLocalTime().toString())
+                .counseleeId(Optional.ofNullable(counselSession.getCounselee())
+                        .map(Counselee::getId)
+                        .orElse(""))
+                .counseleeName(Optional.ofNullable(counselSession.getCounselee())
+                        .map(Counselee::getName)
+                        .orElse(""))
+                .counselorId(Optional.ofNullable(counselSession.getCounselor())
+                        .map(Counselor::getId)
+                        .orElse(""))
+                .counselorName(Optional.ofNullable(counselSession.getCounselor())
+                        .map(Counselor::getName)
+                        .orElse(""))
+                .build();
+
+    }
+
     public SelectCounselSessionListRes selectCounselSessionList(String id, RoleType roleType, SelectCounselSessionListReq selectCounselSessionListReq) throws RuntimeException
     {
         Pageable pageable = PageRequest.of(0, selectCounselSessionListReq.getSize());

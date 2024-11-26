@@ -46,12 +46,6 @@ public class CounselSessionController {
 
     }
 
-//    @GetMapping
-//    public ResponseEntity<SelectCounselSessionRes> selectCounselSession() {
-//        return
-//
-//    }
-//
     @GetMapping("/list")
     @Operation(summary = "상담일정 목록 조회", tags = {"로그인/홈"})
     public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionList(@AuthenticationPrincipal UserDetails userDetails
@@ -75,6 +69,17 @@ public class CounselSessionController {
         return ResponseEntity.ok(new CommonCursorRes<>(
                 selectCounselSessionListRes.sessionListItems(), selectCounselSessionListRes.nextCursor(), selectCounselSessionListRes.hasNext()
         ));
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "상담일정 조회", tags = {"관리자 화면"})
+    public ResponseEntity<CommonRes<SelectCounselSessionRes>> selectCounselSession(@AuthenticationPrincipal UserDetails userDetails,
+                                                                        @PathVariable  String id) {
+
+        SelectCounselSessionRes selectCounselSessionRes = counselSessionService.selectCounselSession(id);
+
+        return ResponseEntity.ok(new CommonRes<>(selectCounselSessionRes));
+
     }
 
 
