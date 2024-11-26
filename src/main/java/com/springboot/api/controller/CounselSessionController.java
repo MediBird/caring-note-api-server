@@ -76,24 +76,25 @@ public class CounselSessionController {
                 selectCounselSessionListRes.sessionListItems(), selectCounselSessionListRes.nextCursor(), selectCounselSessionListRes.hasNext()
         ));
     }
-//
-//
-//    //TODO 상담일정 수정
+
+
+    //TODO 상담일정 수정
 //    @PostMapping
 //    public ResponseEntity<UpdateCounselSessionRes> updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
+//
 //        return
-//
-//    }
-//
-//    //TODO 상당일정 조회
-//    public ResponseEntity<DeleteCounselSessionRes> deleteCounselSession(DeleteCounselSessionReq deleteCounselSessionReq) {
-//        return
-//
 //    }
 
 
+    @DeleteMapping("/")
+    @Operation(summary = "상담일정 삭제", tags = {"로그인/홈"})
+    @RoleSecured(RoleType.ADMIN)
+    public ResponseEntity<CommonRes<DeleteCounselSessionRes>> deleteCounselSession(@AuthenticationPrincipal UserDetails userDetails,
+                                                                        @RequestBody @Valid DeleteCounselSessionReq deleteCounselSessionReq) {
 
+        DeleteCounselSessionRes deleteCounselSessionRes = counselSessionService.deleteCounselSessionRes(deleteCounselSessionReq);
+        return ResponseEntity.ok(new CommonRes<>(deleteCounselSessionRes));
 
-
+    }
 
 }

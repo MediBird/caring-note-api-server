@@ -106,16 +106,22 @@ public class CounselSessionService {
 
         }
 
-//
+
 //    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq)
 //    {
 //
-//    }
-//
-//    public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq)
-//    {
 //
 //    }
+
+    @Transactional
+    public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq)
+    {
+
+        sessionRepository.deleteById(deleteCounselSessionReq.getId());
+
+        return new DeleteCounselSessionRes(deleteCounselSessionReq.getId());
+
+    }
 
 
 

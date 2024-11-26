@@ -16,6 +16,7 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
     
     CounselSession save(CounselSession counselSession);
 
+    void deleteById(String id);
 
     @Query("""
         SELECT cs FROM CounselSession cs
@@ -30,4 +31,7 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
             @Param("counselorId") String counselorId,
             Pageable pageable
     );
+
+
+
 }
