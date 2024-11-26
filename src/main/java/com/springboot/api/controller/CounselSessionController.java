@@ -83,7 +83,7 @@ public class CounselSessionController {
     }
 
 
-    @DeleteMapping
+    @PutMapping
     @Operation(summary = "상담일정 수정", tags = {"관리자 화면"})
     @RoleSecured(RoleType.ADMIN)
     public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateCounselSession(@AuthenticationPrincipal UserDetails userDetails
