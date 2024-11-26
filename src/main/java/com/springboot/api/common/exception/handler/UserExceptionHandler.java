@@ -3,6 +3,7 @@ package com.springboot.api.common.exception.handler;
 import com.springboot.api.common.dto.ErrorRes;
 import com.springboot.api.common.exception.DuplicatedEmailException;
 import com.springboot.api.common.exception.InvalidPasswordException;
+import com.springboot.api.common.exception.ResourceNotFoundException;
 import com.springboot.api.common.message.ExceptionMessages;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -33,5 +34,10 @@ public class UserExceptionHandler extends CommonHandler{
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorRes handleInvalidPassword(InvalidPasswordException ex) {
         return buildErrorResponse(ExceptionMessages.INVALID_PASSWORD);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ErrorRes handleResourceNotFound(ResourceNotFoundException ex) {
+        return buildErrorResponse(ExceptionMessages.RESOURCE_NOT_FOUND);
     }
 }
