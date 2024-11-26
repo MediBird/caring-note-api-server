@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@RequestMapping("/api/v1/counselor")
+@RequestMapping("/v1/counselor")
 @Tag(name = "CounselorController", description = "유저 관리 API를 제공하는 Controller")
 public class CounselorController {
 
@@ -50,7 +50,7 @@ public class CounselorController {
     @Operation(summary = "로그인", description = "로그인 처리, 헤더에 토큰 응답"
             , responses = {
             @ApiResponse(responseCode = "201", description = "로그인 성공")
-    })
+    }, tags = {"로그인/홈"})
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> login(@RequestBody @Valid LoginCounselorReq loginCounselorReq) throws RuntimeException{
