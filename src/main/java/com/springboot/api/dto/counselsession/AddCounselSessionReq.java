@@ -15,6 +15,9 @@ public class AddCounselSessionReq {
     @NotBlank
     private String counseleeId;
 
+    @NotBlank
+    private String counselorId;
+
     @Schema(description = "상담 일정 날짜 및 시간",
             example = "2024-11-23 14:30")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

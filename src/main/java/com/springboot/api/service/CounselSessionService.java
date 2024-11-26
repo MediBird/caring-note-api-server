@@ -33,7 +33,7 @@ public class CounselSessionService {
     @Transactional
     public AddCounselSessionRes addCounselSession(String id, AddCounselSessionReq addCounselSessionReq) throws RuntimeException
     {
-        Counselor proxyCounselor = entityManager.getReference(Counselor.class, id);
+        Counselor proxyCounselor = entityManager.getReference(Counselor.class, addCounselSessionReq.getCounselorId());
         Counselee proxyCounselee = entityManager.getReference(Counselee.class, addCounselSessionReq.getCounseleeId());
 
         CounselSession counselSession = CounselSession.builder()
@@ -107,6 +107,7 @@ public class CounselSessionService {
         }
 
 
+//    @Transactional
 //    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq)
 //    {
 //
