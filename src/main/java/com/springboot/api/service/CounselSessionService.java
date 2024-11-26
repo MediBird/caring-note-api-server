@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import com.springboot.api.common.exception.ResourceNotFoundException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
@@ -107,12 +108,23 @@ public class CounselSessionService {
         }
 
 
-//    @Transactional
-//    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq)
-//    {
-//
-//
-//    }
+    @Transactional
+    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) throws RuntimeException
+    {
+        CounselSession counselSession = sessionRepository.findById(updateCounselSessionReq.getId()).orElseThrow(
+                ResourceNotFoundException::new
+        );
+
+        Counselor proxyCounselor = entityManager.getReference(Counselor.class, updateCounselSessionReq.getCounselorId());
+        Counselee proxyCounselee = entityManager.getReference(Counselee.class, updateCounselSessionReq.getCounseleeId());
+        counselSession.setScheduledStartDateTime(dateTimeUtil
+                .parseToDateTime(updateCounselSessionReq.getScheduledStartDateTime()));
+        counselSession.setCounselor(proxyCounselor);
+        counselSession.setCounselee(proxyCounselee);
+
+
+        return new UpdateCounselSessionRes(updateCounselSessionReq.getId());
+    }
 
     @Transactional
     public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq)

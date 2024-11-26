@@ -78,19 +78,23 @@ public class CounselSessionController {
     }
 
 
-    //TODO 상담일정 수정
-//    @PostMapping
-//    public ResponseEntity<UpdateCounselSessionRes> updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
-//
-//        return
-//    }
-
-
-    @DeleteMapping("/")
-    @Operation(summary = "상담일정 삭제", tags = {"로그인/홈"})
+    @DeleteMapping
+    @Operation(summary = "상담일정 수정", tags = {"관리자 화면"})
     @RoleSecured(RoleType.ADMIN)
-    public ResponseEntity<CommonRes<DeleteCounselSessionRes>> deleteCounselSession(@AuthenticationPrincipal UserDetails userDetails,
-                                                                        @RequestBody @Valid DeleteCounselSessionReq deleteCounselSessionReq) {
+    public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateCounselSession(@AuthenticationPrincipal UserDetails userDetails
+            ,@RequestBody @Valid UpdateCounselSessionReq updateCounselSessionReq) throws RuntimeException {
+
+        UpdateCounselSessionRes updateCounselSessionRes = counselSessionService.updateCounselSession(updateCounselSessionReq);
+
+        return ResponseEntity.ok(new CommonRes<>(updateCounselSessionRes));
+    }
+
+
+    @DeleteMapping
+    @Operation(summary = "상담일정 삭제", tags = {"관리자 화면"})
+    @RoleSecured(RoleType.ADMIN)
+    public ResponseEntity<CommonRes<DeleteCounselSessionRes>> deleteCounselSession(@AuthenticationPrincipal UserDetails userDetails
+            ,@RequestBody @Valid DeleteCounselSessionReq deleteCounselSessionReq) throws RuntimeException  {
 
         DeleteCounselSessionRes deleteCounselSessionRes = counselSessionService.deleteCounselSessionRes(deleteCounselSessionReq);
         return ResponseEntity.ok(new CommonRes<>(deleteCounselSessionRes));
