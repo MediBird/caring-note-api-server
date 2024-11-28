@@ -12,18 +12,12 @@ jobs:
     - uses: actions/checkout@v2
     
     - name: Set up JDK 21
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4.5.0
       with:
         java-version: 21
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-      
-    - name: Validate Gradle Wrapper
-      run: ./gradlew wrapper --gradle-version
-
     - name: Build with Gradle
-      run: ./gradlew build -x test
+      uses: gradle/actions@v4.2.1
       
     - name: Test with Gradle
       run: SPRING_PROFILES_ACTIVE=test ./gradlew test
