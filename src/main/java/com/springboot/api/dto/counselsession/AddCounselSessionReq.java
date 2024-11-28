@@ -18,16 +18,12 @@ public class AddCounselSessionReq {
     @NotBlank
     private String counselorId;
 
-    @Schema(description = "상담 일정 날짜 및 시간",
-            example = "2024-11-23 14:30")
+    @Schema(description = "상담 일정 날짜 및 시간", example = "2024-11-23 14:30")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @NotBlank
     private String scheduledStartDateTime;
 
-    @Schema(description = "상담 상태(SCHEDULED, COMPLETED, CANCELED)",
-            example = "SCHEDULED")
-
+    @Schema(description = "상담 상태(SCHEDULED, COMPLETED, CANCELED)", example = "SCHEDULED")
     @ValidEnum(enumClass = ScheduleStatus.class)
     private ScheduleStatus status;
-
 }
