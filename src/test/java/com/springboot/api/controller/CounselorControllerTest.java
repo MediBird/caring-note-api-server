@@ -28,12 +28,9 @@ public class CounselorControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
-
     @Test
-    @Transactional
-    void shouldAddCounselorAndLoginSuccessfully() throws Exception {
-        // Given: 요청 데이터 준비
+    void shouldAddCounselorSuccessfully() throws Exception {
+
         AddCounselorReq request = AddCounselorReq.builder()
                 .name("sunpil")
                 .email("roung4119@gmail.com")
@@ -42,8 +39,34 @@ public class CounselorControllerTest {
                 .roleType(RoleType.ADMIN)
                 .build();
 
+        // When: 요청 수행
+        mockMvc.perform(post("/api/v1/counselor/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                // Then: 응답 검증
+                .andExpect(status().isCreated())
+                .andExpect(header().string(HttpHeaders.AUTHORIZATION, startsWith("Bearer ")));
+
+
+    }
+
+
+
+
+    @Test
+    @Transactional
+    void shouldAddCounselorAndLoginSuccessfully() throws Exception {
+        // Given: 요청 데이터 준비
+        AddCounselorReq request = AddCounselorReq.builder()
+                .name("sunpil.choi")
+                .email("roung4118@gmail.com")
+                .phoneNumber("01090664118")
+                .password("12341234")
+                .roleType(RoleType.ADMIN)
+                .build();
+
         LoginCounselorReq loginRequest = LoginCounselorReq.builder()
-                .email("roung4119@gmail.com")
+                .email("roung4118@gmail.com")
                 .password("12341234")
                 .build();
 

@@ -17,8 +17,8 @@ import java.util.List;
     @UniqueConstraint(columnNames = {"name", "date_of_birth", "phone_number"})
 })
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"counselingSessions", "medicationRecords", "counselSchedules"})
-@ToString(callSuper = true, exclude = {"counselingSessions", "medicationRecords", "counselSchedules"})
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSessions", "medicationRecords",})
+@ToString(callSuper = true, exclude = {"counselSessions", "medicationRecords"})
 public class Counselee extends BaseEntity {
 
     @Column(nullable = false)

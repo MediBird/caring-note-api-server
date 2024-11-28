@@ -1,6 +1,7 @@
 package com.springboot.api.common.aspect;
 
 import com.springboot.api.common.annotation.RoleSecured;
+import com.springboot.enums.RoleType;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,11 +21,11 @@ public class RoleSecuredAspect {
             throw new AccessDeniedException("User is not authenticated");
         }
 
-        String[] requiredRoles = roleSecured.value();
+        RoleType[] requiredRoles = roleSecured.value();
         boolean hasRole = authentication.getAuthorities().stream()
                 .anyMatch(grantedAuthority -> {
-                    for (String role : requiredRoles) {
-                        if (grantedAuthority.getAuthority().equals(role)) {
+                    for (RoleType role : requiredRoles) {
+                        if (grantedAuthority.getAuthority().equals(role.name())) {
                             return true;
                         }
                     }

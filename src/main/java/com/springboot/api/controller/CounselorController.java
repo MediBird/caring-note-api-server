@@ -9,17 +9,16 @@ import com.springboot.api.service.CounselorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
-@RequestMapping("/api/v1/counselor")
+
+@RestController
+@RequestMapping("/v1/counselor")
+@Tag(name = "CounselorController", description = "유저 관리 API를 제공하는 Controller")
 public class CounselorController {
 
     private final CounselorService counselorService;
@@ -51,14 +50,14 @@ public class CounselorController {
     @Operation(summary = "로그인", description = "로그인 처리, 헤더에 토큰 응답"
             , responses = {
             @ApiResponse(responseCode = "201", description = "로그인 성공")
-    })
+    }, tags = {"로그인/홈"})
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<Void> login(@RequestBody @Valid LoginCounselorReq loginCounselorReq) throws RuntimeException{
 
         LoginCounselorRes loginCounselorRes = counselorService.loginCounselor(loginCounselorReq);
 
-        return jwtUtil.createTokenResponse(loginCounselorRes.id(),loginCounselorRes.roleType());
+        return jwtUtil.createTokenResponse(loginCounselorRes.counselorId(),loginCounselorRes.roleType());
     }
 
 
