@@ -71,12 +71,12 @@ public class CounselSessionController {
         ));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담일정 조회", tags = {"관리자 화면"})
     public ResponseEntity<CommonRes<SelectCounselSessionRes>> selectCounselSession(@AuthenticationPrincipal UserDetails userDetails,
-                                                                        @PathVariable  String id) {
+                                                                        @PathVariable  String counselSessionId) throws RuntimeException {
 
-        SelectCounselSessionRes selectCounselSessionRes = counselSessionService.selectCounselSession(id);
+        SelectCounselSessionRes selectCounselSessionRes = counselSessionService.selectCounselSession(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectCounselSessionRes));
 
