@@ -13,7 +13,7 @@ import lombok.Data;
 public class UpdateCounselSessionReq {
 
     @NotBlank
-    private String id;
+    private String counselSessionId;
 
     @NotBlank
     private String counseleeId;

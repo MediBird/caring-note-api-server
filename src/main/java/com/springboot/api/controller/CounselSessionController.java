@@ -50,14 +50,14 @@ public class CounselSessionController {
     @Operation(summary = "상담일정 목록 조회", tags = {"로그인/홈"})
     public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionList(@AuthenticationPrincipal UserDetails userDetails
             , @RequestParam(required = false) LocalDateTime baseDateTime
-            , @RequestParam(required = false) String cursorId
+            , @RequestParam(required = false) String cursor
             , @RequestParam(defaultValue = "15") int size) throws RuntimeException {
 
         SelectCounselSessionListReq selectCounselSessionListReq
                 = SelectCounselSessionListReq
                 .builder()
                 .baseDateTime(baseDateTime)
-                .cursorId(cursorId)
+                .cursor(cursor)
                 .size(size)
                 .build();
 

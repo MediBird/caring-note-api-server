@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 public class SelectCounselSessionRes {
 
-    private String id;
+    private String counselSessionId;
 
     private String scheduledTime;
 

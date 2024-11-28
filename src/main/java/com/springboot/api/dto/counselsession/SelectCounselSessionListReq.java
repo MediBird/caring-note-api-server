@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class SelectCounselSessionListReq {
 
     private int size;
-    private String cursorId;
+    private String cursor;
     private LocalDateTime baseDateTime;
 
 

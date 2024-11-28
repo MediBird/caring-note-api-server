@@ -57,7 +57,7 @@ public class CounselorController {
 
         LoginCounselorRes loginCounselorRes = counselorService.loginCounselor(loginCounselorReq);
 
-        return jwtUtil.createTokenResponse(loginCounselorRes.id(),loginCounselorRes.roleType());
+        return jwtUtil.createTokenResponse(loginCounselorRes.counselorId(),loginCounselorRes.roleType());
     }
 
 

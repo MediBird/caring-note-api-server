@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +59,7 @@ public class CounselSessionService {
 
         return SelectCounselSessionRes
                 .builder()
-                .id(counselSession.getId())
+                .counselSessionId(counselSession.getId())
                 .scheduledTime(counselSession.getScheduledStartDateTime().toLocalDate().toString())
                 .scheduledDate(counselSession.getScheduledStartDateTime().toLocalTime().toString())
                 .counseleeId(Optional.ofNullable(counselSession.getCounselee())
@@ -80,20 +81,21 @@ public class CounselSessionService {
     public SelectCounselSessionListRes selectCounselSessionList(String id, RoleType roleType, SelectCounselSessionListReq selectCounselSessionListReq) throws RuntimeException
     {
         Pageable pageable = PageRequest.of(0, selectCounselSessionListReq.getSize());
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         List<CounselSession> sessions = null;
 
         if(roleType == RoleType.ADMIN)
         {
             sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
-                    , selectCounselSessionListReq.getCursorId()
+                    , selectCounselSessionListReq.getCursor()
                     , null
                     , pageable);
 
         }
         else {// 커서 기반에서는 항상 첫 페이지 사용
             sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
-                    , selectCounselSessionListReq.getCursorId()
+                    , selectCounselSessionListReq.getCursor()
                     , id
                     , pageable);
         }
@@ -111,16 +113,16 @@ public class CounselSessionService {
             List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
                     .map(s->{
                         return SelectCounselSessionListItem.builder()
-                                .counselorName(Optional.ofNullable(s.getCounselee())
-                                        .map(Counselee::getName)
-                                        .orElse(""))
-                                .counseleeName(Optional.ofNullable(s.getCounselor())
+                                .counselorName(Optional.ofNullable(s.getCounselor())
                                         .map(Counselor::getName)
+                                        .orElse(""))
+                                .counseleeName(Optional.ofNullable(s.getCounselee())
+                                        .map(Counselee::getName)
                                         .orElse(""))
                                 .isShardCaringMessage(false)
                                 .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
-                                .scheduledTime(s.getScheduledStartDateTime().toLocalTime().toString())
-                                .id(s.getId())
+                                .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
+                                .counselSessionId(s.getId())
                                 .build();
                     })
                     .toList();
@@ -133,7 +135,7 @@ public class CounselSessionService {
     @Transactional
     public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) throws RuntimeException
     {
-        CounselSession counselSession = sessionRepository.findById(updateCounselSessionReq.getId()).orElseThrow(
+        CounselSession counselSession = sessionRepository.findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
                 ResourceNotFoundException::new
         );
 
@@ -145,16 +147,16 @@ public class CounselSessionService {
         counselSession.setCounselee(proxyCounselee);
 
 
-        return new UpdateCounselSessionRes(updateCounselSessionReq.getId());
+        return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
     }
 
     @Transactional
     public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq)
     {
 
-        sessionRepository.deleteById(deleteCounselSessionReq.getId());
+        sessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
-        return new DeleteCounselSessionRes(deleteCounselSessionReq.getId());
+        return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
 
     }
 

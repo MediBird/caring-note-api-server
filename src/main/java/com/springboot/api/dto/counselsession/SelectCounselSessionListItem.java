@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class SelectCounselSessionListItem {
-    private String id;
+    private String counselSessionId;
     private String scheduledTime;
     private String scheduledDate;
     private String counseleeName;
