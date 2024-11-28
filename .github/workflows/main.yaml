@@ -28,12 +28,14 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:latest
 
-      # - name: VM에 배포
-      #   uses: appleboy/ssh-action@v0.1.7
-      #   with:
-      #     host: ${{ secrets.VM_HOST }}
-      #     username: ${{ secrets.VM_USERNAME }}
-      #     key: ${{ secrets.VM_SSH_KEY }}
-      #     port: ${{ secrets.VM_PORT }}
-      #     script: |
-      #       kubectl set image deployment/your-deployment your-container=${{ secrets.DOCKERHUB_USERNAME }}/your-image-name:latest --record
+      - name: VM에 배포
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.VM_HOST }}
+          username: ${{ secrets.VM_USERNAME }}
+          key: ${{ secrets.VM_SSH_KEY }}
+          port: ${{ secrets.VM_PORT }}
+          script: |
+            cd /data/caring-note-deployment
+            kubectl delete -f api.yaml
+            kubectl apply -f api.yaml
