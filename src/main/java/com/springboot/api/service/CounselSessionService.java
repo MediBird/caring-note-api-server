@@ -85,20 +85,12 @@ public class CounselSessionService {
 
         List<CounselSession> sessions = null;
 
-        if(roleType == RoleType.ADMIN)
-        {
-            sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
+
+        sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
                     , selectCounselSessionListReq.getCursor()
-                    , null
+                    , roleType == RoleType.ADMIN? null : id
                     , pageable);
 
-        }
-        else {// 커서 기반에서는 항상 첫 페이지 사용
-            sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
-                    , selectCounselSessionListReq.getCursor()
-                    , id
-                    , pageable);
-        }
 
         String nextCursorId = null;
 
