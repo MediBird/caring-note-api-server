@@ -2,6 +2,7 @@ package com.springboot.api.service;
 
 import com.springboot.api.common.exception.ResourceNotFoundException;
 import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.domain.BaseEntity;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
@@ -83,7 +84,7 @@ public class CounselSessionService {
         Pageable pageable = PageRequest.of(0, selectCounselSessionListReq.getSize());
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
-        List<CounselSession> sessions = null;
+        List<CounselSession> sessions;
 
 
         sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
@@ -103,25 +104,71 @@ public class CounselSessionService {
             boolean hasNext = sessions.size() == selectCounselSessionListReq.getSize();
 
             List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
-                    .map(s->{
-                        return SelectCounselSessionListItem.builder()
-                                .counselorName(Optional.ofNullable(s.getCounselor())
-                                        .map(Counselor::getName)
-                                        .orElse(""))
-                                .counseleeName(Optional.ofNullable(s.getCounselee())
-                                        .map(Counselee::getName)
-                                        .orElse(""))
-                                .isShardCaringMessage(false)
-                                .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
-                                .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
-                                .counselSessionId(s.getId())
-                                .build();
-                    })
+                    .map(s-> SelectCounselSessionListItem.builder()
+                            .counselorName(Optional.ofNullable(s.getCounselor())
+                                    .map(Counselor::getName)
+                                    .orElse(""))
+                            .counseleeId(Optional.ofNullable(s.getCounselee())
+                                    .map(BaseEntity::getId)
+                                    .orElse(""))
+                            .counseleeName(Optional.ofNullable(s.getCounselee())
+                                    .map(Counselee::getName)
+                                    .orElse(""))
+                            .isShardCaringMessage(false)
+                            .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
+                            .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
+                            .counselSessionId(s.getId())
+                            .build())
                     .toList();
 
             return new SelectCounselSessionListRes(sessionListItems,nextCursorId,hasNext);
 
         }
+
+    public SelectCounselSessionGuestListRes selectCounselSessionGuestListResList(SelectCounselSessionGuestListReq selectCounselSessionGuestListReq) throws RuntimeException
+    {
+        Pageable pageable = PageRequest.of(0, selectCounselSessionGuestListReq.getSize());
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        List<CounselSession> sessions;
+
+
+        sessions = sessionRepository.findByCursor(selectCounselSessionGuestListReq.getBaseDateTime()
+                , selectCounselSessionGuestListReq.getCursor()
+                , null
+                , pageable);
+
+
+        String nextCursorId = null;
+
+        if (!sessions.isEmpty()) {
+            CounselSession lastSession = sessions.getLast();
+            nextCursorId = lastSession.getId();
+        }
+
+        // hasNext 계산
+        boolean hasNext = sessions.size() == selectCounselSessionGuestListReq.getSize();
+
+        List<SelectCounselSessionGuestListItem> sessionGuestListItems = sessions.stream()
+                .map(s-> SelectCounselSessionGuestListItem.builder()
+                        .counselorName(Optional.ofNullable(s.getCounselor())
+                                .map(Counselor::getName)
+                                .orElse(""))
+                        .counseleeName(Optional.ofNullable(s.getCounselee())
+                                .map(Counselee::getName)
+                                .orElse(""))
+                        .counseleeId(Optional.ofNullable(s.getCounselee())
+                                .map(BaseEntity::getId)
+                                .orElse(""))
+                        .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
+                        .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
+                        .counselSessionId(s.getId())
+                        .build())
+                .toList();
+
+        return new SelectCounselSessionGuestListRes(sessionGuestListItems,nextCursorId,hasNext);
+
+    }
 
 
     @Transactional

@@ -71,6 +71,30 @@ public class CounselSessionController {
         ));
     }
 
+    @GetMapping("/guest/list")
+    @Operation(summary = "상담일정 목록 조회(내담자용 홈)", tags = {"로그인/홈"})
+    public ResponseEntity<CommonCursorRes<List<SelectCounselSessionGuestListItem>>> selectCounselSessionGuestList(
+              @RequestParam(required = false) LocalDateTime baseDateTime
+            , @RequestParam(required = false) String cursor
+            , @RequestParam(defaultValue = "15") int size) throws RuntimeException {
+
+        SelectCounselSessionGuestListReq selectCounselSessionGuestListReq
+                = SelectCounselSessionGuestListReq
+                .builder()
+                .baseDateTime(baseDateTime)
+                .cursor(cursor)
+                .size(size)
+                .build();
+
+
+        SelectCounselSessionGuestListRes selectCounselSessionGuestListRes = counselSessionService
+                .selectCounselSessionGuestListResList(selectCounselSessionGuestListReq);
+
+        return ResponseEntity.ok(new CommonCursorRes<>(
+                selectCounselSessionGuestListRes.sessionGuestListItems(), selectCounselSessionGuestListRes.nextCursor(), selectCounselSessionGuestListRes.hasNext()
+        ));
+    }
+
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담일정 조회", tags = {"관리자 화면"})
     public ResponseEntity<CommonRes<SelectCounselSessionRes>> selectCounselSession(@AuthenticationPrincipal UserDetails userDetails,
