@@ -87,9 +87,10 @@ public class CounselSessionService {
         List<CounselSession> sessions;
 
 
-        sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDateTime()
+        sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDate().atStartOfDay()
+                    , selectCounselSessionListReq.getBaseDate().plusDays(1).atStartOfDay()
                     , selectCounselSessionListReq.getCursor()
-                    , roleType == RoleType.ADMIN? null : id
+                    , roleType == RoleType.ASSISTANT? id : null
                     , pageable);
 
 
@@ -125,50 +126,6 @@ public class CounselSessionService {
 
         }
 
-    public SelectCounselSessionGuestListRes selectCounselSessionGuestListResList(SelectCounselSessionGuestListReq selectCounselSessionGuestListReq) throws RuntimeException
-    {
-        Pageable pageable = PageRequest.of(0, selectCounselSessionGuestListReq.getSize());
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        List<CounselSession> sessions;
-
-
-        sessions = sessionRepository.findByCursor(selectCounselSessionGuestListReq.getBaseDateTime()
-                , selectCounselSessionGuestListReq.getCursor()
-                , null
-                , pageable);
-
-
-        String nextCursorId = null;
-
-        if (!sessions.isEmpty()) {
-            CounselSession lastSession = sessions.getLast();
-            nextCursorId = lastSession.getId();
-        }
-
-        // hasNext 계산
-        boolean hasNext = sessions.size() == selectCounselSessionGuestListReq.getSize();
-
-        List<SelectCounselSessionGuestListItem> sessionGuestListItems = sessions.stream()
-                .map(s-> SelectCounselSessionGuestListItem.builder()
-                        .counselorName(Optional.ofNullable(s.getCounselor())
-                                .map(Counselor::getName)
-                                .orElse(""))
-                        .counseleeName(Optional.ofNullable(s.getCounselee())
-                                .map(Counselee::getName)
-                                .orElse(""))
-                        .counseleeId(Optional.ofNullable(s.getCounselee())
-                                .map(BaseEntity::getId)
-                                .orElse(""))
-                        .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
-                        .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
-                        .counselSessionId(s.getId())
-                        .build())
-                .toList();
-
-        return new SelectCounselSessionGuestListRes(sessionGuestListItems,nextCursorId,hasNext);
-
-    }
 
 
     @Transactional
