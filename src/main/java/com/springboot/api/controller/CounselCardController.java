@@ -2,19 +2,14 @@ package com.springboot.api.controller;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.counselcard.InsertCounselCardReq;
-import com.springboot.api.dto.counselcard.InsertCounselCardRes;
-import com.springboot.api.dto.counselcard.UpdateCounselCardReq;
-import com.springboot.api.dto.counselcard.UpdateCounselCardRes;
+import com.springboot.api.dto.counselcard.*;
 import com.springboot.api.service.CounselCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 @ApiController(
         path="/v1/counsel/card"
@@ -28,6 +23,27 @@ public class CounselCardController {
     public CounselCardController(CounselCardService counselCardService) {
         this.counselCardService = counselCardService;
     }
+
+    @GetMapping("/{counselSessionId}")
+    @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성"})
+    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@AuthenticationPrincipal UserDetails userDetails
+            , @PathVariable String counselSessionId) {
+
+        SelectCounselCardRes selectCounselCardRes = counselCardService.selectCounselCard(userDetails.getUsername(), counselSessionId);
+
+        return ResponseEntity.ok(new CommonRes<>(selectCounselCardRes));
+    }
+
+    @GetMapping("previous/{counselSessionId}")
+    @Operation(summary = "이전 상담 카드 조회",tags = {"상담 카드 작성"})
+    ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@AuthenticationPrincipal UserDetails userDetails
+            , @PathVariable String counselSessionId) {
+
+        SelectPreviousCounselCardRes selectPreviousCounselCardRes = counselCardService.selectPreviousCounselCard(userDetails.getUsername(), counselSessionId);
+
+        return ResponseEntity.ok(new CommonRes<>(selectPreviousCounselCardRes));
+    }
+
 
     @PostMapping
     @Operation(summary = "상담 카드 등록",tags = {"상담 카드 작성"})

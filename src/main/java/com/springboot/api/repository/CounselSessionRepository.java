@@ -34,6 +34,18 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
             Pageable pageable
     );
 
+    @Query("""
+        SELECT cs FROM CounselSession cs
+        WHERE cs.counselee.id = :counseleeId
+         AND cs.id < :id
+        ORDER BY cs.id DESC
+        """)
+    List<CounselSession> findByCounseleeIdPrevious(
+            @Param("counseleeId") String counseleeId
+            ,@Param("id") String id
+            ,Pageable pageable
+    );
+
 
 
 }
