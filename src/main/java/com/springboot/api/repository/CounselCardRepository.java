@@ -13,6 +13,7 @@ public interface CounselCardRepository extends JpaRepository<CounselCard, String
 
     Optional<CounselCard> findById(String id);
 
+    void deleteById(String id);
 
 
 }

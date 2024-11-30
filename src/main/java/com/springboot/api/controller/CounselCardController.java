@@ -67,6 +67,16 @@ public class CounselCardController {
         return ResponseEntity.ok(new CommonRes<>(updateCounselCardRes));
     }
 
+    @DeleteMapping
+    @Operation(summary = "상담 카드 삭제")
+    ResponseEntity<CommonRes<DeleteCounselCardRes>> deleteCounselCard(@AuthenticationPrincipal UserDetails userDetails
+            , @RequestBody @Valid DeleteCounselCardReq deleteCounselCardReq) {
+
+        DeleteCounselCardRes deleteCounselCardRes = counselCardService.deleteCounselCard(userDetails.getUsername(), deleteCounselCardReq);
+
+        return ResponseEntity.ok(new CommonRes<>(deleteCounselCardRes));
+    }
+
 
 
 }

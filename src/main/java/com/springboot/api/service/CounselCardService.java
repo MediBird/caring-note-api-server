@@ -111,5 +111,16 @@ public class CounselCardService {
         return new UpdateCounselCardRes(counselCard.getId());
     }
 
+    @Transactional
+    public DeleteCounselCardRes deleteCounselCard(String id, DeleteCounselCardReq deleteCounselCardReq) throws RuntimeException
+    {
+        CounselCard counselCard = counselCardRepository.findById(deleteCounselCardReq.getCounselCardId())
+                .orElseThrow(NoContentException::new);
+
+        counselCardRepository.deleteById(deleteCounselCardReq.getCounselCardId());
+
+        return new DeleteCounselCardRes(deleteCounselCardReq.getCounselCardId());
+    }
+
 
 }
