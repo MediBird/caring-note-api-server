@@ -1,6 +1,6 @@
 package com.springboot.api.service;
 
-import com.springboot.api.common.exception.ResourceNotFoundException;
+import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.BaseEntity;
 import com.springboot.api.domain.CounselSession;
@@ -55,7 +55,7 @@ public class CounselSessionService {
     public SelectCounselSessionRes selectCounselSession(String id) throws RuntimeException
     {
         CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
-                ResourceNotFoundException::new
+                NoContentException::new
         );
 
         return SelectCounselSessionRes
@@ -132,7 +132,7 @@ public class CounselSessionService {
     public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) throws RuntimeException
     {
         CounselSession counselSession = sessionRepository.findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
-                ResourceNotFoundException::new
+                NoContentException::new
         );
 
         Counselor proxyCounselor = entityManager.getReference(Counselor.class, updateCounselSessionReq.getCounselorId());

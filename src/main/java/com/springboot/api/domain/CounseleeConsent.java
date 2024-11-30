@@ -3,17 +3,18 @@ package com.springboot.api.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "counselee_consents", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"counsel_session_id", "counselee_id"})
 })
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "counselee",})
 @ToString(callSuper = true, exclude = {"counselSession", "counselee"})
 public class CounseleeConsent extends BaseEntity {
@@ -27,11 +28,10 @@ public class CounseleeConsent extends BaseEntity {
     private Counselee counselee;
 
     @NotNull
-    private LocalDate consentedDate;
+    private LocalDateTime consentDateTime;
 
     @NotNull
     private boolean isConsent;
-
 
 
 }
