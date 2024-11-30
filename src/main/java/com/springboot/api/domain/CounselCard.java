@@ -2,9 +2,7 @@ package com.springboot.api.domain;
 
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
@@ -13,6 +11,9 @@ import java.util.Map;
 @Entity
 @Table(name = "counsel_cards")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
 @ToString(callSuper = true, exclude = {"counselSession"})
 public class CounselCard extends BaseEntity {
@@ -33,6 +34,10 @@ public class CounselCard extends BaseEntity {
     @Column(name = "living_information", columnDefinition = "json")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> livingInformation;
+
+    @Column(name = "self_reliant_living_information", columnDefinition = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, Object> selfReliantLivingInformation;
 
     @PrePersist
     @Override
