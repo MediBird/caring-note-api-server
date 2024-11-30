@@ -4,6 +4,8 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselcard.InsertCounselCardReq;
 import com.springboot.api.dto.counselcard.InsertCounselCardRes;
+import com.springboot.api.dto.counselcard.UpdateCounselCardReq;
+import com.springboot.api.dto.counselcard.UpdateCounselCardRes;
 import com.springboot.api.service.CounselCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @ApiController(
@@ -35,6 +38,17 @@ public class CounselCardController {
 
 
         return ResponseEntity.ok(new CommonRes<>(insertCounselCardRes));
+    }
+
+    @PutMapping
+    @Operation(summary = "상담 카드 수정",tags = {"상담 카드 작성"})
+    ResponseEntity<CommonRes<UpdateCounselCardRes>> updateCounselCard(@AuthenticationPrincipal UserDetails userDetails
+            , @RequestBody @Valid UpdateCounselCardReq updateCounselCardReq) {
+
+        UpdateCounselCardRes updateCounselCardRes = counselCardService.updateCounselCard(userDetails.getUsername(), updateCounselCardReq);
+
+
+        return ResponseEntity.ok(new CommonRes<>(updateCounselCardRes));
     }
 
 
