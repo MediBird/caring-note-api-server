@@ -9,4 +9,5 @@ public class HttpMessages {
     public static final String INTERNAL_SERVER_ERROR = "서버 내부 오류 입니다. 관리자에 문의하시기 바랍니다.";
     public static final String NOT_FOUND = "존재하지 않는 페이지입니다.";
     public static final String UNAUTHORIZED = "접근 권한이 없습니다.";
+    public static final String CONFLICT_DUPLICATE ="저장하려는 데이터가 이미 존재합니다.";
 }
