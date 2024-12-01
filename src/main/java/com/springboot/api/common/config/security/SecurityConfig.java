@@ -28,12 +28,7 @@ public class SecurityConfig {
 
         http.csrf(AbstractHttpConfigurer::disable)  // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/user/**",
-                                "/api/counselor/signup",
-                                "/api/counselor/login",
-                                "/api/swagger-ui/**",
-                                "/api/v1/api-docs/**",
-                                "/api/swagger-ui.html",
+                        .requestMatchers(
                                 "/user/**",
                                 "/counselor/signup",
                                 "/counselor/login",
