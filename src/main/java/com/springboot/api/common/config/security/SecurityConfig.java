@@ -30,10 +30,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/user/**",
-                                "*/counselor/signup",
-                                "*/counselor/login",
+                                "/**/counselor/signup",
+                                "/**/counselor/login",
                                 "/swagger-ui/**",
-                                "/v1/api-docs/**",
+                                "/**/api-docs/**",
                                 "/swagger-ui.html"
                                 ).permitAll()  // 인증 없이 접근 가능
                         .anyRequest().authenticated()  // 나머지 요청은 인증 필요
