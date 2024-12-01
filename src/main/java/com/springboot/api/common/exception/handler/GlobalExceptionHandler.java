@@ -2,6 +2,7 @@ package com.springboot.api.common.exception.handler;
 
 import com.springboot.api.common.dto.ErrorRes;
 import com.springboot.api.common.message.HttpMessages;
+import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
@@ -47,7 +48,12 @@ public class GlobalExceptionHandler extends CommonHandler {
         return buildErrorResponse(HttpMessages.UNAUTHORIZED);
     }
 
-
+    // JPA 엔터티가 이미 존재할 때 처리
+    @ExceptionHandler(EntityExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorRes handleEntityExistsException(EntityExistsException ex) {
+        return buildErrorResponse(HttpMessages.CONFLICT_DUPLICATE);
+    }
 
     // 500 - 서버 에러 처리
     @ExceptionHandler(Exception.class)
@@ -55,5 +61,6 @@ public class GlobalExceptionHandler extends CommonHandler {
     public ErrorRes handleGeneralException(Exception ex) {
         return buildErrorResponse(HttpMessages.INTERNAL_SERVER_ERROR);
     }
+
 
 }

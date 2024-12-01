@@ -12,6 +12,7 @@ public class SelectCounselSessionListItem {
     private String counselSessionId;
     private String scheduledTime;
     private String scheduledDate;
+    private String counseleeId;
     private String counseleeName;
     private String counselorName;
     private boolean isShardCaringMessage;

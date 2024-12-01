@@ -13,8 +13,8 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "medication_records_hist")
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"conuselSession", "medication"})
-@ToString(callSuper = true, exclude = {"conuselSession", "medication"})
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession","medication"})
+@ToString(callSuper = true, exclude = {"counselSession", "medication"})
 public class MedicationRecordHist extends BaseEntity{
 
     @ManyToOne

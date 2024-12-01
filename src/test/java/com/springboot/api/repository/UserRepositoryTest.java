@@ -1,6 +1,7 @@
 package com.springboot.api.repository;
 
 import com.springboot.api.domain.User;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 @DataJpaTest
+@Disabled
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest {
 

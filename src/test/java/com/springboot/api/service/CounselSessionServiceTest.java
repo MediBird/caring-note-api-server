@@ -18,6 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -103,11 +104,11 @@ class CounselSessionServiceTest {
         SelectCounselSessionListReq req = SelectCounselSessionListReq
                 .builder()
                .cursor(null)
-                .baseDateTime(LocalDateTime.now())
+                .baseDate(LocalDate.now())
                 .size(5)
                 .build();
 
-        when(sessionRepository.findByCursor(any(), any(), any(), any()))
+        when(sessionRepository.findByCursor(any(),any(), any(), any(), any()))
                 .thenReturn(List.of(mockCounselSession));
 
         SelectCounselSessionListRes res = service.selectCounselSessionList("user-1", RoleType.USER, req);

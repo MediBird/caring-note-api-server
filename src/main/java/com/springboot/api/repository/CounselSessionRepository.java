@@ -20,16 +20,30 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
 
     @Query("""
         SELECT cs FROM CounselSession cs
-        WHERE (:cursorScheduledStartDateTime IS NULL OR cs.scheduledStartDateTime > :cursorScheduledStartDateTime)
+        WHERE (:startOfDay IS NULL OR cs.scheduledStartDateTime >= :startOfDay)
+          AND (:endOfDay IS NULL OR cs.scheduledStartDateTime < :endOfDay)
           AND (:cursorId IS NULL OR cs.id > :cursorId)
           AND (cs.counselor.id IS NULL OR cs.counselor.id = :counselorId)
         ORDER BY cs.id DESC
         """)
     List<CounselSession> findByCursor(
-            @Param("cursorScheduledStartDateTime") LocalDateTime cursorScheduledStartDateTime,
+            @Param("startOfDay") LocalDateTime startOfDay,
+            @Param("endOfDay") LocalDateTime endOfDay,
             @Param("cursorId") String cursorId,
             @Param("counselorId") String counselorId,
             Pageable pageable
+    );
+
+    @Query("""
+        SELECT cs FROM CounselSession cs
+        WHERE cs.counselee.id = :counseleeId
+         AND cs.id < :id
+        ORDER BY cs.id DESC
+        """)
+    List<CounselSession> findByCounseleeIdPrevious(
+            @Param("counseleeId") String counseleeId
+            ,@Param("id") String id
+            ,Pageable pageable
     );
 
 

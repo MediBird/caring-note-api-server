@@ -16,7 +16,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -49,14 +49,14 @@ public class CounselSessionController {
     @GetMapping("/list")
     @Operation(summary = "상담일정 목록 조회", tags = {"로그인/홈"})
     public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionList(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestParam(required = false) LocalDateTime baseDateTime
+            , @RequestParam(required = false) LocalDate baseDate
             , @RequestParam(required = false) String cursor
             , @RequestParam(defaultValue = "15") int size) throws RuntimeException {
 
         SelectCounselSessionListReq selectCounselSessionListReq
                 = SelectCounselSessionListReq
                 .builder()
-                .baseDateTime(baseDateTime)
+                .baseDate(baseDate)
                 .cursor(cursor)
                 .size(size)
                 .build();
@@ -70,6 +70,7 @@ public class CounselSessionController {
                 selectCounselSessionListRes.sessionListItems(), selectCounselSessionListRes.nextCursor(), selectCounselSessionListRes.hasNext()
         ));
     }
+
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담일정 조회", tags = {"관리자 화면"})
