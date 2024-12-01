@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import java.time.LocalDate;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -87,8 +88,14 @@ public class CounselSessionService {
         List<CounselSession> sessions;
 
 
-        sessions = sessionRepository.findByCursor(selectCounselSessionListReq.getBaseDate().atStartOfDay()
-                    , selectCounselSessionListReq.getBaseDate().plusDays(1).atStartOfDay()
+        sessions = sessionRepository.findByCursor(
+                    Optional.ofNullable(selectCounselSessionListReq.getBaseDate())
+                        .map(LocalDate::atStartOfDay)
+                        .orElse(null)
+                    ,Optional.ofNullable(selectCounselSessionListReq.getBaseDate())
+                        .map(d->d.plusDays(1))
+                        .map(LocalDate::atStartOfDay)
+                        .orElse(null)
                     , selectCounselSessionListReq.getCursor()
                     , roleType == RoleType.ASSISTANT? id : null
                     , pageable);
