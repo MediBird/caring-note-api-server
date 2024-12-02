@@ -1,5 +1,6 @@
 package com.springboot.api.domain;
 
+import com.springboot.enums.GenderType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -47,6 +48,9 @@ public class Counselee extends BaseEntity {
     // 메모
     @Lob
     private String notes;
+
+    @Enumerated(EnumType.STRING)
+    private GenderType genderType;
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<CounselSession> counselSessions;
