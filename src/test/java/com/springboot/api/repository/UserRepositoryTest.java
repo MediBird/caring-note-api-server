@@ -1,20 +1,18 @@
 package com.springboot.api.repository;
 
-import com.springboot.api.domain.User;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.context.jdbc.Sql;
+
+import com.springboot.api.domain.User;
 
 @DataJpaTest
-@Disabled
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class UserRepositoryTest {
 
     @Autowired
@@ -22,13 +20,10 @@ public class UserRepositoryTest {
 
     @Test
     @DisplayName("email로 회원 정보 조회 테스트")
+    @Sql("/test-data.sql") // 테스트 데이터 삽입을 위한 SQL 파일
     public void testFindByEmail() {
-
-        String email = "roung4119@gmail.com";
-
-        Optional<User> user1 = userRepository.findByEmail(email);
-
-        assertFalse(user1.isPresent());
+        String email = "example1@gmail.com";
+        Optional<User> user = userRepository.findByEmail(email);
+        assertFalse(user.isPresent());
     }
-
 }
