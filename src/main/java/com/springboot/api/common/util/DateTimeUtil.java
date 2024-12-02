@@ -2,7 +2,9 @@ package com.springboot.api.common.util;
 
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
@@ -16,5 +18,23 @@ public class DateTimeUtil {
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("Invalid date format: " + dateTime + ". Expected format: yyyy-MM-dd HH:mm");
         }
+    }
+
+    public int calculateKoreanAge(LocalDate birthDate, LocalDate currentDate) throws RuntimeException {
+
+        if (birthDate == null || currentDate == null) {
+            throw new IllegalArgumentException("Dates cannot be null");
+        }
+
+        Period period = Period.between(birthDate, currentDate);
+
+        int age = period.getYears();
+
+        // 만나이 계산: 생일이 지나지 않았다면 나이에서 1을 뺌
+        if (birthDate.plusYears(age).isAfter(currentDate)) {
+            age--;
+        }
+
+        return age;
     }
 }
