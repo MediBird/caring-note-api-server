@@ -1,22 +1,29 @@
 package com.springboot.api.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.springboot.api.common.util.JwtUtil;
 import com.springboot.api.dto.counselor.AddCounselorReq;
 import com.springboot.api.dto.counselor.AddCounselorRes;
 import com.springboot.api.dto.counselor.LoginCounselorReq;
 import com.springboot.api.dto.counselor.LoginCounselorRes;
 import com.springboot.api.service.CounselorService;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
+import lombok.RequiredArgsConstructor;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/v1/counselor")
 @Tag(name = "CounselorController", description = "유저 관리 API를 제공하는 Controller")
 public class CounselorController {
@@ -24,45 +31,34 @@ public class CounselorController {
     private final CounselorService counselorService;
     private final JwtUtil jwtUtil;
 
-    public CounselorController(CounselorService counselorService, JwtUtil jwtUtil) {
-        this.counselorService = counselorService;
-        this.jwtUtil = jwtUtil;
-    }
-
-    @Operation(summary = "사용자 추가"
-            , description = "권한,기본정보를 입력받아 회원가입 처리, 헤더에 토큰 응답"
-            , responses = {
-            @ApiResponse(responseCode = "201", description = "회원가입 성공")
-    }
+    @Operation(summary = "사용자 추가",
+            description = "권한,기본정보를 입력받아 회원가입 처리, 헤더에 토큰 응답",
+            responses = {
+                @ApiResponse(responseCode = "201", description = "회원가입 성공")
+            }
     )
     @PostMapping("/signup")
     public ResponseEntity<Void> addCounselor(
             @Parameter(description = "Details of the new Counselor to be added", required = true)
-            @RequestBody @Valid AddCounselorReq addCounselorReq) throws RuntimeException{
+            @RequestBody @Valid AddCounselorReq addCounselorReq) throws RuntimeException {
 
         AddCounselorRes addCounselorRes = counselorService.addCounselor(addCounselorReq);
 
-        return jwtUtil.createTokenResponse(addCounselorRes.id(),addCounselorRes.roleType());
+        return jwtUtil.createTokenResponse(addCounselorRes.id(), addCounselorRes.roleType());
 
     }
 
-
-    @Operation(summary = "로그인", description = "로그인 처리, 헤더에 토큰 응답"
-            , responses = {
-            @ApiResponse(responseCode = "201", description = "로그인 성공")
-    }, tags = {"로그인/홈"})
+    @Operation(summary = "로그인", description = "로그인 처리, 헤더에 토큰 응답",
+            responses = {
+                @ApiResponse(responseCode = "201", description = "로그인 성공")
+            }, tags = {"로그인/홈"})
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<Void> login(@RequestBody @Valid LoginCounselorReq loginCounselorReq) throws RuntimeException{
+    public ResponseEntity<Void> login(@RequestBody @Valid LoginCounselorReq loginCounselorReq) throws RuntimeException {
 
         LoginCounselorRes loginCounselorRes = counselorService.loginCounselor(loginCounselorReq);
 
-        return jwtUtil.createTokenResponse(loginCounselorRes.counselorId(),loginCounselorRes.roleType());
+        return jwtUtil.createTokenResponse(loginCounselorRes.counselorId(), loginCounselorRes.roleType());
     }
-
-
-
-
-
 
 }

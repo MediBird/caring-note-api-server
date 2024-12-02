@@ -1,10 +1,13 @@
 package com.springboot.api.common.util;
 
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.User;
-import com.springboot.enums.RoleType;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -12,12 +15,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.springboot.api.domain.Counselor;
+import com.springboot.api.domain.User;
+import com.springboot.enums.RoleType;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtUtil {
@@ -28,7 +31,7 @@ public class JwtUtil {
         this.secretKey = new SecretKeySpec(secret.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    public String generateToken(long id, List<String> roles ) {
+    public String generateToken(long id, List<String> roles) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roles);
@@ -42,7 +45,7 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String generateToken(String id, RoleType roleType ) {
+    public String generateToken(String id, RoleType roleType) {
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("roles", roleType);
@@ -59,16 +62,16 @@ public class JwtUtil {
     public boolean validateToken(String token, UserDetails userDetails) {
         String username = extractUsername(token);
 
-        if (userDetails instanceof User user)
-        {
-            return username.equals(user.getId().toString()) && !isTokenExpired(token);
-        }
-        else if(userDetails instanceof Counselor counselor)
-        {
-            return username.equals(counselor.getUsername()) && !isTokenExpired(token);
-        }
-        else {
-            return false;
+        switch (userDetails) {
+            case User user -> {
+                return username.equals(user.getId().toString()) && !isTokenExpired(token);
+            }
+            case Counselor counselor -> {
+                return username.equals(counselor.getUsername()) && !isTokenExpired(token);
+            }
+            default -> {
+                return false;
+            }
         }
 
     }
@@ -94,7 +97,6 @@ public class JwtUtil {
                 .getBody()
                 .getExpiration();
     }
-
 
     public ResponseEntity<Void> createTokenResponse(String id, RoleType roleType) {
         // 토큰 생성

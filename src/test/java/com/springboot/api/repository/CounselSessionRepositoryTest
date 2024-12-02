@@ -1,0 +1,80 @@
+package com.springboot.api.repository;
+
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselor;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.domain.PageRequest;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+@DataJpaTest
+class CounselSessionRepositoryTest {
+
+    @Autowired
+    private CounselSessionRepository counselSessionRepository;
+
+    @Test
+    @DisplayName("Should save and retrieve a CounselSession by ID")
+    void testSaveAndFindById() {
+
+        counselSession.setId("1");
+        counselSession.setScheduledStartDateTime(LocalDateTime.now());
+
+        CounselSession savedSession = counselSessionRepository.save(counselSession);
+        Optional<CounselSession> retrievedSession = counselSessionRepository.findById("1");
+
+        assertThat(savedSession).isNotNull();
+        assertThat(retrievedSession).isPresent();
+        assertThat(retrievedSession.get().getId()).isEqualTo("1");
+    }
+
+    @Test
+    @DisplayName("Should delete a CounselSession by ID")
+    void testDeleteById() {
+        CounselSession counselSession = new CounselSession();
+        counselSession.setId("2");
+        counselSessionRepository.save(counselSession);
+
+        counselSessionRepository.deleteById("2");
+        Optional<CounselSession> deletedSession = counselSessionRepository.findById("2");
+        assertThat(deletedSession).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should find CounselSessions using cursor-based pagination")
+    void testFindByCursor() {
+        LocalDateTime now = LocalDateTime.now();
+        CounselSession session1 = new CounselSession();
+        session1.setId("1");
+        session1.setScheduledStartDateTime(now.minusDays(2));
+        counselSessionRepository.save(session1);
+
+        CounselSession session2 = new CounselSession();
+        session2.setId("2");
+        session2.setScheduledStartDateTime(now.minusDays(1));
+        counselSessionRepository.save(session2);
+
+        CounselSession session3 = new CounselSession();
+        session3.setId("3");
+        session3.setScheduledStartDateTime(now);
+        counselSessionRepository.save(session3);
+
+        List<CounselSession> sessions = counselSessionRepository.findByCursor(
+                now.minusDays(2), // cursorScheduledStartDateTime
+                "1",              // cursorId
+                null,             // counselorId
+                PageRequest.of(0, 2) // pageable
+        );
+        assertThat(sessions).hasSize(2);
+        assertThat(sessions.get(0).getId()).isEqualTo("2");
+        assertThat(sessions.get(1).getId()).isEqualTo("3");
+    }
+}
+       

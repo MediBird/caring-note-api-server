@@ -1,6 +1,5 @@
 package com.springboot.api.common.config.security;
 
-import com.springboot.api.common.util.JwtUtil;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -8,6 +7,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
+
+import com.springboot.api.common.util.JwtUtil;
 
 @Component
 public class JwtAuthenticationProvider implements AuthenticationProvider {
