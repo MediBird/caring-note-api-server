@@ -1,6 +1,7 @@
 package com.springboot.api.domain;
 
 import com.springboot.enums.GenderType;
+import com.springboot.enums.HealthInsuranceType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -51,6 +52,11 @@ public class Counselee extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private GenderType genderType;
+
+    @Enumerated(EnumType.STRING)
+    private HealthInsuranceType healthInsuranceType;
+
+    private String address;
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<CounselSession> counselSessions;
