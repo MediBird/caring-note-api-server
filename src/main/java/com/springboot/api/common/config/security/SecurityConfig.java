@@ -1,56 +1,60 @@
 package com.springboot.api.common.config.security;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.core.oidc.OidcIdToken;
+import org.springframework.security.oauth2.core.oidc.OidcUserInfo;
+import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final JwtAuthenticationProvider jwtAuthProvider;
-    private final JwtAuthenticationFilter jwtAuthFilter;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
-                          JwtAuthenticationProvider authenticationProvider) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.jwtAuthProvider = authenticationProvider;
-    }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-        http.csrf(AbstractHttpConfigurer::disable)  // CSRF 비활성화
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/user/**",
-                                "/*/counselor/signup",
-                                "/*/counselor/login",
-                                "/swagger-ui/**",
-                                "/*/api-docs/**",
-                                "/swagger-ui.html"
-                                ).permitAll()  // 인증 없이 접근 가능
-                        .anyRequest().authenticated()  // 나머지 요청은 인증 필요
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(authorize -> authorize
+                .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 세션을 사용하지 않음
+                .oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                .userAuthoritiesMapper(this::mapAuthorities)
                 )
-                .authenticationProvider(jwtAuthProvider)  // 커스텀 AuthenticationProvider 사용
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가
-
+                );
         return http.build();
     }
 
+    private Collection<? extends GrantedAuthority> mapAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        Set<GrantedAuthority> mappedAuthorities = new HashSet<>();
+        authorities.forEach(authority -> {
+            if (OidcUserAuthority.class.isInstance(authority)) {
+                OidcUserAuthority oidcUserAuthority = (OidcUserAuthority) authority;
+                OidcIdToken idToken = oidcUserAuthority.getIdToken();
+                OidcUserInfo userInfo = oidcUserAuthority.getUserInfo();
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+                // Keycloak 역할을 Spring Security 권한으로 매핑
+                if (userInfo.getClaims().containsKey("realm_access")) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> realmAccess = (Map<String, Object>) userInfo.getClaims().get("realm_access");
+                    if (realmAccess.containsKey("roles")) {
+                        @SuppressWarnings("unchecked")
+                        List<String> roles = (List<String>) realmAccess.get("roles");
+                        roles.forEach(role -> mappedAuthorities.add(new SimpleGrantedAuthority("ROLE_" + role)));
+                    }
+                }
+            }
+        });
+        return mappedAuthorities;
     }
-
 }
