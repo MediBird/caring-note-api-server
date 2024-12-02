@@ -1,12 +1,22 @@
 package com.springboot.api.domain;
 
+import java.util.Map;
 
-import jakarta.persistence.*;
-import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.util.Map;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "counsel_cards")
@@ -21,7 +31,6 @@ public class CounselCard extends BaseEntity {
     @OneToOne
     @JoinColumn(name = "counsel_session_id", nullable = false)
     private CounselSession counselSession;
-
 
     @Column(name = "base_information", columnDefinition = "json")
     @JdbcTypeCode(SqlTypes.JSON)
@@ -44,12 +53,5 @@ public class CounselCard extends BaseEntity {
     protected void onCreate() {
         super.onCreate();
     }
-
-
-
-
-
-
-
 
 }

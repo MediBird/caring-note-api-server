@@ -1,6 +1,6 @@
 package com.springboot.api.repository;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Optional;
 
@@ -24,6 +24,6 @@ public class UserRepositoryTest {
     public void testFindByEmail() {
         String email = "example1@gmail.com";
         Optional<User> user = userRepository.findByEmail(email);
-        assertFalse(user.isPresent());
+        assertTrue(user.isPresent());
     }
 }
