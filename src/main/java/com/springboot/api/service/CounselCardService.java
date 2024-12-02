@@ -46,6 +46,7 @@ public class CounselCardService {
                 ,counselCard.getHealthInformation()
                 ,counselCard.getLivingInformation()
                 ,counselCard.getSelfReliantLivingInformation()
+                ,counselCard.getCardRecordStatus()
         );
     }
 
@@ -79,21 +80,22 @@ public class CounselCardService {
 
 
     @Transactional
-    public InsertCounselCardRes insertCounselCard(String id, InsertCounselCardReq insertCounselCardReq) throws RuntimeException
+    public AddCounselCardRes addCounselCard(String id, AddCounselCardReq addCounselCardReq) throws RuntimeException
     {
-        CounselSession counselSessionProxy = entityManager.getReference(CounselSession.class, insertCounselCardReq.getCounselSessionId());
+        CounselSession counselSessionProxy = entityManager.getReference(CounselSession.class, addCounselCardReq.getCounselSessionId());
 
         CounselCard counselCard = CounselCard.builder()
                 .counselSession(counselSessionProxy)
-                .baseInformation(insertCounselCardReq.getBaseInformation())
-                .healthInformation(insertCounselCardReq.getHealthInformation())
-                .livingInformation(insertCounselCardReq.getLivingInformation())
-                .selfReliantLivingInformation(insertCounselCardReq.getSelfReliantLivingInformation())
+                .baseInformation(addCounselCardReq.getBaseInformation())
+                .healthInformation(addCounselCardReq.getHealthInformation())
+                .livingInformation(addCounselCardReq.getLivingInformation())
+                .selfReliantLivingInformation(addCounselCardReq.getSelfReliantLivingInformation())
+                .cardRecordStatus(addCounselCardReq.getCardRecordStatus())
                 .build();
 
         CounselCard savedCounselCard = counselCardRepository.save(counselCard);
 
-        return new InsertCounselCardRes(savedCounselCard.getId());
+        return new AddCounselCardRes(savedCounselCard.getId());
 
     }
 
@@ -107,6 +109,7 @@ public class CounselCardService {
         counselCard.setHealthInformation(updateCounselCardReq.getHealthInformation());
         counselCard.setLivingInformation(updateCounselCardReq.getLivingInformation());
         counselCard.setSelfReliantLivingInformation(updateCounselCardReq.getSelfReliantLivingInformation());
+        counselCard.setCardRecordStatus(updateCounselCardReq.getCardRecordStatus());
 
         return new UpdateCounselCardRes(counselCard.getId());
     }

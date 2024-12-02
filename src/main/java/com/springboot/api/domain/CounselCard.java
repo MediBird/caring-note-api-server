@@ -1,6 +1,7 @@
 package com.springboot.api.domain;
 
 
+import com.springboot.enums.CardRecordStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -38,6 +39,10 @@ public class CounselCard extends BaseEntity {
     @Column(name = "self_reliant_living_information", columnDefinition = "json")
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> selfReliantLivingInformation;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private CardRecordStatus cardRecordStatus;
 
     @PrePersist
     @Override

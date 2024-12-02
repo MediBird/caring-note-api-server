@@ -47,13 +47,13 @@ public class CounselCardController {
 
     @PostMapping
     @Operation(summary = "상담 카드 등록",tags = {"상담 카드 작성"})
-    ResponseEntity<CommonRes<InsertCounselCardRes>> insertCounselCard(@AuthenticationPrincipal UserDetails userDetails
-                                                                    ,@RequestBody @Valid InsertCounselCardReq insertCounselCardReq) {
+    ResponseEntity<CommonRes<AddCounselCardRes>> addCounselCard(@AuthenticationPrincipal UserDetails userDetails
+                                                                    , @RequestBody @Valid AddCounselCardReq addCounselCardReq) {
 
-        InsertCounselCardRes insertCounselCardRes = counselCardService.insertCounselCard(userDetails.getUsername(), insertCounselCardReq);
+        AddCounselCardRes addCounselCardRes = counselCardService.addCounselCard(userDetails.getUsername(), addCounselCardReq);
 
 
-        return ResponseEntity.ok(new CommonRes<>(insertCounselCardRes));
+        return ResponseEntity.ok(new CommonRes<>(addCounselCardRes));
     }
 
     @PutMapping

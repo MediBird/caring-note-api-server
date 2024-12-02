@@ -1,5 +1,7 @@
 package com.springboot.api.dto.counselcard;
 
+import com.springboot.enums.CardRecordStatus;
+
 import java.util.Map;
 
 public record SelectCounselCardRes(
@@ -7,4 +9,5 @@ public record SelectCounselCardRes(
         , Map<String, Object> baseInformation
         , Map<String, Object> healthInformation
         , Map<String, Object> livingInformation
-        , Map<String, Object> selfReliantLivingInformation){}
+        , Map<String, Object> selfReliantLivingInformation
+        , CardRecordStatus cardRecordStatus){}
