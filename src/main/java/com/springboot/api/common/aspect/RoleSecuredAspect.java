@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class RoleSecuredAspect {
 
     @Before("@within(roleSecured) || @annotation(roleSecured)")
-    public void checkRoleAccess(RoleSecured roleSecured) throws Throwable {
+    public void checkRoleAccess(RoleSecured roleSecured) throws RuntimeException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || !authentication.isAuthenticated()) {

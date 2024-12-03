@@ -1,13 +1,13 @@
 package com.springboot.api.controller;
 
-import static org.hamcrest.Matchers.startsWith;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.common.util.JwtUtil;
+import com.springboot.api.dto.counselor.AddCounselorReq;
+import com.springboot.api.dto.counselor.AddCounselorRes;
+import com.springboot.api.dto.counselor.LoginCounselorReq;
+import com.springboot.api.dto.counselor.LoginCounselorRes;
+import com.springboot.api.service.CounselorService;
+import com.springboot.enums.RoleType;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +20,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.common.util.JwtUtil;
-import com.springboot.api.dto.counselor.AddCounselorReq;
-import com.springboot.api.dto.counselor.AddCounselorRes;
-import com.springboot.api.dto.counselor.LoginCounselorReq;
-import com.springboot.api.dto.counselor.LoginCounselorRes;
-import com.springboot.api.service.CounselorService;
-import com.springboot.enums.RoleType;
+import static org.hamcrest.Matchers.startsWith;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -48,9 +47,9 @@ public class CounselorControllerTest {
     @Test
     void shouldAddCounselorSuccessfully() throws Exception {
         Mockito.when(counselorService.addCounselor(any(AddCounselorReq.class)))
-                .thenReturn(new AddCounselorRes("01HXBK6P4NCZXCSNAG3FY7YZDT", RoleType.ADMIN));
+                .thenReturn(new AddCounselorRes("01HXBK6P4NCZXCSNAG3FY7YZDT", RoleType.ROLE_ADMIN));
 
-        Mockito.when(jwtUtil.createTokenResponse(eq("01HXBK6P4NCZXCSNAG3FY7YZDT"), eq(RoleType.ADMIN)))
+        Mockito.when(jwtUtil.createTokenResponse(eq("01HXBK6P4NCZXCSNAG3FY7YZDT"), eq(RoleType.ROLE_ADMIN)))
                 .thenReturn(ResponseEntity.status(HttpStatus.CREATED)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer mock-token")
                         .build());
@@ -60,7 +59,7 @@ public class CounselorControllerTest {
                 .email("roung4119@gmail.com")
                 .phoneNumber("01090654118")
                 .password("12341234")
-                .roleType(RoleType.ADMIN)
+                .roleType(RoleType.ROLE_ADMIN)
                 .build();
 
         // When: 요청 수행
@@ -78,21 +77,21 @@ public class CounselorControllerTest {
     @Test
     void shouldAddCounselorAndLoginSuccessfully() throws Exception {
         Mockito.when(counselorService.addCounselor(any(AddCounselorReq.class)))
-                .thenReturn(new AddCounselorRes("01HXBK6P4NCZXCSNAG3FY7YZDT", RoleType.ADMIN));
+                .thenReturn(new AddCounselorRes("01HXBK6P4NCZXCSNAG3FY7YZDT", RoleType.ROLE_ADMIN));
 
-        Mockito.when(jwtUtil.createTokenResponse(eq("01HXBK6P4NCZXCSNAG3FY7YZDT"), eq(RoleType.ADMIN)))
+        Mockito.when(jwtUtil.createTokenResponse(eq("01HXBK6P4NCZXCSNAG3FY7YZDT"), eq(RoleType.ROLE_ADMIN)))
                 .thenReturn(ResponseEntity.status(HttpStatus.CREATED)
                         .header(HttpHeaders.AUTHORIZATION, "Bearer mock-token")
                         .build());
         Mockito.when(counselorService.loginCounselor(any(LoginCounselorReq.class)))
-                .thenReturn(new LoginCounselorRes("01HXBK6P4NCZXCSNAG3FY7YZDT", RoleType.ADMIN));
+                .thenReturn(new LoginCounselorRes("01HXBK6P4NCZXCSNAG3FY7YZDT", RoleType.ROLE_ADMIN));
 
         AddCounselorReq signupRequest = AddCounselorReq.builder()
                 .name("sunpil.choi")
                 .email("roung4118@gmail.com")
                 .phoneNumber("01090664118")
                 .password("12341234")
-                .roleType(RoleType.ADMIN)
+                .roleType(RoleType.ROLE_ADMIN)
                 .build();
 
         LoginCounselorReq loginRequest = LoginCounselorReq.builder()

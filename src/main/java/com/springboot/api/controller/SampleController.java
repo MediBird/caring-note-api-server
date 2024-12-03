@@ -15,7 +15,7 @@ public class SampleController {
 
     @GetMapping("/v1/auth")
     @ResponseStatus(HttpStatus.OK)
-    @RoleSecured(RoleType.ADMIN)
+    @RoleSecured(RoleType.ROLE_ADMIN)
     public String auth() {
 
         return "권한 있습니다.";

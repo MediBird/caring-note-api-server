@@ -1,5 +1,5 @@
 package com.springboot.enums;
 
 public enum RoleType {
-    ADMIN, USER, ASSISTANT
+    ROLE_ADMIN, ROLE_USER, ROLE_ASSISTANT
 }

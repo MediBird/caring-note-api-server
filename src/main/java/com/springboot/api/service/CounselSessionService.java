@@ -97,7 +97,7 @@ public class CounselSessionService {
                         .map(LocalDate::atStartOfDay)
                         .orElse(null)
                     , selectCounselSessionListReq.getCursor()
-                    , roleType == RoleType.ASSISTANT? id : null
+                    , roleType == RoleType.ROLE_ASSISTANT? id : null
                     , pageable);
 
 
