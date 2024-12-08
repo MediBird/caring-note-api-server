@@ -3,8 +3,8 @@ package com.springboot.api.common.exception.handler;
 import com.springboot.api.common.dto.ErrorRes;
 import com.springboot.api.common.exception.DuplicatedEmailException;
 import com.springboot.api.common.exception.InvalidPasswordException;
+import com.springboot.api.common.exception.JsonConvertException;
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.common.message.ExceptionMessages;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,26 +20,32 @@ public class UserExceptionHandler extends CommonHandler{
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorRes handleUsernameNotFound(UsernameNotFoundException ex) {
 
-        return buildErrorResponse(ExceptionMessages.USER_NOT_FOUND);
+        return buildErrorResponse(ex.getMessage());
     }
 
     @ExceptionHandler(DuplicatedEmailException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleDuplicatedEmail(DuplicatedEmailException ex) {
 
-        return buildErrorResponse(ExceptionMessages.DUPLICATED_USER_EMAIL);
+        return buildErrorResponse(ex.getMessage());
     }
 
     @ExceptionHandler(InvalidPasswordException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorRes handleInvalidPassword(InvalidPasswordException ex) {
-        return buildErrorResponse(ExceptionMessages.INVALID_PASSWORD);
+        return buildErrorResponse(ex.getMessage());
     }
 
     @ExceptionHandler(NoContentException.class)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ErrorRes handleResourceNotFound(NoContentException ex) {
-        return buildErrorResponse(ExceptionMessages.NO_CONTENT);
+        return buildErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(JsonConvertException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorRes handleJsonConvertException(JsonConvertException ex) {
+        return buildErrorResponse(ex.getMessage());
     }
 
 }
