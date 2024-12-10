@@ -3,29 +3,24 @@ package com.springboot.api.service;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.MedicationCounsel;
-import com.springboot.api.dto.medicationcounsel.AddReq;
-import com.springboot.api.dto.medicationcounsel.AddRes;
-import com.springboot.api.dto.medicationcounsel.SelectByCounselSessionIdRes;
+import com.springboot.api.dto.medicationcounsel.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
-import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MedicationCounselService {
 
     private final MedicationCounselRepository medicationCounselRepository;
     private final CounselSessionRepository counselSessionRepository;
-    private final EntityManager entityManager;
 
 
     public MedicationCounselService(MedicationCounselRepository medicationCounselRepository
-            , CounselSessionRepository counselSessionRepository
-            , EntityManager entityManager) {
+            , CounselSessionRepository counselSessionRepository) {
 
         this.medicationCounselRepository = medicationCounselRepository;
         this.counselSessionRepository = counselSessionRepository;
-        this.entityManager = entityManager;
     }
 
 
@@ -61,6 +56,30 @@ public class MedicationCounselService {
                 , medicationCounsel.getCounselRecordHighlights()
                 , medicationCounsel.getCounselNeedStatus()
         );
+    }
+
+    @Transactional
+    public UpdateRes update(String id, UpdateReq updateReq){
+
+        MedicationCounsel medicationCounsel = medicationCounselRepository.findById(updateReq.getMedicationCounselId())
+                .orElseThrow(NoContentException::new);
+
+        medicationCounsel.setCounselRecord(updateReq.getCounselRecord());
+        medicationCounsel.setCounselRecordHighlights(updateReq.getCounselRecordHighlights());
+        medicationCounsel.setCounselNeedStatus(updateReq.getCounselNeedStatus());
+
+        return new UpdateRes(medicationCounsel.getId());
+    }
+
+    @Transactional
+    public DeleteRes delete(String id, DeleteReq deleteReq){
+
+        MedicationCounsel medicationCounsel = medicationCounselRepository.findById(deleteReq.getMedicationCounselId())
+                .orElseThrow(NoContentException::new);
+
+        medicationCounselRepository.deleteById(medicationCounsel.getId());
+
+        return new DeleteRes(medicationCounsel.getId());
     }
 
 
