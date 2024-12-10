@@ -4,14 +4,17 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.medicationcounsel.AddReq;
 import com.springboot.api.dto.medicationcounsel.AddRes;
+import com.springboot.api.dto.medicationcounsel.SelectByCounselSessionIdRes;
 import com.springboot.api.service.MedicationCounselService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @ApiController(
         name = "MedicationCounselController"
@@ -29,11 +32,24 @@ public class MedicationCounselController {
     @PostMapping
     @Operation(summary = "복약 상담 추가",tags = {"복약 상담 화면"})
     public ResponseEntity<CommonRes<AddRes>> add(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestBody @Valid AddReq addReq) throws RuntimeException {
+            , @RequestBody @Valid AddReq addReq) {
 
         AddRes addRes = medicationCounselService.add(userDetails.getUsername(),addReq);
 
         return ResponseEntity.ok(new CommonRes<>(addRes));
+
+    }
+
+    @GetMapping
+    @Operation(summary = "복약 상담 조회", tags ={"복약 상담 화면"})
+    public ResponseEntity<CommonRes<SelectByCounselSessionIdRes>> selectByCounselSessionId(
+            @AuthenticationPrincipal UserDetails userDetails
+            , @RequestParam("counselSessionId") String counselSessionId) {
+
+        SelectByCounselSessionIdRes selectByCounselSessionIdRes = medicationCounselService
+                .selectByCounselSessionId(userDetails.getUsername(), counselSessionId);
+
+        return ResponseEntity.ok(new CommonRes<>(selectByCounselSessionIdRes));
 
     }
 

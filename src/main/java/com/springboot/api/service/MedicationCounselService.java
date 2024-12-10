@@ -5,6 +5,7 @@ import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.MedicationCounsel;
 import com.springboot.api.dto.medicationcounsel.AddReq;
 import com.springboot.api.dto.medicationcounsel.AddRes;
+import com.springboot.api.dto.medicationcounsel.SelectByCounselSessionIdRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
 import jakarta.persistence.EntityManager;
@@ -28,7 +29,7 @@ public class MedicationCounselService {
     }
 
 
-    public AddRes add(String id, AddReq addReq) throws RuntimeException {
+    public AddRes add(String id, AddReq addReq){
 
         CounselSession counselSession = counselSessionRepository.findById(id)
                 .orElseThrow(NoContentException::new);
@@ -44,6 +45,25 @@ public class MedicationCounselService {
 
         return new AddRes(savedMedicationCounsel.getId());
     }
+
+    public SelectByCounselSessionIdRes selectByCounselSessionId(String id, String counselSessionId){
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        MedicationCounsel medicationCounsel = medicationCounselRepository.findByCounselSessionId(counselSession.getId())
+                .orElseThrow(NoContentException::new);
+
+
+        return new SelectByCounselSessionIdRes(
+                medicationCounsel.getId()
+                , medicationCounsel.getCounselRecord()
+                , medicationCounsel.getCounselRecordHighlights()
+                , medicationCounsel.getCounselNeedStatus()
+        );
+    }
+
+
 
 
 
