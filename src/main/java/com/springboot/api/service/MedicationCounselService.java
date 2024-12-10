@@ -26,7 +26,7 @@ public class MedicationCounselService {
 
     public AddRes add(String id, AddReq addReq){
 
-        CounselSession counselSession = counselSessionRepository.findById(id)
+        CounselSession counselSession = counselSessionRepository.findById(addReq.getCounselSessionId())
                 .orElseThrow(NoContentException::new);
 
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
@@ -81,8 +81,6 @@ public class MedicationCounselService {
 
         return new DeleteRes(medicationCounsel.getId());
     }
-
-
 
 
 
