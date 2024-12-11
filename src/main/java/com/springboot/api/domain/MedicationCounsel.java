@@ -1,14 +1,18 @@
 package com.springboot.api.domain;
 
+import com.springboot.api.common.converter.ListToStringConverter;
 import com.springboot.enums.CounselNeedStatus;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "medication_counsels")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
 @ToString(callSuper = true, exclude = {"counselSession"})
 public class MedicationCounsel extends BaseEntity {
@@ -19,6 +23,11 @@ public class MedicationCounsel extends BaseEntity {
 
     @Lob
     private String counselRecord;
+
+
+    @Convert(converter = ListToStringConverter.class)
+    @Column(name= "counsel_record_highlights", columnDefinition = "TEXT")
+    private List<String> counselRecordHighlights;
 
 
     @Enumerated(EnumType.STRING)

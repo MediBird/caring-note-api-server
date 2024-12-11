@@ -8,13 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface CounselSessionRepository extends JpaRepository<CounselSession, String> {
 
-    Optional<CounselSession> findById(String id);
-    
-    CounselSession save(CounselSession counselSession);
 
     void deleteById(String id);
 
