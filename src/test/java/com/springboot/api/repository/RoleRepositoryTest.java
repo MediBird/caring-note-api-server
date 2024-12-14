@@ -1,25 +1,21 @@
 package com.springboot.api.repository;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.util.List;
-
+import com.springboot.api.config.JpaTestAdditionalConfig;
+import com.springboot.api.domain.Role;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.jdbc.Sql;
 
-import com.springboot.api.domain.Role;
+import java.util.List;
 
-import jakarta.persistence.EntityManager;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-@Import(RoleRepositoryTest.H2TestConfig.class)
-@Sql("/test-data.sql")
+@Import(JpaTestAdditionalConfig.class)
+@Sql("/sql/test-role.sql")
 public class RoleRepositoryTest {
 
     @Autowired
@@ -33,14 +29,5 @@ public class RoleRepositoryTest {
         List<Role> roles = roleRepository.findByNameIn(roleNames);
         System.out.println("Roles: " + roles);
         assertEquals(2, roles.size());
-    }
-
-    @TestConfiguration
-    static class H2TestConfig {
-
-        @Bean
-        public EntityManager entityManager(EntityManager entityManager) {
-            return entityManager;
-        }
     }
 }
