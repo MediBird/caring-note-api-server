@@ -58,6 +58,8 @@ public class Counselee extends BaseEntity {
 
     private String address;
 
+    private boolean isDisability;
+
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<CounselSession> counselSessions;
 
