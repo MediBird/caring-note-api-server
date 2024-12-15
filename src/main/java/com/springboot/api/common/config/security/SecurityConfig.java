@@ -14,11 +14,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     private final JwtAuthenticationProvider jwtAuthProvider;
     private final JwtAuthenticationFilter jwtAuthFilter;
 
     public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
-                          JwtAuthenticationProvider authenticationProvider) {
+            JwtAuthenticationProvider authenticationProvider) {
         this.jwtAuthFilter = jwtAuthFilter;
         this.jwtAuthProvider = authenticationProvider;
     }
@@ -26,27 +27,32 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        http.csrf(AbstractHttpConfigurer::disable)  // CSRF 비활성화
+        http.csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/user/**",
-                                "/*/counselor/signup",
-                                "/*/counselor/login",
-                                "/swagger-ui/**",
-                                "/*/api-docs/**",
-                                "/swagger-ui.html"
-                                ).permitAll()  // 인증 없이 접근 가능
-                        .anyRequest().authenticated()  // 나머지 요청은 인증 필요
+                .requestMatchers(
+                        "/user/**",
+                        "/*/counselor/signup",
+                        "/*/counselor/login",
+                        "/swagger-ui/**",
+                        "/*/api-docs/**",
+                        "/swagger-ui.html",
+                        "/h2-console/**"
+                ).permitAll() // 인증 없이 접근 가능
+                .anyRequest().authenticated() // 나머지 요청은 인증 필요
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)  // 세션을 사용하지 않음
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않음
                 )
-                .authenticationProvider(jwtAuthProvider)  // 커스텀 AuthenticationProvider 사용
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가
+                .authenticationProvider(jwtAuthProvider) // 커스텀 AuthenticationProvider 사용
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp -> csp
+                                .policyDirectives("frame-ancestors 'self'")
+                        )
+                );
 
         return http.build();
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder() {

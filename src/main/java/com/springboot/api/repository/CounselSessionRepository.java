@@ -8,13 +8,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 public interface CounselSessionRepository extends JpaRepository<CounselSession, String> {
 
-    Optional<CounselSession> findById(String id);
-    
-    CounselSession save(CounselSession counselSession);
 
     void deleteById(String id);
 
@@ -23,7 +19,7 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
         WHERE (:startOfDay IS NULL OR cs.scheduledStartDateTime >= :startOfDay)
           AND (:endOfDay IS NULL OR cs.scheduledStartDateTime < :endOfDay)
           AND (:cursorId IS NULL OR cs.id > :cursorId)
-          AND (cs.counselor.id IS NULL OR cs.counselor.id = :counselorId)
+          AND (:counselorId IS NULL OR cs.counselor.id = :counselorId)
         ORDER BY cs.id DESC
         """)
     List<CounselSession> findByCursor(

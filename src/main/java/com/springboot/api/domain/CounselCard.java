@@ -1,7 +1,6 @@
 package com.springboot.api.domain;
 
 
-import com.springboot.enums.CardRecordStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
