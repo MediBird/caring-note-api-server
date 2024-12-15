@@ -36,9 +36,9 @@ public class CounselCard extends BaseEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     private Map<String, Object> livingInformation;
 
-    @Column(name = "self_reliant_living_information", columnDefinition = "json")
+    @Column(name = "independent_life_information", columnDefinition = "json")
     @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> selfReliantLivingInformation;
+    private Map<String, Object> independentLifeInformation;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -49,12 +49,6 @@ public class CounselCard extends BaseEntity {
     protected void onCreate() {
         super.onCreate();
     }
-
-
-
-
-
-
 
 
 }

@@ -26,6 +26,6 @@ public class AddCounselCardReq {
 
     private Map<String, Object> livingInformation;
 
-    private Map<String, Object> selfReliantLivingInformation;
+    private Map<String, Object> independentLifeInformation;
 
 }

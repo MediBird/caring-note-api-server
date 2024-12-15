@@ -22,7 +22,7 @@ public class UpdateCounselCardReq {
 
     private Map<String, Object> livingInformation;
 
-    private Map<String, Object> selfReliantLivingInformation;
+    private Map<String, Object> independentLifeInformation;
 
     @ValidEnum(enumClass = CardRecordStatus.class)
     @Schema(description = "상담카드기록상태(RECORDING, RECORDED", example = "RECORDING")

@@ -4,6 +4,7 @@ import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record SelectByCounselSessionIdRes(
         String counseleeId
@@ -13,6 +14,7 @@ public record SelectByCounselSessionIdRes(
         , GenderType gender
         , String address
         , HealthInsuranceType healthInsuranceType
-        , int counsellingCount
-        , LocalDate LastCounselingDate
-) { }
+        , int counselCount
+        , LocalDate lastCounselDate
+        , List<String> diseases
+        ) { }
