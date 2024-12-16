@@ -1,13 +1,11 @@
 package com.springboot.api.domain;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.springboot.api.common.converter.JsonStringConverter;
 import com.springboot.enums.CardRecordStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import java.util.Map;
 
 @Entity
 @Table(name = "counsel_cards")
@@ -24,21 +22,21 @@ public class CounselCard extends BaseEntity {
     private CounselSession counselSession;
 
 
-    @Column(name = "base_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> baseInformation;
+    @Column(name = "base_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode baseInformation;
 
-    @Column(name = "health_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> healthInformation;
+    @Column(name = "health_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode healthInformation;
 
-    @Column(name = "living_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> livingInformation;
+    @Column(name = "living_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode livingInformation;
 
-    @Column(name = "independent_life_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> independentLifeInformation;
+    @Column(name = "independent_life_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode independentLifeInformation;
 
     @Column
     @Enumerated(EnumType.STRING)
