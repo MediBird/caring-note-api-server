@@ -1,14 +1,15 @@
 INSERT INTO counselees (
     id,
-    counseling_count,
+    counsel_count,
     date_of_birth,
-    last_counseling_date,
+    last_counsel_date,
     name,
     notes,
     phone_number,
     registration_date,
     created_date,
-    updated_date
+    updated_date,
+    is_disability
 ) VALUES (
              'TEST-COUNSELEE-01',
              5,
@@ -19,20 +20,22 @@ INSERT INTO counselees (
              '01012345678',
              '2024-01-01',
              '2024-01-01',
-             '2024-12-01'
+             '2024-12-01',
+          true
          );
 
 INSERT INTO counselees (
     id,
-    counseling_count,
+    counsel_count,
     date_of_birth,
-    last_counseling_date,
+    last_counsel_date,
     name,
     notes,
     phone_number,
     registration_date,
     created_date,
-    updated_date
+    updated_date,
+    is_disability
 ) VALUES (
              'TEST-COUNSELEE-02',
              0,
@@ -44,4 +47,5 @@ INSERT INTO counselees (
              '2024-01-10',
              '2024-01-10',
              '2024-12-01'
+    ,false
          );
