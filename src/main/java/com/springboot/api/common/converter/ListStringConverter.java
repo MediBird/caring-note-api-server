@@ -1,24 +1,28 @@
 package com.springboot.api.common.converter;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.exception.JsonConvertException;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Converter
 public class ListStringConverter implements AttributeConverter<List<String>, String> {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
-
+    private final String delimiter = "\\^=\\^";
 
     @Override
     public String convertToDatabaseColumn(List<String> attribute) throws RuntimeException {
         try {
-            return objectMapper.writeValueAsString(attribute);
+            if(attribute == null)
+            {
+                return null;
+            }
+
+            return String.join(delimiter.replace("\\",""), attribute);
+
         } catch (Exception e) {
             throw new JsonConvertException();
         }
@@ -27,7 +31,17 @@ public class ListStringConverter implements AttributeConverter<List<String>, Str
     @Override
     public List<String> convertToEntityAttribute(String dbData) throws RuntimeException {
         try {
-            return objectMapper.readValue(dbData, new TypeReference<List<String>>() {});
+
+            if(dbData == null)
+            {
+                return List.of();
+            }
+
+            return Arrays.stream(dbData.split(delimiter))
+                    .filter(s -> !s.isEmpty())  // 빈 문자열 필터링
+                    .toList();
+
+
         } catch (Exception e) {
             throw new JsonConvertException();
         }

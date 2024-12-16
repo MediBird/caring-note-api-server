@@ -13,6 +13,7 @@ import com.springboot.enums.CardRecordStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -49,7 +50,7 @@ public class CounseleeService {
         CounselCard currentCounselCard = counselSession.getCounselCard();
 
         CounselCard targetCounselCard = (currentCounselCard == null || currentCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDING))
-                ? getPreviousCounselCard(counseleeId, counselSessionId)
+                ? getPreviousCounselCard(counseleeId, counselSession.getScheduledStartDateTime())
                 : currentCounselCard;
 
         List<String> diseases = new ArrayList<>();
@@ -81,10 +82,11 @@ public class CounseleeService {
         );
     }
 
-    private CounselCard getPreviousCounselCard(String counseleeId, String currentCounselSessionId) {
+    private CounselCard getPreviousCounselCard(String counseleeId, LocalDateTime scheduledStartDateTime) {
+
         // 이전 상담 세션을 가져오는 메서드
         List<CounselSession> previousCounselSessions = counselSessionRepository
-                .findByCounseleeIdAndIdLessThan(counseleeId, currentCounselSessionId);
+                .findByCounseleeIdAndScheduledStartDateTimeLessThan(counseleeId, scheduledStartDateTime);
 
         for (CounselSession previousSession : previousCounselSessions) {
             CounselCard previousCounselCard = previousSession.getCounselCard();
