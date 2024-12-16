@@ -38,10 +38,10 @@ public class Counselee extends BaseEntity {
 
     // 상담 횟수
     @Min(value = 0, message = "상담 횟수는 0 이상이어야 합니다.")
-    private int counselingCount;
+    private int counselCount;
 
     // 마지막 상담 날짜
-    private LocalDate lastCounselingDate;
+    private LocalDate lastCounselDate;
 
     @Column(updatable = false)
     private LocalDate registrationDate;
