@@ -75,6 +75,9 @@ public class CounseleeService {
                 counselee.getCounselCount(),
                 counselee.getLastCounselDate(),
                 diseases // diseases 값 반환
+                ,Optional.ofNullable(currentCounselCard)
+                .map(CounselCard::getCardRecordStatus)
+                .orElse(CardRecordStatus.UNRECORDED)
         );
     }
 

@@ -1,5 +1,6 @@
 package com.springboot.api.dto.counselee;
 
+import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
 
@@ -17,4 +18,5 @@ public record SelectByCounselSessionIdRes(
         , int counselCount
         , LocalDate lastCounselDate
         , List<String> diseases
+        , CardRecordStatus cardRecordStatus
         ) { }
