@@ -42,6 +42,8 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
             ,Pageable pageable
     );
 
+    List<CounselSession> findByCounseleeIdAndIdLessThan(String counseleeId, String id);
+
 
 
 }

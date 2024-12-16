@@ -1,15 +1,20 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
+import com.springboot.enums.CardRecordStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -21,7 +26,7 @@ public class CounseleeService {
 
     public CounseleeService(CounseleeRepository counseleeRepository
     , CounselSessionRepository counselSessionRepository
-    ,DateTimeUtil dateTimeUtil) {
+    , DateTimeUtil dateTimeUtil) {
         this.counseleeRepository = counseleeRepository;
         this.counselSessionRepository = counselSessionRepository;
         this.dateTimeUtil = dateTimeUtil;
@@ -30,6 +35,7 @@ public class CounseleeService {
     public SelectByCounselSessionIdRes selectByCounselSessionId(String id, String counselSessionId,
                                                                 String counseleeId) throws RuntimeException {
 
+
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
 
@@ -37,27 +43,53 @@ public class CounseleeService {
                 .orElseThrow(NoContentException::new);
 
         Counselee counselee = counseleeRepository.findById(counseleeId)
-                .orElseThrow(NoContentException::new);
-
-        Optional.of(counselee)
                 .filter(c -> c.getId().equals(counseleeInSession.getId()))
                 .orElseThrow(NoContentException::new);
 
+        CounselCard currentCounselCard = counselSession.getCounselCard();
 
+        CounselCard targetCounselCard = (currentCounselCard == null || currentCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDING))
+                ? getPreviousCounselCard(counseleeId, counselSessionId)
+                : currentCounselCard;
 
+        List<String> diseases = new ArrayList<>();
+
+        if (targetCounselCard != null) {
+            JsonNode diseasesInfoJson = targetCounselCard.getHealthInformation().get("diseaseInfo");
+            JsonNode diseasesJson = diseasesInfoJson != null ? diseasesInfoJson.get("diseases") : null;
+
+            if (diseasesJson != null && diseasesJson.isArray()) {
+                diseasesJson.forEach(diseaseJson -> diseases.add(diseaseJson.asText()));
+            }
+        }
+
+        // Step 6: 결과 반환
         return new SelectByCounselSessionIdRes(
-                counselee.getId()
-                ,counselee.getName()
-                ,dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now())
-                ,counselee.getDateOfBirth().toString()
-                ,counselee.getGenderType()
-                ,counselee.getAddress()
-                ,counselee.getHealthInsuranceType()
-                ,counselee.getCounselingCount()
-                ,counselee.getLastCounselingDate()
+                counselee.getId(),
+                counselee.getName(),
+                dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()),
+                counselee.getDateOfBirth().toString(),
+                counselee.getGenderType(),
+                counselee.getAddress(),
+                counselee.getHealthInsuranceType(),
+                counselee.getCounselCount(),
+                counselee.getLastCounselDate(),
+                diseases // diseases 값 반환
         );
-
     }
 
+    private CounselCard getPreviousCounselCard(String counseleeId, String currentCounselSessionId) {
+        // 이전 상담 세션을 가져오는 메서드
+        List<CounselSession> previousCounselSessions = counselSessionRepository
+                .findByCounseleeIdAndIdLessThan(counseleeId, currentCounselSessionId);
 
+        for (CounselSession previousSession : previousCounselSessions) {
+            CounselCard previousCounselCard = previousSession.getCounselCard();
+            if (previousCounselCard != null && !previousCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDED)) {
+                return previousCounselCard;
+            }
+        }
+
+        return null;
+    }
 }

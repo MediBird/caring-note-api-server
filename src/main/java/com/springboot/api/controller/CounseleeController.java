@@ -4,6 +4,7 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
 import com.springboot.api.service.CounseleeService;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,6 +28,7 @@ public class CounseleeController {
 
 
     @GetMapping("/{counselSessionId}")
+    @Operation(summary = "내담자 기본 정보 조회",tags = {"상담 카드 작성","상담 노트"})
     public ResponseEntity<CommonRes<SelectByCounselSessionIdRes>> selectByCounselSessionId(@AuthenticationPrincipal UserDetails userDetails
             , @PathVariable("counselSessionId") String counselSessionId
             , @RequestParam String counseleeId) {
