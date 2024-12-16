@@ -45,7 +45,7 @@ public class CounselCardService {
                 ,counselCard.getBaseInformation()
                 ,counselCard.getHealthInformation()
                 ,counselCard.getLivingInformation()
-                ,counselCard.getSelfReliantLivingInformation()
+                ,counselCard.getIndependentLifeInformation()
                 ,counselCard.getCardRecordStatus()
         );
     }
@@ -73,7 +73,7 @@ public class CounselCardService {
         return new SelectPreviousCounselCardRes(previousCounselCard.getBaseInformation()
                 ,previousCounselCard.getHealthInformation()
                 ,previousCounselCard.getLivingInformation()
-                ,previousCounselCard.getSelfReliantLivingInformation()
+                ,previousCounselCard.getIndependentLifeInformation()
         );
     }
 
@@ -89,7 +89,7 @@ public class CounselCardService {
                 .baseInformation(addCounselCardReq.getBaseInformation())
                 .healthInformation(addCounselCardReq.getHealthInformation())
                 .livingInformation(addCounselCardReq.getLivingInformation())
-                .selfReliantLivingInformation(addCounselCardReq.getSelfReliantLivingInformation())
+                .independentLifeInformation(addCounselCardReq.getIndependentLifeInformation())
                 .cardRecordStatus(addCounselCardReq.getCardRecordStatus())
                 .build();
 
@@ -108,7 +108,7 @@ public class CounselCardService {
         counselCard.setBaseInformation(updateCounselCardReq.getBaseInformation());
         counselCard.setHealthInformation(updateCounselCardReq.getHealthInformation());
         counselCard.setLivingInformation(updateCounselCardReq.getLivingInformation());
-        counselCard.setSelfReliantLivingInformation(updateCounselCardReq.getSelfReliantLivingInformation());
+        counselCard.setIndependentLifeInformation(updateCounselCardReq.getIndependentLifeInformation());
         counselCard.setCardRecordStatus(updateCounselCardReq.getCardRecordStatus());
 
         return new UpdateCounselCardRes(counselCard.getId());
