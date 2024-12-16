@@ -25,7 +25,7 @@ public class CounselCardController {
     }
 
     @GetMapping("/{counselSessionId}")
-    @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성"})
+    @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성","본상담 - 상담 카드"})
     ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@AuthenticationPrincipal UserDetails userDetails
             , @PathVariable String counselSessionId) {
 
