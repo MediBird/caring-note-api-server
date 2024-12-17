@@ -8,6 +8,7 @@ import com.springboot.api.dto.counselcard.*;
 import com.springboot.api.repository.CounselCardRepository;
 import com.springboot.api.repository.CounselSessionRepository;
 import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CounselCardService {
 
 
@@ -24,13 +26,6 @@ public class CounselCardService {
     private final CounselSessionRepository counselSessionRepository;
     private final EntityManager entityManager;
 
-    public CounselCardService(CounselCardRepository counselCardRepository
-            , CounselSessionRepository counselSessionRepository
-            , EntityManager entityManager) {
-        this.counselCardRepository = counselCardRepository;
-        this.counselSessionRepository = counselSessionRepository;
-        this.entityManager = entityManager;
-    }
 
     public SelectCounselCardRes selectCounselCard(String id, String counselSessionId) throws RuntimeException{
 

@@ -10,6 +10,7 @@ import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -19,19 +20,13 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CounseleeService {
 
     public final CounseleeRepository counseleeRepository;
     public final CounselSessionRepository counselSessionRepository;
     public final DateTimeUtil dateTimeUtil;
 
-    public CounseleeService(CounseleeRepository counseleeRepository
-    , CounselSessionRepository counselSessionRepository
-    , DateTimeUtil dateTimeUtil) {
-        this.counseleeRepository = counseleeRepository;
-        this.counselSessionRepository = counselSessionRepository;
-        this.dateTimeUtil = dateTimeUtil;
-    }
 
     public SelectByCounselSessionIdRes selectByCounselSessionId(String id, String counselSessionId,
                                                                 String counseleeId) throws RuntimeException {

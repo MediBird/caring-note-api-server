@@ -13,6 +13,7 @@ import com.springboot.enums.RoleType;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,17 +24,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CounselSessionService {
 
     private final CounselSessionRepository sessionRepository;
     private final EntityManager entityManager;
     private final DateTimeUtil dateTimeUtil;
-
-    public CounselSessionService(CounselSessionRepository sessionRepository, EntityManager entityManager, DateTimeUtil dateTimeUtil) {
-        this.sessionRepository = sessionRepository;
-        this.entityManager = entityManager;
-        this.dateTimeUtil = dateTimeUtil;
-    }
 
 
     @Transactional

@@ -8,6 +8,7 @@ import com.springboot.api.dto.medicationcounsel.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
 import com.springboot.enums.ScheduleStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class MedicationCounselService {
 
     private final MedicationCounselRepository medicationCounselRepository;
     private final CounselSessionRepository counselSessionRepository;
-
-
-    public MedicationCounselService(MedicationCounselRepository medicationCounselRepository
-            , CounselSessionRepository counselSessionRepository) {
-
-        this.medicationCounselRepository = medicationCounselRepository;
-        this.counselSessionRepository = counselSessionRepository;
-    }
 
 
     public AddRes add(String id, AddReq addReq){
