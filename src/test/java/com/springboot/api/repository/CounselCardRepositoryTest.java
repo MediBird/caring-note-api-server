@@ -25,8 +25,7 @@ class CounselCardRepositoryTest {
     @Autowired
     private CounselSessionRepository counselSessionRepository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     @DisplayName("Should save a CounselCard successfully")
@@ -44,7 +43,7 @@ class CounselCardRepositoryTest {
                      "counseleeId": "string",
                      "name": "김늘픔",
                      "birthDate": "YYYY-MM-DD",
-                     "counselNumber": "1회차",
+                     "counselSessionOrder": "1회차",
                      "lastCounselDate": "YYYY-MM-DD"
                  },
                  "counselPurposeAndMomo": {
@@ -133,13 +132,30 @@ class CounselCardRepositoryTest {
 
     @Test
     @DisplayName("Should find a CounselCard by ID")
-    void testFindById() {
+    void testFindById() throws JsonProcessingException {
         // Given
         CounselSession counselSession = new CounselSession();
         counselSessionRepository.save(counselSession);
 
         CounselCard counselCard = CounselCard.builder()
                 .counselSession(counselSession)
+                .baseInformation(objectMapper.readTree("""
+                        {
+                 "version": 1.0,
+                 "baseInfo": {
+                     "counseleeId": "string",
+                     "name": "김늘픔",
+                     "birthDate": "YYYY-MM-DD",
+                     "counselSessionOrder": "1회차",
+                     "lastCounselDate": "YYYY-MM-DD"
+                 },
+                 "counselPurposeAndMomo": {
+                     "counselPurpose": "약물 부작용 상담",
+                     "SignificantNote": "특이사항",
+                     "MedicationNote": "복약 관련 메모"
+                 }
+             }
+             """))
                 .build();
 
         CounselCard savedCounselCard = counselCardRepository.save(counselCard);
@@ -149,7 +165,7 @@ class CounselCardRepositoryTest {
 
         // Then
         assertThat(foundCounselCard).isPresent();
-        assertThat(foundCounselCard.get().getBaseInformation().get("name")).isEqualTo("Jane Doe");
+        assertThat(foundCounselCard.get().getBaseInformation().get("baseInfo").get("name").asText()).isEqualTo("김늘픔");
     }
 
     @Test
