@@ -10,10 +10,14 @@ import lombok.Data;
 
 @Data
 @Builder
-public class UpdateCounselCardReq {
+public class AddCounselCardReq {
 
     @NotBlank
-    private String counselCardId;
+    private String counselSessionId;
+
+    @ValidEnum(enumClass = CardRecordStatus.class)
+    @Schema(description = "상담카드기록상태(RECORDING, RECORDED", example = "RECORDING")
+    private CardRecordStatus cardRecordStatus;
 
     private JsonNode baseInformation;
 
@@ -23,7 +27,4 @@ public class UpdateCounselCardReq {
 
     private JsonNode independentLifeInformation;
 
-    @ValidEnum(enumClass = CardRecordStatus.class)
-    @Schema(description = "상담카드기록상태(RECORDING, RECORDED", example = "RECORDING")
-    private CardRecordStatus cardRecordStatus;
 }

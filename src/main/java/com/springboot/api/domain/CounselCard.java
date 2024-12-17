@@ -1,22 +1,11 @@
 package com.springboot.api.domain;
 
-import java.util.Map;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.springboot.api.common.converter.JsonStringConverter;
+import com.springboot.enums.CardRecordStatus;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "counsel_cards")
@@ -32,26 +21,32 @@ public class CounselCard extends BaseEntity {
     @JoinColumn(name = "counsel_session_id", nullable = false)
     private CounselSession counselSession;
 
-    @Column(name = "base_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> baseInformation;
 
-    @Column(name = "health_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> healthInformation;
+    @Column(name = "base_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode baseInformation;
 
-    @Column(name = "living_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> livingInformation;
+    @Column(name = "health_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode healthInformation;
 
-    @Column(name = "self_reliant_living_information", columnDefinition = "json")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private Map<String, Object> selfReliantLivingInformation;
+    @Column(name = "living_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode livingInformation;
+
+    @Column(name = "independent_life_information", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode independentLifeInformation;
+
+    @Column
+    @Enumerated(EnumType.STRING)
+    private CardRecordStatus cardRecordStatus;
 
     @PrePersist
     @Override
     protected void onCreate() {
         super.onCreate();
     }
+
 
 }

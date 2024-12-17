@@ -42,6 +42,8 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
             ,Pageable pageable
     );
 
+    List<CounselSession> findByCounseleeIdAndScheduledStartDateTimeLessThan(String counseleeId, LocalDateTime scheduledStartDateTime);
+
 
 
 }

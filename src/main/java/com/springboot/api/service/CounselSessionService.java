@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.BaseEntity;
@@ -9,29 +10,26 @@ import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.enums.RoleType;
+import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import java.time.LocalDate;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CounselSessionService {
 
     private final CounselSessionRepository sessionRepository;
     private final EntityManager entityManager;
     private final DateTimeUtil dateTimeUtil;
-
-    public CounselSessionService(CounselSessionRepository sessionRepository, EntityManager entityManager, DateTimeUtil dateTimeUtil) {
-        this.sessionRepository = sessionRepository;
-        this.entityManager = entityManager;
-        this.dateTimeUtil = dateTimeUtil;
-    }
 
 
     @Transactional
@@ -160,6 +158,37 @@ public class CounselSessionService {
         sessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
         return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
+
+    }
+
+
+
+    public List<SelectPreviousListByCounselSessionIdRes> selectPreviousListByCounselSessionId(String id, String counselSessionId)
+    {
+        CounselSession counselSession = sessionRepository.findById(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+                .orElseThrow(NoContentException::new);
+
+        List<CounselSession> previousCounselSessions = sessionRepository.findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),counselSession.getScheduledStartDateTime());
+
+
+        return previousCounselSessions
+                .stream()
+                .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
+                .map(session -> {
+
+                    JsonNode baseInfo = session.getCounselCard().getBaseInformation().get("baseInfo");
+                    return new SelectPreviousListByCounselSessionIdRes(
+                            session.getId()
+                            , baseInfo.get("counselSessionOrder").asText()
+                            , session.getScheduledStartDateTime().toLocalDate()
+                            , session.getCounselor().getName()
+                            , false
+                    );
+                })
+                .toList();
 
     }
 

@@ -10,20 +10,18 @@ import com.springboot.api.dto.counselor.LoginCounselorReq;
 import com.springboot.api.dto.counselor.LoginCounselorRes;
 import com.springboot.api.repository.CounselorRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class CounselorService {
 
     private final PasswordEncoder passwordEncoder;
     private final CounselorRepository counselorRepository;
 
-    public CounselorService(PasswordEncoder passwordEncoder, CounselorRepository counselorRepository) {
-        this.passwordEncoder = passwordEncoder;
-        this.counselorRepository = counselorRepository;
-    }
 
     @Transactional
     public AddCounselorRes addCounselor(AddCounselorReq addCounselorReq) {

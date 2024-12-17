@@ -8,22 +8,19 @@ import com.springboot.api.dto.counseleeconsent.*;
 import com.springboot.api.repository.CounseleeConsentRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class CounseleeConsentService {
 
     private final CounseleeConsentRepository counseleeConsentRepository;
     private final EntityManager entityManager;
 
-    public CounseleeConsentService(CounseleeConsentRepository counseleeConsentRepository, EntityManager entityManager)
-    {
-        this.counseleeConsentRepository = counseleeConsentRepository;
-        this.entityManager = entityManager;
-    }
 
     public SelectCounseleeConsentRes selectCounseleeConsent(String id, String counselSessionId, String counseleeId)
     {

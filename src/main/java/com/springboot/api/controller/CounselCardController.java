@@ -25,7 +25,7 @@ public class CounselCardController {
     }
 
     @GetMapping("/{counselSessionId}")
-    @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성"})
+    @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성","본상담 - 상담 카드"})
     ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@AuthenticationPrincipal UserDetails userDetails
             , @PathVariable String counselSessionId) {
 
@@ -34,7 +34,7 @@ public class CounselCardController {
         return ResponseEntity.ok(new CommonRes<>(selectCounselCardRes));
     }
 
-    @GetMapping("previous/{counselSessionId}")
+    @GetMapping("/{counselSessionId}/previous")
     @Operation(summary = "이전 상담 카드 조회",tags = {"상담 카드 작성"})
     ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@AuthenticationPrincipal UserDetails userDetails
             , @PathVariable String counselSessionId) {
@@ -47,13 +47,13 @@ public class CounselCardController {
 
     @PostMapping
     @Operation(summary = "상담 카드 등록",tags = {"상담 카드 작성"})
-    ResponseEntity<CommonRes<InsertCounselCardRes>> insertCounselCard(@AuthenticationPrincipal UserDetails userDetails
-                                                                    ,@RequestBody @Valid InsertCounselCardReq insertCounselCardReq) {
+    ResponseEntity<CommonRes<AddCounselCardRes>> addCounselCard(@AuthenticationPrincipal UserDetails userDetails
+                                                                    , @RequestBody @Valid AddCounselCardReq addCounselCardReq) {
 
-        InsertCounselCardRes insertCounselCardRes = counselCardService.insertCounselCard(userDetails.getUsername(), insertCounselCardReq);
+        AddCounselCardRes addCounselCardRes = counselCardService.addCounselCard(userDetails.getUsername(), addCounselCardReq);
 
 
-        return ResponseEntity.ok(new CommonRes<>(insertCounselCardRes));
+        return ResponseEntity.ok(new CommonRes<>(addCounselCardRes));
     }
 
     @PutMapping

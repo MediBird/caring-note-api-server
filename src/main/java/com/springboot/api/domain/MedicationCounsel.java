@@ -1,6 +1,6 @@
 package com.springboot.api.domain;
 
-import com.springboot.api.common.converter.ListToStringConverter;
+import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.enums.CounselNeedStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +25,7 @@ public class MedicationCounsel extends BaseEntity {
     private String counselRecord;
 
 
-    @Convert(converter = ListToStringConverter.class)
+    @Convert(converter = ListStringConverter.class)
     @Column(name= "counsel_record_highlights", columnDefinition = "TEXT")
     private List<String> counselRecordHighlights;
 
