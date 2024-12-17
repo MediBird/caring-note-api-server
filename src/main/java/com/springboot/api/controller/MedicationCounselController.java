@@ -49,11 +49,11 @@ public class MedicationCounselController {
     }
 
 
-    @GetMapping("/previous/summary")
+    @GetMapping("/{counselSessionId}/previous/summary")
     @Operation(summary = "이전 복약 상담 조회", tags ={"이전 상담 내역"})
     public ResponseEntity<CommonRes<SelectPreviousByCounselSessionIdRes>> selectPreviousByCounselSessionId(
             @AuthenticationPrincipal UserDetails userDetails
-            , @RequestParam("counselSessionId") String counselSessionId) {
+            , @PathVariable("counselSessionId") String counselSessionId) {
 
         SelectPreviousByCounselSessionIdRes selectPreviousByCounselSessionIdRes = medicationCounselService
                 .selectPreviousByCounselSessionId(userDetails.getUsername(), counselSessionId);

@@ -34,7 +34,7 @@ public class CounselCardController {
         return ResponseEntity.ok(new CommonRes<>(selectCounselCardRes));
     }
 
-    @GetMapping("previous/{counselSessionId}")
+    @GetMapping("/{counselSessionId}/previous")
     @Operation(summary = "이전 상담 카드 조회",tags = {"상담 카드 작성"})
     ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@AuthenticationPrincipal UserDetails userDetails
             , @PathVariable String counselSessionId) {
