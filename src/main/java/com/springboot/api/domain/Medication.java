@@ -1,6 +1,6 @@
 package com.springboot.api.domain;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +11,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -45,7 +47,8 @@ public class Medication extends BaseEntity{
     private float lengLong;
     private float lengShort;
     private float thick;
-    private Date imgRegistTs;
+    @Temporal(TemporalType.DATE)
+    private LocalDate imgRegistTs;
     private Integer classNo;
     private String className;
     private String etcOtcName;
@@ -57,6 +60,8 @@ public class Medication extends BaseEntity{
     private String markCodeFrontImg;
     private String markCodeBackImg;
     private String itemEngName;
+    @Temporal(TemporalType.DATE)
+    private LocalDate itemPermitDate;
     private String ediCode;
 
     // 폐기 시점 (개봉 후 며칠 뒤 폐기해야 하는지)

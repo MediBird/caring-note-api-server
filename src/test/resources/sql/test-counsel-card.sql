@@ -6,8 +6,8 @@ INSERT INTO counsel_cards (
     living_information,
     independent_life_information,
     card_record_status,
-    created_date,
-    updated_date
+    created_datetime,
+    updated_datetime
 ) VALUES (
              'TEST-COUNSEL-CARD-00', -- 고유 ID
              'TEST-COUNSEL-SESSION-00', -- CounselSession 외래 키
@@ -99,8 +99,8 @@ INSERT INTO counsel_cards (
     living_information,
     independent_life_information,
     card_record_status,
-    created_date,
-    updated_date
+    created_datetime,
+    updated_datetime
 ) VALUES (
              'TEST-COUNSEL-CARD-01', -- 고유 ID
              'TEST-COUNSEL-SESSION-01', -- CounselSession 외래 키

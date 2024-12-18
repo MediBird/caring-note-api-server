@@ -7,8 +7,8 @@ INSERT INTO counselees (
     notes,
     phone_number,
     registration_date,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     is_disability
 ) VALUES (
              'TEST-COUNSELEE-01',
@@ -19,8 +19,8 @@ INSERT INTO counselees (
              NULL, -- No notes
              '01012345678',
              '2024-01-01',
-             '2024-01-01',
-             '2024-12-01',
+             '2024-01-01 10:00:00',
+             '2024-12-01 10:00:00',
           true
          );
 
@@ -33,8 +33,8 @@ INSERT INTO counselees (
     notes,
     phone_number,
     registration_date,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     is_disability
 ) VALUES (
              'TEST-COUNSELEE-02',
@@ -45,7 +45,7 @@ INSERT INTO counselees (
              NULL, -- No notes
              '01087654321',
              '2024-01-10',
-             '2024-01-10',
-             '2024-12-01'
+             '2024-01-10 10:00:00',
+             '2024-12-01 10:00:00'
     ,false
          );

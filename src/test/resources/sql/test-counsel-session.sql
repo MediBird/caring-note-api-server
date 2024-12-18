@@ -4,8 +4,8 @@ INSERT INTO counsel_sessions (
     status,
     counselee_id,
     counselor_id,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     end_datetime,
     start_datetime
 ) VALUES (
@@ -14,8 +14,8 @@ INSERT INTO counsel_sessions (
              'COMPLETED',
              'TEST-COUNSELEE-01', -- Assume CNL001 exists in counselees table
              'TEST-COUNSELOR-02', -- Assume CNS001 exists in counselors table
-             '2024-12-10',
-             '2024-12-12',
+             '2024-12-10 10:00:00',
+             '2024-12-12 10:00:00',
              '2024-12-14 10:00:00',
              '2024-12-14 12:00:00'
          );
@@ -25,8 +25,8 @@ INSERT INTO counsel_sessions (
     status,
     counselee_id,
     counselor_id,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     end_datetime,
     start_datetime
 ) VALUES (
@@ -35,8 +35,8 @@ INSERT INTO counsel_sessions (
              'SCHEDULED',
              'TEST-COUNSELEE-01', -- Assume CNL001 exists in counselees table
              'TEST-COUNSELOR-02', -- Assume CNS001 exists in counselors table
-             '2024-12-10',
-             '2024-12-12',
+             '2024-12-10 10:00:00',
+             '2024-12-12 10:00:00',
              NULL, -- No end datetime yet
              NULL  -- No start datetime yet
          );
@@ -47,8 +47,8 @@ INSERT INTO counsel_sessions (
     status,
     counselee_id,
     counselor_id,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     end_datetime,
     start_datetime
 ) VALUES (
@@ -57,8 +57,8 @@ INSERT INTO counsel_sessions (
              'SCHEDULED',
              'TEST-COUNSELEE-01', -- Assume CNL001 exists in counselees table
              'TEST-COUNSELOR-01', -- Assume CNS001 exists in counselors table
-             '2024-12-10',
-             '2024-12-12',
+             '2024-12-10 10:00:00',
+             '2024-12-12 10:00:00',
              NULL, -- No end datetime yet
              NULL  -- No start datetime yet
          );
@@ -70,8 +70,8 @@ INSERT INTO counsel_sessions (
     status,
     counselee_id,
     counselor_id,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     end_datetime,
     start_datetime
 ) VALUES (
@@ -80,8 +80,8 @@ INSERT INTO counsel_sessions (
              'SCHEDULED',
              'TEST-COUNSELEE-01', -- Assume CNL001 exists in counselees table
              'TEST-COUNSELOR-01', -- Assume CNS001 exists in counselors table
-             '2024-12-10',
-             '2024-12-12',
+             '2024-12-10 10:00:00',
+             '2024-12-12 10:00:00',
              NULL, -- No end datetime yet
              NULL  -- No start datetime yet
          );
