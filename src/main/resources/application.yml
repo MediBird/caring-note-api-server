@@ -1,6 +1,6 @@
 spring:
   config:
-    import: application-secret.yml
+    import: optional:application-secret.yml
   docker:
     compose:
       enabled: false
