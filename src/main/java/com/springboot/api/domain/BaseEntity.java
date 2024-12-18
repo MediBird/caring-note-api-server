@@ -1,5 +1,7 @@
 package com.springboot.api.domain;
 
+import java.time.LocalDateTime;
+
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -7,8 +9,6 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDate;
 
 @MappedSuperclass
 @Data
@@ -21,10 +21,10 @@ public abstract class BaseEntity {
 
 
     @Column(updatable = false)
-    private LocalDate createdDate;
+    private LocalDateTime createdDateTime;
 
     @Column
-    private LocalDate updatedDate;
+    private LocalDateTime updatedDateTime;
 
 
 
@@ -33,13 +33,13 @@ public abstract class BaseEntity {
             ULID ulid = new ULID();
             this.id = ulid.nextULID();
         }
-        createdDate = LocalDate.now();
-        updatedDate = LocalDate.now();
+        createdDateTime = LocalDateTime.now();
+        updatedDateTime = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedDate = LocalDate.now();
+        updatedDateTime = LocalDateTime.now();
     }
 
 }
