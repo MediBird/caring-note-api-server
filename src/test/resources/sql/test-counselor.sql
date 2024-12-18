@@ -11,8 +11,8 @@ INSERT INTO counselors (
     profile_image_url,
     registration_date,
     status,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     role_type,
     password
 ) VALUES (
@@ -28,8 +28,8 @@ INSERT INTO counselors (
              'https://example.com/images/profile1.jpg',
              '2024-12-01',
              'ACTIVE',
-             '2024-12-01',
-             '2024-12-02',
+             '2024-12-01 10:00:00',
+             '2024-12-02 10:00:00',
              'ROLE_ADMIN',
              'securepassword123'
          );
@@ -48,8 +48,8 @@ INSERT INTO counselors (
     profile_image_url,
     registration_date,
     status,
-    created_date,
-    updated_date,
+    created_datetime,
+    updated_datetime,
     role_type,
     password
 ) VALUES (
@@ -65,8 +65,8 @@ INSERT INTO counselors (
              'https://example.com/images/profile1.jpg',
              '2024-12-01',
              'ACTIVE',
-             '2024-12-01',
-             '2024-12-02',
+             '2024-12-01 10:00:00',
+             '2024-12-02 10:00:00',
              'ROLE_USER',
              'securepassword123'
          );
