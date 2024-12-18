@@ -21,10 +21,10 @@ public abstract class BaseEntity {
 
 
     @Column(updatable = false)
-    private LocalDateTime createdDatetime;
+    private LocalDateTime createdDateTime;
 
     @Column
-    private LocalDateTime updatedDatetime;
+    private LocalDateTime updatedDateTime;
 
 
 
@@ -33,13 +33,13 @@ public abstract class BaseEntity {
             ULID ulid = new ULID();
             this.id = ulid.nextULID();
         }
-        createdDatetime = LocalDateTime.now();
-        updatedDatetime = LocalDateTime.now();
+        createdDateTime = LocalDateTime.now();
+        updatedDateTime = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updatedDatetime = LocalDateTime.now();
+        updatedDateTime = LocalDateTime.now();
     }
 
 }
