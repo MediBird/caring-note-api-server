@@ -61,7 +61,7 @@ public class Medication extends BaseEntity{
 
     // 폐기 시점 (개봉 후 며칠 뒤 폐기해야 하는지)
     @Min(value = 0, message = "폐기까지의 일수는 0 이상이어야 합니다.")
-    private int daysUntilDiscard;
+    private Integer daysUntilDiscard;
 
 
     // 위험한 약물 상호 작용 (자기 자신과의 다대다 관계)
