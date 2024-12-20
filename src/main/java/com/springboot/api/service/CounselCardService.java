@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
@@ -7,6 +8,7 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselcard.*;
 import com.springboot.api.repository.CounselCardRepository;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -118,6 +120,45 @@ public class CounselCardService {
         counselCardRepository.deleteById(deleteCounselCardReq.getCounselCardId());
 
         return new DeleteCounselCardRes(deleteCounselCardReq.getCounselCardId());
+    }
+
+
+    public List<SelectPreviousCounselCardItemListRes> selectPreviousCounselCardItemListByCounselSessionId(String id
+            , String counselSessionId
+            , String informationName
+            , String informationItemName){
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+                .orElseThrow(NoContentException::new);
+
+        List<CounselSession> previousCounselSessions =
+                counselSessionRepository.findByCounseleeIdAndScheduledStartDateTimeLessThan(
+                        counselee.getId()
+                        ,counselSession.getScheduledStartDateTime()
+                );
+
+        return previousCounselSessions
+                .stream()
+                .filter(cs -> ScheduleStatus.COMPLETED.equals(cs.getStatus()))
+                .map(cs ->{
+                    JsonNode informationJsonNode;
+                    switch (informationName){
+                        case "baseInformation" ->informationJsonNode = cs.getCounselCard().getBaseInformation();
+                        case "healthInformation" -> informationJsonNode = cs.getCounselCard().getHealthInformation();
+                        case "livingInformation" -> informationJsonNode = cs.getCounselCard().getLivingInformation();
+                        default -> throw new NoContentException();
+                    }
+                    return informationJsonNode;
+                })
+                .map(informationJsonNode -> Optional.ofNullable(informationJsonNode.get(informationItemName))
+                        .orElseThrow(NoContentException::new)
+                )
+                .map(SelectPreviousCounselCardItemListRes::new)
+                .toList();
+
     }
 
 

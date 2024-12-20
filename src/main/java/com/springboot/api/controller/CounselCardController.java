@@ -12,6 +12,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @ApiController(
         path="/v1/counsel/card"
         ,name = "CounselCardController"
@@ -76,6 +78,24 @@ public class CounselCardController {
         return ResponseEntity.ok(new CommonRes<>(deleteCounselCardRes));
     }
 
+    @GetMapping("/{counselSessionId}/preious/item/list")
+    @Operation(summary = "이전 상담 카드 item 목록 조회",tags = {"본상담 - 상담 카드"})
+    ResponseEntity<CommonRes<List<SelectPreviousCounselCardItemListRes>>> selectPreviousItemListByCounselSessionId(
+            @AuthenticationPrincipal UserDetails userDetails
+            ,@PathVariable String counselSessionId
+            ,@RequestParam(required = true) String informationName
+            ,@RequestParam(required = true) String informationItemName
+    ){
+
+        List<SelectPreviousCounselCardItemListRes> selectPreviousCounselCardItemListResList = counselCardService
+                .selectPreviousCounselCardItemListByCounselSessionId(userDetails.getUsername()
+                        , counselSessionId
+                        , informationName
+                        , informationItemName);
+
+
+        return ResponseEntity.ok(new CommonRes<>(selectPreviousCounselCardItemListResList));
+    }
 
 
 }
