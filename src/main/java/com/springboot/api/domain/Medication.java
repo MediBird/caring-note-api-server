@@ -6,6 +6,7 @@ import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
@@ -21,32 +22,45 @@ import lombok.ToString;
 
 @Entity
 @Data
-@Table(name = "medications")
+@Table(name = "medications", indexes = {
+    @Index(name = "idx_item_name", columnList = "item_name")
+})
 @EqualsAndHashCode(callSuper = true, exclude = {"contraindications"})
 @ToString(callSuper = true, exclude = {"contraindications"})
 public class Medication extends BaseEntity{
 
         // 약 이름
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, length = 255)
     @NotBlank(message = "약 이름은 필수 입력 항목입니다.")
     private String itemName;
-
+    @Column(nullable = false)
     private Integer itemSeq;
-  
-    private Integer entpSeq;
+
+    @Column(nullable = true, length = 255)
     private String entpName;
+    @Column(nullable = true, length = 3000)
     private String itemImage;
+    @Column(nullable = true, length = 3000)
     private String chart;
+    @Column(nullable = true, length = 255)
     private String printFront;
+    @Column(nullable = true, length = 255)
     private String printBack;
+    @Column(nullable = true, length = 255)
     private String drugShape;
+    @Column(nullable = true, length = 255)
     private String colorClass1;
+    @Column(nullable = true, length = 255)
     private String colorClass2;
     private String lineFront;
     private String lineBack;
-    private float lengLong;
-    private float lengShort;
-    private float thick;
+    @Column(nullable = true)
+    private Float lengLong;
+    @Column(nullable = true)
+    private Float lengShort;
+    @Column(nullable = true)
+    private Float thick;
+    @Column(nullable = true)
     @Temporal(TemporalType.DATE)
     private LocalDate imgRegistTs;
     private Integer classNo;

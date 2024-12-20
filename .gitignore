@@ -28,3 +28,6 @@ replay_pid*
 build/
 logs/
 .vscode/
+
+
+src/main/resources/application-secret.yml

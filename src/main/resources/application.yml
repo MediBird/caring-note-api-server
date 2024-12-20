@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:application-secret.yml
   docker:
     compose:
       enabled: false
