@@ -24,7 +24,7 @@ public class MedicationCounselController {
 
 
     @PostMapping
-    @Operation(summary = "복약 상담 추가",tags = {"복약 상담 화면"})
+    @Operation(summary = "복약 상담 추가",tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<AddRes>> add(@AuthenticationPrincipal UserDetails userDetails
             , @RequestBody @Valid AddReq addReq) {
 
@@ -35,7 +35,7 @@ public class MedicationCounselController {
     }
 
     @GetMapping
-    @Operation(summary = "복약 상담 조회", tags ={"복약 상담 화면"})
+    @Operation(summary = "복약 상담 조회", tags ={"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<SelectByCounselSessionIdRes>> selectByCounselSessionId(
             @AuthenticationPrincipal UserDetails userDetails
             , @RequestParam("counselSessionId") String counselSessionId) {
@@ -49,7 +49,7 @@ public class MedicationCounselController {
 
 
     @GetMapping("/{counselSessionId}/previous/summary")
-    @Operation(summary = "이전 복약 상담 조회", tags ={"이전 상담 내역"})
+    @Operation(summary = "이전 복약 상담 조회", tags ={"본상담 - 이전 상담 내역"})
     public ResponseEntity<CommonRes<SelectPreviousByCounselSessionIdRes>> selectPreviousByCounselSessionId(
             @AuthenticationPrincipal UserDetails userDetails
             , @PathVariable("counselSessionId") String counselSessionId) {
@@ -65,7 +65,7 @@ public class MedicationCounselController {
 
 
     @PutMapping
-    @Operation(summary = "복약 상담 수정", tags = {"복약 상담 화면"})
+    @Operation(summary = "복약 상담 수정", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<UpdateRes>> update(@AuthenticationPrincipal UserDetails userDetails
     , @RequestBody @Valid UpdateReq updateReq) {
 
@@ -77,7 +77,7 @@ public class MedicationCounselController {
 
 
     @DeleteMapping
-    @Operation(summary = "복약 상담 삭제", tags = {"복약 상담 화면"})
+    @Operation(summary = "복약 상담 삭제", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<DeleteRes>> delete(@AuthenticationPrincipal UserDetails userDetails
     ,@RequestBody @Valid DeleteReq deleteReq){
 

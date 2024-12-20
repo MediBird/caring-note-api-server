@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/sample")
+@Deprecated
 public class SampleController {
 
     @GetMapping("/v1/auth")

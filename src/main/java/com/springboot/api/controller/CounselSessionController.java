@@ -109,7 +109,7 @@ public class CounselSessionController {
     }
 
     @GetMapping("/{counselSessionId}/previous/list")
-    @Operation(summary = "이전 상담 내역 조회", tags = {"이전 상담 내역"})
+    @Operation(summary = "이전 상담 내역 조회", tags = {"본상담 - 이전 상담 내역"})
     @RoleSecured(RoleType.ROLE_ADMIN)
     public ResponseEntity<CommonRes<List<SelectPreviousListByCounselSessionIdRes>>> selectPreviousListByCounselSessionId(@AuthenticationPrincipal UserDetails userDetails
             ,@PathVariable("counselSessionId")String counselSessionId) {
