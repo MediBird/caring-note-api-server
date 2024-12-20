@@ -1,35 +1,34 @@
 package com.springboot.api.controller;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.util.JwtUtil;
 import com.springboot.api.dto.counselor.AddCounselorReq;
 import com.springboot.api.dto.counselor.AddCounselorRes;
 import com.springboot.api.dto.counselor.LoginCounselorReq;
 import com.springboot.api.dto.counselor.LoginCounselorRes;
 import com.springboot.api.service.CounselorService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
-@RestController
+@ApiController(
+        name = "CounselorController"
+        ,description = "유저 관리 API를 제공하는 Controller"
+        ,path = "/v1/counselor"
+)
 @RequiredArgsConstructor
-@RequestMapping("/v1/counselor")
-@Tag(name = "CounselorController", description = "유저 관리 API를 제공하는 Controller")
 public class CounselorController {
 
     private final CounselorService counselorService;
     private final JwtUtil jwtUtil;
+
 
     @Operation(summary = "사용자 추가",
             description = "권한,기본정보를 입력받아 회원가입 처리, 헤더에 토큰 응답",

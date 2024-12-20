@@ -6,6 +6,7 @@ import com.springboot.api.dto.counselcard.*;
 import com.springboot.api.service.CounselCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.*;
         ,name = "CounselCardController"
         , description = "상담카드 관련 API를 제공하는 Controller"
 )
+@RequiredArgsConstructor
 public class CounselCardController {
 
     private final CounselCardService counselCardService;
 
-    public CounselCardController(CounselCardService counselCardService) {
-        this.counselCardService = counselCardService;
-    }
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성","본상담 - 상담 카드"})

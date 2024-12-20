@@ -6,6 +6,7 @@ import com.springboot.api.dto.medicationcounsel.*;
 import com.springboot.api.service.MedicationCounselService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,13 +17,11 @@ import org.springframework.web.bind.annotation.*;
         ,path ="/v1/counsel/record"
         ,description ="본상담 내 복약상담 관련 API를 제공하는 Controller"
 )
+@RequiredArgsConstructor
 public class MedicationCounselController {
 
     private final MedicationCounselService medicationCounselService;
 
-    public MedicationCounselController(MedicationCounselService medicationCounselService) {
-        this.medicationCounselService = medicationCounselService;
-    }
 
     @PostMapping
     @Operation(summary = "복약 상담 추가",tags = {"복약 상담 화면"})

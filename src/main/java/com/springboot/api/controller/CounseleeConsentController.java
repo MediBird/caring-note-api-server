@@ -6,6 +6,7 @@ import com.springboot.api.dto.counseleeconsent.*;
 import com.springboot.api.service.CounseleeConsentService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,12 +17,11 @@ import org.springframework.web.bind.annotation.*;
         ,name = "CounseleeConsentController"
         ,description = "내담자 동의 관련 API를 제공하는 Controller"
 )
+@RequiredArgsConstructor
 public class CounseleeConsentController {
+
     private final CounseleeConsentService counseleeConsentService;
 
-    public CounseleeConsentController(CounseleeConsentService counseleeConsentService) {
-        this.counseleeConsentService = counseleeConsentService;
-    }
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "내담자 개인정보 수집 동의 여부 조회",tags = {"개인 정보 수집 동의"})
