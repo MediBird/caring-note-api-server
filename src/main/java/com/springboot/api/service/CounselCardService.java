@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.AbstractMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -143,20 +144,25 @@ public class CounselCardService {
         return previousCounselSessions
                 .stream()
                 .filter(cs -> ScheduleStatus.COMPLETED.equals(cs.getStatus()))
-                .map(cs ->{
+                .map(cs -> {
                     JsonNode informationJsonNode;
-                    switch (informationName){
-                        case "baseInformation" ->informationJsonNode = cs.getCounselCard().getBaseInformation();
+
+                    switch (informationName) {
+                        case "baseInformation" -> informationJsonNode = cs.getCounselCard().getBaseInformation();
                         case "healthInformation" -> informationJsonNode = cs.getCounselCard().getHealthInformation();
                         case "livingInformation" -> informationJsonNode = cs.getCounselCard().getLivingInformation();
                         default -> throw new NoContentException();
                     }
-                    return informationJsonNode;
+                    return new AbstractMap.SimpleEntry<>(cs, informationJsonNode);
                 })
-                .map(informationJsonNode -> Optional.ofNullable(informationJsonNode.get(informationItemName))
-                        .orElseThrow(NoContentException::new)
-                )
-                .map(SelectPreviousCounselCardItemListRes::new)
+                .map(entry -> {
+                    JsonNode informationJsonNode = entry.getValue();
+                    JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(informationItemName))
+                            .orElseThrow(NoContentException::new);
+
+                    return new SelectPreviousCounselCardItemListRes( entry.getKey().getScheduledStartDateTime().toLocalDate()
+                            ,itemNode);
+                })
                 .toList();
 
     }
