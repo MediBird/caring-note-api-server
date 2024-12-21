@@ -111,7 +111,7 @@ class CounselSessionServiceTest {
         when(sessionRepository.findByCursor(any(),any(), any(), any(), any()))
                 .thenReturn(List.of(mockCounselSession));
 
-        SelectCounselSessionListByBaseDateAndCursorAndSizeRes res = service.selectCounselSessionList("user-1", RoleType.ROLE_USER, req);
+        SelectCounselSessionListByBaseDateAndCursorAndSizeRes res = service.selectCounselSessionListByBaseDateAndCursorAndSize("user-1", RoleType.ROLE_USER, req);
 
         assertNotNull(res);
         assertEquals(1, res.sessionListItems().size());
