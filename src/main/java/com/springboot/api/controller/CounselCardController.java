@@ -80,21 +80,21 @@ public class CounselCardController {
 
     @GetMapping("/{counselSessionId}/preious/item/list")
     @Operation(summary = "이전 상담 카드 item 목록 조회",tags = {"본상담 - 상담 카드"})
-    ResponseEntity<CommonRes<List<SelectPreviousCounselCardItemListRes>>> selectPreviousItemListByCounselSessionId(
+    ResponseEntity<CommonRes<List<SelectPreviousItemListByInformationNameAndInformationItemNameRes>>> selectPreviousItemListByInformationNameAndInformationItemName(
             @AuthenticationPrincipal UserDetails userDetails
             ,@PathVariable String counselSessionId
             ,@RequestParam(required = true) String informationName
             ,@RequestParam(required = true) String informationItemName
     ){
 
-        List<SelectPreviousCounselCardItemListRes> selectPreviousCounselCardItemListResList = counselCardService
-                .selectPreviousCounselCardItemListByCounselSessionId(userDetails.getUsername()
+        List<SelectPreviousItemListByInformationNameAndInformationItemNameRes> selectPreviousItemListResListByInformationNameAndInformationItemName = counselCardService
+                .selectPreviousItemListByInformationNameAndInformationItemName(userDetails.getUsername()
                         , counselSessionId
                         , informationName
                         , informationItemName);
 
 
-        return ResponseEntity.ok(new CommonRes<>(selectPreviousCounselCardItemListResList));
+        return ResponseEntity.ok(new CommonRes<>(selectPreviousItemListResListByInformationNameAndInformationItemName));
     }
 
 
