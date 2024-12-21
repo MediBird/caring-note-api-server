@@ -22,7 +22,7 @@ public class CounseleeConsentService {
     private final EntityManager entityManager;
 
 
-    public SelectCounseleeConsentRes selectCounseleeConsent(String id, String counselSessionId, String counseleeId)
+    public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String id, String counselSessionId, String counseleeId)
     {
 
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findByCounselSessionIdAndCounseleeId(counselSessionId,counseleeId)
@@ -31,7 +31,7 @@ public class CounseleeConsentService {
         Counselee counselee = Optional.ofNullable(counseleeConsent.getCounselee()).orElseGet(Counselee::new);
         CounselSession counselSession = Optional.ofNullable(counseleeConsent.getCounselSession()).orElseGet(CounselSession::new);
 
-       return new SelectCounseleeConsentRes(counseleeConsent.getId()
+       return new SelectCounseleeConsentByCounseleeIdRes(counseleeConsent.getId()
                ,counselee.getId()
                ,counselee.getName()
                ,counselSession.getId()
