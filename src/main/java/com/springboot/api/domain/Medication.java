@@ -23,7 +23,8 @@ import lombok.ToString;
 @Entity
 @Data
 @Table(name = "medications", indexes = {
-    @Index(name = "idx_item_name", columnList = "item_name")
+    @Index(name = "idx_item_name", columnList = "item_name"),
+    @Index(name = "idx_item_name_chosung", columnList = "item_name_chosung")
 })
 @EqualsAndHashCode(callSuper = true, exclude = {"contraindications"})
 @ToString(callSuper = true, exclude = {"contraindications"})
