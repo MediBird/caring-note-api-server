@@ -13,7 +13,7 @@ import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.springboot.api.domain.Medication;
-import com.springboot.api.dto.medication.MedicationAutoCompleteDTO;
+import com.springboot.api.dto.medication.SearchMedicationsByNameRes;
 import com.springboot.api.repository.MedicationRepository;
 
 import de.huxhorn.sulky.ulid.ULID;
@@ -37,9 +37,9 @@ public class MedicationServiceTest {
         System.out.println("Converting to Chosung: " + keyword);
         String ulid1 = ulid.nextULID();
         String ulid2 = ulid.nextULID();
-        List<MedicationAutoCompleteDTO> expectedResults = Arrays.asList(
-            MedicationAutoCompleteDTO.builder().id(ulid1).itemName("타이레놀").itemImage("image1.jpg").build(),
-            MedicationAutoCompleteDTO.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg").build()
+        List<SearchMedicationsByNameRes> expectedResults = Arrays.asList(
+            SearchMedicationsByNameRes.builder().id(ulid1).itemName("타이레놀").itemImage("image1.jpg").build(),
+            SearchMedicationsByNameRes.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg").build()
         );
 
         Medication medication1 = new Medication();
@@ -58,7 +58,7 @@ public class MedicationServiceTest {
         when(medicationRepository.searchByItemNameWithPattern(keyword, "ㅌㅇㄹㄴ")).thenReturn(medications);
 
         // when
-        List<MedicationAutoCompleteDTO> actualResults = medicationService.searchMedicationsByName(keyword);
+        List<SearchMedicationsByNameRes> actualResults = medicationService.searchMedicationsByName(keyword);
         // then
         assertEquals(expectedResults, actualResults);
     }

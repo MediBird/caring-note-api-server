@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class MedicationAutoCompleteDTO {
+public class SearchMedicationsByNameRes {
     private String id;
     private String itemName;
     private String itemImage;
