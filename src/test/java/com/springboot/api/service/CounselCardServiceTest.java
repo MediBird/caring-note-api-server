@@ -38,7 +38,7 @@ public class CounselCardServiceTest {
         String informationItemName = "diseaseInfo";
 
         List<SelectPreviousItemListByInformationNameAndInformationItemNameRes> selectPreviousItemListResListByInformationNameAndInformationItemName
-                = counselCardService.selectPreviousCounselCardItemListByCounselSessionId(
+                = counselCardService.selectPreviousItemListByInformationNameAndInformationItemName(
                         counselorId
                 ,counselSessionId
                 ,informationName
