@@ -8,13 +8,13 @@ import lombok.Data;
 
 @Data
 @Builder
-public class DeleteReq {
+public class DeleteMedicationCounselReq {
 
     @NotBlank
     private String medicationCounselId;
 
     @JsonCreator
-    public DeleteReq(@JsonProperty("medicationCounselId") String medicationCounselId) {
+    public DeleteMedicationCounselReq(@JsonProperty("medicationCounselId") String medicationCounselId) {
         this.medicationCounselId = medicationCounselId;
     }
 }

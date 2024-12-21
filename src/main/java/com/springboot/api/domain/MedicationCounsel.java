@@ -22,6 +22,7 @@ public class MedicationCounsel extends BaseEntity {
     private CounselSession counselSession;
 
     @Lob
+    @Column(name = "counsel_record", columnDefinition = "TEXT")
     private String counselRecord;
 
 

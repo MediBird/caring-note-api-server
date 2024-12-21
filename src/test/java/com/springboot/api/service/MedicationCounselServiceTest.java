@@ -1,6 +1,6 @@
 package com.springboot.api.service;
 
-import com.springboot.api.dto.medicationcounsel.SelectPreviousByCounselSessionIdRes;
+import com.springboot.api.dto.medicationcounsel.SelectPreviousMedicationCounselRes;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,12 +34,12 @@ class MedicationCounselServiceTest {
         String counselorId ="TEST-COUNSELOR-02";
 
         //then
-        SelectPreviousByCounselSessionIdRes  selectPreviousByCounselSessionIdRes = medicationCounselService
-                .selectPreviousByCounselSessionId(counselorId, counselSessionId);
+        SelectPreviousMedicationCounselRes selectPreviousMedicationCounselRes = medicationCounselService
+                .selectPreviousMedicationCounsel(counselorId, counselSessionId);
 
-        log.debug(selectPreviousByCounselSessionIdRes.toString());
+        log.debug(selectPreviousMedicationCounselRes.toString());
         //valid
-        assertEquals(selectPreviousByCounselSessionIdRes.previousCounselSessionId(),"TEST-COUNSEL-SESSION-00");
+        assertEquals(selectPreviousMedicationCounselRes.previousCounselSessionId(),"TEST-COUNSEL-SESSION-00");
     }
 
 }

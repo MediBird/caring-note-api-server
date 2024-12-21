@@ -6,9 +6,9 @@ import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.domain.MedicationCounsel;
-import com.springboot.api.dto.medicationcounsel.AddReq;
-import com.springboot.api.dto.medicationcounsel.DeleteReq;
-import com.springboot.api.dto.medicationcounsel.UpdateReq;
+import com.springboot.api.dto.medicationcounsel.AddMedicationCounselReq;
+import com.springboot.api.dto.medicationcounsel.DeleteMedicationCounselReq;
+import com.springboot.api.dto.medicationcounsel.UpdateMedicationCounselReq;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
 import com.springboot.enums.CounselNeedStatus;
@@ -104,7 +104,7 @@ public class MedicationCounselControllerTest {
 
         //given
 
-        AddReq requestBody = AddReq.builder()
+        AddMedicationCounselReq requestBody = AddMedicationCounselReq.builder()
                 .counselSessionId(testCounselSession.getId())
                 .counselRecord("I'm counselor")
                 .counselNeedStatus(CounselNeedStatus.ONE)
@@ -146,7 +146,7 @@ public class MedicationCounselControllerTest {
     @WithMockUser(username = "sunpil", roles = {"ADMIN"})
     void testUpdate() throws Exception {
 
-        UpdateReq requestBody = UpdateReq.builder()
+        UpdateMedicationCounselReq requestBody = UpdateMedicationCounselReq.builder()
                 .medicationCounselId(testMedicationCounsel.getId())
                 .counselRecord("I'm counselors")
                 .counselNeedStatus(CounselNeedStatus.ONE)
@@ -181,7 +181,7 @@ public class MedicationCounselControllerTest {
     @WithMockUser(username = "sunpil", roles = {"ADMIN"})
     void testDelete() throws Exception{
 
-        DeleteReq requestBody = DeleteReq.builder()
+        DeleteMedicationCounselReq requestBody = DeleteMedicationCounselReq.builder()
                 .medicationCounselId(testMedicationCounsel.getId())
                 .build();
 

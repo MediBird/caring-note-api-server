@@ -10,9 +10,9 @@ import java.util.List;
 
 @Data
 @Builder
-public class AddReq {
+public class UpdateMedicationCounselReq {
     @NotBlank
-    private String counselSessionId;
+    private String medicationCounselId;
 
     private String counselRecord;
 
@@ -20,5 +20,4 @@ public class AddReq {
 
     @ValidEnum(enumClass = CounselNeedStatus.class)
     private CounselNeedStatus counselNeedStatus;
-
 }
