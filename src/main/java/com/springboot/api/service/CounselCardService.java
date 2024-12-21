@@ -123,10 +123,10 @@ public class CounselCardService {
     }
 
 
-    public List<SelectPreviousItemListByInformationNameAndInformationItemNameRes> selectPreviousItemListByInformationNameAndInformationItemName(String id
+    public List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListByInformationNameAndItemName(String id
             , String counselSessionId
             , String informationName
-            , String informationItemName){
+            , String itemName){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -156,10 +156,10 @@ public class CounselCardService {
                 })
                 .map(entry -> {
                     JsonNode informationJsonNode = entry.getValue();
-                    JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(informationItemName))
+                    JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(itemName))
                             .orElseThrow(NoContentException::new);
 
-                    return new SelectPreviousItemListByInformationNameAndInformationItemNameRes( entry.getKey().getScheduledStartDateTime().toLocalDate()
+                    return new SelectPreviousItemListByInformationNameAndItemNameRes( entry.getKey().getScheduledStartDateTime().toLocalDate()
                             ,itemNode);
                 })
                 .toList();
