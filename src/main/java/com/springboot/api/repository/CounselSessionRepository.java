@@ -1,18 +1,21 @@
 package com.springboot.api.repository;
 
-import com.springboot.api.domain.CounselSession;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.lang.NonNull;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.springboot.api.domain.CounselSession;
 
 public interface CounselSessionRepository extends JpaRepository<CounselSession, String> {
 
 
-    void deleteById(String id);
+    @Override
+    void deleteById(@NonNull String id);
 
     @Query("""
         SELECT cs FROM CounselSession cs

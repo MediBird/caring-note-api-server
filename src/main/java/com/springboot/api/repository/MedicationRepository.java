@@ -12,13 +12,12 @@ public interface MedicationRepository extends JpaRepository<Medication, String> 
     List<Medication> findByItemNameContainingIgnoreCase(String keyword);
     // 또는 더 세밀한 제어를 위해
     @Query(value = """
-    SELECT m FROM Medication m 
-    WHERE LOWER(m.itemName) LIKE LOWER(CONCAT('%', :keyword, '%')) 
-    OR FUNCTION('REGEXP_LIKE', m.itemName, :pattern)
-    """)
+        SELECT * FROM medications m
+        WHERE LOWER(m.item_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR REPLACE(m.item_name, ' ', '') ~ CONCAT('.*', :pattern, '.*')
+    """, nativeQuery = true)
     List<Medication> searchByItemNameWithPattern(
         @Param("keyword") String keyword,
         @Param("pattern") String pattern
     );
-
 }

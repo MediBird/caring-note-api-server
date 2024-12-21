@@ -11,10 +11,12 @@ import com.springboot.api.repository.MedicationRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class MedicationService {
     private final MedicationRepository medicationRepository;
     
@@ -34,22 +36,24 @@ public class MedicationService {
             .collect(Collectors.toList());
     }
 
-    private String createSearchPattern(String keyword){
+    public String createSearchPattern(String keyword){
         return convertToChosung(keyword);
     }
-    private String convertToChosung(String text) {
-    String[] chosung = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
-    StringBuilder result = new StringBuilder();
     
-    for (char ch : text.toCharArray()) {
-        if (ch >= '가' && ch <= '힣') {
-            int unicode = ch - '가';
-            int cho = unicode / (21 * 28);
-            result.append(chosung[cho]);
-        } else {
-            result.append(ch);
+    public String convertToChosung(String text) {
+        String[] chosung = {"ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"};
+        StringBuilder result = new StringBuilder();
+        
+        for (char ch : text.toCharArray()) {
+            if (ch >= '가' && ch <= '힣') {
+                int unicode = ch - '가';
+                int cho = unicode / (21 * 28);
+                result.append(chosung[cho]);
+            } else {
+                result.append(ch);
+            }
         }
+        log.info(result.toString());
+        return result.toString();
     }
-    return result.toString();
-}
 }
