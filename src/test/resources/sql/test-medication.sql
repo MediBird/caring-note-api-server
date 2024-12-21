@@ -5,7 +5,7 @@ INSERT INTO medications (
     edi_code, entp_name, etc_otc_name, form_code_name, item_eng_name, 
     item_name, line_back, line_front, mark_code_back, mark_code_back_anal, 
     mark_code_back_img, mark_code_front, mark_code_front_anal, 
-    mark_code_front_img, print_back, print_front
+    mark_code_front_img, print_back, print_front, item_name_chosung
 ) VALUES 
 (
     3990, 60, '2020-03-05', '2019-12-03', 201908214, 18.8, 6.4, 6.7, 
@@ -15,7 +15,7 @@ INSERT INTO medications (
     '따로 분류되지 않는 대사성 의약품', '파랑', '파랑', '장방형', NULL, 
     '한국휴텍스제약(주)', '전문의약품', '경질캡슐제, 산제', 'Xenilow Cap. 120mg', 
     '제니로우캡슐120밀리그램(오르리스타트)', NULL, NULL, NULL, NULL, NULL, 
-    '20200411', NULL,NULL, NULL, 'XENILOW120'
+    '20200411', NULL,NULL, NULL, 'XENILOW120', 'ㅈㄴㄹㅇㅋㅅ120ㅁㄹㄱㄹ(ㅇㄹㄹㅅㅌㅌ)'
 ),
 (
     3220, 60, '2022-02-04', '2003-11-21', 200300281, 18.5, 6.2, 6.6, 
@@ -24,5 +24,5 @@ INSERT INTO medications (
     'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NxP24YNxf2', 
     '무기질제제', '빨강', '빨강', '장방형', NULL, '일동제약(주)', '일반의약품', 
     '경질캡슐제, 산제', 'Ferritop F Cap.', '훼리탑에프캡슐', NULL, NULL, NULL, 
-    NULL, NULL, '20231211', NULL, NULL, NULL, '훼리탑F 일동제약'
+    NULL, NULL, '20231211', NULL, NULL, NULL, '훼리탑F 일동제약','ㅎㄹㅌㅇㅍㅋㅅ'
 );

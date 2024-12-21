@@ -22,6 +22,7 @@ public class MedicationService {
     
     @Cacheable(value = "medicationSearch")
     public List<MedicationAutoCompleteDTO> searchMedicationsByName(String keyword) {
+        log.info("keyword: {}", keyword);   
         return medicationRepository.searchByItemNameWithPattern(
                 keyword,
                 createSearchPattern(keyword)

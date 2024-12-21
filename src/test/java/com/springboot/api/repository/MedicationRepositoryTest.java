@@ -23,7 +23,6 @@ public class MedicationRepositoryTest {
 
     @Test
     void testSearchByItemNameWithPattern() {
-
         String keyword = "ㅈㄴㄹㅇ";
         String pattern = "ㅈㄴㄹㅇ";
 
@@ -31,25 +30,31 @@ public class MedicationRepositoryTest {
         List<Medication> results = medicationRepository.searchByItemNameWithPattern(keyword, pattern);
 
         // 검증
-        assertNotNull(results);
-        assertTrue(results.stream()
-                .allMatch(med -> med.getItemName().toLowerCase().contains(keyword.toLowerCase())
-                        || med.getItemName().matches(pattern.replace("%", ".*"))));
+        assertNotNull(results, "검색 결과가 null이 아니어야 합니다");
+        assertTrue(!results.isEmpty(), "검색 결과가 있어야 합니다");
+        System.out.println("results: " + results);
+
+        Medication firstResult = results.get(0);
+        assertNotNull(firstResult, "첫 번째 결과가 null이 아니어야 합니다");
+        assertTrue(firstResult.getItemNameChosung().contains(pattern), 
+            "검색 결과의 초성은 패턴을 포함해야 합니다");
     }
     
     @Test
     void testSearchByItemNameWithKeyword() {
-
-        String keyword = "제니로우캡슐120밀리그램(오르리스타트)";
-        String pattern = "ㅈㄴㄹㅇㅋㅅ120ㅁㄹㄱㄹ(ㅇㄹㄹㅅㅌㅌ)";
+        String keyword = "제니로우";
+        String pattern = "ㅈㄴㄹㅇ";
 
         // 메서드 호출
         List<Medication> results = medicationRepository.searchByItemNameWithPattern(keyword, pattern);
 
         // 검증
-        assertNotNull(results);
-        assertTrue(results.stream()
-                .allMatch(med -> med.getItemName().toLowerCase().contains(keyword.toLowerCase()) 
-                        || med.getItemName().matches(pattern.replace("%", ".*"))));
+        assertNotNull(results, "검색 결과가 null이 아니어야 합니다");
+        assertTrue(!results.isEmpty(), "검색 결과가 있어야 합니다");
+
+        Medication firstResult = results.get(0);
+        assertNotNull(firstResult, "첫 번째 결과가 null이 아니어야 합니다");
+        assertTrue(firstResult.getItemName().contains(keyword), 
+            "검색 결과는 키워드를 포함해야 합니다");
     }
 }

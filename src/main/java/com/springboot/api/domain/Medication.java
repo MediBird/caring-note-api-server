@@ -33,6 +33,8 @@ public class Medication extends BaseEntity{
     @Column(nullable = false, length = 255)
     @NotBlank(message = "약 이름은 필수 입력 항목입니다.")
     private String itemName;
+    @Column(nullable = false, length = 255, name = "item_name_chosung")
+    private String itemNameChosung;
     @Column(nullable = false)
     private Integer itemSeq;
 
