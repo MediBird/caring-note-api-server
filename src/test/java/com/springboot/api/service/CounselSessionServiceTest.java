@@ -101,7 +101,7 @@ class CounselSessionServiceTest {
 
     @Test
     void selectCounselSessionList() {
-        SelectCounselSessionListReq req = SelectCounselSessionListReq
+        SelectCounselSessionListByBaseDateAndCursorAndSizeReq req = SelectCounselSessionListByBaseDateAndCursorAndSizeReq
                 .builder()
                .cursor(null)
                 .baseDate(LocalDate.now())
@@ -111,7 +111,7 @@ class CounselSessionServiceTest {
         when(sessionRepository.findByCursor(any(),any(), any(), any(), any()))
                 .thenReturn(List.of(mockCounselSession));
 
-        SelectCounselSessionListRes res = service.selectCounselSessionList("user-1", RoleType.ROLE_USER, req);
+        SelectCounselSessionListByBaseDateAndCursorAndSizeRes res = service.selectCounselSessionList("user-1", RoleType.ROLE_USER, req);
 
         assertNotNull(res);
         assertEquals(1, res.sessionListItems().size());

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class SelectCounselSessionListReq {
+public class SelectCounselSessionListByBaseDateAndCursorAndSizeReq {
 
     private int size;
     private String cursor;

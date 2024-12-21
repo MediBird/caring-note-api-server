@@ -78,23 +78,23 @@ public class CounselSessionService {
 
     }
 
-    public SelectCounselSessionListRes selectCounselSessionList(String id, RoleType roleType, SelectCounselSessionListReq selectCounselSessionListReq) throws RuntimeException
+    public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(String id, RoleType roleType, SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq) throws RuntimeException
     {
-        Pageable pageable = PageRequest.of(0, selectCounselSessionListReq.getSize());
+        Pageable pageable = PageRequest.of(0, selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize());
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         List<CounselSession> sessions;
 
 
         sessions = sessionRepository.findByCursor(
-                    Optional.ofNullable(selectCounselSessionListReq.getBaseDate())
+                    Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
                         .map(LocalDate::atStartOfDay)
                         .orElse(null)
-                    ,Optional.ofNullable(selectCounselSessionListReq.getBaseDate())
+                    ,Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
                         .map(d->d.plusDays(1))
                         .map(LocalDate::atStartOfDay)
                         .orElse(null)
-                    , selectCounselSessionListReq.getCursor()
+                    , selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor()
                     , null
                     , pageable);
 
@@ -107,7 +107,7 @@ public class CounselSessionService {
             }
 
             // hasNext 계산
-            boolean hasNext = sessions.size() == selectCounselSessionListReq.getSize();
+            boolean hasNext = sessions.size() == selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize();
 
             List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
                     .map(s-> SelectCounselSessionListItem.builder()
@@ -127,7 +127,7 @@ public class CounselSessionService {
                             .build())
                     .toList();
 
-            return new SelectCounselSessionListRes(sessionListItems,nextCursorId,hasNext);
+            return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems,nextCursorId,hasNext);
 
         }
 
@@ -163,7 +163,7 @@ public class CounselSessionService {
 
 
 
-    public List<SelectPreviousListByCounselSessionIdRes> selectPreviousListByCounselSessionId(String id, String counselSessionId)
+    public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String id, String counselSessionId)
     {
         CounselSession counselSession = sessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -180,7 +180,7 @@ public class CounselSessionService {
                 .map(session -> {
 
                     JsonNode baseInfo = session.getCounselCard().getBaseInformation().get("baseInfo");
-                    return new SelectPreviousListByCounselSessionIdRes(
+                    return new SelectPreviousCounselSessionListRes(
                             session.getId()
                             , baseInfo.get("counselSessionOrder").asText()
                             , session.getScheduledStartDateTime().toLocalDate()
