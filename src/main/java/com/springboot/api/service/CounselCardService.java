@@ -1,24 +1,34 @@
 package com.springboot.api.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.domain.CounselCard;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselcard.*;
-import com.springboot.api.repository.CounselCardRepository;
-import com.springboot.api.repository.CounselSessionRepository;
-import com.springboot.enums.ScheduleStatus;
-import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Optional;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.domain.CounselCard;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.dto.counselcard.AddCounselCardReq;
+import com.springboot.api.dto.counselcard.AddCounselCardRes;
+import com.springboot.api.dto.counselcard.DeleteCounselCardReq;
+import com.springboot.api.dto.counselcard.DeleteCounselCardRes;
+import com.springboot.api.dto.counselcard.SelectCounselCardRes;
+import com.springboot.api.dto.counselcard.SelectPreviousCounselCardItemListRes;
+import com.springboot.api.dto.counselcard.SelectPreviousCounselCardRes;
+import com.springboot.api.dto.counselcard.UpdateCounselCardReq;
+import com.springboot.api.dto.counselcard.UpdateCounselCardRes;
+import com.springboot.api.repository.CounselCardRepository;
+import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.enums.ScheduleStatus;
+
+import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -115,11 +125,10 @@ public class CounselCardService {
     @Transactional
     public DeleteCounselCardRes deleteCounselCard(String id, DeleteCounselCardReq deleteCounselCardReq) throws RuntimeException
     {
-        CounselCard counselCard = counselCardRepository.findById(deleteCounselCardReq.getCounselCardId())
-                .orElseThrow(NoContentException::new);
-
+        if(!counselCardRepository.existsById(deleteCounselCardReq.getCounselCardId())){
+            throw new NoContentException();
+        }
         counselCardRepository.deleteById(deleteCounselCardReq.getCounselCardId());
-
         return new DeleteCounselCardRes(deleteCounselCardReq.getCounselCardId());
     }
 
