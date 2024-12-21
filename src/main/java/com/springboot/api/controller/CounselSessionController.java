@@ -1,6 +1,7 @@
 package com.springboot.api.controller;
 
 
+import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
@@ -9,8 +10,8 @@ import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.service.CounselSessionService;
 import com.springboot.enums.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,18 +20,18 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 
-@RestController
-@RequestMapping("/v1/counsel/session")
-@Tag(name = "CounselSessionController", description = "상담 세션 관련 API를 제공하는 Controller")
+
+@ApiController(
+        name = "CounselSessionController"
+        ,description = "상담 세션 관련 API를 제공하는 Controller"
+        ,path = "/v1/counsel/session"
+)
+@RequiredArgsConstructor
 public class CounselSessionController {
 
     private final CounselSessionService counselSessionService;
     private final AuthUtil authUtil;
 
-    public CounselSessionController(CounselSessionService counselSessionService, AuthUtil authUtil) {
-        this.counselSessionService = counselSessionService;
-        this.authUtil = authUtil;
-    }
 
     @Operation(summary = "상담세션(일정) 추가",tags = {"관리자 화면"})
     @PostMapping
@@ -108,7 +109,7 @@ public class CounselSessionController {
     }
 
     @GetMapping("/{counselSessionId}/previous/list")
-    @Operation(summary = "이전 상담 내역 조회", tags = {"이전 상담 내역"})
+    @Operation(summary = "이전 상담 내역 조회", tags = {"본상담 - 이전 상담 내역"})
     @RoleSecured(RoleType.ROLE_ADMIN)
     public ResponseEntity<CommonRes<List<SelectPreviousListByCounselSessionIdRes>>> selectPreviousListByCounselSessionId(@AuthenticationPrincipal UserDetails userDetails
             ,@PathVariable("counselSessionId")String counselSessionId) {

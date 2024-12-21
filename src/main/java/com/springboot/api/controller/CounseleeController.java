@@ -5,6 +5,7 @@ import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
 import com.springboot.api.service.CounseleeService;
 import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,14 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
         ,description = "내담자 관련 API를 제공하는 Controller"
         ,path = "/v1/counsel/counselee"
 )
+@RequiredArgsConstructor
 public class CounseleeController {
 
     private final CounseleeService counseleeService;
-
-    public CounseleeController(CounseleeService counseleeService) {
-
-        this.counseleeService = counseleeService;
-    }
 
 
     @GetMapping("/{counselSessionId}")

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
+@Deprecated
 public class UserController {
     UserService userService;
     JwtUtil jwtUtil;
@@ -35,7 +36,6 @@ public class UserController {
              }
     )
     @PostMapping("/v1/signup")
-    @Deprecated
     public ResponseEntity<Void> addUser(
             @Parameter(description = "User details for the new user to be added", required = true)
             @RequestBody @Valid AddUserReq addUserReq) throws RuntimeException{
@@ -57,7 +57,6 @@ public class UserController {
     })
     @PostMapping("/v1/login")
     @ResponseStatus(HttpStatus.CREATED)
-    @Deprecated
     public ResponseEntity<Void> login(@RequestBody @Valid LoginReq loginReq){
 
         LoginRes loginRes = userService.login(loginReq);
