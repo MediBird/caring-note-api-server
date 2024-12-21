@@ -2,7 +2,7 @@ package com.springboot.api.controller;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.medication.SearchMedicationsByNameRes;
+import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
 import com.springboot.api.service.MedicationService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ public class MedicationController {
 
     @Operation(summary = "약 검색",tags = {"약 검색"})
     @GetMapping
-    public ResponseEntity<CommonRes<List<SearchMedicationsByNameRes>>> searchMedication(@RequestParam String keyword) {
-        List<SearchMedicationsByNameRes> medications = medicationService.searchMedicationsByName(keyword);
+    public ResponseEntity<CommonRes<List<SearchMedicationByKeywordRes>>> searchMedicationByKeyword(@RequestParam String keyword) {
+        List<SearchMedicationByKeywordRes> medications = medicationService.searchMedicationByKeyword(keyword);
         log.info("medications: {}", medications);
         return ResponseEntity.ok(new CommonRes<>(medications));
     }

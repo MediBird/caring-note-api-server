@@ -19,7 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.dto.medication.SearchMedicationsByNameRes;
+import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
@@ -37,7 +37,7 @@ public class MedicationControllerTest {
     void testSearchMedication() throws Exception {
         String keyword = "ㅈㄴㄹㅇ";
         String itemName = "제니로우캡슐120밀리그램(오르리스타트)";
-        SearchMedicationsByNameRes searchMedicationsByNameRes = SearchMedicationsByNameRes.builder()
+        SearchMedicationByKeywordRes searchMedicationByKeywordRes = SearchMedicationByKeywordRes.builder()
             .itemName(itemName)
             .id("AAAA26XK48EDA")
             .itemImage("https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1PEPKBUcgZk")
@@ -50,11 +50,11 @@ public class MedicationControllerTest {
                     String responseContent = handler.getResponse().getContentAsString(StandardCharsets.UTF_8);
                     System.out.println(responseContent);
                     JsonNode root = objectMapper.readTree(responseContent);
-                    List<SearchMedicationsByNameRes> responseDTOs = objectMapper.convertValue(
+                    List<SearchMedicationByKeywordRes> responseDTOs = objectMapper.convertValue(
                         root.get("data"), 
-                        new TypeReference<List<SearchMedicationsByNameRes>>() {}
+                        new TypeReference<List<SearchMedicationByKeywordRes>>() {}
                     );
-                    assertEquals(searchMedicationsByNameRes, responseDTOs.get(0));
+                    assertEquals(searchMedicationByKeywordRes, responseDTOs.get(0));
                 });
     }
 }

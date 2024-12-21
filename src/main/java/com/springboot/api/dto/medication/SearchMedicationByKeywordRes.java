@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SearchMedicationsByNameRes {
+public class SearchMedicationByKeywordRes {
     private String id;
     private String itemName;
     private String itemImage;

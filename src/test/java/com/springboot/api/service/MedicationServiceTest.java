@@ -1,22 +1,21 @@
 package com.springboot.api.service;
 
+import com.springboot.api.domain.Medication;
+import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
+import com.springboot.api.repository.MedicationRepository;
+import de.huxhorn.sulky.ulid.ULID;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import static org.mockito.Mockito.when;
-import org.mockito.junit.jupiter.MockitoExtension;
-
-import com.springboot.api.domain.Medication;
-import com.springboot.api.dto.medication.SearchMedicationsByNameRes;
-import com.springboot.api.repository.MedicationRepository;
-
-import de.huxhorn.sulky.ulid.ULID;
 
 @ExtendWith(MockitoExtension.class)
 public class MedicationServiceTest {
@@ -37,9 +36,9 @@ public class MedicationServiceTest {
         System.out.println("Converting to Chosung: " + keyword);
         String ulid1 = ulid.nextULID();
         String ulid2 = ulid.nextULID();
-        List<SearchMedicationsByNameRes> expectedResults = Arrays.asList(
-            SearchMedicationsByNameRes.builder().id(ulid1).itemName("타이레놀").itemImage("image1.jpg").build(),
-            SearchMedicationsByNameRes.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg").build()
+        List<SearchMedicationByKeywordRes> expectedResults = Arrays.asList(
+            SearchMedicationByKeywordRes.builder().id(ulid1).itemName("타이레놀").itemImage("image1.jpg").build(),
+            SearchMedicationByKeywordRes.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg").build()
         );
 
         Medication medication1 = new Medication();
@@ -58,7 +57,7 @@ public class MedicationServiceTest {
         when(medicationRepository.searchByItemNameWithPattern(keyword, "ㅌㅇㄹㄴ")).thenReturn(medications);
 
         // when
-        List<SearchMedicationsByNameRes> actualResults = medicationService.searchMedicationsByName(keyword);
+        List<SearchMedicationByKeywordRes> actualResults = medicationService.searchMedicationByKeyword(keyword);
         // then
         assertEquals(expectedResults, actualResults);
     }

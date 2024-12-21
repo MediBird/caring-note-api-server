@@ -1,6 +1,6 @@
 package com.springboot.api.service;
 
-import com.springboot.api.dto.medication.SearchMedicationsByNameRes;
+import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
 import com.springboot.api.repository.MedicationRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class MedicationService {
     private final MedicationRepository medicationRepository;
     
     @Cacheable(value = "medicationSearch")
-    public List<SearchMedicationsByNameRes> searchMedicationsByName(String keyword) {
+    public List<SearchMedicationByKeywordRes> searchMedicationByKeyword(String keyword) {
         log.info("keyword: {}", keyword);   
         return medicationRepository.searchByItemNameWithPattern(
                 keyword,
@@ -27,7 +27,7 @@ public class MedicationService {
             )
             .stream()
             .limit(10)
-            .map(medication -> SearchMedicationsByNameRes.builder()
+            .map(medication -> SearchMedicationByKeywordRes.builder()
                 .id(medication.getId())
                 .itemName(medication.getItemName())
                 .itemImage(medication.getItemImage())
