@@ -6,7 +6,7 @@ import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
@@ -28,8 +28,8 @@ public class CounseleeService {
     public final DateTimeUtil dateTimeUtil;
 
 
-    public SelectByCounselSessionIdRes selectByCounselSessionId(String id, String counselSessionId,
-                                                                String counseleeId) throws RuntimeException {
+    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeId(String id, String counselSessionId,
+                                                                                   String counseleeId) throws RuntimeException {
 
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
@@ -60,7 +60,7 @@ public class CounseleeService {
         }
 
         // Step 6: 결과 반환
-        return new SelectByCounselSessionIdRes(
+        return new SelectCounseleeBaseInformationByCounseleeIdRes(
                 counselee.getId(),
                 counselee.getName(),
                 dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()),

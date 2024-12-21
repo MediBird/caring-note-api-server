@@ -7,7 +7,7 @@ import com.springboot.enums.HealthInsuranceType;
 import java.time.LocalDate;
 import java.util.List;
 
-public record SelectByCounselSessionIdRes(
+public record SelectCounseleeBaseInformationByCounseleeIdRes(
         String counseleeId
         , String name
         , int age
