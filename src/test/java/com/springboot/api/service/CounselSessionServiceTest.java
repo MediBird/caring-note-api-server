@@ -6,7 +6,6 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
-import com.springboot.enums.RoleType;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,7 +81,7 @@ class CounselSessionServiceTest {
         when(dateTimeUtil.parseToDateTime(req.getScheduledStartDateTime())).thenReturn(LocalDateTime.of(2024, 11, 25, 14, 0));
         when(sessionRepository.save(any(CounselSession.class))).thenReturn(mockCounselSession);
 
-        AddCounselSessionRes res = service.addCounselSession("user-1", req);
+        AddCounselSessionRes res = service.addCounselSession(req);
         assertNotNull(res);
         assertEquals("session-1", res.counselSessionId());
         verify(sessionRepository, times(1)).save(any(CounselSession.class));
@@ -111,7 +110,7 @@ class CounselSessionServiceTest {
         when(sessionRepository.findByCursor(any(),any(), any(), any(), any()))
                 .thenReturn(List.of(mockCounselSession));
 
-        SelectCounselSessionListByBaseDateAndCursorAndSizeRes res = service.selectCounselSessionListByBaseDateAndCursorAndSize("user-1", RoleType.ROLE_USER, req);
+        SelectCounselSessionListByBaseDateAndCursorAndSizeRes res = service.selectCounselSessionListByBaseDateAndCursorAndSize(req);
 
         assertNotNull(res);
         assertEquals(1, res.sessionListItems().size());

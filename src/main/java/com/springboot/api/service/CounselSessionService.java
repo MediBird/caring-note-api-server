@@ -9,7 +9,6 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
-import com.springboot.enums.RoleType;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -33,7 +32,7 @@ public class CounselSessionService {
 
 
     @Transactional
-    public AddCounselSessionRes addCounselSession(String id, AddCounselSessionReq addCounselSessionReq) throws RuntimeException
+    public AddCounselSessionRes addCounselSession(AddCounselSessionReq addCounselSessionReq)
     {
         Counselor proxyCounselor = entityManager.getReference(Counselor.class, addCounselSessionReq.getCounselorId());
         Counselee proxyCounselee = entityManager.getReference(Counselee.class, addCounselSessionReq.getCounseleeId());
@@ -51,7 +50,7 @@ public class CounselSessionService {
         return new AddCounselSessionRes(savedCounselSession.getId());
     }
 
-    public SelectCounselSessionRes selectCounselSession(String id) throws RuntimeException
+    public SelectCounselSessionRes selectCounselSession(String id)
     {
         CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
                 NoContentException::new
@@ -78,7 +77,7 @@ public class CounselSessionService {
 
     }
 
-    public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(String id, RoleType roleType, SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq) throws RuntimeException
+    public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq)
     {
         Pageable pageable = PageRequest.of(0, selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize());
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -134,7 +133,7 @@ public class CounselSessionService {
 
 
     @Transactional
-    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) throws RuntimeException
+    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq)
     {
         CounselSession counselSession = sessionRepository.findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
                 NoContentException::new
@@ -163,7 +162,7 @@ public class CounselSessionService {
 
 
 
-    public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String id, String counselSessionId)
+    public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId)
     {
         CounselSession counselSession = sessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
