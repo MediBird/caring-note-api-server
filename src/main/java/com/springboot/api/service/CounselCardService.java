@@ -30,7 +30,7 @@ public class CounselCardService {
     private final EntityManager entityManager;
 
 
-    public SelectCounselCardRes selectCounselCard(String counselSessionId) throws RuntimeException{
+    public SelectCounselCardRes selectCounselCard(String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -48,7 +48,7 @@ public class CounselCardService {
         );
     }
 
-    public SelectPreviousCounselCardRes selectPreviousCounselCard(String counselSessionId) throws RuntimeException{
+    public SelectPreviousCounselCardRes selectPreviousCounselCard(String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -78,7 +78,7 @@ public class CounselCardService {
 
 
     @Transactional
-    public AddCounselCardRes addCounselCard(AddCounselCardReq addCounselCardReq) throws RuntimeException
+    public AddCounselCardRes addCounselCard(AddCounselCardReq addCounselCardReq)
     {
         CounselSession counselSessionProxy = entityManager.getReference(CounselSession.class, addCounselCardReq.getCounselSessionId());
 
@@ -98,7 +98,7 @@ public class CounselCardService {
     }
 
     @Transactional
-    public UpdateCounselCardRes updateCounselCard(UpdateCounselCardReq updateCounselCardReq) throws RuntimeException
+    public UpdateCounselCardRes updateCounselCard(UpdateCounselCardReq updateCounselCardReq)
     {
         CounselCard counselCard = counselCardRepository.findById(updateCounselCardReq.getCounselCardId())
                 .orElseThrow(NoContentException::new);
@@ -113,7 +113,7 @@ public class CounselCardService {
     }
 
     @Transactional
-    public DeleteCounselCardRes deleteCounselCard(DeleteCounselCardReq deleteCounselCardReq) throws RuntimeException
+    public DeleteCounselCardRes deleteCounselCard(DeleteCounselCardReq deleteCounselCardReq)
     {
         if(!counselCardRepository.existsById(deleteCounselCardReq.getCounselCardId())){
             throw new NoContentException();
