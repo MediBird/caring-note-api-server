@@ -21,7 +21,7 @@ public class MedicationCounsel extends BaseEntity {
     @JoinColumn(name = "counsel_session_id", nullable = false)
     private CounselSession counselSession;
 
-    @Lob
+
     @Column(name = "counsel_record", columnDefinition = "TEXT")
     private String counselRecord;
 

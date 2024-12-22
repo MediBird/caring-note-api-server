@@ -1,13 +1,10 @@
 package com.springboot.api.common.util;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
+import com.springboot.api.domain.Counselor;
+import com.springboot.api.domain.User;
+import com.springboot.enums.RoleType;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,12 +12,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.User;
-import com.springboot.enums.RoleType;
-
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
@@ -40,7 +37,7 @@ public class JwtUtil {
                 .setClaims(claims)
                 .setSubject(String.valueOf(id))
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 48))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
