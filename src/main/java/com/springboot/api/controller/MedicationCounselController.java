@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @ApiController(
@@ -63,10 +61,9 @@ public class MedicationCounselController {
 
     @PutMapping
     @Operation(summary = "복약 상담 수정", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<UpdateMedicationCounselRes>> updateMedicationCounsel(@AuthenticationPrincipal UserDetails userDetails
-    , @RequestBody @Valid UpdateMedicationCounselReq updateMedicationCounselReq) {
+    public ResponseEntity<CommonRes<UpdateMedicationCounselRes>> updateMedicationCounsel(@RequestBody @Valid UpdateMedicationCounselReq updateMedicationCounselReq) {
 
-        UpdateMedicationCounselRes updateMedicationCounselRes = medicationCounselService.updateMedicationCounsel(userDetails.getUsername(), updateMedicationCounselReq);
+        UpdateMedicationCounselRes updateMedicationCounselRes = medicationCounselService.updateMedicationCounsel(updateMedicationCounselReq);
 
         return ResponseEntity.ok(new CommonRes<>(updateMedicationCounselRes));
 
@@ -75,10 +72,9 @@ public class MedicationCounselController {
 
     @DeleteMapping
     @Operation(summary = "복약 상담 삭제", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<DeleteMedicationCounselRes>> deleteMedicationCounsel(@AuthenticationPrincipal UserDetails userDetails
-    , @RequestBody @Valid DeleteMedicationCounselReq deleteMedicationCounselReq){
+    public ResponseEntity<CommonRes<DeleteMedicationCounselRes>> deleteMedicationCounsel(@RequestBody @Valid DeleteMedicationCounselReq deleteMedicationCounselReq){
 
-        DeleteMedicationCounselRes deleteMedicationCounselRes = medicationCounselService.deleteMedicationCounsel(userDetails.getUsername(), deleteMedicationCounselReq);
+        DeleteMedicationCounselRes deleteMedicationCounselRes = medicationCounselService.deleteMedicationCounsel(deleteMedicationCounselReq);
 
         return ResponseEntity.ok(new CommonRes<>(deleteMedicationCounselRes));
 
