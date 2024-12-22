@@ -2,22 +2,14 @@ package com.springboot.api.controller;
 
 import java.io.IOException;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.springboot.api.common.annotation.ApiController;
-import com.springboot.api.common.util.JwtUtil;
-import com.springboot.api.dto.counselor.AddCounselorReq;
-import com.springboot.api.dto.counselor.AddCounselorRes;
 import com.springboot.api.service.CounselorService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @ApiController(
@@ -29,25 +21,20 @@ import lombok.RequiredArgsConstructor;
 public class CounselorController {
 
     private final CounselorService counselorService;
-    private final JwtUtil jwtUtil;
 
-    @Operation(summary = "사용자 추가",
-            description = "권한,기본정보를 입력받아 회원가입 처리, 헤더에 토큰 응답",
-            responses = {
-                @ApiResponse(responseCode = "201", description = "회원가입 성공")
-            }
-    )
-    @PostMapping("/signup")
-    public ResponseEntity<Void> addCounselor(
-            @Parameter(description = "Details of the new Counselor to be added", required = true)
-            @RequestBody @Valid AddCounselorReq addCounselorReq) throws RuntimeException {
-
-        AddCounselorRes addCounselorRes = counselorService.addCounselor(addCounselorReq);
-
-        return jwtUtil.createTokenResponse(addCounselorRes.id(), addCounselorRes.roleType());
-
-    }
-
+    // @Operation(summary = "사용자 추가",
+    //         description = "권한,기본정보를 입력받아 회원가입 처리, 헤더에 토큰 응답",
+    //         responses = {
+    //             @ApiResponse(responseCode = "201", description = "회원가입 성공")
+    //         }
+    // )
+    // @PostMapping("/signup")
+    // public ResponseEntity<Void> addCounselor(
+    //         @Parameter(description = "Details of the new Counselor to be added", required = true)
+    //         @RequestBody @Valid AddCounselorReq addCounselorReq) throws RuntimeException {
+    //     AddCounselorRes addCounselorRes = counselorService.addCounselor(addCounselorReq);
+    //     return jwtUtil.createTokenResponse(addCounselorRes.id(), addCounselorRes.roleType());
+    // }
     @Operation(summary = "로그인", description = "Keycloak 로그인 페이지로 리다이렉트",
             responses = {
                 @ApiResponse(responseCode = "302", description = "Keycloak 로그인 페이지로 리다이렉트")
