@@ -2,7 +2,7 @@ package com.springboot.api.controller;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.service.CounseleeService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,16 +24,16 @@ public class CounseleeController {
     private final CounseleeService counseleeService;
 
 
-    @GetMapping("/{counselSessionId}")
+    @GetMapping("/{counselSessionId}/base/information")
     @Operation(summary = "내담자 기본 정보 조회",tags = {"상담 카드 작성","상담 노트"})
-    public ResponseEntity<CommonRes<SelectByCounselSessionIdRes>> selectByCounselSessionId(@AuthenticationPrincipal UserDetails userDetails
+    public ResponseEntity<CommonRes<SelectCounseleeBaseInformationByCounseleeIdRes>> selectCounseleeBaseInformationByCounseleeId(@AuthenticationPrincipal UserDetails userDetails
             , @PathVariable("counselSessionId") String counselSessionId
             , @RequestParam String counseleeId) {
 
-        SelectByCounselSessionIdRes selectByCounselSessionIdRes = counseleeService
-                .selectByCounselSessionId(userDetails.getUsername(), counselSessionId, counseleeId);
+        SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes = counseleeService
+                .selectCounseleeBaseInformationByCounseleeId(userDetails.getUsername(), counselSessionId, counseleeId);
 
-        return ResponseEntity.ok(new CommonRes<>(selectByCounselSessionIdRes));
+        return ResponseEntity.ok(new CommonRes<>(selectCounseleeBaseInformationByCounseleeIdRes));
     }
 
 

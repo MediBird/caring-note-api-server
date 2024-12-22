@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.springboot.api.dto.counselee.SelectByCounselSessionIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
 
 @SpringBootTest
 @Transactional
@@ -33,13 +33,13 @@ public class CounseleeServiceTest {
         String counselSessionId ="TEST-COUNSEL-SESSION-01";
         String counseleeId ="TEST-COUNSELEE-01";
 
-        SelectByCounselSessionIdRes selectByCounselSessionIdRes =  counseleeService.selectByCounselSessionId(
+        SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes =  counseleeService.selectCounseleeBaseInformationByCounseleeId(
                 counselorId
                 ,counselSessionId
                 ,counseleeId
         );
 
-        log.debug(selectByCounselSessionIdRes.toString());
+        log.debug(selectCounseleeBaseInformationByCounseleeIdRes.toString());
 
     }
 

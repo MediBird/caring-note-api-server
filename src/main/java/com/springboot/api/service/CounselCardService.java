@@ -1,34 +1,24 @@
 package com.springboot.api.service;
 
-import java.util.AbstractMap;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselcard.AddCounselCardReq;
-import com.springboot.api.dto.counselcard.AddCounselCardRes;
-import com.springboot.api.dto.counselcard.DeleteCounselCardReq;
-import com.springboot.api.dto.counselcard.DeleteCounselCardRes;
-import com.springboot.api.dto.counselcard.SelectCounselCardRes;
-import com.springboot.api.dto.counselcard.SelectPreviousCounselCardItemListRes;
-import com.springboot.api.dto.counselcard.SelectPreviousCounselCardRes;
-import com.springboot.api.dto.counselcard.UpdateCounselCardReq;
-import com.springboot.api.dto.counselcard.UpdateCounselCardRes;
+import com.springboot.api.dto.counselcard.*;
 import com.springboot.api.repository.CounselCardRepository;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.enums.ScheduleStatus;
-
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.AbstractMap;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -133,10 +123,10 @@ public class CounselCardService {
     }
 
 
-    public List<SelectPreviousCounselCardItemListRes> selectPreviousCounselCardItemListByCounselSessionId(String id
+    public List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListByInformationNameAndItemName(String id
             , String counselSessionId
             , String informationName
-            , String informationItemName){
+            , String itemName){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -166,10 +156,10 @@ public class CounselCardService {
                 })
                 .map(entry -> {
                     JsonNode informationJsonNode = entry.getValue();
-                    JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(informationItemName))
+                    JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(itemName))
                             .orElseThrow(NoContentException::new);
 
-                    return new SelectPreviousCounselCardItemListRes( entry.getKey().getScheduledStartDateTime().toLocalDate()
+                    return new SelectPreviousItemListByInformationNameAndItemNameRes( entry.getKey().getScheduledStartDateTime().toLocalDate()
                             ,itemNode);
                 })
                 .toList();

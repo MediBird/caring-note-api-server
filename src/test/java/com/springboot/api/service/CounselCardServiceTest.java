@@ -1,7 +1,7 @@
 package com.springboot.api.service;
 
 
-import com.springboot.api.dto.counselcard.SelectPreviousCounselCardItemListRes;
+import com.springboot.api.dto.counselcard.SelectPreviousItemListByInformationNameAndItemNameRes;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,16 +37,16 @@ public class CounselCardServiceTest {
         String informationName = "healthInformation";
         String informationItemName = "diseaseInfo";
 
-        List<SelectPreviousCounselCardItemListRes> selectPreviousCounselCardItemListResList
-                = counselCardService.selectPreviousCounselCardItemListByCounselSessionId(
+        List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListResListByInformationNameAndInformationItemName
+                = counselCardService.selectPreviousItemListByInformationNameAndItemName(
                         counselorId
                 ,counselSessionId
                 ,informationName
                 ,informationItemName
         );
 
-        log.debug(selectPreviousCounselCardItemListResList.toString());
-        assertEquals(1, selectPreviousCounselCardItemListResList.size());
+        log.debug(selectPreviousItemListResListByInformationNameAndInformationItemName.toString());
+        assertEquals(1, selectPreviousItemListResListByInformationNameAndInformationItemName.size());
 
 
     }

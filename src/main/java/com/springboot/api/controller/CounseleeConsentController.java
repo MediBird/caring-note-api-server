@@ -25,18 +25,18 @@ public class CounseleeConsentController {
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "내담자 개인정보 수집 동의 여부 조회",tags = {"개인 정보 수집 동의"})
-    public ResponseEntity<CommonRes<SelectCounseleeConsentRes>> selectCounseleeConsent(
+    public ResponseEntity<CommonRes<SelectCounseleeConsentByCounseleeIdRes>> selectCounseleeConsentByCounseleeId(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable String counselSessionId,
             @RequestParam(required = true) String counseleeId
     ) throws RuntimeException{
 
-        SelectCounseleeConsentRes selectCounseleeConsentRes =  counseleeConsentService.selectCounseleeConsent(
+        SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeIdRes =  counseleeConsentService.selectCounseleeConsentByCounseleeId(
                 userDetails.getUsername()
                 , counselSessionId
                 ,counseleeId);
 
-        return ResponseEntity.ok(new CommonRes<>(selectCounseleeConsentRes));
+        return ResponseEntity.ok(new CommonRes<>(selectCounseleeConsentByCounseleeIdRes));
     }
 
     @PostMapping

@@ -23,24 +23,24 @@ public class MedicationCounselService {
     private final CounselSessionRepository counselSessionRepository;
 
 
-    public AddRes add(String id, AddReq addReq){
+    public AddMedicationCounselRes addMedicationCounsel(String id, AddMedicationCounselReq addMedicationCounselReq){
 
-        CounselSession counselSession = counselSessionRepository.findById(addReq.getCounselSessionId())
+        CounselSession counselSession = counselSessionRepository.findById(addMedicationCounselReq.getCounselSessionId())
                 .orElseThrow(NoContentException::new);
 
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
                 .counselSession(counselSession)
-                .counselRecord(addReq.getCounselRecord())
-                .counselRecordHighlights(addReq.getCounselRecordHighlights())
-                .counselNeedStatus(addReq.getCounselNeedStatus())
+                .counselRecord(addMedicationCounselReq.getCounselRecord())
+                .counselRecordHighlights(addMedicationCounselReq.getCounselRecordHighlights())
+                .counselNeedStatus(addMedicationCounselReq.getCounselNeedStatus())
                 .build();
 
         MedicationCounsel savedMedicationCounsel = medicationCounselRepository.save(medicationCounsel);
 
-        return new AddRes(savedMedicationCounsel.getId());
+        return new AddMedicationCounselRes(savedMedicationCounsel.getId());
     }
 
-    public SelectByCounselSessionIdRes selectByCounselSessionId(String id, String counselSessionId){
+    public SelectMedicationCounselRes selectMedicationCounsel(String id, String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -49,7 +49,7 @@ public class MedicationCounselService {
                 .orElseThrow(NoContentException::new);
 
 
-        return new SelectByCounselSessionIdRes(
+        return new SelectMedicationCounselRes(
                 medicationCounsel.getId()
                 , medicationCounsel.getCounselRecord()
                 , medicationCounsel.getCounselRecordHighlights()
@@ -57,7 +57,7 @@ public class MedicationCounselService {
         );
     }
 
-    public SelectPreviousByCounselSessionIdRes selectPreviousByCounselSessionId(String id, String counselSessionId){
+    public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String id, String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -77,7 +77,7 @@ public class MedicationCounselService {
         MedicationCounsel medicationCounsel = Optional.ofNullable(previousCounselSession.getMedicationCounsel())
                 .orElseThrow(NoContentException::new);
 
-        return new SelectPreviousByCounselSessionIdRes(
+        return new SelectPreviousMedicationCounselRes(
                 previousCounselSession.getId()
                 ,medicationCounsel.getCounselRecordHighlights()
                 , medicationCounsel.getCounselRecord() //STT 도입 이후 STT 결과로 변경 예정
@@ -88,27 +88,27 @@ public class MedicationCounselService {
     }
 
     @Transactional
-    public UpdateRes update(String id, UpdateReq updateReq){
+    public UpdateMedicationCounselRes updateMedicationCounsel(String id, UpdateMedicationCounselReq updateMedicationCounselReq){
 
-        MedicationCounsel medicationCounsel = medicationCounselRepository.findById(updateReq.getMedicationCounselId())
+        MedicationCounsel medicationCounsel = medicationCounselRepository.findById(updateMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);
 
-        medicationCounsel.setCounselRecord(updateReq.getCounselRecord());
-        medicationCounsel.setCounselRecordHighlights(updateReq.getCounselRecordHighlights());
-        medicationCounsel.setCounselNeedStatus(updateReq.getCounselNeedStatus());
+        medicationCounsel.setCounselRecord(updateMedicationCounselReq.getCounselRecord());
+        medicationCounsel.setCounselRecordHighlights(updateMedicationCounselReq.getCounselRecordHighlights());
+        medicationCounsel.setCounselNeedStatus(updateMedicationCounselReq.getCounselNeedStatus());
 
-        return new UpdateRes(medicationCounsel.getId());
+        return new UpdateMedicationCounselRes(medicationCounsel.getId());
     }
 
     @Transactional
-    public DeleteRes delete(String id, DeleteReq deleteReq){
+    public DeleteMedicationCounselRes deleteMedicationCounsel(String id, DeleteMedicationCounselReq deleteMedicationCounselReq){
 
-        MedicationCounsel medicationCounsel = medicationCounselRepository.findById(deleteReq.getMedicationCounselId())
+        MedicationCounsel medicationCounsel = medicationCounselRepository.findById(deleteMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);
 
         medicationCounselRepository.deleteById(medicationCounsel.getId());
 
-        return new DeleteRes(medicationCounsel.getId());
+        return new DeleteMedicationCounselRes(medicationCounsel.getId());
     }
 
 

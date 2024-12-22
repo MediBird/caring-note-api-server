@@ -4,4 +4,4 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import java.time.LocalDate;
 
-public record SelectPreviousCounselCardItemListRes(LocalDate counselDate, JsonNode counselCardItem) {}
+public record SelectPreviousItemListByInformationNameAndItemNameRes(LocalDate counselDate, JsonNode counselCardItem) {}

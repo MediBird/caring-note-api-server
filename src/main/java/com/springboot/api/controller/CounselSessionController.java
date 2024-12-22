@@ -49,13 +49,13 @@ public class CounselSessionController {
 
     @GetMapping("/list")
     @Operation(summary = "상담일정 목록 조회", tags = {"로그인/홈"})
-    public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionList(@AuthenticationPrincipal UserDetails userDetails
+    public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionListByBaseDateAndCursorAndSize(@AuthenticationPrincipal UserDetails userDetails
             , @RequestParam(required = false) LocalDate baseDate
             , @RequestParam(required = false) String cursor
             , @RequestParam(defaultValue = "15") int size)  {
 
-        SelectCounselSessionListReq selectCounselSessionListReq
-                = SelectCounselSessionListReq
+        SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq
+                = SelectCounselSessionListByBaseDateAndCursorAndSizeReq
                 .builder()
                 .baseDate(baseDate)
                 .cursor(cursor)
@@ -64,11 +64,11 @@ public class CounselSessionController {
 
         RoleType roleType = authUtil.getRoleType(userDetails);
 
-        SelectCounselSessionListRes selectCounselSessionListRes = counselSessionService
-                .selectCounselSessionList(userDetails.getUsername(),roleType, selectCounselSessionListReq);
+        SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSizeRes = counselSessionService
+                .selectCounselSessionListByBaseDateAndCursorAndSize(userDetails.getUsername(),roleType, selectCounselSessionListByBaseDateAndCursorAndSizeReq);
 
         return ResponseEntity.ok(new CommonCursorRes<>(
-                selectCounselSessionListRes.sessionListItems(), selectCounselSessionListRes.nextCursor(), selectCounselSessionListRes.hasNext()
+                selectCounselSessionListByBaseDateAndCursorAndSizeRes.sessionListItems(), selectCounselSessionListByBaseDateAndCursorAndSizeRes.nextCursor(), selectCounselSessionListByBaseDateAndCursorAndSizeRes.hasNext()
         ));
     }
 
@@ -111,11 +111,11 @@ public class CounselSessionController {
     @GetMapping("/{counselSessionId}/previous/list")
     @Operation(summary = "이전 상담 내역 조회", tags = {"본상담 - 이전 상담 내역"})
     @RoleSecured(RoleType.ROLE_ADMIN)
-    public ResponseEntity<CommonRes<List<SelectPreviousListByCounselSessionIdRes>>> selectPreviousListByCounselSessionId(@AuthenticationPrincipal UserDetails userDetails
-            ,@PathVariable("counselSessionId")String counselSessionId) {
+    public ResponseEntity<CommonRes<List<SelectPreviousCounselSessionListRes>>> selectPreviousCounselSessionList(@AuthenticationPrincipal UserDetails userDetails
+            , @PathVariable("counselSessionId")String counselSessionId) {
 
-        List<SelectPreviousListByCounselSessionIdRes> selectPreviousListByCounselSessionIdResList
-                = counselSessionService.selectPreviousListByCounselSessionId(userDetails.getUsername(),counselSessionId);
+        List<SelectPreviousCounselSessionListRes> selectPreviousListByCounselSessionIdResList
+                = counselSessionService.selectPreviousCounselSessionList(userDetails.getUsername(),counselSessionId);
 
 
         return ResponseEntity.ok(new CommonRes<>(selectPreviousListByCounselSessionIdResList));

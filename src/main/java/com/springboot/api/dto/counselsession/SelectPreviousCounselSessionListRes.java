@@ -3,7 +3,7 @@ package com.springboot.api.dto.counselsession;
 
 import java.time.LocalDate;
 
-public record SelectPreviousListByCounselSessionIdRes(
+public record SelectPreviousCounselSessionListRes(
 
         String counselSessionId
         , String CounselSessionOrder

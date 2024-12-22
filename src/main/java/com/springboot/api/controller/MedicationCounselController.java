@@ -25,39 +25,39 @@ public class MedicationCounselController {
 
     @PostMapping
     @Operation(summary = "복약 상담 추가",tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<AddRes>> add(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestBody @Valid AddReq addReq) {
+    public ResponseEntity<CommonRes<AddMedicationCounselRes>> addMedicationCounsel(@AuthenticationPrincipal UserDetails userDetails
+            , @RequestBody @Valid AddMedicationCounselReq addMedicationCounselReq) {
 
-        AddRes addRes = medicationCounselService.add(userDetails.getUsername(),addReq);
+        AddMedicationCounselRes addMedicationCounselRes = medicationCounselService.addMedicationCounsel(userDetails.getUsername(), addMedicationCounselReq);
 
-        return ResponseEntity.ok(new CommonRes<>(addRes));
+        return ResponseEntity.ok(new CommonRes<>(addMedicationCounselRes));
 
     }
 
     @GetMapping
     @Operation(summary = "복약 상담 조회", tags ={"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<SelectByCounselSessionIdRes>> selectByCounselSessionId(
+    public ResponseEntity<CommonRes<SelectMedicationCounselRes>> selectMedicationCounsel(
             @AuthenticationPrincipal UserDetails userDetails
             , @RequestParam("counselSessionId") String counselSessionId) {
 
-        SelectByCounselSessionIdRes selectByCounselSessionIdRes = medicationCounselService
-                .selectByCounselSessionId(userDetails.getUsername(), counselSessionId);
+        SelectMedicationCounselRes selectMedicationCounselRes = medicationCounselService
+                .selectMedicationCounsel(userDetails.getUsername(), counselSessionId);
 
-        return ResponseEntity.ok(new CommonRes<>(selectByCounselSessionIdRes));
+        return ResponseEntity.ok(new CommonRes<>(selectMedicationCounselRes));
 
     }
 
 
     @GetMapping("/{counselSessionId}/previous/summary")
     @Operation(summary = "이전 복약 상담 조회", tags ={"본상담 - 이전 상담 내역"})
-    public ResponseEntity<CommonRes<SelectPreviousByCounselSessionIdRes>> selectPreviousByCounselSessionId(
+    public ResponseEntity<CommonRes<SelectPreviousMedicationCounselRes>> selectPreviousMedicationCounsel(
             @AuthenticationPrincipal UserDetails userDetails
             , @PathVariable("counselSessionId") String counselSessionId) {
 
-        SelectPreviousByCounselSessionIdRes selectPreviousByCounselSessionIdRes = medicationCounselService
-                .selectPreviousByCounselSessionId(userDetails.getUsername(), counselSessionId);
+        SelectPreviousMedicationCounselRes selectPreviousMedicationCounselRes = medicationCounselService
+                .selectPreviousMedicationCounsel(userDetails.getUsername(), counselSessionId);
 
-        return ResponseEntity.ok(new CommonRes<>(selectPreviousByCounselSessionIdRes));
+        return ResponseEntity.ok(new CommonRes<>(selectPreviousMedicationCounselRes));
 
     }
 
@@ -66,24 +66,24 @@ public class MedicationCounselController {
 
     @PutMapping
     @Operation(summary = "복약 상담 수정", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<UpdateRes>> update(@AuthenticationPrincipal UserDetails userDetails
-    , @RequestBody @Valid UpdateReq updateReq) {
+    public ResponseEntity<CommonRes<UpdateMedicationCounselRes>> updateMedicationCounsel(@AuthenticationPrincipal UserDetails userDetails
+    , @RequestBody @Valid UpdateMedicationCounselReq updateMedicationCounselReq) {
 
-        UpdateRes updateRes = medicationCounselService.update(userDetails.getUsername(),updateReq);
+        UpdateMedicationCounselRes updateMedicationCounselRes = medicationCounselService.updateMedicationCounsel(userDetails.getUsername(), updateMedicationCounselReq);
 
-        return ResponseEntity.ok(new CommonRes<>(updateRes));
+        return ResponseEntity.ok(new CommonRes<>(updateMedicationCounselRes));
 
     }
 
 
     @DeleteMapping
     @Operation(summary = "복약 상담 삭제", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<DeleteRes>> delete(@AuthenticationPrincipal UserDetails userDetails
-    ,@RequestBody @Valid DeleteReq deleteReq){
+    public ResponseEntity<CommonRes<DeleteMedicationCounselRes>> deleteMedicationCounsel(@AuthenticationPrincipal UserDetails userDetails
+    , @RequestBody @Valid DeleteMedicationCounselReq deleteMedicationCounselReq){
 
-        DeleteRes deleteRes = medicationCounselService.delete(userDetails.getUsername(),deleteReq);
+        DeleteMedicationCounselRes deleteMedicationCounselRes = medicationCounselService.deleteMedicationCounsel(userDetails.getUsername(), deleteMedicationCounselReq);
 
-        return ResponseEntity.ok(new CommonRes<>(deleteRes));
+        return ResponseEntity.ok(new CommonRes<>(deleteMedicationCounselRes));
 
     }
 

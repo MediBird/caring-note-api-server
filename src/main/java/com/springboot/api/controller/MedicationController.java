@@ -1,19 +1,17 @@
 package com.springboot.api.controller;
 
-import java.util.List;
-
+import com.springboot.api.common.annotation.ApiController;
+import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
+import com.springboot.api.service.MedicationService;
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.springboot.api.common.annotation.ApiController;
-import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.medication.MedicationAutoCompleteDTO;
-import com.springboot.api.service.MedicationService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @ApiController(
         name = "MedicationController"
@@ -27,8 +25,8 @@ public class MedicationController {
 
     @Operation(summary = "약 검색",tags = {"약 검색"})
     @GetMapping
-    public ResponseEntity<CommonRes<List<MedicationAutoCompleteDTO>>> searchMedication(@RequestParam String keyword) {
-        List<MedicationAutoCompleteDTO> medications = medicationService.searchMedicationsByName(keyword);
+    public ResponseEntity<CommonRes<List<SearchMedicationByKeywordRes>>> searchMedicationByKeyword(@RequestParam String keyword) {
+        List<SearchMedicationByKeywordRes> medications = medicationService.searchMedicationByKeyword(keyword);
         log.info("medications: {}", medications);
         return ResponseEntity.ok(new CommonRes<>(medications));
     }
