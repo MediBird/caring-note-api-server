@@ -31,11 +31,10 @@ class MedicationCounselServiceTest {
 
         //when
         String counselSessionId ="TEST-COUNSEL-SESSION-01";
-        String counselorId ="TEST-COUNSELOR-02";
 
         //then
         SelectPreviousMedicationCounselRes selectPreviousMedicationCounselRes = medicationCounselService
-                .selectPreviousMedicationCounsel(counselorId, counselSessionId);
+                .selectPreviousMedicationCounsel(counselSessionId);
 
         log.debug(selectPreviousMedicationCounselRes.toString());
         //valid

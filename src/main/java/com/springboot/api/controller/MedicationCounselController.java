@@ -25,10 +25,9 @@ public class MedicationCounselController {
 
     @PostMapping
     @Operation(summary = "복약 상담 추가",tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<AddMedicationCounselRes>> addMedicationCounsel(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestBody @Valid AddMedicationCounselReq addMedicationCounselReq) {
+    public ResponseEntity<CommonRes<AddMedicationCounselRes>> addMedicationCounsel( @RequestBody @Valid AddMedicationCounselReq addMedicationCounselReq) {
 
-        AddMedicationCounselRes addMedicationCounselRes = medicationCounselService.addMedicationCounsel(userDetails.getUsername(), addMedicationCounselReq);
+        AddMedicationCounselRes addMedicationCounselRes = medicationCounselService.addMedicationCounsel(addMedicationCounselReq);
 
         return ResponseEntity.ok(new CommonRes<>(addMedicationCounselRes));
 
@@ -37,11 +36,10 @@ public class MedicationCounselController {
     @GetMapping
     @Operation(summary = "복약 상담 조회", tags ={"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<SelectMedicationCounselRes>> selectMedicationCounsel(
-            @AuthenticationPrincipal UserDetails userDetails
-            , @RequestParam("counselSessionId") String counselSessionId) {
+             @RequestParam("counselSessionId") String counselSessionId) {
 
         SelectMedicationCounselRes selectMedicationCounselRes = medicationCounselService
-                .selectMedicationCounsel(userDetails.getUsername(), counselSessionId);
+                .selectMedicationCounsel(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectMedicationCounselRes));
 
@@ -51,11 +49,10 @@ public class MedicationCounselController {
     @GetMapping("/{counselSessionId}/previous/summary")
     @Operation(summary = "이전 복약 상담 조회", tags ={"본상담 - 이전 상담 내역"})
     public ResponseEntity<CommonRes<SelectPreviousMedicationCounselRes>> selectPreviousMedicationCounsel(
-            @AuthenticationPrincipal UserDetails userDetails
-            , @PathVariable("counselSessionId") String counselSessionId) {
+             @PathVariable("counselSessionId") String counselSessionId) {
 
         SelectPreviousMedicationCounselRes selectPreviousMedicationCounselRes = medicationCounselService
-                .selectPreviousMedicationCounsel(userDetails.getUsername(), counselSessionId);
+                .selectPreviousMedicationCounsel(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectPreviousMedicationCounselRes));
 
