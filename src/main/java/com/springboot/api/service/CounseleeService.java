@@ -28,8 +28,8 @@ public class CounseleeService {
     public final DateTimeUtil dateTimeUtil;
 
 
-    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeId(String id, String counselSessionId,
-                                                                                   String counseleeId) throws RuntimeException {
+    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeId(String counselSessionId,
+                                                                                   String counseleeId){
 
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
