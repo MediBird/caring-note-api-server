@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @ApiController(
@@ -26,14 +24,12 @@ public class CounseleeConsentController {
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "내담자 개인정보 수집 동의 여부 조회",tags = {"개인 정보 수집 동의"})
     public ResponseEntity<CommonRes<SelectCounseleeConsentByCounseleeIdRes>> selectCounseleeConsentByCounseleeId(
-            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable String counselSessionId,
             @RequestParam(required = true) String counseleeId
-    ) throws RuntimeException{
+    ){
 
         SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeIdRes =  counseleeConsentService.selectCounseleeConsentByCounseleeId(
-                userDetails.getUsername()
-                , counselSessionId
+               counselSessionId
                 ,counseleeId);
 
         return ResponseEntity.ok(new CommonRes<>(selectCounseleeConsentByCounseleeIdRes));
@@ -42,12 +38,10 @@ public class CounseleeConsentController {
     @PostMapping
     @Operation(summary = "내담자 개인정보 수집 동의 여부 등록",tags = {"개인 정보 수집 동의"})
     public ResponseEntity<CommonRes<AddCounseleeConsentRes>> addCounseleeConsent(
-            @AuthenticationPrincipal UserDetails userDetails
-            ,@RequestBody @Valid AddCounseleeConsentReq addCounseleeConsentReq) throws RuntimeException {
+            @RequestBody @Valid AddCounseleeConsentReq addCounseleeConsentReq){
 
         AddCounseleeConsentRes addCounseleeConsentRes =  counseleeConsentService.addCounseleeConsent(
-                userDetails.getUsername()
-                , addCounseleeConsentReq);
+               addCounseleeConsentReq);
 
         return ResponseEntity.ok(new CommonRes<>(addCounseleeConsentRes));
     }
@@ -55,12 +49,10 @@ public class CounseleeConsentController {
     @PutMapping
     @Operation(summary = "내담자 개인정보 수집 동의 여부 수정",tags = {"개인 정보 수집 동의"})
     public ResponseEntity<CommonRes<UpdateCounseleeConsentRes>> updateCounseleeConsent(
-            @AuthenticationPrincipal UserDetails userDetails
-            ,@RequestBody @Valid UpdateCounseleeConsentReq updateCounseleeConsentReq)  throws RuntimeException{
+           @RequestBody @Valid UpdateCounseleeConsentReq updateCounseleeConsentReq){
 
         UpdateCounseleeConsentRes updateCounseleeConsentRes =  counseleeConsentService.updateCounseleeConsent(
-                userDetails.getUsername()
-                , updateCounseleeConsentReq);
+                updateCounseleeConsentReq);
 
         return ResponseEntity.ok(new CommonRes<>(updateCounseleeConsentRes));
 
@@ -69,10 +61,9 @@ public class CounseleeConsentController {
     @DeleteMapping
     @Operation(summary = "내담자 개인정보 수집 동의 여부 삭제")
     public ResponseEntity<CommonRes<DeleteCounseleeConsentRes>> deleteCounseleeConsent(
-            @AuthenticationPrincipal UserDetails userDetails
-            ,@RequestBody @Valid DeleteCounseleeConsentReq deleteCounseleeConsentReq) throws RuntimeException {
+           @RequestBody @Valid DeleteCounseleeConsentReq deleteCounseleeConsentReq){
 
-        DeleteCounseleeConsentRes deleteCounseleeConsentRes = counseleeConsentService.deleteCounseleeConsent(userDetails.getUsername(),deleteCounseleeConsentReq);
+        DeleteCounseleeConsentRes deleteCounseleeConsentRes = counseleeConsentService.deleteCounseleeConsent(deleteCounseleeConsentReq);
 
         return ResponseEntity.ok(new CommonRes<>(deleteCounseleeConsentRes));
 

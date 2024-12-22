@@ -22,7 +22,7 @@ public class CounseleeConsentService {
     private final EntityManager entityManager;
 
 
-    public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String id, String counselSessionId, String counseleeId)
+    public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId, String counseleeId)
     {
 
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findByCounselSessionIdAndCounseleeId(counselSessionId,counseleeId)
@@ -42,7 +42,7 @@ public class CounseleeConsentService {
     }
 
     @Transactional
-    public AddCounseleeConsentRes addCounseleeConsent(String id, AddCounseleeConsentReq addCounseleeConsentReq) throws RuntimeException
+    public AddCounseleeConsentRes addCounseleeConsent(AddCounseleeConsentReq addCounseleeConsentReq)
     {
         CounselSession proxyCounselSession = entityManager.getReference(CounselSession.class, addCounseleeConsentReq.getCounselSessionId());
         Counselee proxyCounselee = entityManager.getReference(Counselee.class, addCounseleeConsentReq.getCounseleeId());
@@ -63,7 +63,7 @@ public class CounseleeConsentService {
 
 
     @Transactional
-    public UpdateCounseleeConsentRes updateCounseleeConsent(String id, UpdateCounseleeConsentReq updateCounseleeConsentReq)
+    public UpdateCounseleeConsentRes updateCounseleeConsent(UpdateCounseleeConsentReq updateCounseleeConsentReq)
     {
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(updateCounseleeConsentReq.getCounseleeConsentId())
                 .orElseThrow(NoContentException::new);
@@ -76,7 +76,7 @@ public class CounseleeConsentService {
     }
 
     @Transactional
-    public DeleteCounseleeConsentRes deleteCounseleeConsent(String id, DeleteCounseleeConsentReq deleteCounseleeConsentReq){
+    public DeleteCounseleeConsentRes deleteCounseleeConsent(DeleteCounseleeConsentReq deleteCounseleeConsentReq){
 
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(deleteCounseleeConsentReq.getCounseleeConsentId())
                 .orElseThrow(NoContentException::new);
