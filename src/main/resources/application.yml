@@ -4,7 +4,11 @@ spring:
       client:
         provider:
           keycloak:
-            issuer-uri: https://caringnote.co.kr/keycloak/auth/realms/caringnote
+            issuer-uri: https://caringnote.co.kr/keycloak/realms/caringnote
+            authorization-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/auth
+            token-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/token
+            user-info-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/userinfo
+            jwk-set-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/certs
             user-name-attribute: preferred_username
         registration:
           keycloak:
@@ -12,9 +16,12 @@ spring:
             client-secret: OPV3ZncOKzLWqvY8jjnNgH8xEHsj6ulH
             client-name: localhost
             scope: openid,profile,email
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
         resourceserver:
           jwt:
-            jwk-set-uri: https://caringnote.co.kr/keycloak/auth/realms/caringnote
+            issuer-uri: https://caringnote.co.kr/keycloak/realms/caringnote
+            jwk-set-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/certs
   config:
     import: optional:application-secret.yml
   docker:
