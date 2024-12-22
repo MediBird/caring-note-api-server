@@ -39,8 +39,7 @@ public class CounselCardServiceTest {
 
         List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListResListByInformationNameAndInformationItemName
                 = counselCardService.selectPreviousItemListByInformationNameAndItemName(
-                        counselorId
-                ,counselSessionId
+                 counselSessionId
                 ,informationName
                 ,informationItemName
         );
