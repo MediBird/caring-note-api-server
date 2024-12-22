@@ -13,8 +13,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -36,11 +34,10 @@ public class CounselSessionController {
     @Operation(summary = "상담세션(일정) 추가",tags = {"관리자 화면"})
     @PostMapping
     @RoleSecured(RoleType.ROLE_ADMIN)
-    public ResponseEntity<CommonRes<AddCounselSessionRes>> addCounselSession(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestBody @Valid AddCounselSessionReq addCounselSessionReq) {
+    public ResponseEntity<CommonRes<AddCounselSessionRes>> addCounselSession(@RequestBody @Valid AddCounselSessionReq addCounselSessionReq) {
 
         AddCounselSessionRes addCounselSessionRes = counselSessionService
-                .addCounselSession(userDetails.getUsername(), addCounselSessionReq);
+                .addCounselSession(addCounselSessionReq);
 
         CommonRes<AddCounselSessionRes> commonRes = new CommonRes<>(addCounselSessionRes);
         return ResponseEntity.ok(commonRes);
@@ -49,8 +46,8 @@ public class CounselSessionController {
 
     @GetMapping("/list")
     @Operation(summary = "상담일정 목록 조회", tags = {"로그인/홈"})
-    public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionListByBaseDateAndCursorAndSize(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestParam(required = false) LocalDate baseDate
+    public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionListByBaseDateAndCursorAndSize(
+            @RequestParam(required = false) LocalDate baseDate
             , @RequestParam(required = false) String cursor
             , @RequestParam(defaultValue = "15") int size)  {
 
@@ -62,10 +59,8 @@ public class CounselSessionController {
                 .size(size)
                 .build();
 
-        RoleType roleType = authUtil.getRoleType(userDetails);
-
         SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSizeRes = counselSessionService
-                .selectCounselSessionListByBaseDateAndCursorAndSize(userDetails.getUsername(),roleType, selectCounselSessionListByBaseDateAndCursorAndSizeReq);
+                .selectCounselSessionListByBaseDateAndCursorAndSize(selectCounselSessionListByBaseDateAndCursorAndSizeReq);
 
         return ResponseEntity.ok(new CommonCursorRes<>(
                 selectCounselSessionListByBaseDateAndCursorAndSizeRes.sessionListItems(), selectCounselSessionListByBaseDateAndCursorAndSizeRes.nextCursor(), selectCounselSessionListByBaseDateAndCursorAndSizeRes.hasNext()
@@ -75,8 +70,7 @@ public class CounselSessionController {
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담일정 조회", tags = {"관리자 화면"})
-    public ResponseEntity<CommonRes<SelectCounselSessionRes>> selectCounselSession(@AuthenticationPrincipal UserDetails userDetails,
-                                                                        @PathVariable  String counselSessionId) {
+    public ResponseEntity<CommonRes<SelectCounselSessionRes>> selectCounselSession(@PathVariable  String counselSessionId) {
 
         SelectCounselSessionRes selectCounselSessionRes = counselSessionService.selectCounselSession(counselSessionId);
 
@@ -88,8 +82,7 @@ public class CounselSessionController {
     @PutMapping
     @Operation(summary = "상담일정 수정", tags = {"관리자 화면"})
     @RoleSecured(RoleType.ROLE_ADMIN)
-    public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateCounselSession(@AuthenticationPrincipal UserDetails userDetails
-            ,@RequestBody @Valid UpdateCounselSessionReq updateCounselSessionReq) {
+    public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateCounselSession(@RequestBody @Valid UpdateCounselSessionReq updateCounselSessionReq) {
 
         UpdateCounselSessionRes updateCounselSessionRes = counselSessionService.updateCounselSession(updateCounselSessionReq);
 
@@ -100,8 +93,7 @@ public class CounselSessionController {
     @DeleteMapping
     @Operation(summary = "상담일정 삭제", tags = {"관리자 화면"})
     @RoleSecured(RoleType.ROLE_ADMIN)
-    public ResponseEntity<CommonRes<DeleteCounselSessionRes>> deleteCounselSession(@AuthenticationPrincipal UserDetails userDetails
-            ,@RequestBody @Valid DeleteCounselSessionReq deleteCounselSessionReq) {
+    public ResponseEntity<CommonRes<DeleteCounselSessionRes>> deleteCounselSession(@RequestBody @Valid DeleteCounselSessionReq deleteCounselSessionReq) {
 
         DeleteCounselSessionRes deleteCounselSessionRes = counselSessionService.deleteCounselSessionRes(deleteCounselSessionReq);
         return ResponseEntity.ok(new CommonRes<>(deleteCounselSessionRes));
@@ -111,11 +103,11 @@ public class CounselSessionController {
     @GetMapping("/{counselSessionId}/previous/list")
     @Operation(summary = "이전 상담 내역 조회", tags = {"본상담 - 이전 상담 내역"})
     @RoleSecured(RoleType.ROLE_ADMIN)
-    public ResponseEntity<CommonRes<List<SelectPreviousCounselSessionListRes>>> selectPreviousCounselSessionList(@AuthenticationPrincipal UserDetails userDetails
-            , @PathVariable("counselSessionId")String counselSessionId) {
+    public ResponseEntity<CommonRes<List<SelectPreviousCounselSessionListRes>>> selectPreviousCounselSessionList(
+            @PathVariable("counselSessionId")String counselSessionId) {
 
         List<SelectPreviousCounselSessionListRes> selectPreviousListByCounselSessionIdResList
-                = counselSessionService.selectPreviousCounselSessionList(userDetails.getUsername(),counselSessionId);
+                = counselSessionService.selectPreviousCounselSessionList(counselSessionId);
 
 
         return ResponseEntity.ok(new CommonRes<>(selectPreviousListByCounselSessionIdResList));

@@ -8,8 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,20 +25,18 @@ public class CounselCardController {
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성","본상담 - 상담 카드"})
-    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@AuthenticationPrincipal UserDetails userDetails
-            , @PathVariable String counselSessionId) {
+    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@PathVariable String counselSessionId) {
 
-        SelectCounselCardRes selectCounselCardRes = counselCardService.selectCounselCard(userDetails.getUsername(), counselSessionId);
+        SelectCounselCardRes selectCounselCardRes = counselCardService.selectCounselCard(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectCounselCardRes));
     }
 
     @GetMapping("/{counselSessionId}/previous")
     @Operation(summary = "이전 상담 카드 조회",tags = {"상담 카드 작성"})
-    ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@AuthenticationPrincipal UserDetails userDetails
-            , @PathVariable String counselSessionId) {
+    ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@PathVariable String counselSessionId) {
 
-        SelectPreviousCounselCardRes selectPreviousCounselCardRes = counselCardService.selectPreviousCounselCard(userDetails.getUsername(), counselSessionId);
+        SelectPreviousCounselCardRes selectPreviousCounselCardRes = counselCardService.selectPreviousCounselCard(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectPreviousCounselCardRes));
     }
@@ -48,10 +44,9 @@ public class CounselCardController {
 
     @PostMapping
     @Operation(summary = "상담 카드 등록",tags = {"상담 카드 작성"})
-    ResponseEntity<CommonRes<AddCounselCardRes>> addCounselCard(@AuthenticationPrincipal UserDetails userDetails
-                                                                    , @RequestBody @Valid AddCounselCardReq addCounselCardReq) {
+    ResponseEntity<CommonRes<AddCounselCardRes>> addCounselCard(@RequestBody @Valid AddCounselCardReq addCounselCardReq) {
 
-        AddCounselCardRes addCounselCardRes = counselCardService.addCounselCard(userDetails.getUsername(), addCounselCardReq);
+        AddCounselCardRes addCounselCardRes = counselCardService.addCounselCard(addCounselCardReq);
 
 
         return ResponseEntity.ok(new CommonRes<>(addCounselCardRes));
@@ -59,10 +54,9 @@ public class CounselCardController {
 
     @PutMapping
     @Operation(summary = "상담 카드 수정",tags = {"상담 카드 작성"})
-    ResponseEntity<CommonRes<UpdateCounselCardRes>> updateCounselCard(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestBody @Valid UpdateCounselCardReq updateCounselCardReq) {
+    ResponseEntity<CommonRes<UpdateCounselCardRes>> updateCounselCard(@RequestBody @Valid UpdateCounselCardReq updateCounselCardReq) {
 
-        UpdateCounselCardRes updateCounselCardRes = counselCardService.updateCounselCard(userDetails.getUsername(), updateCounselCardReq);
+        UpdateCounselCardRes updateCounselCardRes = counselCardService.updateCounselCard(updateCounselCardReq);
 
 
         return ResponseEntity.ok(new CommonRes<>(updateCounselCardRes));
@@ -70,10 +64,9 @@ public class CounselCardController {
 
     @DeleteMapping
     @Operation(summary = "상담 카드 삭제")
-    ResponseEntity<CommonRes<DeleteCounselCardRes>> deleteCounselCard(@AuthenticationPrincipal UserDetails userDetails
-            , @RequestBody @Valid DeleteCounselCardReq deleteCounselCardReq) {
+    ResponseEntity<CommonRes<DeleteCounselCardRes>> deleteCounselCard(@RequestBody @Valid DeleteCounselCardReq deleteCounselCardReq) {
 
-        DeleteCounselCardRes deleteCounselCardRes = counselCardService.deleteCounselCard(userDetails.getUsername(), deleteCounselCardReq);
+        DeleteCounselCardRes deleteCounselCardRes = counselCardService.deleteCounselCard(deleteCounselCardReq);
 
         return ResponseEntity.ok(new CommonRes<>(deleteCounselCardRes));
     }
@@ -81,15 +74,14 @@ public class CounselCardController {
     @GetMapping("/{counselSessionId}/preious/item/list")
     @Operation(summary = "이전 상담 카드 item 목록 조회",tags = {"본상담 - 상담 카드"})
     ResponseEntity<CommonRes<List<SelectPreviousItemListByInformationNameAndItemNameRes>>> selectPreviousItemListByInformationNameAndItemName(
-            @AuthenticationPrincipal UserDetails userDetails
-            ,@PathVariable String counselSessionId
+            @PathVariable String counselSessionId
             ,@RequestParam(required = true) String informationName
             ,@RequestParam(required = true) String itemName
     ){
 
         List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListResListByInformationNameAndInformationItemName = counselCardService
-                .selectPreviousItemListByInformationNameAndItemName(userDetails.getUsername()
-                        , counselSessionId
+                .selectPreviousItemListByInformationNameAndItemName(
+                        counselSessionId
                         , informationName
                         , itemName);
 

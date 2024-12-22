@@ -23,7 +23,7 @@ public class MedicationCounselService {
     private final CounselSessionRepository counselSessionRepository;
 
 
-    public AddMedicationCounselRes addMedicationCounsel(String id, AddMedicationCounselReq addMedicationCounselReq){
+    public AddMedicationCounselRes addMedicationCounsel(AddMedicationCounselReq addMedicationCounselReq){
 
         CounselSession counselSession = counselSessionRepository.findById(addMedicationCounselReq.getCounselSessionId())
                 .orElseThrow(NoContentException::new);
@@ -40,7 +40,7 @@ public class MedicationCounselService {
         return new AddMedicationCounselRes(savedMedicationCounsel.getId());
     }
 
-    public SelectMedicationCounselRes selectMedicationCounsel(String id, String counselSessionId){
+    public SelectMedicationCounselRes selectMedicationCounsel(String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -57,7 +57,7 @@ public class MedicationCounselService {
         );
     }
 
-    public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String id, String counselSessionId){
+    public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -88,7 +88,7 @@ public class MedicationCounselService {
     }
 
     @Transactional
-    public UpdateMedicationCounselRes updateMedicationCounsel(String id, UpdateMedicationCounselReq updateMedicationCounselReq){
+    public UpdateMedicationCounselRes updateMedicationCounsel(UpdateMedicationCounselReq updateMedicationCounselReq){
 
         MedicationCounsel medicationCounsel = medicationCounselRepository.findById(updateMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);
@@ -101,7 +101,7 @@ public class MedicationCounselService {
     }
 
     @Transactional
-    public DeleteMedicationCounselRes deleteMedicationCounsel(String id, DeleteMedicationCounselReq deleteMedicationCounselReq){
+    public DeleteMedicationCounselRes deleteMedicationCounsel(DeleteMedicationCounselReq deleteMedicationCounselReq){
 
         MedicationCounsel medicationCounsel = medicationCounselRepository.findById(deleteMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);

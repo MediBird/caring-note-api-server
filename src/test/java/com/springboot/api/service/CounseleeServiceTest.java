@@ -34,8 +34,7 @@ public class CounseleeServiceTest {
         String counseleeId ="TEST-COUNSELEE-01";
 
         SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes =  counseleeService.selectCounseleeBaseInformationByCounseleeId(
-                counselorId
-                ,counselSessionId
+                counselSessionId
                 ,counseleeId
         );
 
