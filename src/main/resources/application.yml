@@ -1,4 +1,20 @@
 spring:
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: https://caringnote.co.kr/keycloak/auth/realms/caringnote
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: localhost
+            client-secret: OPV3ZncOKzLWqvY8jjnNgH8xEHsj6ulH
+            client-name: localhost
+            scope: openid,profile,email
+        resourceserver:
+          jwt:
+            jwk-set-uri: https://caringnote.co.kr/keycloak/auth/realms/caringnote
   config:
     import: optional:application-secret.yml
   docker:
