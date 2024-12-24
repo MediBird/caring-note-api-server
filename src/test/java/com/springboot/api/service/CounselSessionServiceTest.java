@@ -6,6 +6,7 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.CounselorRepository;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,13 +41,20 @@ class CounselSessionServiceTest {
     private CounselSessionRepository sessionRepository;
 
     @MockBean
+    private CounselorRepository counselorRepository;
+
+    @MockBean
     private EntityManager entityManager;
 
     @MockBean
     private DateTimeUtil dateTimeUtil;
 
     private Counselor mockCounselor;
+
+    private Counselor mockCounselor2;
+
     private Counselee mockCounselee;
+
     private CounselSession mockCounselSession;
 
     @BeforeEach
@@ -54,6 +62,10 @@ class CounselSessionServiceTest {
         mockCounselor = new Counselor();
         mockCounselor.setId("counselor-1");
         mockCounselor.setName("Test Counselor");
+
+        mockCounselor2 = new Counselor();
+        mockCounselor2.setId("counselor-2");
+        mockCounselor2.setName("Test Counselor2");
 
         mockCounselee = new Counselee();
         mockCounselee.setId("counselee-1");
@@ -155,5 +167,29 @@ class CounselSessionServiceTest {
         assertNotNull(res);
         assertEquals("session-1", res.deletedCounselSessionId());
         verify(sessionRepository, times(1)).deleteById("session-1");
+    }
+
+    @Test
+    void updateCounselorInCounselSession() {
+
+        String userId ="counselor-2";
+        UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq
+                = UpdateCounselorInCounselSessionReq.builder()
+                .counselSessionId("session-1")
+                .build();
+
+
+        // Setting mock behaviors
+        when(sessionRepository.findById(anyString())).thenReturn(Optional.of(mockCounselSession));
+        when(counselorRepository.findById(anyString())).thenReturn(Optional.of(mockCounselor2));
+
+        // Act
+        UpdateCounselorInCounselSessionRes response = service.updateCounselorInCounselSession(userId, updateCounselorInCounselSessionReq);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals("session-1", response.updatedCounselSessionId());
+
+
     }
 }
