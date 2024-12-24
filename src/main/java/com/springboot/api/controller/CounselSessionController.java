@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -87,6 +89,22 @@ public class CounselSessionController {
         UpdateCounselSessionRes updateCounselSessionRes = counselSessionService.updateCounselSession(updateCounselSessionReq);
 
         return ResponseEntity.ok(new CommonRes<>(updateCounselSessionRes));
+    }
+
+    @PutMapping("/counselor")
+    @Operation(summary = "상담일정 담당 약사 수정",tags = {"로그인/홈"}
+    ,description = "req body에 counselorId 넣지 않은 경우 로그인 계정 정보로 할당됨. ")
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    public ResponseEntity<CommonRes<UpdateCounselorInCounselSessionRes>>updateCounselorInCounselSession(
+            @AuthenticationPrincipal UserDetails userDetails
+            ,@RequestBody @Valid UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq
+    ){
+
+        UpdateCounselorInCounselSessionRes updateCounselorInCounselSessionRes = counselSessionService
+                .updateCounselorInCounselSession(userDetails.getUsername(), updateCounselorInCounselSessionReq);
+
+        return ResponseEntity.ok(new CommonRes<>(updateCounselorInCounselSessionRes));
+
     }
 
 

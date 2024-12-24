@@ -9,10 +9,12 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.CounselorRepository;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ public class CounselSessionService {
     private final CounselSessionRepository sessionRepository;
     private final EntityManager entityManager;
     private final DateTimeUtil dateTimeUtil;
+    private final CounselSessionRepository counselSessionRepository;
+    private final CounselorRepository counselorRepository;
 
 
     @Transactional
@@ -148,6 +152,27 @@ public class CounselSessionService {
 
 
         return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
+    }
+
+    @Transactional
+    public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(String userId
+            , UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq)
+    {
+        CounselSession counselSession = counselSessionRepository
+                .findById(updateCounselorInCounselSessionReq.counselSessionId())
+                .orElseThrow(NoContentException::new);
+
+        String counselorId = updateCounselorInCounselSessionReq.counselorId();
+        if(StringUtils.isBlank(counselorId))
+        {
+            counselorId = userId;
+        }
+        Counselor counselor = counselorRepository.findById(counselorId)
+                .orElseThrow(NoContentException::new);
+
+        counselSession.setCounselor(counselor);
+
+        return new UpdateCounselorInCounselSessionRes(counselSession.getId());
     }
 
     @Transactional
