@@ -24,12 +24,11 @@ public class CounseleeController {
 
     @GetMapping("/{counselSessionId}/base/information")
     @Operation(summary = "내담자 기본 정보 조회",tags = {"상담 카드 작성","상담 노트"})
-    public ResponseEntity<CommonRes<SelectCounseleeBaseInformationByCounseleeIdRes>> selectCounseleeBaseInformationByCounseleeId(
-            @PathVariable("counselSessionId") String counselSessionId
-            , @RequestParam String counseleeId) {
+    public ResponseEntity<CommonRes<SelectCounseleeBaseInformationByCounseleeIdRes>> selectCounseleeBaseInformation(
+            @PathVariable("counselSessionId") String counselSessionId) {
 
         SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes = counseleeService
-                .selectCounseleeBaseInformationByCounseleeId( counselSessionId, counseleeId);
+                .selectCounseleeBaseInformation( counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectCounseleeBaseInformationByCounseleeIdRes));
     }
