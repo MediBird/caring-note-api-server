@@ -107,6 +107,19 @@ public class CounselSessionController {
 
     }
 
+    @PutMapping("/status")
+    @Operation(summary = "상담 상태 수정",tags = {"로그인/홈"})
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    public ResponseEntity<CommonRes<UpdateStatusInCounselSessionRes>>updateStatusInCounselSession(
+            @RequestBody @Valid UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq
+    ){
+        UpdateStatusInCounselSessionRes updateStatusInCounselSessionRes = counselSessionService
+                .updateStatusInCounselSession(updateStatusInCounselSessionReq);
+
+        return ResponseEntity.ok(new CommonRes<>(updateStatusInCounselSessionRes));
+
+    }
+
 
     @DeleteMapping
     @Operation(summary = "상담일정 삭제", tags = {"관리자 화면"})

@@ -181,6 +181,19 @@ public class CounselSessionService {
     }
 
     @Transactional
+    public UpdateStatusInCounselSessionRes updateStatusInCounselSession(UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq)
+    {
+
+        CounselSession counselSession = counselSessionRepository
+                .findById(updateStatusInCounselSessionReq.counselSessionId())
+                .orElseThrow(NoContentException::new);
+
+        counselSession.setStatus(updateStatusInCounselSessionReq.status());
+
+        return new UpdateStatusInCounselSessionRes(counselSession.getId());
+    }
+
+    @Transactional
     public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq)
     {
 
