@@ -192,4 +192,26 @@ class CounselSessionServiceTest {
 
 
     }
+
+    @Test
+    void updateStatusInCounselSession() {
+
+        UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq
+                = UpdateStatusInCounselSessionReq.builder()
+                .counselSessionId("session-1")
+                .status(ScheduleStatus.CANCELED)
+                .build();
+
+        // Setting mock behaviors
+        when(sessionRepository.findById(anyString())).thenReturn(Optional.of(mockCounselSession));
+
+        // Act
+        UpdateStatusInCounselSessionRes response = service.updateStatusInCounselSession(updateStatusInCounselSessionReq);
+
+        // Assert
+        assertNotNull(response);
+        assertEquals("session-1", response.updatedCounselSessionId());
+
+
+    }
 }
