@@ -128,6 +128,7 @@ public class CounselSessionService {
                             .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
                             .counselSessionId(s.getId())
                             .isCounselorAssign(Optional.ofNullable(s.getCounselor()).isPresent())
+                            .status(s.getStatus())
                             .cardRecordStatus(Optional.ofNullable(s.getCounselCard())
                                     .map(CounselCard::getCardRecordStatus)
                                     .orElse(CardRecordStatus.UNRECORDED))
