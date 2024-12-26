@@ -29,13 +29,10 @@ public class CounseleeServiceTest {
     })
     public void selectByCounselSessionId() {
 
-        String counselorId = "TEST-COUNSELOR-01";
         String counselSessionId ="TEST-COUNSEL-SESSION-01";
-        String counseleeId ="TEST-COUNSELEE-01";
 
-        SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes =  counseleeService.selectCounseleeBaseInformationByCounseleeId(
+        SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes =  counseleeService.selectCounseleeBaseInformation(
                 counselSessionId
-                ,counseleeId
         );
 
         log.debug(selectCounseleeBaseInformationByCounseleeIdRes.toString());

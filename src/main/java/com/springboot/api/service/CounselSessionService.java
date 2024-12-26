@@ -3,16 +3,16 @@ package com.springboot.api.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
-import com.springboot.api.domain.BaseEntity;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.domain.Counselor;
+import com.springboot.api.domain.*;
 import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.CounselorRepository;
+import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,6 +29,8 @@ public class CounselSessionService {
     private final CounselSessionRepository sessionRepository;
     private final EntityManager entityManager;
     private final DateTimeUtil dateTimeUtil;
+    private final CounselSessionRepository counselSessionRepository;
+    private final CounselorRepository counselorRepository;
 
 
     @Transactional
@@ -110,19 +112,26 @@ public class CounselSessionService {
 
             List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
                     .map(s-> SelectCounselSessionListItem.builder()
+                            .counseleeId(Optional.ofNullable(s.getCounselee())
+                                    .map(BaseEntity::getId)
+                                    .orElse(""))
                             .counselorName(Optional.ofNullable(s.getCounselor())
                                     .map(Counselor::getName)
                                     .orElse(""))
-                            .counseleeId(Optional.ofNullable(s.getCounselee())
-                                    .map(BaseEntity::getId)
+                            .counselorId(Optional.ofNullable(s.getCounselor())
+                                    .map(Counselor::getId)
                                     .orElse(""))
                             .counseleeName(Optional.ofNullable(s.getCounselee())
                                     .map(Counselee::getName)
                                     .orElse(""))
-                            .isShardCaringMessage(false)
                             .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
                             .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
                             .counselSessionId(s.getId())
+                            .isCounselorAssign(Optional.ofNullable(s.getCounselor()).isPresent())
+                            .status(s.getStatus())
+                            .cardRecordStatus(Optional.ofNullable(s.getCounselCard())
+                                    .map(CounselCard::getCardRecordStatus)
+                                    .orElse(CardRecordStatus.UNRECORDED))
                             .build())
                     .toList();
 
@@ -148,6 +157,40 @@ public class CounselSessionService {
 
 
         return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
+    }
+
+    @Transactional
+    public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(String userId
+            , UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq)
+    {
+        CounselSession counselSession = counselSessionRepository
+                .findById(updateCounselorInCounselSessionReq.counselSessionId())
+                .orElseThrow(NoContentException::new);
+
+        String counselorId = updateCounselorInCounselSessionReq.counselorId();
+        if(StringUtils.isBlank(counselorId))
+        {
+            counselorId = userId;
+        }
+        Counselor counselor = counselorRepository.findById(counselorId)
+                .orElseThrow(NoContentException::new);
+
+        counselSession.setCounselor(counselor);
+
+        return new UpdateCounselorInCounselSessionRes(counselSession.getId());
+    }
+
+    @Transactional
+    public UpdateStatusInCounselSessionRes updateStatusInCounselSession(UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq)
+    {
+
+        CounselSession counselSession = counselSessionRepository
+                .findById(updateStatusInCounselSessionReq.counselSessionId())
+                .orElseThrow(NoContentException::new);
+
+        counselSession.setStatus(updateStatusInCounselSessionReq.status());
+
+        return new UpdateStatusInCounselSessionRes(counselSession.getId());
     }
 
     @Transactional

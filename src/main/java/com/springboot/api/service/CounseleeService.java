@@ -28,24 +28,20 @@ public class CounseleeService {
     public final DateTimeUtil dateTimeUtil;
 
 
-    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeId(String counselSessionId,
-                                                                                   String counseleeId){
+    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId){
 
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
 
-        Counselee counseleeInSession = Optional.ofNullable(counselSession.getCounselee())
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
 
-        Counselee counselee = counseleeRepository.findById(counseleeId)
-                .filter(c -> c.getId().equals(counseleeInSession.getId()))
-                .orElseThrow(NoContentException::new);
 
         CounselCard currentCounselCard = counselSession.getCounselCard();
 
         CounselCard targetCounselCard = (currentCounselCard == null || currentCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDING))
-                ? getPreviousCounselCard(counseleeId, counselSession.getScheduledStartDateTime())
+                ? getPreviousCounselCard(counselee.getId(), counselSession.getScheduledStartDateTime())
                 : currentCounselCard;
 
         List<String> diseases = new ArrayList<>();
