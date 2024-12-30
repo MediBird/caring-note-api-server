@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.config.JpaTestAdditionalConfig;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
+import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
@@ -19,13 +22,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Import(JpaTestAdditionalConfig.class)
 class CounselCardRepositoryTest {
 
+    private static final Logger log = LoggerFactory.getLogger(CounselCardRepositoryTest.class);
     @Autowired
     private CounselCardRepository counselCardRepository;
 
     @Autowired
     private CounselSessionRepository counselSessionRepository;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("Should save a CounselCard successfully")
@@ -38,13 +43,13 @@ class CounselCardRepositoryTest {
                 .counselSession(counselSession)
                 .baseInformation(objectMapper.readTree("""
                         {
-                 "version": 1.0,
+                 "version": "1.0",
                  "baseInfo": {
                      "counseleeId": "string",
                      "name": "김늘픔",
-                     "birthDate": "YYYY-MM-DD",
+                     "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "YYYY-MM-DD"
+                     "lastCounselDate": "2024-12-20"
                  },
                  "counselPurposeAndMomo": {
                      "counselPurpose": "약물 부작용 상담",
@@ -145,11 +150,11 @@ class CounselCardRepositoryTest {
                  "baseInfo": {
                      "counseleeId": "string",
                      "name": "김늘픔",
-                     "birthDate": "YYYY-MM-DD",
+                     "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "YYYY-MM-DD"
+                     "lastCounselDate": "2024-12-20"
                  },
-                 "counselPurposeAndMomo": {
+                 "counselPurposeAndNote": {
                      "counselPurpose": "약물 부작용 상담",
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
@@ -166,6 +171,10 @@ class CounselCardRepositoryTest {
         // Then
         assertThat(foundCounselCard).isPresent();
         assertThat(foundCounselCard.get().getBaseInformation().get("baseInfo").get("name").asText()).isEqualTo("김늘픔");
+
+        BaseInformationDTO baseInformationDTO = objectMapper.treeToValue(foundCounselCard.get().getBaseInformation(), BaseInformationDTO.class);
+        log.debug(baseInformationDTO.toString());
+
     }
 
     @Test

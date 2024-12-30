@@ -1,11 +1,14 @@
 package com.springboot.api.common.exception.handler;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.dto.ErrorRes;
+import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.common.message.HttpMessages;
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -54,6 +57,19 @@ public class GlobalExceptionHandler extends CommonHandler {
     public ErrorRes handleEntityExistsException(EntityExistsException ex) {
         return buildErrorResponse(HttpMessages.CONFLICT_DUPLICATE);
     }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorRes handleJsonProcessingException(JsonProcessingException ex) {
+        return buildErrorResponse(ExceptionMessages.FAIL_JSON_CONVERT);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorRes handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return buildErrorResponse(HttpMessages.BAD_REQUEST);
+    }
+
 
     // 500 - 서버 에러 처리
     @ExceptionHandler(Exception.class)

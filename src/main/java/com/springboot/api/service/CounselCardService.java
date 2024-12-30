@@ -1,11 +1,17 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselcard.*;
+import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
+import com.springboot.api.dto.counselcard.information.health.HealthInformationDTO;
+import com.springboot.api.dto.counselcard.information.independentlife.IndependentLifeInformationDTO;
+import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
 import com.springboot.api.repository.CounselCardRepository;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.enums.ScheduleStatus;
@@ -28,9 +34,10 @@ public class CounselCardService {
     private final CounselCardRepository counselCardRepository;
     private final CounselSessionRepository counselSessionRepository;
     private final EntityManager entityManager;
+    private final ObjectMapper objectMapper;
 
 
-    public SelectCounselCardRes selectCounselCard(String counselSessionId){
+    public SelectCounselCardRes selectCounselCard(String counselSessionId) throws JsonProcessingException{
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -38,17 +45,16 @@ public class CounselCardService {
         CounselCard counselCard = Optional.ofNullable(counselSession.getCounselCard())
                 .orElseThrow(NoContentException::new);
 
-
         return new SelectCounselCardRes(counselCard.getId()
-                ,counselCard.getBaseInformation()
-                ,counselCard.getHealthInformation()
-                ,counselCard.getLivingInformation()
-                ,counselCard.getIndependentLifeInformation()
+                ,objectMapper.treeToValue(counselCard.getBaseInformation(), BaseInformationDTO.class)
+                ,objectMapper.treeToValue(counselCard.getHealthInformation(), HealthInformationDTO.class)
+                ,objectMapper.treeToValue(counselCard.getLivingInformation(), LivingInformationDTO.class)
+                ,objectMapper.treeToValue(counselCard.getIndependentLifeInformation(), IndependentLifeInformationDTO.class)
                 ,counselCard.getCardRecordStatus()
         );
     }
 
-    public SelectPreviousCounselCardRes selectPreviousCounselCard(String counselSessionId){
+    public SelectPreviousCounselCardRes selectPreviousCounselCard(String counselSessionId) throws JsonProcessingException{
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(NoContentException::new);
@@ -68,10 +74,11 @@ public class CounselCardService {
                 .orElseThrow(NoContentException::new);
 
 
-        return new SelectPreviousCounselCardRes(previousCounselCard.getBaseInformation()
-                ,previousCounselCard.getHealthInformation()
-                ,previousCounselCard.getLivingInformation()
-                ,previousCounselCard.getIndependentLifeInformation()
+        return new SelectPreviousCounselCardRes(
+                objectMapper.treeToValue(previousCounselCard.getBaseInformation(), BaseInformationDTO.class)
+                ,objectMapper.treeToValue(previousCounselCard.getHealthInformation(), HealthInformationDTO.class)
+                ,objectMapper.treeToValue(previousCounselCard.getLivingInformation(), LivingInformationDTO.class)
+                ,objectMapper.treeToValue(previousCounselCard.getIndependentLifeInformation(), IndependentLifeInformationDTO.class)
         );
     }
 
@@ -84,10 +91,10 @@ public class CounselCardService {
 
         CounselCard counselCard = CounselCard.builder()
                 .counselSession(counselSessionProxy)
-                .baseInformation(addCounselCardReq.getBaseInformation())
-                .healthInformation(addCounselCardReq.getHealthInformation())
-                .livingInformation(addCounselCardReq.getLivingInformation())
-                .independentLifeInformation(addCounselCardReq.getIndependentLifeInformation())
+                .baseInformation(objectMapper.valueToTree(addCounselCardReq.getBaseInformation()))
+                .healthInformation(objectMapper.valueToTree(addCounselCardReq.getHealthInformation()))
+                .livingInformation(objectMapper.valueToTree(addCounselCardReq.getLivingInformation()))
+                .independentLifeInformation(objectMapper.valueToTree(addCounselCardReq.getIndependentLifeInformation()))
                 .cardRecordStatus(addCounselCardReq.getCardRecordStatus())
                 .build();
 
@@ -103,10 +110,10 @@ public class CounselCardService {
         CounselCard counselCard = counselCardRepository.findById(updateCounselCardReq.getCounselCardId())
                 .orElseThrow(NoContentException::new);
 
-        counselCard.setBaseInformation(updateCounselCardReq.getBaseInformation());
-        counselCard.setHealthInformation(updateCounselCardReq.getHealthInformation());
-        counselCard.setLivingInformation(updateCounselCardReq.getLivingInformation());
-        counselCard.setIndependentLifeInformation(updateCounselCardReq.getIndependentLifeInformation());
+        counselCard.setBaseInformation(objectMapper.valueToTree(updateCounselCardReq.getBaseInformation()));
+        counselCard.setHealthInformation(objectMapper.valueToTree(updateCounselCardReq.getHealthInformation()));
+        counselCard.setLivingInformation(objectMapper.valueToTree(updateCounselCardReq.getLivingInformation()));
+        counselCard.setIndependentLifeInformation(objectMapper.valueToTree(updateCounselCardReq.getIndependentLifeInformation()));
         counselCard.setCardRecordStatus(updateCounselCardReq.getCardRecordStatus());
 
         return new UpdateCounselCardRes(counselCard.getId());
