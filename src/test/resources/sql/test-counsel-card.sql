@@ -16,11 +16,11 @@ INSERT INTO counsel_cards (
                  "baseInfo": {
                      "counseleeId": "string",
                      "name": "김늘픔",
-                     "birthDate": "YYYY-MM-DD",
+                     "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "YYYY-MM-DD"
+                     "lastCounselDate": "2024-12-19"
                  },
-                 "counselPurposeAndMomo": {
+                 "counselPurposeAndNote": {
                      "counselPurpose": "약물 부작용 상담",
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
@@ -108,12 +108,12 @@ INSERT INTO counsel_cards (
                  "version": 1.0,
                  "baseInfo": {
                      "counseleeId": "string",
-                     "name": "김늘픔",
-                     "birthDate": "YYYY-MM-DD",
+                     "name": "김늘픔2",
+                     "birthDate": "1995-07-18",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "YYYY-MM-DD"
+                     "lastCounselDate": "2024-12-20"
                  },
-                 "counselPurposeAndMomo": {
+                 "counselPurposeAndNote": {
                      "counselPurpose": "약물 부작용 상담",
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
