@@ -1,5 +1,6 @@
 package com.springboot.api.dto.counselcard.information.base.item;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -8,7 +9,7 @@ import java.time.LocalDate;
 public record BaseInfoDTO(
         String counseleeId
         ,String name
-        , LocalDate birthDate
+        , @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
         , String counselSessionOrder
-        , LocalDate lastCounselDate
+        , @JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate
 ){}
