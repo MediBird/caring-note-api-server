@@ -1,7 +1,10 @@
 package com.springboot.api.dto.counselcard;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.annotation.ValidEnum;
+import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
+import com.springboot.api.dto.counselcard.information.health.HealthInformationDTO;
+import com.springboot.api.dto.counselcard.information.independentlife.IndependentLifeInformationDTO;
+import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
 import com.springboot.enums.CardRecordStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -15,13 +18,13 @@ public class UpdateCounselCardReq {
     @NotBlank
     private String counselCardId;
 
-    private JsonNode baseInformation;
+    private BaseInformationDTO baseInformation;
 
-    private JsonNode healthInformation;
+    private HealthInformationDTO healthInformation;
 
-    private JsonNode livingInformation;
+    private LivingInformationDTO livingInformation;
 
-    private JsonNode independentLifeInformation;
+    private IndependentLifeInformationDTO independentLifeInformation;
 
     @ValidEnum(enumClass = CardRecordStatus.class)
     @Schema(description = "상담카드기록상태(RECORDING, RECORDED", example = "RECORDING")
