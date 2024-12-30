@@ -17,10 +17,12 @@ public class JpaTestAdditionalConfig {
 
     @Bean
     public ObjectMapper objectMapper() {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.registerModule(new JavaTimeModule());  // Java 8 날짜/시간 모듈 등록
-            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);  // 타임스탬프 형식 출력 안 함
-            return objectMapper;
-        }
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());  // Java 8 날짜/시간 모듈 등록
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);  // 타임스탬프 형식 출력 안 함
+        objectMapper.enable(SerializationFeature.WRITE_ENUMS_USING_TO_STRING);  // Enum을 문자열로 직렬화
+        return objectMapper;
+    }
+
 }
 
