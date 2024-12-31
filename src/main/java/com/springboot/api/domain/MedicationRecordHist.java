@@ -1,21 +1,30 @@
 package com.springboot.api.domain;
 
+import java.time.LocalDate;
+
 import com.springboot.enums.MedicationDivision;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "medication_records_hist")
 @Data
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession","medication"})
+@Builder
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "medication"})
 @ToString(callSuper = true, exclude = {"counselSession", "medication"})
-public class MedicationRecordHist extends BaseEntity{
+public class MedicationRecordHist extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "counsel_session_id", nullable = false)
@@ -42,13 +51,8 @@ public class MedicationRecordHist extends BaseEntity{
 
     @PrePersist
     @Override
-    protected void  onCreate(){
+    protected void onCreate() {
         super.onCreate();
     }
-
-
-
-
-
 
 }

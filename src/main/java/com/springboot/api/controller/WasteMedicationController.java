@@ -3,6 +3,8 @@ package com.springboot.api.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -10,7 +12,6 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.wasteMedication.AddWasteMedicationRecordReq;
 import com.springboot.api.dto.wasteMedication.AddWasteMedicationRecordRes;
-import com.springboot.api.dto.wasteMedication.SelectMedicationRecordListBySessionIdReq;
 import com.springboot.api.dto.wasteMedication.SelectMedicationRecordListBySessionIdRes;
 import com.springboot.api.service.WasteMedicationRecordService;
 
@@ -28,13 +29,13 @@ public class WasteMedicationController {
 
     private final WasteMedicationRecordService wasteMedicationRecordService;
 
-    @PostMapping("/single")
+    @PostMapping("/")
     @Operation(summary = "폐의약품 추가", tags = {"본상담 - 폐의약품 목록"})
     public ResponseEntity<CommonRes<AddWasteMedicationRecordRes>> addWasteMedicationRecord(
             @RequestBody @Valid AddWasteMedicationRecordReq addWasteMedicationRecordReq) {
 
         AddWasteMedicationRecordRes addWasteMedicationRecordRes = wasteMedicationRecordService
-                .createWasteMedicationRecord(addWasteMedicationRecordReq);
+                .addWasteMedicationRecord(addWasteMedicationRecordReq);
 
         return ResponseEntity.ok(new CommonRes<>(addWasteMedicationRecordRes));
     }
@@ -45,7 +46,7 @@ public class WasteMedicationController {
             @RequestBody @Valid List<AddWasteMedicationRecordReq> addWasteMedicationRecordReqs) {
 
         List<AddWasteMedicationRecordRes> addWasteMedicationRecordResList = wasteMedicationRecordService
-                .createWasteMedicationRecords(addWasteMedicationRecordReqs);
+                .addWasteMedicationRecords(addWasteMedicationRecordReqs);
 
         return ResponseEntity.ok(new CommonRes<>(addWasteMedicationRecordResList));
     }
@@ -60,14 +61,13 @@ public class WasteMedicationController {
     // public ResponseEntity<CommonRes<DeleteWasteMedicationRecordRes>> deleteWasteMedicationRecord(
     //         @RequestBody @Valid DeleteWasteMedicationRecordReq deleteWasteMedicationRecordReq) {
     // }
-    @PostMapping("/list")
+    @GetMapping("/list/{counselSessionId}")
     @Operation(summary = "폐의약품 리스트 조회", tags = {"본상담 - 폐의약품 목록"})
     public ResponseEntity<CommonRes<SelectMedicationRecordListBySessionIdRes>> selectMedicationRecordListBySessionId(
-            @RequestBody @Valid SelectMedicationRecordListBySessionIdReq selectMedicationRecordListBySessionIdReq) {
+            @PathVariable @Valid String counselSessionId) {
 
         SelectMedicationRecordListBySessionIdRes selectMedicationRecordListBySessionIdRes = wasteMedicationRecordService
-                .getWasteMedicationRecord(selectMedicationRecordListBySessionIdReq.getCounselSessionId());
-
+                .getWasteMedicationRecord(counselSessionId);
         return ResponseEntity.ok(new CommonRes<>(selectMedicationRecordListBySessionIdRes));
 
     }

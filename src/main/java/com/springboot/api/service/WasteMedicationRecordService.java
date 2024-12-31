@@ -1,6 +1,5 @@
 package com.springboot.api.service;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,21 +32,14 @@ public class WasteMedicationRecordService {
     public SelectMedicationRecordListBySessionIdRes getWasteMedicationRecord(String counselSessionId) {
         List<WasteMedicationRecord> wasteMedicationRecords = wasteMedicationRecordRepository
                 .findByCounselSessionId(counselSessionId);
-        SelectMedicationRecordListBySessionIdRes selectMedicationRecordListBySessionIdRes = new SelectMedicationRecordListBySessionIdRes(wasteMedicationRecords);
-        return selectMedicationRecordListBySessionIdRes;
+        return new SelectMedicationRecordListBySessionIdRes(wasteMedicationRecords);
     }
 
     public WasteMedicationRecord getWasteMedicationRecordByCounselSessionIdAndMedicationId(String counselSessionId, String medicationId) {
         return wasteMedicationRecordRepository.findByCounselSessionIdAndMedicationId(counselSessionId, medicationId);
     }
 
-    public WasteMedicationRecord getWasteMedicationRecordByCounselSessionIdAndMedicationIdAndMedicationDate(
-            String counselSessionId, String medicationId, ZonedDateTime medicationDateTime) {
-        return wasteMedicationRecordRepository.findByCounselSessionIdAndMedicationIdAndMedicationDateTime(
-                counselSessionId, medicationId, medicationDateTime);
-    }
-
-    public AddWasteMedicationRecordRes createWasteMedicationRecord(AddWasteMedicationRecordReq addWasteMedicationRecordReq) {
+    public AddWasteMedicationRecordRes addWasteMedicationRecord(AddWasteMedicationRecordReq addWasteMedicationRecordReq) {
         CounselSession counselSession = counselSessionRepository.findById(addWasteMedicationRecordReq.getCounselSessionId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
 
@@ -64,7 +56,7 @@ public class WasteMedicationRecordService {
         return new AddWasteMedicationRecordRes(savedWasteMedicationRecord.getId());
     }
 
-    public List<AddWasteMedicationRecordRes> createWasteMedicationRecords(
+    public List<AddWasteMedicationRecordRes> addWasteMedicationRecords(
             List<AddWasteMedicationRecordReq> addWasteMedicationRecordReqs) {
         List<WasteMedicationRecord> wasteMedicationRecords = addWasteMedicationRecordReqs.stream()
                 .map(addWasteMedicationRecordReq -> WasteMedicationRecord.builder()

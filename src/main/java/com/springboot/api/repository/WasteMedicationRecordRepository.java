@@ -1,6 +1,5 @@
 package com.springboot.api.repository;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,8 +11,5 @@ public interface WasteMedicationRecordRepository extends JpaRepository<WasteMedi
     List<WasteMedicationRecord> findByCounselSessionId(String counselSessionId);
 
     WasteMedicationRecord findByCounselSessionIdAndMedicationId(String counselSessionId, String medicationId);
-
-    WasteMedicationRecord findByCounselSessionIdAndMedicationIdAndMedicationDateTime(String counselSessionId,
-            String medicationId, ZonedDateTime medicationDateTime);
 
 }

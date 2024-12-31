@@ -1,20 +1,26 @@
 package com.springboot.api.domain;
 
-import jakarta.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "medication_records")
 @Data
+@Builder
 @EqualsAndHashCode(callSuper = true, exclude = {"counselee", "medication", "prescribingCounselor"})
 @ToString(callSuper = true, exclude = {"counselee", "medication", "prescribingCounselor"})
 public class MedicationRecord extends BaseEntity {
@@ -39,7 +45,6 @@ public class MedicationRecord extends BaseEntity {
 
     private String notes;
 
-
     @NotNull
     @PastOrPresent
     private LocalDate prescriptionDate;
@@ -56,6 +61,5 @@ public class MedicationRecord extends BaseEntity {
     protected void onCreate() {
         super.onCreate();
     }
-
 
 }
