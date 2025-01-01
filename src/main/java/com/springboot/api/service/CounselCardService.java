@@ -40,7 +40,7 @@ public class CounselCardService {
     public SelectCounselCardRes selectCounselCard(String counselSessionId) throws JsonProcessingException{
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         CounselCard counselCard = Optional.ofNullable(counselSession.getCounselCard())
                 .orElseThrow(NoContentException::new);
@@ -57,7 +57,7 @@ public class CounselCardService {
     public SelectPreviousCounselCardRes selectPreviousCounselCard(String counselSessionId) throws JsonProcessingException{
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
@@ -136,7 +136,7 @@ public class CounselCardService {
             , String itemName){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
