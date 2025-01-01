@@ -13,7 +13,7 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistRes;
-import com.springboot.api.dto.medicationRecordHist.SelectMedictaionRecordHistRes;
+import com.springboot.api.dto.medicationRecordHist.SelectMedicationRecordHistRes;
 import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistRes;
 import com.springboot.api.service.MedicationRecordHistService;
@@ -58,10 +58,10 @@ public class MedicationRecordHistController {
 
     @GetMapping("/{counselSessionId}/list")
     @Operation(summary = "처방 의약품 리스트 조회", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<List<SelectMedictaionRecordHistRes>>> selectMedicationRecordListBySessionId(
+    public ResponseEntity<CommonRes<List<SelectMedicationRecordHistRes>>> selectMedicationRecordListBySessionId(
             @PathVariable("counselSessionId") String counselSessionId) {
 
-        List<SelectMedictaionRecordHistRes> selectMedicationRecordListBySessionIdRes = medicationRecordHistService
+        List<SelectMedicationRecordHistRes> selectMedicationRecordListBySessionIdRes = medicationRecordHistService
                 .selectMedicationRecordHistByCounselSessionId(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectMedicationRecordListBySessionIdRes));

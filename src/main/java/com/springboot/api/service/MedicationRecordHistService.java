@@ -12,7 +12,7 @@ import com.springboot.api.domain.Medication;
 import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistRes;
-import com.springboot.api.dto.medicationRecordHist.SelectMedictaionRecordHistRes;
+import com.springboot.api.dto.medicationRecordHist.SelectMedicationRecordHistRes;
 import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistRes;
 import com.springboot.api.repository.CounselSessionRepository;
@@ -35,11 +35,11 @@ public class MedicationRecordHistService {
         return medicationRecordHistRepository.findById(id).orElse(null);
     }
 
-    public List<SelectMedictaionRecordHistRes> selectMedicationRecordHistByCounselSessionId(String counselSessionId) {
+    public List<SelectMedicationRecordHistRes> selectMedicationRecordHistByCounselSessionId(String counselSessionId) {
         List<MedicationRecordHist> medicationRecordHists = medicationRecordHistRepository
                 .findByCounselSessionId(counselSessionId);
 
-        return medicationRecordHists.stream().map(medicationRecordHist -> new SelectMedictaionRecordHistRes(
+        return medicationRecordHists.stream().map(medicationRecordHist -> new SelectMedicationRecordHistRes(
                 medicationRecordHist.getId(),
                 medicationRecordHist.getMedication().getId(),
                 medicationRecordHist.getName(),
