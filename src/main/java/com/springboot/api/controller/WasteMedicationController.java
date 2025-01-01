@@ -42,31 +42,12 @@ public class WasteMedicationController {
         return ResponseEntity.ok(new CommonRes<>(addAndUpdateWasteMedicationRecordRes));
     }
 
-//     @PostMapping("/{counselSessionId}/batch")
-//     @Operation(summary = "폐의약품 리스트 추가", tags = {"본상담 - 폐의약품 목록"})
-//     public ResponseEntity<CommonRes<List<AddWasteMedicationRecordRes>>> addWasteMedicationRecords(
-//             @PathVariable("counselSessionId") String counselSessionId,
-//             @RequestBody @Valid List<AddWasteMedicationRecordReq> addWasteMedicationRecordReqs) {
-//         List<AddWasteMedicationRecordRes> addWasteMedicationRecordResList = wasteMedicationRecordService
-//                 .addWasteMedicationRecords(counselSessionId, addWasteMedicationRecordReqs);
-//         return ResponseEntity.ok(new CommonRes<>(addWasteMedicationRecordResList));
-//     }
-    // @PostMapping("/update")
-    // @Operation(summary = "폐의약품 수정", tags = {"본상담 - 폐의약품 목록"})
-    // public ResponseEntity<CommonRes<UpdateWasteMedicationRecordRes>> updateWasteMedicationRecord(
-    //         @RequestBody @Valid UpdateWasteMedicationRecordReq updateWasteMedicationRecordReq) {
-    // }
-    // @PostMapping("/delete")
-    // @Operation(summary = "폐의약품 삭제", tags = {"본상담 - 폐의약품 목록"})
-    // public ResponseEntity<CommonRes<DeleteWasteMedicationRecordRes>> deleteWasteMedicationRecord(
-    //         @RequestBody @Valid DeleteWasteMedicationRecordReq deleteWasteMedicationRecordReq) {
-    // }
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "폐의약품 리스트 조회", tags = {"본상담 - 폐의약품 목록"})
-    public ResponseEntity<CommonRes<SelectMedicationRecordListBySessionIdRes>> selectMedicationRecordListBySessionId(
+    public ResponseEntity<CommonRes<List<SelectMedicationRecordListBySessionIdRes>>> selectMedicationRecordListBySessionId(
             @PathVariable("counselSessionId") String counselSessionId) {
 
-        SelectMedicationRecordListBySessionIdRes selectMedicationRecordListBySessionIdRes = wasteMedicationRecordService
+        List<SelectMedicationRecordListBySessionIdRes> selectMedicationRecordListBySessionIdRes = wasteMedicationRecordService
                 .getWasteMedicationRecord(counselSessionId);
         return ResponseEntity.ok(new CommonRes<>(selectMedicationRecordListBySessionIdRes));
     }
