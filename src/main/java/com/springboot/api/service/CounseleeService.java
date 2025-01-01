@@ -32,7 +32,7 @@ public class CounseleeService {
     public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId) {
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
