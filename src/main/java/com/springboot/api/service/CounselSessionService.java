@@ -155,6 +155,11 @@ public class CounselSessionService {
                             .build())
                     .toList();
 
+        if(sessionListItems.isEmpty())
+        {
+            throw new NoContentException();
+        }
+
             return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems,nextCursorId,hasNext);
 
         }
@@ -235,8 +240,7 @@ public class CounselSessionService {
 
         List<CounselSession> previousCounselSessions = sessionRepository.findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),counselSession.getScheduledStartDateTime());
 
-
-        return previousCounselSessions
+        List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                 .stream()
                 .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
                 .map(session -> {
@@ -251,6 +255,13 @@ public class CounselSessionService {
                     );
                 })
                 .toList();
+
+        if(selectPreviousCounselSessionListResList.isEmpty())
+        {
+            throw new NoContentException();
+        }
+
+        return selectPreviousCounselSessionListResList;
 
     }
 
