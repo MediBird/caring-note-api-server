@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistReq;
@@ -29,8 +30,11 @@ public class MedicationRecordHistService {
     private final MedicationRepository medicationRepository;
 
     public List<SelectMedicationRecordHistRes> selectMedicationRecordHistByCounselSessionId(String counselSessionId) {
-        List<MedicationRecordHist> medicationRecordHists = medicationRecordHistRepository
-                .findByCounselSessionId(counselSessionId);
+        List<MedicationRecordHist> medicationRecordHists = medicationRecordHistRepository.findByCounselSessionId(counselSessionId);
+
+        if (medicationRecordHists.isEmpty()) {
+            throw new NoContentException("No medication record history found");
+        }
 
         return medicationRecordHists.stream().map(medicationRecordHist -> new SelectMedicationRecordHistRes(
                 medicationRecordHist.getId(),

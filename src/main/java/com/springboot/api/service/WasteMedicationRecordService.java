@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.WasteMedicationRecord;
 import com.springboot.api.dto.wasteMedication.AddAndUpdateWasteMedicationRecordReq;
@@ -32,6 +33,9 @@ public class WasteMedicationRecordService {
     public List<SelectMedicationRecordListBySessionIdRes> getWasteMedicationRecord(String counselSessionId) {
         List<WasteMedicationRecord> wasteMedicationRecords = wasteMedicationRecordRepository
                 .findByCounselSessionId(counselSessionId);
+        if (wasteMedicationRecords.isEmpty()) {
+            throw new NoContentException("Waste medication record not found");
+        }
         return wasteMedicationRecords.stream()
                 .map(wasteMedicationRecord -> new SelectMedicationRecordListBySessionIdRes(
                 wasteMedicationRecord.getId(),
