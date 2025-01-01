@@ -46,11 +46,6 @@ public class WasteMedicationRecordService {
                 .collect(Collectors.toList());
     }
 
-    public WasteMedicationRecord getWasteMedicationRecordByCounselSessionIdAndMedicationId(String counselSessionId,
-            String medicationId) {
-        return wasteMedicationRecordRepository.findByCounselSessionIdAndMedicationId(counselSessionId, medicationId);
-    }
-
     public List<AddAndUpdateWasteMedicationRecordRes> addAndUpdateWasteMedicationRecords(String counselSessionId,
             List<AddAndUpdateWasteMedicationRecordReq> addAndUpdateWasteMedicationRecordReqs) {
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
@@ -87,53 +82,6 @@ public class WasteMedicationRecordService {
         return wasteMedicationRecords.stream()
                 .map(savedWasteMedicationRecord -> new AddAndUpdateWasteMedicationRecordRes(savedWasteMedicationRecord.getId()))
                 .collect(Collectors.toList());
-    }
-
-    // public AddWasteMedicationRecordRes addWasteMedicationRecord(String counselSessionId, AddWasteMedicationRecordReq addWasteMedicationRecordReq) {
-    //     CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-    //             .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
-    //     Medication medication = medicationRepository.findById(addWasteMedicationRecordReq.getMedicationId())
-    //             .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID"));
-    //     WasteMedicationRecord wasteMedicationRecord = WasteMedicationRecord.builder()
-    //             .counselSession(counselSession)
-    //             .medication(medication)
-    //             .unit(addWasteMedicationRecordReq.getUnit())
-    //             .disposalReason(addWasteMedicationRecordReq.getDisposalReason())
-    //             .build();
-    //     WasteMedicationRecord savedWasteMedicationRecord = wasteMedicationRecordRepository.save(wasteMedicationRecord);
-    //     return new AddWasteMedicationRecordRes(savedWasteMedicationRecord.getId());
-    // }
-    // public List<AddWasteMedicationRecordRes> addWasteMedicationRecords(String counselSessionId,
-    //         List<AddWasteMedicationRecordReq> addWasteMedicationRecordReqs) {
-    //     CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-    //             .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
-    //     List<WasteMedicationRecord> wasteMedicationRecords = addWasteMedicationRecordReqs.stream()
-    //             .map(addWasteMedicationRecordReq -> {
-    //                 Medication medication = medicationRepository.findById(addWasteMedicationRecordReq.getMedicationId())
-    //                         .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID"));
-    //                 return WasteMedicationRecord.builder()
-    //                         .counselSession(counselSession)
-    //                         .medication(medication)
-    //                         .unit(addWasteMedicationRecordReq.getUnit())
-    //                         .disposalReason(addWasteMedicationRecordReq.getDisposalReason())
-    //                         .build();
-    //             })
-    //             .collect(Collectors.toList());
-    //     List<WasteMedicationRecord> savedWasteMedicationRecords = wasteMedicationRecordRepository.saveAll(wasteMedicationRecords);
-    //     return savedWasteMedicationRecords.stream()
-    //             .map(wasteMedicationRecord -> new AddWasteMedicationRecordRes(wasteMedicationRecord.getId()))
-    //             .collect(Collectors.toList());
-    // }
-    // public List<WasteMedicationRecord> updateWasteMedicationRecords(
-    //         List<WasteMedicationRecord> wasteMedicationRecords) {
-    //     return wasteMedicationRecordRepository.saveAll(wasteMedicationRecords);
-    // }
-    public void deleteWasteMedicationRecords(String counselSessionId, List<String> wasteMedicationRecords) {
-        wasteMedicationRecordRepository.deleteAllById(wasteMedicationRecords);
-    }
-
-    public WasteMedicationRecord updateWasteMedicationRecord(WasteMedicationRecord wasteMedicationRecord) {
-        return wasteMedicationRecordRepository.save(wasteMedicationRecord);
     }
 
     public void deleteWasteMedicationRecord(String counselSessionId, String id) {
