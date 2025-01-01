@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Medication;
 import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistRes;
@@ -40,7 +42,7 @@ public class MedicationRecordHistService {
         return medicationRecordHistRepository.save(medicationRecordHist);
     }
 
-    public void deleteMedicationRecordHist(String id) {
+    public void deleteMedicationRecordHist(String counselSessionId, String id) {
         medicationRecordHistRepository.deleteById(id);
     }
 
@@ -52,10 +54,16 @@ public class MedicationRecordHistService {
         medicationRecordHistRepository.save(medicationRecordHist);
     }
 
-    public AddMedicationRecordHistRes addMedicationRecordHist(AddMedicationRecordHistReq addMedicationRecordHistReq) {
+    public AddMedicationRecordHistRes addMedicationRecordHist(String counselSessionId, AddMedicationRecordHistReq addMedicationRecordHistReq) {
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+
+        Medication medication = medicationRepository.findById(addMedicationRecordHistReq.getMedicationId())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID"));
+
         MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
-                .counselSession(counselSessionRepository.findById(addMedicationRecordHistReq.getCounselSessionId()).orElse(null))
-                .medication(medicationRepository.findById(addMedicationRecordHistReq.getMedicationId()).orElse(null))
+                .counselSession(counselSession)
+                .medication(medication)
                 .medicationDivision(addMedicationRecordHistReq.getMedicationDivision())
                 .prescriptionDate(LocalDate.parse(addMedicationRecordHistReq.getPrescriptionDate()))
                 .prescriptionDays(addMedicationRecordHistReq.getPrescriptionDays())
@@ -66,12 +74,15 @@ public class MedicationRecordHistService {
         return new AddMedicationRecordHistRes(medicationRecordHist.getId());
     }
 
-    public List<AddMedicationRecordHistRes> addMedicationRecordHists(
+    public List<AddMedicationRecordHistRes> addMedicationRecordHists(String counselSessionId,
             List<AddMedicationRecordHistReq> addMedicationRecordHistReqs) {
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+
         List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
         for (AddMedicationRecordHistReq addMedicationRecordHistReq : addMedicationRecordHistReqs) {
             MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
-                    .counselSession(counselSessionRepository.findById(addMedicationRecordHistReq.getCounselSessionId()).orElse(null))
+                    .counselSession(counselSession)
                     .medication(
                             medicationRepository.findById(addMedicationRecordHistReq.getMedicationId()).orElse(null))
                     .medicationDivision(addMedicationRecordHistReq.getMedicationDivision())
@@ -88,7 +99,7 @@ public class MedicationRecordHistService {
                 .collect(Collectors.toList());
     }
 
-    public UpdateMedicationRecordHistRes updateMedicationRecordHist(UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
+    public UpdateMedicationRecordHistRes updateMedicationRecordHist(String counselSessionId, UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
         MedicationRecordHist medicationRecordHist = medicationRecordHistRepository.findById(updateMedicationRecordHistReq.getId()).orElse(null);
         medicationRecordHist.setMedication(medicationRepository.findById(updateMedicationRecordHistReq.getMedicationId()).orElse(null));
         medicationRecordHist.setMedicationDivision(updateMedicationRecordHistReq.getMedicationDivision());
@@ -100,7 +111,7 @@ public class MedicationRecordHistService {
         return new UpdateMedicationRecordHistRes(medicationRecordHist.getId());
     }
 
-    public List<UpdateMedicationRecordHistRes> updateMedicationRecordHists(List<UpdateMedicationRecordHistReq> updateMedicationRecordHistReqs) {
+    public List<UpdateMedicationRecordHistRes> updateMedicationRecordHists(String counselSessionId, List<UpdateMedicationRecordHistReq> updateMedicationRecordHistReqs) {
         List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
         for (UpdateMedicationRecordHistReq updateMedicationRecordHistReq : updateMedicationRecordHistReqs) {
             MedicationRecordHist medicationRecordHist = medicationRecordHistRepository.findById(updateMedicationRecordHistReq.getId()).orElse(null);

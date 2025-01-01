@@ -32,32 +32,34 @@ public class MedicationRecordHistController {
 
     private final MedicationRecordHistService medicationRecordHistService;
 
-    @PostMapping
+    @PostMapping("/{counselSessionId}")
     @Operation(summary = "처방 의약품 추가", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<AddMedicationRecordHistRes>> addMedicationRecordHist(
+            @PathVariable("counselSessionId") String counselSessionId,
             @RequestBody @Valid AddMedicationRecordHistReq addMedicationRecordHistReq) {
 
         AddMedicationRecordHistRes addMedicationRecordHistRes = medicationRecordHistService
-                .addMedicationRecordHist(addMedicationRecordHistReq);
+                .addMedicationRecordHist(counselSessionId, addMedicationRecordHistReq);
 
         return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
     }
 
-    @PostMapping("/batch")
+    @PostMapping("/{counselSessionId}/batch")
     @Operation(summary = "처방 의약품 일괄 추가", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<List<AddMedicationRecordHistRes>>> addMedicationRecordHists(
+            @PathVariable("counselSessionId") String counselSessionId,
             @RequestBody @Valid List<AddMedicationRecordHistReq> addMedicationRecordHistReqs) {
 
         List<AddMedicationRecordHistRes> addMedicationRecordHistRes = medicationRecordHistService
-                .addMedicationRecordHists(addMedicationRecordHistReqs);
+                .addMedicationRecordHists(counselSessionId, addMedicationRecordHistReqs);
 
         return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
     }
 
-    @GetMapping("/list/{counselSessionId}")
+    @GetMapping("/{counselSessionId}/list")
     @Operation(summary = "처방 의약품 리스트 조회", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<List<MedicationRecordHist>>> selectMedicationRecordListBySessionId(
-            @PathVariable @Valid String counselSessionId) {
+            @PathVariable("counselSessionId") String counselSessionId) {
 
         List<MedicationRecordHist> selectMedicationRecordListBySessionIdRes = medicationRecordHistService
                 .selectMedicationRecordHistByCounselSessionId(counselSessionId);
@@ -65,31 +67,33 @@ public class MedicationRecordHistController {
         return ResponseEntity.ok(new CommonRes<>(selectMedicationRecordListBySessionIdRes));
     }
 
-    @PostMapping("/update")
+    @PostMapping("/{counselSessionId}/update")
     @Operation(summary = "처방 의약품 수정", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<UpdateMedicationRecordHistRes>> updateMedicationRecordHist(
+            @PathVariable("counselSessionId") String counselSessionId,
             @RequestBody @Valid UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
 
         UpdateMedicationRecordHistRes updateMedicationRecordHistRes = medicationRecordHistService
-                .updateMedicationRecordHist(updateMedicationRecordHistReq);
+                .updateMedicationRecordHist(counselSessionId, updateMedicationRecordHistReq);
 
         return ResponseEntity.ok(new CommonRes<>(updateMedicationRecordHistRes));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{counselSessionId}/{id}")
     @Operation(summary = "처방 의약품 삭제", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<Void>> deleteMedicationRecordHist(
-            @PathVariable @Valid String id) {
+            @PathVariable("counselSessionId") String counselSessionId,
+            @PathVariable("id") String id) {
 
-        medicationRecordHistService.deleteMedicationRecordHist(id);
+        medicationRecordHistService.deleteMedicationRecordHist(counselSessionId, id);
 
         return ResponseEntity.ok(new CommonRes<>(null));
     }
 
-    @DeleteMapping("/batch/{counselSessionId}")
+    @DeleteMapping("/{counselSessionId}")
     @Operation(summary = "처방 의약품 일괄 삭제", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<Void>> deleteMedicationRecordHistsByCounselSessionId(
-            @PathVariable @Valid String counselSessionId) {
+            @PathVariable("counselSessionId") String counselSessionId) {
 
         medicationRecordHistService.deleteMedicationRecordHistByCounselSessionId(counselSessionId);
 
