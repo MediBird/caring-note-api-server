@@ -22,7 +22,7 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
           AND (cs.scheduledStartDateTime < :endOfDay)
           AND (:cursorId IS NULL OR cs.id > :cursorId)
           AND (:counselorId IS NULL OR cs.counselor.id = :counselorId)
-        ORDER BY cs.id DESC
+        ORDER BY cs.id ASC
         """)
     List<CounselSession> findByDateAndCursor(
             @Param("startOfDay") LocalDateTime startOfDay,
@@ -37,7 +37,7 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
         SELECT cs FROM CounselSession cs
         WHERE (:cursorId IS NULL OR cs.id > :cursorId)
           AND (:counselorId IS NULL OR cs.counselor.id = :counselorId)
-        ORDER BY cs.id DESC
+        ORDER BY cs.id ASC
         """)
     List<CounselSession> findByCursor(
             @Param("cursorId") String cursorId,
