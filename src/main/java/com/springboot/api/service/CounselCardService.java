@@ -147,7 +147,7 @@ public class CounselCardService {
                         ,counselSession.getScheduledStartDateTime()
                 );
 
-        return previousCounselSessions
+        List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListByInformationNameAndItemNameResList = previousCounselSessions
                 .stream()
                 .filter(cs -> ScheduleStatus.COMPLETED.equals(cs.getStatus()))
                 .map(cs -> {
@@ -171,6 +171,11 @@ public class CounselCardService {
                 })
                 .toList();
 
+        if(selectPreviousItemListByInformationNameAndItemNameResList.isEmpty()){
+            throw new NoContentException();
+        }
+
+        return selectPreviousItemListByInformationNameAndItemNameResList;
     }
 
 
