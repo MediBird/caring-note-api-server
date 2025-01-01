@@ -32,7 +32,7 @@ public class CounseleeConsentService {
     public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId, String counseleeId) {
 
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findByCounselSessionIdAndCounseleeId(counselSessionId, counseleeId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee = Optional.ofNullable(counseleeConsent.getCounselee()).orElseGet(Counselee::new);
         CounselSession counselSession = Optional.ofNullable(counseleeConsent.getCounselSession()).orElseGet(CounselSession::new);
