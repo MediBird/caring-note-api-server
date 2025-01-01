@@ -8,13 +8,10 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Medication;
 import com.springboot.api.domain.MedicationRecordHist;
-import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistReq;
-import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistRes;
+import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistReq;
+import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistRes;
 import com.springboot.api.dto.medicationRecordHist.SelectMedicationRecordHistRes;
-import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistReq;
-import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationRecordHistRepository;
 import com.springboot.api.repository.MedicationRepository;
@@ -67,81 +64,110 @@ public class MedicationRecordHistService {
         medicationRecordHistRepository.deleteByCounselSessionId(counselSessionId);
     }
 
-    public void updateMedicationRecordHist(String id, MedicationRecordHist medicationRecordHist) {
-        medicationRecordHistRepository.save(medicationRecordHist);
-    }
-
-    public AddMedicationRecordHistRes addMedicationRecordHist(String counselSessionId, AddMedicationRecordHistReq addMedicationRecordHistReq) {
-        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
-
-        Medication medication = medicationRepository.findById(addMedicationRecordHistReq.getMedicationId())
-                .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID"));
-
-        MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
-                .counselSession(counselSession)
-                .medication(medication)
-                .medicationDivision(addMedicationRecordHistReq.getMedicationDivision())
-                .prescriptionDate(LocalDate.parse(addMedicationRecordHistReq.getPrescriptionDate()))
-                .prescriptionDays(addMedicationRecordHistReq.getPrescriptionDays())
-                .name(addMedicationRecordHistReq.getName())
-                .usageObject(addMedicationRecordHistReq.getUsageObject())
-                .unit(addMedicationRecordHistReq.getUnit())
-                .build();
-        return new AddMedicationRecordHistRes(medicationRecordHist.getId());
-    }
-
-    public List<AddMedicationRecordHistRes> addMedicationRecordHists(String counselSessionId,
-            List<AddMedicationRecordHistReq> addMedicationRecordHistReqs) {
-        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+    public List<AddAndUpdateMedicationRecordHistRes> addAndUpdateMedicationRecordHists(String counselSessionId, List<AddAndUpdateMedicationRecordHistReq> addAndUpdateMedicationRecordHistReqs) {
 
         List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
-        for (AddMedicationRecordHistReq addMedicationRecordHistReq : addMedicationRecordHistReqs) {
-            MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
-                    .counselSession(counselSession)
-                    .medication(
-                            medicationRepository.findById(addMedicationRecordHistReq.getMedicationId()).orElse(null))
-                    .medicationDivision(addMedicationRecordHistReq.getMedicationDivision())
-                    .prescriptionDate(LocalDate.parse(addMedicationRecordHistReq.getPrescriptionDate()))
-                    .prescriptionDays(addMedicationRecordHistReq.getPrescriptionDays())
-                    .name(addMedicationRecordHistReq.getName())
-                    .usageObject(addMedicationRecordHistReq.getUsageObject())
-                    .unit(addMedicationRecordHistReq.getUnit())
-                    .build();
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+        MedicationRecordHist medicationRecordHist;
+        for (AddAndUpdateMedicationRecordHistReq addAndUpdateMedicationRecordHistReq : addAndUpdateMedicationRecordHistReqs) {
+            if (addAndUpdateMedicationRecordHistReq.getRowId().isEmpty()) {
+                medicationRecordHist = MedicationRecordHist.builder()
+                        .counselSession(counselSession)
+                        .medication(medicationRepository.findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null))
+                        .medicationDivision(addAndUpdateMedicationRecordHistReq.getMedicationDivisionCode())
+                        .prescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()))
+                        .prescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays())
+                        .name(addAndUpdateMedicationRecordHistReq.getName())
+                        .usageObject(addAndUpdateMedicationRecordHistReq.getUsageObject())
+                        .unit(addAndUpdateMedicationRecordHistReq.getUnit())
+                        .medicationUsageStatus(addAndUpdateMedicationRecordHistReq.getMedicationUsageStatusCode())
+                        .build();
+            } else {
+                medicationRecordHist = medicationRecordHistRepository.findById(addAndUpdateMedicationRecordHistReq.getRowId()).orElse(null);
+                medicationRecordHist.setMedication(medicationRepository.findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null));
+                medicationRecordHist.setMedicationDivision(addAndUpdateMedicationRecordHistReq.getMedicationDivisionCode());
+                medicationRecordHist.setPrescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()));
+                medicationRecordHist.setPrescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
+                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getName());
+                medicationRecordHist.setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
+                medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());
+                medicationRecordHist.setMedicationUsageStatus(addAndUpdateMedicationRecordHistReq.getMedicationUsageStatusCode());
+            }
             medicationRecordHists.add(medicationRecordHist);
         }
         medicationRecordHistRepository.saveAll(medicationRecordHists);
-        return medicationRecordHists.stream().map(MedicationRecordHist::getId).map(AddMedicationRecordHistRes::new)
-                .collect(Collectors.toList());
+        return medicationRecordHists.stream().map(MedicationRecordHist::getId).map(AddAndUpdateMedicationRecordHistRes::new).collect(Collectors.toList());
     }
 
-    public UpdateMedicationRecordHistRes updateMedicationRecordHist(String counselSessionId, UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
-        MedicationRecordHist medicationRecordHist = medicationRecordHistRepository.findById(updateMedicationRecordHistReq.getId()).orElse(null);
-        medicationRecordHist.setMedication(medicationRepository.findById(updateMedicationRecordHistReq.getMedicationId()).orElse(null));
-        medicationRecordHist.setMedicationDivision(updateMedicationRecordHistReq.getMedicationDivision());
-        medicationRecordHist.setPrescriptionDate(LocalDate.parse(updateMedicationRecordHistReq.getPrescriptionDate()));
-        medicationRecordHist.setPrescriptionDays(updateMedicationRecordHistReq.getPrescriptionDays());
-        medicationRecordHist.setName(updateMedicationRecordHistReq.getName());
-        medicationRecordHist.setUsageObject(updateMedicationRecordHistReq.getUsageObject());
-        medicationRecordHist.setUnit(updateMedicationRecordHistReq.getUnit());
-        return new UpdateMedicationRecordHistRes(medicationRecordHist.getId());
-    }
-
-    public List<UpdateMedicationRecordHistRes> updateMedicationRecordHists(String counselSessionId, List<UpdateMedicationRecordHistReq> updateMedicationRecordHistReqs) {
-        List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
-        for (UpdateMedicationRecordHistReq updateMedicationRecordHistReq : updateMedicationRecordHistReqs) {
-            MedicationRecordHist medicationRecordHist = medicationRecordHistRepository.findById(updateMedicationRecordHistReq.getId()).orElse(null);
-            medicationRecordHist.setMedication(medicationRepository.findById(updateMedicationRecordHistReq.getMedicationId()).orElse(null));
-            medicationRecordHist.setMedicationDivision(updateMedicationRecordHistReq.getMedicationDivision());
-            medicationRecordHist.setPrescriptionDate(LocalDate.parse(updateMedicationRecordHistReq.getPrescriptionDate()));
-            medicationRecordHist.setPrescriptionDays(updateMedicationRecordHistReq.getPrescriptionDays());
-            medicationRecordHist.setName(updateMedicationRecordHistReq.getName());
-            medicationRecordHist.setUsageObject(updateMedicationRecordHistReq.getUsageObject());
-            medicationRecordHist.setUnit(updateMedicationRecordHistReq.getUnit());
-            medicationRecordHists.add(medicationRecordHist);
-        }
-        medicationRecordHistRepository.saveAll(medicationRecordHists);
-        return medicationRecordHists.stream().map(MedicationRecordHist::getId).map(UpdateMedicationRecordHistRes::new).collect(Collectors.toList());
-    }
+    // public void updateMedicationRecordHist(String id, MedicationRecordHist medicationRecordHist) {
+    //     medicationRecordHistRepository.save(medicationRecordHist);
+    // }
+    // public AddMedicationRecordHistRes addMedicationRecordHist(String counselSessionId, AddMedicationRecordHistReq addMedicationRecordHistReq) {
+    //     CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+    //             .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+    //     Medication medication = medicationRepository.findById(addMedicationRecordHistReq.getMedicationId())
+    //             .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID"));
+    //     MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
+    //             .counselSession(counselSession)
+    //             .medication(medication)
+    //             .medicationDivision(addMedicationRecordHistReq.getMedicationDivision())
+    //             .prescriptionDate(LocalDate.parse(addMedicationRecordHistReq.getPrescriptionDate()))
+    //             .prescriptionDays(addMedicationRecordHistReq.getPrescriptionDays())
+    //             .name(addMedicationRecordHistReq.getName())
+    //             .usageObject(addMedicationRecordHistReq.getUsageObject())
+    //             .unit(addMedicationRecordHistReq.getUnit())
+    //             .build();
+    //     return new AddMedicationRecordHistRes(medicationRecordHist.getId());
+    // }
+    // public List<AddMedicationRecordHistRes> addMedicationRecordHists(String counselSessionId,
+    //         List<AddMedicationRecordHistReq> addMedicationRecordHistReqs) {
+    //     CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+    //             .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+    //     List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
+    //     for (AddMedicationRecordHistReq addMedicationRecordHistReq : addMedicationRecordHistReqs) {
+    //         MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
+    //                 .counselSession(counselSession)
+    //                 .medication(
+    //                         medicationRepository.findById(addMedicationRecordHistReq.getMedicationId()).orElse(null))
+    //                 .medicationDivision(addMedicationRecordHistReq.getMedicationDivision())
+    //                 .prescriptionDate(LocalDate.parse(addMedicationRecordHistReq.getPrescriptionDate()))
+    //                 .prescriptionDays(addMedicationRecordHistReq.getPrescriptionDays())
+    //                 .name(addMedicationRecordHistReq.getName())
+    //                 .usageObject(addMedicationRecordHistReq.getUsageObject())
+    //                 .unit(addMedicationRecordHistReq.getUnit())
+    //                 .build();
+    //         medicationRecordHists.add(medicationRecordHist);
+    //     }
+    //     medicationRecordHistRepository.saveAll(medicationRecordHists);
+    //     return medicationRecordHists.stream().map(MedicationRecordHist::getId).map(AddMedicationRecordHistRes::new)
+    //             .collect(Collectors.toList());
+    // }
+    // public UpdateMedicationRecordHistRes updateMedicationRecordHist(String counselSessionId, UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
+    //     MedicationRecordHist medicationRecordHist = medicationRecordHistRepository.findById(updateMedicationRecordHistReq.getId()).orElse(null);
+    //     medicationRecordHist.setMedication(medicationRepository.findById(updateMedicationRecordHistReq.getMedicationId()).orElse(null));
+    //     medicationRecordHist.setMedicationDivision(updateMedicationRecordHistReq.getMedicationDivision());
+    //     medicationRecordHist.setPrescriptionDate(LocalDate.parse(updateMedicationRecordHistReq.getPrescriptionDate()));
+    //     medicationRecordHist.setPrescriptionDays(updateMedicationRecordHistReq.getPrescriptionDays());
+    //     medicationRecordHist.setName(updateMedicationRecordHistReq.getName());
+    //     medicationRecordHist.setUsageObject(updateMedicationRecordHistReq.getUsageObject());
+    //     medicationRecordHist.setUnit(updateMedicationRecordHistReq.getUnit());
+    //     return new UpdateMedicationRecordHistRes(medicationRecordHist.getId());
+    // }
+    // public List<UpdateMedicationRecordHistRes> updateMedicationRecordHists(String counselSessionId, List<UpdateMedicationRecordHistReq> updateMedicationRecordHistReqs) {
+    //     List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
+    //     for (UpdateMedicationRecordHistReq updateMedicationRecordHistReq : updateMedicationRecordHistReqs) {
+    //         MedicationRecordHist medicationRecordHist = medicationRecordHistRepository.findById(updateMedicationRecordHistReq.getId()).orElse(null);
+    //         medicationRecordHist.setMedication(medicationRepository.findById(updateMedicationRecordHistReq.getMedicationId()).orElse(null));
+    //         medicationRecordHist.setMedicationDivision(updateMedicationRecordHistReq.getMedicationDivision());
+    //         medicationRecordHist.setPrescriptionDate(LocalDate.parse(updateMedicationRecordHistReq.getPrescriptionDate()));
+    //         medicationRecordHist.setPrescriptionDays(updateMedicationRecordHistReq.getPrescriptionDays());
+    //         medicationRecordHist.setName(updateMedicationRecordHistReq.getName());
+    //         medicationRecordHist.setUsageObject(updateMedicationRecordHistReq.getUsageObject());
+    //         medicationRecordHist.setUnit(updateMedicationRecordHistReq.getUnit());
+    //         medicationRecordHists.add(medicationRecordHist);
+    //     }
+    //     medicationRecordHistRepository.saveAll(medicationRecordHists);
+    //     return medicationRecordHists.stream().map(MedicationRecordHist::getId).map(UpdateMedicationRecordHistRes::new).collect(Collectors.toList());
+    // }
 }

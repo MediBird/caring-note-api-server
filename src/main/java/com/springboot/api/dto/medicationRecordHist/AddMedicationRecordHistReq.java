@@ -26,6 +26,4 @@ public class AddMedicationRecordHistReq {
     @NotBlank
     private String unit;
 
-    private String disposalReason;
-
 }

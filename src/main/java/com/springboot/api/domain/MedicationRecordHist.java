@@ -3,6 +3,7 @@ package com.springboot.api.domain;
 import java.time.LocalDate;
 
 import com.springboot.enums.MedicationDivision;
+import com.springboot.enums.MedicationUsageStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -48,6 +49,9 @@ public class MedicationRecordHist extends BaseEntity {
     private int prescriptionDays;
 
     private String unit;
+
+    @Enumerated(EnumType.STRING)
+    private MedicationUsageStatus medicationUsageStatus;
 
     @PrePersist
     @Override

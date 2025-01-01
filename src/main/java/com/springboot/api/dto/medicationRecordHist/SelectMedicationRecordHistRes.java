@@ -6,9 +6,9 @@ import java.time.LocalDateTime;
 import com.springboot.enums.MedicationDivision;
 
 public record SelectMedicationRecordHistRes(
-        String id,
+        String rowId,
         String medicationId,
-        String name,
+        String medicationName,
         MedicationDivision medicationDivision,
         String usageObject,
         LocalDate prescriptionDate,
