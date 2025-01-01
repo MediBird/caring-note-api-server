@@ -59,7 +59,7 @@ public class CounselSessionService {
     public SelectCounselSessionRes selectCounselSession(String id)
     {
         CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
-                NoContentException::new
+                IllegalArgumentException::new
         );
 
         return SelectCounselSessionRes
@@ -155,6 +155,11 @@ public class CounselSessionService {
                             .build())
                     .toList();
 
+        if(sessionListItems.isEmpty())
+        {
+            throw new NoContentException();
+        }
+
             return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems,nextCursorId,hasNext);
 
         }
@@ -228,15 +233,14 @@ public class CounselSessionService {
     public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId)
     {
         CounselSession counselSession = sessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
 
         List<CounselSession> previousCounselSessions = sessionRepository.findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),counselSession.getScheduledStartDateTime());
 
-
-        return previousCounselSessions
+        List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                 .stream()
                 .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
                 .map(session -> {
@@ -251,6 +255,13 @@ public class CounselSessionService {
                     );
                 })
                 .toList();
+
+        if(selectPreviousCounselSessionListResList.isEmpty())
+        {
+            throw new NoContentException();
+        }
+
+        return selectPreviousCounselSessionListResList;
 
     }
 
