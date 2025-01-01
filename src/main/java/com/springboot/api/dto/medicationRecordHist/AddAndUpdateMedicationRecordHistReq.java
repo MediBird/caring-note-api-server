@@ -12,7 +12,7 @@ public class AddAndUpdateMedicationRecordHistReq {
     private String rowId;
     private String medicationId;
     @NotBlank
-    private MedicationDivision medicationDivisionCode;
+    private MedicationDivision divisionCode;
 
     private String prescriptionDate;
 
@@ -24,5 +24,5 @@ public class AddAndUpdateMedicationRecordHistReq {
 
     private String unit;
 
-    private MedicationUsageStatus medicationUsageStatusCode;
+    private MedicationUsageStatus usageStatusCode;
 }

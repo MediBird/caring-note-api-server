@@ -41,6 +41,7 @@ public class MedicationRecordHistService {
                 medicationRecordHist.getPrescriptionDate(),
                 medicationRecordHist.getPrescriptionDays(),
                 medicationRecordHist.getUnit(),
+                medicationRecordHist.getMedicationUsageStatus(),
                 medicationRecordHist.getUpdatedDatetime(),
                 medicationRecordHist.getCreatedDatetime(),
                 medicationRecordHist.getCreatedBy(),
@@ -67,24 +68,24 @@ public class MedicationRecordHistService {
                 medicationRecordHist = MedicationRecordHist.builder()
                         .counselSession(counselSession)
                         .medication(medicationRepository.findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null))
-                        .medicationDivision(addAndUpdateMedicationRecordHistReq.getMedicationDivisionCode())
+                        .medicationDivision(addAndUpdateMedicationRecordHistReq.getDivisionCode())
                         .prescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()))
                         .prescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays())
                         .name(addAndUpdateMedicationRecordHistReq.getName())
                         .usageObject(addAndUpdateMedicationRecordHistReq.getUsageObject())
                         .unit(addAndUpdateMedicationRecordHistReq.getUnit())
-                        .medicationUsageStatus(addAndUpdateMedicationRecordHistReq.getMedicationUsageStatusCode())
+                        .medicationUsageStatus(addAndUpdateMedicationRecordHistReq.getUsageStatusCode())
                         .build();
             } else {
                 medicationRecordHist = medicationRecordHistRepository.findById(addAndUpdateMedicationRecordHistReq.getRowId()).orElse(null);
                 medicationRecordHist.setMedication(medicationRepository.findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null));
-                medicationRecordHist.setMedicationDivision(addAndUpdateMedicationRecordHistReq.getMedicationDivisionCode());
+                medicationRecordHist.setMedicationDivision(addAndUpdateMedicationRecordHistReq.getDivisionCode());
                 medicationRecordHist.setPrescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()));
                 medicationRecordHist.setPrescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
                 medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getName());
                 medicationRecordHist.setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
                 medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());
-                medicationRecordHist.setMedicationUsageStatus(addAndUpdateMedicationRecordHistReq.getMedicationUsageStatusCode());
+                medicationRecordHist.setMedicationUsageStatus(addAndUpdateMedicationRecordHistReq.getUsageStatusCode());
             }
             medicationRecordHists.add(medicationRecordHist);
         }
