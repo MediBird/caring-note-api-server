@@ -29,10 +29,21 @@ public class WasteMedicationRecordService {
     private final CounselSessionRepository counselSessionRepository;
     private final MedicationRepository medicationRepository;
 
-    public SelectMedicationRecordListBySessionIdRes getWasteMedicationRecord(String counselSessionId) {
+    public List<SelectMedicationRecordListBySessionIdRes> getWasteMedicationRecord(String counselSessionId) {
         List<WasteMedicationRecord> wasteMedicationRecords = wasteMedicationRecordRepository
                 .findByCounselSessionId(counselSessionId);
-        return new SelectMedicationRecordListBySessionIdRes(wasteMedicationRecords);
+        return wasteMedicationRecords.stream()
+                .map(wasteMedicationRecord -> new SelectMedicationRecordListBySessionIdRes(
+                wasteMedicationRecord.getId(),
+                wasteMedicationRecord.getMedication().getId(),
+                wasteMedicationRecord.getMedicationName(),
+                wasteMedicationRecord.getUnit(),
+                wasteMedicationRecord.getDisposalReason(),
+                wasteMedicationRecord.getCreatedDatetime(),
+                wasteMedicationRecord.getUpdatedDatetime(),
+                wasteMedicationRecord.getCreatedBy(),
+                wasteMedicationRecord.getUpdatedBy()))
+                .collect(Collectors.toList());
     }
 
     public WasteMedicationRecord getWasteMedicationRecordByCounselSessionIdAndMedicationId(String counselSessionId,
@@ -62,6 +73,9 @@ public class WasteMedicationRecordService {
                 wasteMedicationRecord = wasteMedicationRecordRepository
                         .findById(addAndUpdateWasteMedicationRecordReq.getRowId())
                         .orElseThrow(() -> new IllegalArgumentException("Invalid waste medication record ID"));
+                wasteMedicationRecord.setMedication(
+                        medicationRepository.findById(addAndUpdateWasteMedicationRecordReq.getMedicationId())
+                                .orElse(null));
                 wasteMedicationRecord.setUnit(addAndUpdateWasteMedicationRecordReq.getUnit());
                 wasteMedicationRecord.setDisposalReason(addAndUpdateWasteMedicationRecordReq.getDisposalReason());
                 wasteMedicationRecord.setMedicationName(addAndUpdateWasteMedicationRecordReq.getMedicationName());

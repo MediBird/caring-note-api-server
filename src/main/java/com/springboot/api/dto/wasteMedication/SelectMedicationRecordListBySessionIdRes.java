@@ -1,9 +1,16 @@
 package com.springboot.api.dto.wasteMedication;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-import com.springboot.api.domain.WasteMedicationRecord;
-
-public record SelectMedicationRecordListBySessionIdRes(List<WasteMedicationRecord> wasteMedicationRecords) {
+public record SelectMedicationRecordListBySessionIdRes(
+        String rowId,
+        String medicationId,
+        String medicationName,
+        String unit,
+        String disposalReason,
+        LocalDateTime createdDatetime,
+        LocalDateTime updatedDatetime,
+        String createdBy,
+        String updatedBy) {
 
 }
