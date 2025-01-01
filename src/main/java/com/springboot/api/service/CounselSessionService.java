@@ -13,11 +13,14 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
@@ -26,6 +29,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class CounselSessionService {
 
+    private static final Logger log = LoggerFactory.getLogger(CounselSessionService.class);
     private final CounselSessionRepository sessionRepository;
     private final EntityManager entityManager;
     private final DateTimeUtil dateTimeUtil;
@@ -86,18 +90,34 @@ public class CounselSessionService {
 
         List<CounselSession> sessions;
 
+        LocalDateTime startOfDay = Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
+                .map(LocalDate::atStartOfDay)
+                .orElse(null);
 
-        sessions = sessionRepository.findByCursor(
-                    Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
-                        .map(LocalDate::atStartOfDay)
-                        .orElse(null)
-                    ,Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
-                        .map(d->d.plusDays(1))
-                        .map(LocalDate::atStartOfDay)
-                        .orElse(null)
+        LocalDateTime endOfDay = Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
+                .map(d->d.plusDays(1))
+                .map(LocalDate::atStartOfDay)
+                .orElse(null);
+
+
+        if(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate() ==  null)
+        {
+            sessions = sessionRepository.findByCursor(
+                    selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor()
+                    , null
+                    , pageable);
+        }
+        else
+        {
+            sessions = sessionRepository.findByDateAndCursor(
+                    selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
+                            .atStartOfDay()
+                    ,Optional.of(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
+                            .atStartOfDay()).map(d->d.plusDays(1)).get()
                     , selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor()
                     , null
                     , pageable);
+        }
 
 
         String nextCursorId = null;
