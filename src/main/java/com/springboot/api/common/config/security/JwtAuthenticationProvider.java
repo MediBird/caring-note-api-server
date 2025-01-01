@@ -1,5 +1,6 @@
 package com.springboot.api.common.config.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,15 +12,11 @@ import org.springframework.stereotype.Component;
 import com.springboot.api.common.util.JwtUtil;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     private final UserDetailsService userDetailsService;
-    private final JwtUtil jwtUtil;  // JWT 관련 유틸리티 클래스
-
-    public JwtAuthenticationProvider(UserDetailsService userDetailsService, JwtUtil jwtUtil) {
-        this.userDetailsService = userDetailsService;
-        this.jwtUtil = jwtUtil;
-    }
+    private final JwtUtil jwtUtil;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
