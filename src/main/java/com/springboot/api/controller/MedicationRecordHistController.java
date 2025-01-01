@@ -11,11 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.domain.MedicationRecordHist;
-import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistReq;
-import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistRes;
-import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistReq;
-import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistRes;
+import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistReq;
+import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistRes;
+import com.springboot.api.dto.medicationRecordHist.SelectMedicationRecordHistRes;
 import com.springboot.api.service.MedicationRecordHistService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -34,51 +32,45 @@ public class MedicationRecordHistController {
 
     @PostMapping("/{counselSessionId}")
     @Operation(summary = "처방 의약품 추가", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<AddMedicationRecordHistRes>> addMedicationRecordHist(
+    public ResponseEntity<CommonRes<List<AddAndUpdateMedicationRecordHistRes>>> addAndUpdateMedicationRecordHist(
             @PathVariable("counselSessionId") String counselSessionId,
-            @RequestBody @Valid AddMedicationRecordHistReq addMedicationRecordHistReq) {
+            @RequestBody @Valid List<AddAndUpdateMedicationRecordHistReq> addAndUpdateMedicationRecordHistReqs) {
 
-        AddMedicationRecordHistRes addMedicationRecordHistRes = medicationRecordHistService
-                .addMedicationRecordHist(counselSessionId, addMedicationRecordHistReq);
+        List<AddAndUpdateMedicationRecordHistRes> addAndUpdateMedicationRecordHistRes = medicationRecordHistService
+                .addAndUpdateMedicationRecordHists(counselSessionId, addAndUpdateMedicationRecordHistReqs);
 
-        return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
+        return ResponseEntity.ok(new CommonRes<>(addAndUpdateMedicationRecordHistRes));
     }
 
-    @PostMapping("/{counselSessionId}/batch")
-    @Operation(summary = "처방 의약품 일괄 추가", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<List<AddMedicationRecordHistRes>>> addMedicationRecordHists(
-            @PathVariable("counselSessionId") String counselSessionId,
-            @RequestBody @Valid List<AddMedicationRecordHistReq> addMedicationRecordHistReqs) {
-
-        List<AddMedicationRecordHistRes> addMedicationRecordHistRes = medicationRecordHistService
-                .addMedicationRecordHists(counselSessionId, addMedicationRecordHistReqs);
-
-        return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
-    }
-
+//     @PostMapping("/{counselSessionId}/batch")
+//     @Operation(summary = "처방 의약품 일괄 추가", tags = {"본상담 - 복약 상담"})
+//     public ResponseEntity<CommonRes<List<AddMedicationRecordHistRes>>> addMedicationRecordHists(
+//             @PathVariable("counselSessionId") String counselSessionId,
+//             @RequestBody @Valid List<AddMedicationRecordHistReq> addMedicationRecordHistReqs) {
+//         List<AddMedicationRecordHistRes> addMedicationRecordHistRes = medicationRecordHistService
+//                 .addMedicationRecordHists(counselSessionId, addMedicationRecordHistReqs);
+//         return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
+//     }
     @GetMapping("/{counselSessionId}/list")
     @Operation(summary = "처방 의약품 리스트 조회", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<List<MedicationRecordHist>>> selectMedicationRecordListBySessionId(
+    public ResponseEntity<CommonRes<List<SelectMedicationRecordHistRes>>> selectMedicationRecordListBySessionId(
             @PathVariable("counselSessionId") String counselSessionId) {
 
-        List<MedicationRecordHist> selectMedicationRecordListBySessionIdRes = medicationRecordHistService
+        List<SelectMedicationRecordHistRes> selectMedicationRecordListBySessionIdRes = medicationRecordHistService
                 .selectMedicationRecordHistByCounselSessionId(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectMedicationRecordListBySessionIdRes));
     }
 
-    @PostMapping("/{counselSessionId}/update")
-    @Operation(summary = "처방 의약품 수정", tags = {"본상담 - 복약 상담"})
-    public ResponseEntity<CommonRes<UpdateMedicationRecordHistRes>> updateMedicationRecordHist(
-            @PathVariable("counselSessionId") String counselSessionId,
-            @RequestBody @Valid UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
-
-        UpdateMedicationRecordHistRes updateMedicationRecordHistRes = medicationRecordHistService
-                .updateMedicationRecordHist(counselSessionId, updateMedicationRecordHistReq);
-
-        return ResponseEntity.ok(new CommonRes<>(updateMedicationRecordHistRes));
-    }
-
+//     @PostMapping("/{counselSessionId}/update")
+//     @Operation(summary = "처방 의약품 수정", tags = {"본상담 - 복약 상담"})
+//     public ResponseEntity<CommonRes<UpdateMedicationRecordHistRes>> updateMedicationRecordHist(
+//             @PathVariable("counselSessionId") String counselSessionId,
+//             @RequestBody @Valid UpdateMedicationRecordHistReq updateMedicationRecordHistReq) {
+//         UpdateMedicationRecordHistRes updateMedicationRecordHistRes = medicationRecordHistService
+//                 .updateMedicationRecordHist(counselSessionId, updateMedicationRecordHistReq);
+//         return ResponseEntity.ok(new CommonRes<>(updateMedicationRecordHistRes));
+//     }
     @DeleteMapping("/{counselSessionId}/{id}")
     @Operation(summary = "처방 의약품 삭제", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<Void>> deleteMedicationRecordHist(
