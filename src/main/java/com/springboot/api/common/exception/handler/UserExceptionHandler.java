@@ -1,18 +1,16 @@
 package com.springboot.api.common.exception.handler;
 
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import com.springboot.api.common.dto.ErrorRes;
 import com.springboot.api.common.exception.DuplicatedEmailException;
 import com.springboot.api.common.exception.InvalidPasswordException;
 import com.springboot.api.common.exception.JsonConvertException;
 import com.springboot.api.common.exception.NoContentException;
+import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Order(1)
@@ -40,8 +38,8 @@ public class UserExceptionHandler extends CommonHandler {
 
     @ExceptionHandler(NoContentException.class)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> handleNoContent(NoContentException ex) {
-        return ResponseEntity.noContent().build();
+    public void handleNoContent(NoContentException ex) {
+
     }
 
     @ExceptionHandler(JsonConvertException.class)
