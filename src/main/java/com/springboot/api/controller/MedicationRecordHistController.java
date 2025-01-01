@@ -51,7 +51,7 @@ public class MedicationRecordHistController {
 //                 .addMedicationRecordHists(counselSessionId, addMedicationRecordHistReqs);
 //         return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
 //     }
-    @GetMapping("/{counselSessionId}/list")
+    @GetMapping("/{counselSessionId}")
     @Operation(summary = "처방 의약품 리스트 조회", tags = {"본상담 - 복약 상담"})
     public ResponseEntity<CommonRes<List<SelectMedicationRecordHistRes>>> selectMedicationRecordListBySessionId(
             @PathVariable("counselSessionId") String counselSessionId) {

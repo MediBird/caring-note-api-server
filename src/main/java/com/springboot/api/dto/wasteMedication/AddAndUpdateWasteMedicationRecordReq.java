@@ -1,20 +1,22 @@
 package com.springboot.api.dto.wasteMedication;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Data;
 
 @Data
-@Builder
-public class AddWasteMedicationRecordReq {
+public class AddAndUpdateWasteMedicationRecordReq {
 
-    @NotBlank
-    private String counselSessionId;
+    private String rowId;
 
-    @NotBlank
     private String medicationId;
 
+    @NotBlank
     private String unit;
 
+    @NotBlank
     private String disposalReason;
+
+    @NotBlank
+    private String medicationName;
+
 }
