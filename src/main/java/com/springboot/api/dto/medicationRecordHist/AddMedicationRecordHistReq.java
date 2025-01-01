@@ -9,9 +9,6 @@ import lombok.Data;
 public class AddMedicationRecordHistReq {
 
     @NotBlank
-    private String counselSessionId;
-
-    @NotBlank
     private String medicationId;
 
     @NotBlank

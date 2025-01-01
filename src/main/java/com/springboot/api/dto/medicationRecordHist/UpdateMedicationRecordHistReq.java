@@ -12,9 +12,6 @@ public class UpdateMedicationRecordHistReq {
     private String id;
 
     @NotBlank
-    private String counselSessionId;
-
-    @NotBlank
     private String medicationId;
 
     @NotBlank

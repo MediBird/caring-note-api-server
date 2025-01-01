@@ -39,8 +39,8 @@ public class WasteMedicationRecordService {
         return wasteMedicationRecordRepository.findByCounselSessionIdAndMedicationId(counselSessionId, medicationId);
     }
 
-    public AddWasteMedicationRecordRes addWasteMedicationRecord(AddWasteMedicationRecordReq addWasteMedicationRecordReq) {
-        CounselSession counselSession = counselSessionRepository.findById(addWasteMedicationRecordReq.getCounselSessionId())
+    public AddWasteMedicationRecordRes addWasteMedicationRecord(String counselSessionId, AddWasteMedicationRecordReq addWasteMedicationRecordReq) {
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
 
         Medication medication = medicationRepository.findById(addWasteMedicationRecordReq.getMedicationId())
@@ -56,18 +56,25 @@ public class WasteMedicationRecordService {
         return new AddWasteMedicationRecordRes(savedWasteMedicationRecord.getId());
     }
 
-    public List<AddWasteMedicationRecordRes> addWasteMedicationRecords(
+    public List<AddWasteMedicationRecordRes> addWasteMedicationRecords(String counselSessionId,
             List<AddWasteMedicationRecordReq> addWasteMedicationRecordReqs) {
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+
         List<WasteMedicationRecord> wasteMedicationRecords = addWasteMedicationRecordReqs.stream()
-                .map(addWasteMedicationRecordReq -> WasteMedicationRecord.builder()
-                .counselSession(counselSessionRepository.findById(addWasteMedicationRecordReq.getCounselSessionId())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID")))
-                .medication(medicationRepository.findById(addWasteMedicationRecordReq.getMedicationId())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID")))
-                .unit(addWasteMedicationRecordReq.getUnit())
-                .disposalReason(addWasteMedicationRecordReq.getDisposalReason())
-                .build())
+                .map(addWasteMedicationRecordReq -> {
+                    Medication medication = medicationRepository.findById(addWasteMedicationRecordReq.getMedicationId())
+                            .orElseThrow(() -> new IllegalArgumentException("Invalid medication ID"));
+
+                    return WasteMedicationRecord.builder()
+                            .counselSession(counselSession)
+                            .medication(medication)
+                            .unit(addWasteMedicationRecordReq.getUnit())
+                            .disposalReason(addWasteMedicationRecordReq.getDisposalReason())
+                            .build();
+                })
                 .collect(Collectors.toList());
+
         List<WasteMedicationRecord> savedWasteMedicationRecords = wasteMedicationRecordRepository.saveAll(wasteMedicationRecords);
         return savedWasteMedicationRecords.stream()
                 .map(wasteMedicationRecord -> new AddWasteMedicationRecordRes(wasteMedicationRecord.getId()))
