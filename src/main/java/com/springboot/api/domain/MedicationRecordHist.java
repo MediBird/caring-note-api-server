@@ -14,7 +14,6 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -22,7 +21,6 @@ import lombok.ToString;
 @Entity
 @Table(name = "medication_records_hist")
 @Data
-@Builder
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "medication"})
 @ToString(callSuper = true, exclude = {"counselSession", "medication"})
 public class MedicationRecordHist extends BaseEntity {
@@ -51,7 +49,7 @@ public class MedicationRecordHist extends BaseEntity {
     private String unit;
 
     @Enumerated(EnumType.STRING)
-    private MedicationUsageStatus medicationUsageStatus;
+    private MedicationUsageStatus usageStatus;
 
     @PrePersist
     @Override

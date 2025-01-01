@@ -16,6 +16,8 @@ import com.springboot.api.dto.medicationRecordHist.SelectMedicationRecordHistRes
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationRecordHistRepository;
 import com.springboot.api.repository.MedicationRepository;
+import com.springboot.enums.MedicationDivision;
+import com.springboot.enums.MedicationUsageStatus;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,12 +42,12 @@ public class MedicationRecordHistService {
                 medicationRecordHist.getId(),
                 medicationRecordHist.getMedication().getId(),
                 medicationRecordHist.getName(),
-                medicationRecordHist.getMedicationDivision(),
+                medicationRecordHist.getMedicationDivision().getDescription(),
                 medicationRecordHist.getUsageObject(),
                 medicationRecordHist.getPrescriptionDate(),
                 medicationRecordHist.getPrescriptionDays(),
                 medicationRecordHist.getUnit(),
-                medicationRecordHist.getMedicationUsageStatus(),
+                medicationRecordHist.getUsageStatus().getDescription(),
                 medicationRecordHist.getUpdatedDatetime(),
                 medicationRecordHist.getCreatedDatetime(),
                 medicationRecordHist.getCreatedBy(),
@@ -61,7 +63,8 @@ public class MedicationRecordHistService {
         medicationRecordHistRepository.deleteByCounselSessionId(counselSessionId);
     }
 
-    public List<AddAndUpdateMedicationRecordHistRes> addAndUpdateMedicationRecordHists(String counselSessionId, List<AddAndUpdateMedicationRecordHistReq> addAndUpdateMedicationRecordHistReqs) {
+    public List<AddAndUpdateMedicationRecordHistRes> addAndUpdateMedicationRecordHists(String counselSessionId,
+            List<AddAndUpdateMedicationRecordHistReq> addAndUpdateMedicationRecordHistReqs) {
 
         List<MedicationRecordHist> medicationRecordHists = new ArrayList<>();
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
@@ -69,31 +72,56 @@ public class MedicationRecordHistService {
         MedicationRecordHist medicationRecordHist;
         for (AddAndUpdateMedicationRecordHistReq addAndUpdateMedicationRecordHistReq : addAndUpdateMedicationRecordHistReqs) {
             if (addAndUpdateMedicationRecordHistReq.getRowId().isEmpty()) {
-                medicationRecordHist = MedicationRecordHist.builder()
-                        .counselSession(counselSession)
-                        .medication(medicationRepository.findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null))
-                        .medicationDivision(addAndUpdateMedicationRecordHistReq.getDivisionCode())
-                        .prescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()))
-                        .prescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays())
-                        .name(addAndUpdateMedicationRecordHistReq.getName())
-                        .usageObject(addAndUpdateMedicationRecordHistReq.getUsageObject())
-                        .unit(addAndUpdateMedicationRecordHistReq.getUnit())
-                        .medicationUsageStatus(addAndUpdateMedicationRecordHistReq.getUsageStatusCode())
-                        .build();
-            } else {
-                medicationRecordHist = medicationRecordHistRepository.findById(addAndUpdateMedicationRecordHistReq.getRowId()).orElse(null);
-                medicationRecordHist.setMedication(medicationRepository.findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null));
-                medicationRecordHist.setMedicationDivision(addAndUpdateMedicationRecordHistReq.getDivisionCode());
-                medicationRecordHist.setPrescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()));
+                medicationRecordHist = new MedicationRecordHist();
+                medicationRecordHist.setCounselSession(counselSession);
+                medicationRecordHist.setMedication(medicationRepository
+                        .findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null));
+                medicationRecordHist.setMedicationDivision(getMedicationDivisionByDescription(addAndUpdateMedicationRecordHistReq.getDivisionCode()));
+                medicationRecordHist.setPrescriptionDate(
+                        LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()));
                 medicationRecordHist.setPrescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
                 medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getName());
                 medicationRecordHist.setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
                 medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());
-                medicationRecordHist.setMedicationUsageStatus(addAndUpdateMedicationRecordHistReq.getUsageStatusCode());
+                medicationRecordHist.setUsageStatus(
+                        getMedicationUsageStatusByDescription(addAndUpdateMedicationRecordHistReq.getUsageStatusCode()));
+            } else {
+                medicationRecordHist = medicationRecordHistRepository
+                        .findById(addAndUpdateMedicationRecordHistReq.getRowId()).orElse(null);
+                medicationRecordHist.setMedication(medicationRepository
+                        .findById(addAndUpdateMedicationRecordHistReq.getMedicationId()).orElse(null));
+                medicationRecordHist.setMedicationDivision(getMedicationDivisionByDescription(addAndUpdateMedicationRecordHistReq.getDivisionCode()));
+                medicationRecordHist.setPrescriptionDate(
+                        LocalDate.parse(addAndUpdateMedicationRecordHistReq.getPrescriptionDate()));
+                medicationRecordHist.setPrescriptionDays(addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
+                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getName());
+                medicationRecordHist.setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
+                medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());
+                medicationRecordHist.setUsageStatus(
+                        getMedicationUsageStatusByDescription(addAndUpdateMedicationRecordHistReq.getUsageStatusCode()));
             }
             medicationRecordHists.add(medicationRecordHist);
         }
         medicationRecordHistRepository.saveAll(medicationRecordHists);
-        return medicationRecordHists.stream().map(MedicationRecordHist::getId).map(AddAndUpdateMedicationRecordHistRes::new).collect(Collectors.toList());
+        return medicationRecordHists.stream().map(MedicationRecordHist::getId)
+                .map(AddAndUpdateMedicationRecordHistRes::new).collect(Collectors.toList());
+    }
+
+    private MedicationUsageStatus getMedicationUsageStatusByDescription(String description) {
+        for (MedicationUsageStatus status : MedicationUsageStatus.values()) {
+            if (status.getDescription().equals(description)) {
+                return status;
+            }
+        }
+        throw new IllegalArgumentException("Invalid medication usage status description: " + description);
+    }
+
+    private MedicationDivision getMedicationDivisionByDescription(String description) {
+        for (MedicationDivision division : MedicationDivision.values()) {
+            if (division.getDescription().equals(description)) {
+                return division;
+            }
+        }
+        throw new IllegalArgumentException("Invalid medication division description: " + description);
     }
 }
