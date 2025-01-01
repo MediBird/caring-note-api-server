@@ -29,7 +29,6 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleValidationException(MethodArgumentNotValidException ex) {
-        log.error("Validation error: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.INVALID_REQUEST_BODY);
     }
 
@@ -37,21 +36,18 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class, IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleBadRequest(Exception ex) {
-        log.error("Bad request: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.BAD_REQUEST_PARAMETER);
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorRes handleNotFound(Exception ex) {
-        log.error("Resource not found: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.NOT_FOUND);
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorRes handleAccessDenied(Exception ex) {
-        log.error("Access denied: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.UNAUTHORIZED);
     }
 
@@ -59,21 +55,18 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler(EntityExistsException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorRes handleEntityExistsException(EntityExistsException ex) {
-        log.error("Entity exists: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.CONFLICT_DUPLICATE);
     }
 
     @ExceptionHandler(JsonProcessingException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorRes handleJsonProcessingException(JsonProcessingException ex) {
-        log.error("JSON processing error: {}", ex.getMessage());
         return buildErrorResponse(ExceptionMessages.FAIL_JSON_CONVERT);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.error("Message not readable: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.BAD_REQUEST);
     }
 
@@ -81,7 +74,6 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorRes handleGeneralException(Exception ex) {
-        log.error("Internal server error: {}", ex.getMessage());
         return buildErrorResponse(HttpMessages.INTERNAL_SERVER_ERROR);
     }
 }
