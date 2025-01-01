@@ -12,6 +12,7 @@ import com.springboot.api.domain.Medication;
 import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.AddMedicationRecordHistRes;
+import com.springboot.api.dto.medicationRecordHist.SelectMedictaionRecordHistRes;
 import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.UpdateMedicationRecordHistRes;
 import com.springboot.api.repository.CounselSessionRepository;
@@ -34,8 +35,24 @@ public class MedicationRecordHistService {
         return medicationRecordHistRepository.findById(id).orElse(null);
     }
 
-    public List<MedicationRecordHist> selectMedicationRecordHistByCounselSessionId(String counselSessionId) {
-        return medicationRecordHistRepository.findByCounselSessionId(counselSessionId);
+    public List<SelectMedictaionRecordHistRes> selectMedicationRecordHistByCounselSessionId(String counselSessionId) {
+        List<MedicationRecordHist> medicationRecordHists = medicationRecordHistRepository
+                .findByCounselSessionId(counselSessionId);
+
+        return medicationRecordHists.stream().map(medicationRecordHist -> new SelectMedictaionRecordHistRes(
+                medicationRecordHist.getId(),
+                medicationRecordHist.getMedication().getId(),
+                medicationRecordHist.getName(),
+                medicationRecordHist.getMedicationDivision(),
+                medicationRecordHist.getUsageObject(),
+                medicationRecordHist.getPrescriptionDate(),
+                medicationRecordHist.getPrescriptionDays(),
+                medicationRecordHist.getUnit(),
+                medicationRecordHist.getUpdatedDatetime(),
+                medicationRecordHist.getCreatedDatetime(),
+                medicationRecordHist.getCreatedBy(),
+                medicationRecordHist.getUpdatedBy()
+        )).collect(Collectors.toList());
     }
 
     public MedicationRecordHist saveMedicationRecordHist(MedicationRecordHist medicationRecordHist) {
