@@ -14,7 +14,6 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.dto.ErrorRes;
-import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.common.message.HttpMessages;
 
@@ -77,11 +76,4 @@ public class GlobalExceptionHandler extends CommonHandler {
     public ErrorRes handleGeneralException(Exception ex) {
         return buildErrorResponse(HttpMessages.INTERNAL_SERVER_ERROR);
     }
-
-    @ExceptionHandler(NoContentException.class)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ErrorRes handleNoContent(NoContentException ex) {
-        return buildErrorResponse(ex.getMessage());
-    }
-
 }
