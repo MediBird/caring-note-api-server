@@ -26,7 +26,7 @@ public class MedicationCounselService {
     public AddMedicationCounselRes addMedicationCounsel(AddMedicationCounselReq addMedicationCounselReq){
 
         CounselSession counselSession = counselSessionRepository.findById(addMedicationCounselReq.getCounselSessionId())
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
                 .counselSession(counselSession)
@@ -43,7 +43,7 @@ public class MedicationCounselService {
     public SelectMedicationCounselRes selectMedicationCounsel(String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         MedicationCounsel medicationCounsel = medicationCounselRepository.findByCounselSessionId(counselSession.getId())
                 .orElseThrow(NoContentException::new);
@@ -60,7 +60,7 @@ public class MedicationCounselService {
     public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String counselSessionId){
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee= Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
