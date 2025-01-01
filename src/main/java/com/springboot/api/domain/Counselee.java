@@ -1,8 +1,22 @@
 package com.springboot.api.domain;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -10,9 +24,6 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
@@ -68,7 +79,6 @@ public class Counselee extends BaseEntity {
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<MedicationRecord> medicationRecords;
-
 
     @PrePersist
     @Override

@@ -1,8 +1,5 @@
 package com.springboot.api.dto.medicationRecordHist;
 
-import com.springboot.enums.MedicationDivision;
-import com.springboot.enums.MedicationUsageStatus;
-
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -12,7 +9,7 @@ public class AddAndUpdateMedicationRecordHistReq {
     private String rowId;
     private String medicationId;
     @NotBlank
-    private MedicationDivision divisionCode;
+    private String divisionCode;
 
     private String prescriptionDate;
 
@@ -24,5 +21,5 @@ public class AddAndUpdateMedicationRecordHistReq {
 
     private String unit;
 
-    private MedicationUsageStatus usageStatusCode;
+    private String usageStatusCode;
 }
