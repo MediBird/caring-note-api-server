@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.springboot.api.domain.WasteMedicationRecord;
 
-public interface WasteMedicationRecordRepository extends JpaRepository<WasteMedicationRecord, Long> {
+public interface WasteMedicationRecordRepository extends JpaRepository<WasteMedicationRecord, String> {
 
     List<WasteMedicationRecord> findByCounselSessionId(String counselSessionId);
 

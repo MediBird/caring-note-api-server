@@ -24,8 +24,10 @@ public class WasteMedicationRecord extends BaseEntity {
     private CounselSession counselSession;
 
     @OneToOne
-    @JoinColumn(name = "medication_id", nullable = false)
+    @JoinColumn(name = "medication_id", nullable = true)
     private Medication medication;
+
+    private String medicationName;
 
     private String unit;
 
