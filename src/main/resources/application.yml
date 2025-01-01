@@ -45,3 +45,13 @@ jwt:
 api:
   userdetails:
     implementation: counselorUserDetailsService
+
+security:
+  permit-all-urls:
+    - "/user/**"
+    - "/*/counselor/signup"
+    - "/*/counselor/login"
+    - "/swagger-ui/**"
+    - "/*/api-docs/**"
+    - "/swagger-ui.html"
+    - "/h2-console/**"

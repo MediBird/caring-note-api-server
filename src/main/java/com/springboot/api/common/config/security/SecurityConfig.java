@@ -1,7 +1,6 @@
 package com.springboot.api.common.config.security;
 
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,18 +15,17 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthenticationProvider jwtAuthProvider;
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final SecurityProperties securityProperties;
 
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter,
-            JwtAuthenticationProvider authenticationProvider) {
-        this.jwtAuthFilter = jwtAuthFilter;
-        this.jwtAuthProvider = authenticationProvider;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -36,13 +34,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                             .authorizeHttpRequests(auth -> auth
                                             .requestMatchers(
-                                                            "/user/**",
-                                                            "/*/counselor/signup",
-                                                            "/*/counselor/login",
-                                                            "/swagger-ui/**",
-                                                            "/*/api-docs/**",
-                                                            "/swagger-ui.html",
-                                                            "/h2-console/**")
+                                                    securityProperties.getPermitAllUrls().toArray(new String[0]))
                                             .permitAll() // 인증 없이 접근 가능
                                             .anyRequest().authenticated() // 나머지 요청은 인증 필요
                             )
