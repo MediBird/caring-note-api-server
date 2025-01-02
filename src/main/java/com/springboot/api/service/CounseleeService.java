@@ -68,6 +68,7 @@ public class CounseleeService {
                 Optional.ofNullable(currentCounselCard)
                         .map(CounselCard::getCardRecordStatus)
                         .orElse(CardRecordStatus.UNRECORDED)
+                ,counselee.isDisability()
         );
     }
 
