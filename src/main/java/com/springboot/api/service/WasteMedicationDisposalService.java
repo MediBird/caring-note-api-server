@@ -1,5 +1,7 @@
 package com.springboot.api.service;
 
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.springboot.api.common.exception.NoContentException;
@@ -8,6 +10,7 @@ import com.springboot.api.domain.WasteMedicationDisposal;
 import com.springboot.api.dto.wasteMedicationDisposal.WasteMedicationDisposalReq;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.WasteMedicationDisposalRepository;
+import com.springboot.enums.wasteMedication.UnusedReasonType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +32,9 @@ public class WasteMedicationDisposalService {
             wasteMedicationDisposal = new WasteMedicationDisposal();
         }
         wasteMedicationDisposal.setCounselSession(counselSession);
-        wasteMedicationDisposal.setUnusedReasonTypes(wasteMedicationDisposalReq.getUnusedReasonTypes());
+        wasteMedicationDisposal.setUnusedReasons(wasteMedicationDisposalReq.getUnusedReasonTypes().stream()
+                .map(UnusedReasonType::name)
+                .collect(Collectors.toList()));
         wasteMedicationDisposal.setUnusedReasonDetail(wasteMedicationDisposalReq.getUnusedReasonDetail());
         wasteMedicationDisposal.setDrugRemainActionType(wasteMedicationDisposalReq.getDrugRemainActionType());
         wasteMedicationDisposal.setDrugRemainActionDetail(wasteMedicationDisposalReq.getDrugRemainActionDetail());
