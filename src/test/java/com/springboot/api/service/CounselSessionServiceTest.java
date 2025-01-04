@@ -119,7 +119,7 @@ class CounselSessionServiceTest {
                 .size(5)
                 .build();
 
-        when(sessionRepository.findByCursor(any(),any(), any(), any(), any()))
+        when(sessionRepository.findByDateAndCursor(any(),any(), any(), any(), any()))
                 .thenReturn(List.of(mockCounselSession));
 
         SelectCounselSessionListByBaseDateAndCursorAndSizeRes res = service.selectCounselSessionListByBaseDateAndCursorAndSize(req);
