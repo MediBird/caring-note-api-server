@@ -1,11 +1,5 @@
 package com.springboot.api.common.config.initializer;
 
-import java.time.LocalDate;
-import java.util.Optional;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Medication;
 import com.springboot.api.domain.MedicationRecordHist;
@@ -14,8 +8,12 @@ import com.springboot.api.repository.MedicationRecordHistRepository;
 import com.springboot.api.repository.MedicationRepository;
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
-
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+
+import java.time.LocalDate;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -53,7 +51,7 @@ public class MedicationRecordHistInitializer implements CommandLineRunner {
                         .prescriptionDate(LocalDate.now().minusDays(i))
                         .prescriptionDays(i)
                         .unit("mg")
-                        .medicationUsageStatus(MedicationUsageStatus.AS_NEEDED) // Example Enum
+                        .usageStatus(MedicationUsageStatus.AS_NEEDED) // Example Enum
                         .build();
 
                 medicationRecordHistRepository.save(record);
