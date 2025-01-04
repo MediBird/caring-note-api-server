@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.domain.*;
 import com.springboot.enums.*;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -305,8 +306,29 @@ public class TestDataInitializer implements CommandLineRunner {
 
     }
 
-    private void addMedicationRecordHist(String counselSessionId, String medicationRecordHistId){
+    private void addMedicationRecordHist(String counselSessionId){
 
+        CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
+        String jpql = "SELECT m FROM Medication m";
+        TypedQuery<Medication> query = entityManager.createQuery(jpql, Medication.class);
+        query.setMaxResults(10);
+        List<Medication> medications = query.getResultList();
+
+        for (Medication medication : medications) {
+            MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
+                    .counselSession(counselSession)
+                    .medication(medication) // Associate with a Medication
+                    .medicationDivision(MedicationDivision.PRESCRIPTION) // Example Enum
+                    .name(medication.getItemName())
+                    .usageObject("그냥")
+                    .prescriptionDate(counselSession.getScheduledStartDateTime().minusDays(2).toLocalDate())
+                    .prescriptionDays(7)
+                    .unit("mg")
+                    .usageStatus(MedicationUsageStatus.AS_NEEDED) // Example Enum
+                    .build();
+
+            entityManager.persist(medicationRecordHist);
+        }
 
     }
 
