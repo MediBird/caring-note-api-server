@@ -17,9 +17,9 @@ spring:
           keycloak:
             client-id: caringnote
             client-name: caringnote
-            scope: openid,profile,email,phone_number
+            scope: openid,profile,email,phone
             authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
   config:
     import: optional:application-secret.yml
   docker:
@@ -60,9 +60,6 @@ spring:
     caffeine:
       spec: maximumSize=500,expireAfterWrite=60s
 
-jwt:
-  secret: my-very-secure-and-strong-key-for-jwt-authentication
-
 api:
   userdetails:
     implementation: counselorUserDetailsService
@@ -75,8 +72,8 @@ security:
     - "/user/**"
     - "/*/counselor/signup"
     - "/*/counselor/login"
-    - "/swagger-ui/**"
-    - "/*/api-docs/**"
-    - "/swagger-ui.html"
+    # - "/swagger-ui/**"
+    # - "/*/api-docs/**"
+    # - "/swagger-ui.html"
     - "/h2-console/**"
   
