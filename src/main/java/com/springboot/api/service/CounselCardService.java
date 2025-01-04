@@ -171,7 +171,7 @@ public class CounselCardService {
                     JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(itemName))
                             .orElseThrow(NoContentException::new);
 
-                    return new SelectPreviousItemListByInformationNameAndItemNameRes(entry.getKey().getScheduledStartDateTime().toLocalDate(), 
+                    return new SelectPreviousItemListByInformationNameAndItemNameRes(entry.getKey().getScheduledStartDateTime().toLocalDate(),
                             itemNode);
                 })
                 .toList();
