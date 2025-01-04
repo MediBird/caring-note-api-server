@@ -2,14 +2,13 @@ package com.springboot.api.domain;
 
 import java.util.List;
 
-import org.hibernate.annotations.Type;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.enums.wasteMedication.DrugRemainActionType;
 import com.springboot.enums.wasteMedication.RecoveryAgreementType;
 
-import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -33,8 +32,8 @@ public class WasteMedicationDisposal extends BaseEntity {
     @JsonIgnore
     private CounselSession counselSession;
 
-    @Type(ListArrayType.class)
-    @Column(name = "unused_reasons", columnDefinition = "character varying[]", nullable = true)
+    @Convert(converter = ListStringConverter.class)
+    @Column(name = "unused_reasons", columnDefinition = "TEXT", nullable = true)
     private List<String> unusedReasons;
 
     @Column(name = "unused_reason_detail")
