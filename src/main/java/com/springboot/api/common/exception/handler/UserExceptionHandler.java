@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 @Order(1)
-public class UserExceptionHandler extends CommonHandler{
+public class UserExceptionHandler extends CommonHandler {
 
     @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -38,8 +38,8 @@ public class UserExceptionHandler extends CommonHandler{
 
     @ExceptionHandler(NoContentException.class)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ErrorRes handleResourceNotFound(NoContentException ex) {
-        return buildErrorResponse(ex.getMessage());
+    public void handleNoContent(NoContentException ex) {
+
     }
 
     @ExceptionHandler(JsonConvertException.class)

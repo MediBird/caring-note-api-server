@@ -1,5 +1,6 @@
 package com.springboot.api.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselcard.*;
@@ -25,7 +26,7 @@ public class CounselCardController {
 
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담 카드 조회",tags = {"상담 카드 작성","본상담 - 상담 카드"})
-    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@PathVariable String counselSessionId) {
+    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@PathVariable String counselSessionId) throws JsonProcessingException {
 
         SelectCounselCardRes selectCounselCardRes = counselCardService.selectCounselCard(counselSessionId);
 
@@ -34,7 +35,7 @@ public class CounselCardController {
 
     @GetMapping("/{counselSessionId}/previous")
     @Operation(summary = "이전 상담 카드 조회",tags = {"상담 카드 작성"})
-    ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@PathVariable String counselSessionId) {
+    ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(@PathVariable String counselSessionId) throws JsonProcessingException {
 
         SelectPreviousCounselCardRes selectPreviousCounselCardRes = counselCardService.selectPreviousCounselCard(counselSessionId);
 

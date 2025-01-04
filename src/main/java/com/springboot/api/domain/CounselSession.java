@@ -22,12 +22,12 @@ import java.util.List;
 public class CounselSession extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "counselor_id", nullable = false)
+    @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 
     // 내담자와의 관계 매핑 (다대일)
     @ManyToOne
-    @JoinColumn(name = "counselee_id", nullable = false)
+    @JoinColumn(name = "counselee_id")
     private Counselee counselee;
 
     //상담 일정 날짜 및 시간

@@ -19,4 +19,5 @@ public record SelectCounseleeBaseInformationByCounseleeIdRes(
         , LocalDate lastCounselDate
         , List<String> diseases
         , CardRecordStatus cardRecordStatus
+        , boolean isisDisability
         ) { }

@@ -1,10 +1,10 @@
 package com.springboot.api.repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.springboot.api.config.JpaTestAdditionalConfig;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.domain.Counselor;
+import com.springboot.enums.ScheduleStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +14,11 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.jdbc.Sql;
 
-import com.springboot.api.config.JpaTestAdditionalConfig;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.domain.Counselor;
-import com.springboot.enums.ScheduleStatus;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @Import(JpaTestAdditionalConfig.class)
@@ -76,9 +76,9 @@ class CounselSessionRepositoryTest {
     void testFindByCursor() {
 
 
-        List<CounselSession> sessions = counselSessionRepository.findByCursor(
-                null
-                ,null // cursorScheduledStartDateTime
+        List<CounselSession> sessions = counselSessionRepository.findByDateAndCursor(
+                 LocalDateTime.of(2024,12,16,0,0)
+                ,LocalDateTime.of(2024,12,17,0,0)// cursorScheduledStartDateTime
                 ,null             // cursorId
                 ,null           // counselorId
                 ,PageRequest.of(0, 1) // pageable
@@ -86,6 +86,9 @@ class CounselSessionRepositoryTest {
 
         assertThat(sessions).hasSize(1);
         assertThat(sessions.get(0).getId()).isEqualTo("TEST-COUNSEL-SESSION-03");
+
+
+
     }
 }
 

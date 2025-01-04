@@ -27,25 +27,18 @@ public class CounseleeService {
     public final CounselSessionRepository counselSessionRepository;
     public final DateTimeUtil dateTimeUtil;
 
-
-    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeId(String counselSessionId,
-                                                                                   String counseleeId){
-
+    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId) {
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
-        Counselee counseleeInSession = Optional.ofNullable(counselSession.getCounselee())
-                .orElseThrow(NoContentException::new);
-
-        Counselee counselee = counseleeRepository.findById(counseleeId)
-                .filter(c -> c.getId().equals(counseleeInSession.getId()))
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
 
         CounselCard currentCounselCard = counselSession.getCounselCard();
 
         CounselCard targetCounselCard = (currentCounselCard == null || currentCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDING))
-                ? getPreviousCounselCard(counseleeId, counselSession.getScheduledStartDateTime())
+                ? getPreviousCounselCard(counselee.getId(), counselSession.getScheduledStartDateTime())
                 : currentCounselCard;
 
         List<String> diseases = new ArrayList<>();
@@ -71,9 +64,11 @@ public class CounseleeService {
                 counselee.getCounselCount(),
                 counselee.getLastCounselDate(),
                 diseases // diseases 값 반환
-                ,Optional.ofNullable(currentCounselCard)
-                .map(CounselCard::getCardRecordStatus)
-                .orElse(CardRecordStatus.UNRECORDED)
+                , 
+                Optional.ofNullable(currentCounselCard)
+                        .map(CounselCard::getCardRecordStatus)
+                        .orElse(CardRecordStatus.UNRECORDED)
+                ,counselee.isDisability()
         );
     }
 

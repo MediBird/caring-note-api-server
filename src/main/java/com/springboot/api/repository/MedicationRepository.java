@@ -14,12 +14,12 @@ public interface MedicationRepository extends JpaRepository<Medication, String> 
     @Query(value = """
         SELECT * FROM medications m
         WHERE LOWER(m.item_name) LIKE LOWER(CONCAT('%', :keyword, '%'))
-                OR m.item_name_chosung ~ LOWER(CONCAT('.*', :pattern, '.*'))
-        ORDER BY 
+                        OR m.item_name_chosung ~ LOWER(CONCAT('.*', :pattern, '.*'))
+            ORDER BY 
             CASE 
                 WHEN LOWER(m.item_name_chosung) LIKE LOWER(CONCAT(:pattern, '%')) THEN 1
                 WHEN LOWER(m.item_name_chosung) LIKE LOWER(CONCAT('%', :pattern, '%')) THEN 2
-                ELSE 3
+                        ELSE 3
             END
     """, nativeQuery = true)
     List<Medication> searchByItemNameWithPattern(
