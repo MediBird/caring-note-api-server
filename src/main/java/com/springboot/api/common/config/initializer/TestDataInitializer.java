@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.domain.*;
 import com.springboot.enums.*;
+import com.springboot.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.enums.wasteMedication.RecoveryAgreementType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +65,7 @@ public class TestDataInitializer implements CommandLineRunner {
         List<String> counselCardIds = List.of(
                 "TEST-COUNSEL-CARD-01"
         );
-        addCounselCard(counselCardIds.getFirst(), counselCardIds.getFirst(), counseleeIds.getFirst());
+        addCounselCard(counselSessionIds.getFirst(), counselCardIds.getFirst(), counseleeIds.getFirst());
 
         // add CounseleeConsent
         List<String> counseleeConsentIds = List.of(
@@ -81,11 +83,40 @@ public class TestDataInitializer implements CommandLineRunner {
         ,medicationCounselIds.getFirst());
 
 
-        //TODO add MedicationRecordHist
+        // add MedicationRecordHist
+        List<String> medicationRecordHistIds = List.of(
+                "TEST-RECORD-HIST-01"
+                ,"TEST-RECORD-HIST-02"
+                ,"TEST-RECORD-HIST-03"
+                ,"TEST-RECORD-HIST-04"
+                ,"TEST-RECORD-HIST-05"
+                ,"TEST-RECORD-HIST-06"
+                ,"TEST-RECORD-HIST-07"
+                ,"TEST-RECORD-HIST-08"
+                ,"TEST-RECORD-HIST-09"
+                ,"TEST-RECORD-HIST-10"
+        );
+        addMedicationRecordHist(counselSessionIds.getFirst(), medicationRecordHistIds);
 
-        //TODO add WasteMedicationDisposal
+        // add WasteMedicationDisposal
+        List<String> wasteMedicationDisposalIds = List.of("TEST-WASTE-DISPOSAL-01");
+        addWasteMedicationDisposal(counselSessionIds.getFirst(), wasteMedicationDisposalIds.getFirst());
 
-        //TODO add WasteMedicationRecord
+        // add WasteMedicationRecord
+        List<String> wasteMedicationRecordIds = List.of(
+                "TEST-WASTE-RECORD-HIST-01"
+                ,"TEST-WASTE-RECORD-HIST-02"
+                ,"TEST-WASTE-RECORD-HIST-03"
+                ,"TEST-WASTE-RECORD-HIST-04"
+                ,"TEST-WASTE-RECORD-HIST-05"
+                ,"TEST-WASTE-RECORD-HIST-06"
+                ,"TEST-WASTE-RECORD-HIST-07"
+                ,"TEST-WASTE-RECORD-HIST-08"
+                ,"TEST-WASTE-RECORD-HIST-09"
+                ,"TEST-WASTE-RECORD-HIST-10"
+        );
+        addWasteMedicationRecord(counselSessionIds.getFirst(), wasteMedicationRecordIds);
+
 
     }
 
@@ -127,8 +158,8 @@ public class TestDataInitializer implements CommandLineRunner {
     }
 
     private void addCounselSession(String counselSessionId
-            , String counseleeId
             , String counselorId
+            , String counseleeId
     , ScheduleStatus scheduleStatus) {
 
         Counselor counselor = entityManager.getReference(Counselor.class, counselorId);
@@ -306,13 +337,14 @@ public class TestDataInitializer implements CommandLineRunner {
 
     }
 
-    private void addMedicationRecordHist(String counselSessionId){
+    private void addMedicationRecordHist(String counselSessionId,List<String> medicationRecordHistIds){
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         String jpql = "SELECT m FROM Medication m";
         TypedQuery<Medication> query = entityManager.createQuery(jpql, Medication.class);
-        query.setMaxResults(10);
+        query.setMaxResults(medicationRecordHistIds.size());
         List<Medication> medications = query.getResultList();
+        int idx = 0;
 
         for (Medication medication : medications) {
             MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
@@ -327,7 +359,55 @@ public class TestDataInitializer implements CommandLineRunner {
                     .usageStatus(MedicationUsageStatus.AS_NEEDED) // Example Enum
                     .build();
 
+            medicationRecordHist.setId(medicationRecordHistIds.get(idx++));
+
             entityManager.persist(medicationRecordHist);
+        }
+
+    }
+
+    private void addWasteMedicationDisposal(String counselSessionId,String wasteMedicationDisposalId){
+
+        CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
+
+        WasteMedicationDisposal wasteMedicationDisposal = WasteMedicationDisposal
+                .builder()
+                .counselSession(counselSession)
+                .unusedReasons(List.of("다른 약으로 대체함"))
+                .unusedReasonDetail("")
+                .drugRemainActionType(DrugRemainActionType.DOCTOR_OR_PHARMACIST)
+                .recoveryAgreementType(RecoveryAgreementType.AGREE)
+                .wasteMedicationGram(100)
+                .build();
+
+        wasteMedicationDisposal.setId(wasteMedicationDisposalId);
+
+        entityManager.persist(wasteMedicationDisposal);
+    }
+
+    private void addWasteMedicationRecord(String counselSessionId, List<String> wasteMedicationRecordIds){
+
+        CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
+        String jpql = "SELECT m FROM Medication m";
+        TypedQuery<Medication> query = entityManager.createQuery(jpql, Medication.class);
+        query.setMaxResults(wasteMedicationRecordIds.size());
+        List<Medication> medications = query.getResultList();
+        int idx = 0;
+
+        for (Medication medication : medications) {
+
+            WasteMedicationRecord wasteMedicationRecord = WasteMedicationRecord
+                    .builder()
+                    .counselSession(counselSession)
+                    .medication(medication)
+                    .medicationName(medication.getItemName())
+                    .disposalReason("그냥")
+                    .unit("mg")
+                    .build();
+
+            wasteMedicationRecord.setId(wasteMedicationRecordIds.get(idx++));
+
+            entityManager.persist(wasteMedicationRecord);
         }
 
     }
