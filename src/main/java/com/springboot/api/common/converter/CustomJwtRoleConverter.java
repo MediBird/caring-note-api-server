@@ -15,6 +15,7 @@ import com.springboot.api.repository.CounselorRepository;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.RoleType;
 
+import io.micrometer.common.lang.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -24,9 +25,8 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
     private final UserDetailsService userDetailsService;
     private final CounselorRepository counselorRepository;
 
-    
     @Override
-    public Collection<GrantedAuthority> convert(Jwt jwt) {
+    public Collection<GrantedAuthority> convert(@NonNull Jwt jwt) {
         // JWT에서 사용자 ID나 이메일 추출
         String username = jwt.getClaimAsString("preferred_username");
 

@@ -15,10 +15,9 @@ spring:
             user-name-attribute: preferred_username
         registration:
           keycloak:
-            client-id: localhost
-            client-secret: OPV3ZncOKzLWqvY8jjnNgH8xEHsj6ulH
-            client-name: localhost
-            scope: openid,profile,email
+            client-id: caringnote
+            client-name: caringnote
+            scope: openid,profile,email,phone_number
             authorization-grant-type: authorization_code
             redirect-uri: "{baseUrl}/login/oauth2/code/keycloak"
   config:
@@ -37,7 +36,7 @@ spring:
       path: /v1/api-docs
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
@@ -67,7 +66,10 @@ jwt:
 api:
   userdetails:
     implementation: counselorUserDetailsService
-
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
 security:
   permit-all-urls:
     - "/user/**"
@@ -77,3 +79,4 @@ security:
     - "/*/api-docs/**"
     - "/swagger-ui.html"
     - "/h2-console/**"
+  
