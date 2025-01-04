@@ -45,7 +45,7 @@ public class CounselCardService {
     private final EntityManager entityManager;
     private final ObjectMapper objectMapper;
 
-    public SelectCounselCardRes selectCounselCard(String counselSessionId) {
+    public SelectCounselCardRes selectCounselCard(String counselSessionId) throws JsonProcessingException {
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
@@ -53,11 +53,11 @@ public class CounselCardService {
         CounselCard counselCard = Optional.ofNullable(counselSession.getCounselCard())
                 .orElseThrow(NoContentException::new);
 
-        return new SelectCounselCardRes(counselCard.getId(), 
-                objectMapper.treeToValue(counselCard.getBaseInformation(), BaseInformationDTO.class), 
-                objectMapper.treeToValue(counselCard.getHealthInformation(), HealthInformationDTO.class), 
-                objectMapper.treeToValue(counselCard.getLivingInformation(), LivingInformationDTO.class), 
-                objectMapper.treeToValue(counselCard.getIndependentLifeInformation(), IndependentLifeInformationDTO.class), 
+        return new SelectCounselCardRes(counselCard.getId(),
+                objectMapper.treeToValue(counselCard.getBaseInformation(), BaseInformationDTO.class),
+                objectMapper.treeToValue(counselCard.getHealthInformation(), HealthInformationDTO.class),
+                objectMapper.treeToValue(counselCard.getLivingInformation(), LivingInformationDTO.class),
+                objectMapper.treeToValue(counselCard.getIndependentLifeInformation(), IndependentLifeInformationDTO.class),
                 counselCard.getCardRecordStatus()
         );
     }
@@ -82,9 +82,9 @@ public class CounselCardService {
                 .orElseThrow(NoContentException::new);
 
         return new SelectPreviousCounselCardRes(
-                objectMapper.treeToValue(previousCounselCard.getBaseInformation(), BaseInformationDTO.class), 
-                objectMapper.treeToValue(previousCounselCard.getHealthInformation(), HealthInformationDTO.class), 
-                objectMapper.treeToValue(previousCounselCard.getLivingInformation(), LivingInformationDTO.class), 
+                objectMapper.treeToValue(previousCounselCard.getBaseInformation(), BaseInformationDTO.class),
+                objectMapper.treeToValue(previousCounselCard.getHealthInformation(), HealthInformationDTO.class),
+                objectMapper.treeToValue(previousCounselCard.getLivingInformation(), LivingInformationDTO.class),
                 objectMapper.treeToValue(previousCounselCard.getIndependentLifeInformation(), IndependentLifeInformationDTO.class)
         );
     }
@@ -171,7 +171,7 @@ public class CounselCardService {
                     JsonNode itemNode = Optional.ofNullable(informationJsonNode.get(itemName))
                             .orElseThrow(NoContentException::new);
 
-                    return new SelectPreviousItemListByInformationNameAndItemNameRes(entry.getKey().getScheduledStartDateTime().toLocalDate(),
+                    return new SelectPreviousItemListByInformationNameAndItemNameRes(entry.getKey().getScheduledStartDateTime().toLocalDate(), 
                             itemNode);
                 })
                 .toList();
