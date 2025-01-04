@@ -1,71 +1,74 @@
 package com.springboot.api.common.config.security;
 
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class SecurityConfig {
 
-    private final JwtAuthenticationProvider jwtAuthProvider;
-    private final JwtAuthenticationFilter jwtAuthFilter;
     private final SecurityProperties securityProperties;
-
+    private final CustomJwtRoleConverter customJwtRoleConverter;
+    private final JwtDecoder jwtDecoder;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-            http.csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        return http
+                .csrf(CsrfConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                            .authorizeHttpRequests(auth -> auth
-                                            .requestMatchers(
-                                                    securityProperties.getPermitAllUrls().toArray(new String[0]))
-                                            .permitAll() // 인증 없이 접근 가능
-                                            .anyRequest().authenticated() // 나머지 요청은 인증 필요
-                            )
-                            .sessionManagement(session -> session
-                                            .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // 세션을 사용하지 않음
-                            )
-                            .authenticationProvider(jwtAuthProvider) // 커스텀 AuthenticationProvider 사용
-                            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-                            .headers(headers -> headers
-                                            .contentSecurityPolicy(csp -> csp
-                                                            .policyDirectives("frame-ancestors 'self'")));
+                .authorizeHttpRequests(auth -> auth
+                .requestMatchers(securityProperties.getPermitAllUrls().toArray(String[]::new))
+                .permitAll()
+                .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> {
+                })
+                .oauth2ResourceServer(oauth2 -> oauth2
+                .jwt(jwt -> jwt.decoder(jwtDecoder)
+                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                )
+                )
+                .build();
+    }
 
-            return http.build();
+    @Bean
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(customJwtRoleConverter);
+        return converter;
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("https://caringnote.co.kr", "http://localhost:3000","http://localhost:5173"));
+        configuration.setAllowedOrigins(
+                List.of("https://caringnote.co.kr", "http://localhost:3000", "http://localhost:5173",
+                        "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Authorization","Access-Token","Uid","Refresh-Token"));
+        configuration.setExposedHeaders(List.of("Authorization", "Access-Token", "Uid", "Refresh-Token"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
 }
