@@ -11,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.domain.WasteMedicationDisposal;
 import com.springboot.api.dto.wasteMedication.AddAndUpdateWasteMedicationRecordReq;
 import com.springboot.api.dto.wasteMedication.AddAndUpdateWasteMedicationRecordRes;
 import com.springboot.api.dto.wasteMedication.SelectMedicationRecordListBySessionIdRes;
+import com.springboot.api.dto.wasteMedicationDisposal.WasteMedicationDisposalReq;
+import com.springboot.api.dto.wasteMedicationDisposal.WasteMedicationDisposalRes;
+import com.springboot.api.service.WasteMedicationDisposalService;
 import com.springboot.api.service.WasteMedicationRecordService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class WasteMedicationController {
 
     private final WasteMedicationRecordService wasteMedicationRecordService;
+    private final WasteMedicationDisposalService wasteMedicationDisposalService;
 
     @PostMapping("/{counselSessionId}")
     @Operation(summary = "폐의약품 추가", tags = {"본상담 - 폐의약품 목록"})
@@ -61,4 +66,33 @@ public class WasteMedicationController {
         wasteMedicationRecordService.deleteWasteMedicationRecord(counselSessionId, wasteMedicationRecordId);
         return ResponseEntity.ok(new CommonRes<>(null));
     }
+
+    @PostMapping("/disposal/{counselSessionId}")
+    @Operation(summary = "폐의약품 폐기 정보 추가 혹은 업데이트", tags = {"본상담 - 폐의약품 목록"})
+    public ResponseEntity<CommonRes<String>> addWasteMedicationDisposal(
+            @PathVariable("counselSessionId") String counselSessionId,
+            @RequestBody @Valid WasteMedicationDisposalReq wasteMedicationDisposalReq) {
+
+        return ResponseEntity.ok(new CommonRes<>(
+                wasteMedicationDisposalService.save(counselSessionId, wasteMedicationDisposalReq)));
+    }
+
+    @DeleteMapping("/disposal/{counselSessionId}")
+    @Operation(summary = "폐의약품 폐기 정보 삭제", tags = {"본상담 - 폐의약품 목록"})
+    public ResponseEntity<CommonRes<Void>> deleteWasteMedicationDisposal(
+            @PathVariable("counselSessionId") String counselSessionId) {
+        wasteMedicationDisposalService.delete(counselSessionId);
+        return ResponseEntity.ok(new CommonRes<>(null));
+    }
+
+    @GetMapping("/disposal/{counselSessionId}")
+    @Operation(summary = "폐의약품 폐기 정보 조회", tags = {"본상담 - 폐의약품 목록"})
+    public ResponseEntity<CommonRes<WasteMedicationDisposalRes>> getWasteMedicationDisposal(
+            @PathVariable("counselSessionId") String counselSessionId) {
+        WasteMedicationDisposal disposal = wasteMedicationDisposalService.get(counselSessionId);
+        WasteMedicationDisposalRes response = new WasteMedicationDisposalRes(disposal);
+        return ResponseEntity.ok(new CommonRes<>(response));
+
+    }
+
 }
