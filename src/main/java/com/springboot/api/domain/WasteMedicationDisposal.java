@@ -1,21 +1,28 @@
 package com.springboot.api.domain;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.enums.wasteMedication.DrugRemainActionType;
 import com.springboot.enums.wasteMedication.RecoveryAgreementType;
-import io.hypersistence.utils.hibernate.type.array.ListArrayType;
-import jakarta.persistence.*;
-import lombok.*;
-import org.hibernate.annotations.Type;
 
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "waste_medication_disposals")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
 @ToString(callSuper = true, exclude = {"counselSession"})
 public class WasteMedicationDisposal extends BaseEntity {
@@ -25,8 +32,8 @@ public class WasteMedicationDisposal extends BaseEntity {
     @JsonIgnore
     private CounselSession counselSession;
 
-    @Type(ListArrayType.class)
-    @Column(name = "unused_reasons", columnDefinition = "character varying[]", nullable = true)
+    @Convert(converter = ListStringConverter.class)
+    @Column(name = "unused_reasons", columnDefinition = "TEXT", nullable = true)
     private List<String> unusedReasons;
 
     @Column(name = "unused_reason_detail")

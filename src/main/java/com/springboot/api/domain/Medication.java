@@ -28,9 +28,9 @@ import lombok.ToString;
 })
 @EqualsAndHashCode(callSuper = true, exclude = {"contraindications"})
 @ToString(callSuper = true, exclude = {"contraindications"})
-public class Medication extends BaseEntity{
+public class Medication extends BaseEntity {
 
-        // 약 이름
+    // 약 이름
     @Column(nullable = false, length = 255)
     @NotBlank(message = "약 이름은 필수 입력 항목입니다.")
     private String itemName;
@@ -85,13 +85,12 @@ public class Medication extends BaseEntity{
     @Min(value = 0, message = "폐기까지의 일수는 0 이상이어야 합니다.")
     private Integer daysUntilDiscard;
 
-
     // 위험한 약물 상호 작용 (자기 자신과의 다대다 관계)
     @ManyToMany
     @JoinTable(
-        name = "medication_contraindications",
-        joinColumns = @JoinColumn(name = "medication_id"),
-        inverseJoinColumns = @JoinColumn(name = "contraindicated_medication_id")
+            name = "medication_contraindications",
+            joinColumns = @JoinColumn(name = "medication_id"),
+            inverseJoinColumns = @JoinColumn(name = "contraindicated_medication_id")
     )
     private Set<Medication> contraindications = new HashSet<>();
 

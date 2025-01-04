@@ -1,4 +1,25 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/certs
+      client:
+        provider:
+          keycloak:
+            issuer-uri: https://caringnote.co.kr/keycloak/realms/caringnote
+            authorization-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/auth
+            token-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/token
+            user-info-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/userinfo
+            jwk-set-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/certs
+            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            client-id: caringnote
+            client-name: caringnote
+            scope: openid,profile,email,phone
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
   config:
     import: optional:application-secret.yml
   docker:
@@ -15,7 +36,7 @@ spring:
       path: /v1/api-docs
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
     properties:
       hibernate:
@@ -39,19 +60,20 @@ spring:
     caffeine:
       spec: maximumSize=500,expireAfterWrite=60s
 
-jwt:
-  secret: my-very-secure-and-strong-key-for-jwt-authentication
-
 api:
   userdetails:
     implementation: counselorUserDetailsService
-
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
 security:
   permit-all-urls:
     - "/user/**"
     - "/*/counselor/signup"
     - "/*/counselor/login"
-    - "/swagger-ui/**"
-    - "/*/api-docs/**"
-    - "/swagger-ui.html"
+    # - "/swagger-ui/**"
+    # - "/*/api-docs/**"
+    # - "/swagger-ui.html"
     - "/h2-console/**"
+  
