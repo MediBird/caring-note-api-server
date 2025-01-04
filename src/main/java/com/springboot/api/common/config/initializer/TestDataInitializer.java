@@ -122,39 +122,46 @@ public class TestDataInitializer implements CommandLineRunner {
 
     private void addCounselor(String counselorId) {
 
-        Counselor counselor = Counselor
-                .builder()
-                .email(counselorId+"@gmail.com")
-                .phoneNumber(getRandomPhoneNumber())
-                .name(names.get(random.nextInt(names.size())))
-                .password(passwordEncoder.encode("1234qwer!@"))
-                .roleType(RoleType.ROLE_ADMIN)
-                .status(CounselorStatus.ACTIVE)
-                .registrationDate(LocalDate.now())
-                .build();
+        if(entityManager.find(Counselor.class, counselorId) == null) {
 
-        counselor.setId(counselorId);
+            Counselor counselor = Counselor
+                    .builder()
+                    .email(counselorId+"@gmail.com")
+                    .phoneNumber(getRandomPhoneNumber())
+                    .name(names.get(random.nextInt(names.size())))
+                    .password(passwordEncoder.encode("1234qwer!@"))
+                    .roleType(RoleType.ROLE_ADMIN)
+                    .status(CounselorStatus.ACTIVE)
+                    .registrationDate(LocalDate.now())
+                    .build();
 
-        entityManager.persist(counselor);
+            counselor.setId(counselorId);
+
+            entityManager.persist(counselor);
+
+        }
+
 
     }
 
     private void addCounselee(String counseleeId) {
 
-        Counselee counselee = Counselee
-                .builder()
-                .name(names.get(random.nextInt(names.size())))
-                .dateOfBirth(getRandomDate("1930-01-01","2000-01-01"))
-                .genderType(GenderType.MALE)
-                .isDisability(true)
-                .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                .phoneNumber(getRandomPhoneNumber())
-                .registrationDate(LocalDate.now())
-                .build();
+        if(entityManager.find(Counselee.class, counseleeId) == null) {
+            Counselee counselee = Counselee
+                    .builder()
+                    .name(names.get(random.nextInt(names.size())))
+                    .dateOfBirth(getRandomDate("1930-01-01", "2000-01-01"))
+                    .genderType(GenderType.MALE)
+                    .isDisability(true)
+                    .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
+                    .phoneNumber(getRandomPhoneNumber())
+                    .registrationDate(LocalDate.now())
+                    .build();
 
-        counselee.setId(counseleeId);
+            counselee.setId(counseleeId);
 
-        entityManager.persist(counselee);
+            entityManager.persist(counselee);
+        }
     }
 
     private void addCounselSession(String counselSessionId
@@ -172,19 +179,21 @@ public class TestDataInitializer implements CommandLineRunner {
         LocalDateTime scheduleDateTime = scheduleDate.atTime(random.nextInt(9,19),0);
 ;
 
-        CounselSession counselSession = CounselSession
-                .builder()
-                .counselor(counselor)
-                .counselee(counselee)
-                .status(scheduleStatus)
-                .scheduledStartDateTime(scheduleDateTime)
-                .startDateTime(scheduleDateTime)
-                .endDateTime(scheduleDateTime.plusMinutes(30))
-                .build();
+        if(entityManager.find(CounselSession.class, counselSessionId) == null) {
+            CounselSession counselSession = CounselSession
+                    .builder()
+                    .counselor(counselor)
+                    .counselee(counselee)
+                    .status(scheduleStatus)
+                    .scheduledStartDateTime(scheduleDateTime)
+                    .startDateTime(scheduleDateTime)
+                    .endDateTime(scheduleDateTime.plusMinutes(30))
+                    .build();
 
-        counselSession.setId(counselSessionId);
+            counselSession.setId(counselSessionId);
 
-        entityManager.persist(counselSession);
+            entityManager.persist(counselSession);
+        }
     }
 
     private void addCounselCard(String counselSessionId, String counselCardId, String counseleeId) throws JsonProcessingException {
@@ -284,20 +293,22 @@ public class TestDataInitializer implements CommandLineRunner {
                 :null;
 
 
-        CounselCard counselCard = CounselCard
-                .builder()
-                .counselSession(counselSession)
-                .baseInformation(baseInformation)
-                .healthInformation(healthInformation)
-                .livingInformation(livingInformation)
-                .independentLifeInformation(independentLifeInformation)
-                .cardRecordStatus(counselSession.getStatus()== ScheduleStatus.CANCELED
-                        ? CardRecordStatus.RECORDED : CardRecordStatus.RECORDING)
-                .build();
+        if(entityManager.find(CounselCard.class, counselCardId) == null) {
+            CounselCard counselCard = CounselCard
+                    .builder()
+                    .counselSession(counselSession)
+                    .baseInformation(baseInformation)
+                    .healthInformation(healthInformation)
+                    .livingInformation(livingInformation)
+                    .independentLifeInformation(independentLifeInformation)
+                    .cardRecordStatus(counselSession.getStatus() == ScheduleStatus.CANCELED
+                            ? CardRecordStatus.RECORDED : CardRecordStatus.RECORDING)
+                    .build();
 
-        counselCard.setId(counselCardId);
+            counselCard.setId(counselCardId);
 
-        entityManager.persist(counselCard);
+            entityManager.persist(counselCard);
+        }
 
     }
 
@@ -306,16 +317,17 @@ public class TestDataInitializer implements CommandLineRunner {
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
 
-        CounseleeConsent counseleeConsent = CounseleeConsent.builder()
-                .isConsent(true)
-                .counselSession(counselSession)
-                .counselee(counselee)
-                .consentDateTime(counselSession.getStartDateTime())
-                .build();
-        counseleeConsent.setId(counseleeConsentId);
+        if(entityManager.find(CounseleeConsent.class, counseleeConsentId) == null) {
+            CounseleeConsent counseleeConsent = CounseleeConsent.builder()
+                    .isConsent(true)
+                    .counselSession(counselSession)
+                    .counselee(counselee)
+                    .consentDateTime(counselSession.getStartDateTime())
+                    .build();
+            counseleeConsent.setId(counseleeConsentId);
 
-        entityManager.persist(counseleeConsent);
-
+            entityManager.persist(counseleeConsent);
+        }
 
     }
 
@@ -323,18 +335,19 @@ public class TestDataInitializer implements CommandLineRunner {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
 
-        MedicationCounsel medicationCounsel = MedicationCounsel
-                .builder()
-                .counselSession(counselSession)
-                .counselRecord("의약 상담을 진행합니다. 아주 좋습니다. 뭐가 문제일까요?")
-                .counselRecordHighlights(List.of("아주","뭐가"))
-                .counselNeedStatus(CounselNeedStatus.CONTINUOUS)
-                .build();
+        if(entityManager.find(MedicationCounsel.class, medicationCounselId) == null) {
+            MedicationCounsel medicationCounsel = MedicationCounsel
+                    .builder()
+                    .counselSession(counselSession)
+                    .counselRecord("의약 상담을 진행합니다. 아주 좋습니다. 뭐가 문제일까요?")
+                    .counselRecordHighlights(List.of("아주", "뭐가"))
+                    .counselNeedStatus(CounselNeedStatus.CONTINUOUS)
+                    .build();
 
-        medicationCounsel.setId(medicationCounselId);
+            medicationCounsel.setId(medicationCounselId);
 
-        entityManager.persist(medicationCounsel);
-
+            entityManager.persist(medicationCounsel);
+        }
     }
 
     private void addMedicationRecordHist(String counselSessionId,List<String> medicationRecordHistIds){
@@ -347,21 +360,23 @@ public class TestDataInitializer implements CommandLineRunner {
         int idx = 0;
 
         for (Medication medication : medications) {
-            MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
-                    .counselSession(counselSession)
-                    .medication(medication) // Associate with a Medication
-                    .medicationDivision(MedicationDivision.PRESCRIPTION) // Example Enum
-                    .name(medication.getItemName())
-                    .usageObject("그냥")
-                    .prescriptionDate(counselSession.getScheduledStartDateTime().minusDays(2).toLocalDate())
-                    .prescriptionDays(7)
-                    .unit("mg")
-                    .usageStatus(MedicationUsageStatus.AS_NEEDED) // Example Enum
-                    .build();
+            if(entityManager.find(MedicationRecordHist.class, medicationRecordHistIds.get(idx)) == null) {
+                MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
+                        .counselSession(counselSession)
+                        .medication(medication) // Associate with a Medication
+                        .medicationDivision(MedicationDivision.PRESCRIPTION) // Example Enum
+                        .name(medication.getItemName())
+                        .usageObject("그냥")
+                        .prescriptionDate(counselSession.getScheduledStartDateTime().minusDays(2).toLocalDate())
+                        .prescriptionDays(7)
+                        .unit("mg")
+                        .usageStatus(MedicationUsageStatus.AS_NEEDED) // Example Enum
+                        .build();
 
-            medicationRecordHist.setId(medicationRecordHistIds.get(idx++));
+                medicationRecordHist.setId(medicationRecordHistIds.get(idx++));
 
-            entityManager.persist(medicationRecordHist);
+                entityManager.persist(medicationRecordHist);
+            }
         }
 
     }
@@ -370,19 +385,21 @@ public class TestDataInitializer implements CommandLineRunner {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
 
-        WasteMedicationDisposal wasteMedicationDisposal = WasteMedicationDisposal
-                .builder()
-                .counselSession(counselSession)
-                .unusedReasons(List.of("다른 약으로 대체함"))
-                .unusedReasonDetail("")
-                .drugRemainActionType(DrugRemainActionType.DOCTOR_OR_PHARMACIST)
-                .recoveryAgreementType(RecoveryAgreementType.AGREE)
-                .wasteMedicationGram(100)
-                .build();
+        if(entityManager.find(WasteMedicationDisposal.class, wasteMedicationDisposalId) == null) {
+            WasteMedicationDisposal wasteMedicationDisposal = WasteMedicationDisposal
+                    .builder()
+                    .counselSession(counselSession)
+                    .unusedReasons(List.of("다른 약으로 대체함"))
+                    .unusedReasonDetail("")
+                    .drugRemainActionType(DrugRemainActionType.DOCTOR_OR_PHARMACIST)
+                    .recoveryAgreementType(RecoveryAgreementType.AGREE)
+                    .wasteMedicationGram(100)
+                    .build();
 
-        wasteMedicationDisposal.setId(wasteMedicationDisposalId);
+            wasteMedicationDisposal.setId(wasteMedicationDisposalId);
 
-        entityManager.persist(wasteMedicationDisposal);
+            entityManager.persist(wasteMedicationDisposal);
+        }
     }
 
     private void addWasteMedicationRecord(String counselSessionId, List<String> wasteMedicationRecordIds){
@@ -396,18 +413,20 @@ public class TestDataInitializer implements CommandLineRunner {
 
         for (Medication medication : medications) {
 
-            WasteMedicationRecord wasteMedicationRecord = WasteMedicationRecord
-                    .builder()
-                    .counselSession(counselSession)
-                    .medication(medication)
-                    .medicationName(medication.getItemName())
-                    .disposalReason("그냥")
-                    .unit("mg")
-                    .build();
+            if(entityManager.find(WasteMedicationRecord.class, wasteMedicationRecordIds.get(idx)) == null) {
+                WasteMedicationRecord wasteMedicationRecord = WasteMedicationRecord
+                        .builder()
+                        .counselSession(counselSession)
+                        .medication(medication)
+                        .medicationName(medication.getItemName())
+                        .disposalReason("그냥")
+                        .unit("mg")
+                        .build();
 
-            wasteMedicationRecord.setId(wasteMedicationRecordIds.get(idx++));
+                wasteMedicationRecord.setId(wasteMedicationRecordIds.get(idx++));
 
-            entityManager.persist(wasteMedicationRecord);
+                entityManager.persist(wasteMedicationRecord);
+            }
         }
 
     }
