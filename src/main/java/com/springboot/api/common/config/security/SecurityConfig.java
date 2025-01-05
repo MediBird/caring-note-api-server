@@ -1,8 +1,7 @@
 package com.springboot.api.common.config.security;
 
-import com.springboot.api.common.converter.CustomJwtRoleConverter;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -17,7 +16,10 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.List;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
@@ -39,8 +41,8 @@ public class SecurityConfig {
                 .permitAll()
                 .anyRequest().authenticated()
                 )
-                .oauth2Login(oauth2 -> {
-                })
+                // .oauth2Login(oauth2 -> {
+                // })
                 .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(jwtDecoder)
                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
