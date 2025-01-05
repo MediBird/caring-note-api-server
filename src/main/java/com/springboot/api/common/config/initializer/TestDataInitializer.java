@@ -1,25 +1,44 @@
 package com.springboot.api.common.config.initializer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.domain.*;
-import com.springboot.enums.*;
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.domain.CounselCard;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.domain.CounseleeConsent;
+import com.springboot.api.domain.Counselor;
+import com.springboot.api.domain.Medication;
+import com.springboot.api.domain.MedicationCounsel;
+import com.springboot.api.domain.MedicationRecordHist;
+import com.springboot.api.domain.WasteMedicationDisposal;
+import com.springboot.api.domain.WasteMedicationRecord;
+import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.CounselNeedStatus;
+import com.springboot.enums.CounselorStatus;
+import com.springboot.enums.GenderType;
+import com.springboot.enums.HealthInsuranceType;
+import com.springboot.enums.MedicationDivision;
+import com.springboot.enums.MedicationUsageStatus;
+import com.springboot.enums.RoleType;
+import com.springboot.enums.ScheduleStatus;
+import com.springboot.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.enums.wasteMedication.RecoveryAgreementType;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -37,7 +56,7 @@ public class TestDataInitializer implements CommandLineRunner {
     @Transactional
     public void run(String... args) throws Exception {
 
-        if(Arrays.asList(args).contains("--initTestData")) {
+        if (Arrays.asList(args).contains("--initTestData")) {
             initTestData();
         }
     }
@@ -53,13 +72,13 @@ public class TestDataInitializer implements CommandLineRunner {
                 this::addCounselee
         );
         // add CounselSession
-        List<String> counselSessionIds = List.of("TEST-COUNSEL-SESSION-01"
-                ,"TEST-COUNSEL-SESSION-02"
-                ,"TEST-COUNSEL-SESSION-03");
+        List<String> counselSessionIds = List.of("TEST-COUNSEL-SESSION-01", 
+                "TEST-COUNSEL-SESSION-02", 
+                "TEST-COUNSEL-SESSION-03");
 
-        addCounselSession(counselSessionIds.getFirst(),counselorId,counseleeIds.getFirst(), ScheduleStatus.COMPLETED);
-        addCounselSession(counselSessionIds.get(1),counselorId,counseleeIds.getFirst(), ScheduleStatus.SCHEDULED);
-        addCounselSession(counselSessionIds.get(2),counselorId,counseleeIds.getLast(), ScheduleStatus.SCHEDULED);
+        addCounselSession(counselSessionIds.getFirst(), counselorId, counseleeIds.getFirst(), ScheduleStatus.COMPLETED);
+        addCounselSession(counselSessionIds.get(1), counselorId, counseleeIds.getFirst(), ScheduleStatus.SCHEDULED);
+        addCounselSession(counselSessionIds.get(2), counselorId, counseleeIds.getLast(), ScheduleStatus.SCHEDULED);
 
         // add CounselCard
         List<String> counselCardIds = List.of(
@@ -71,30 +90,29 @@ public class TestDataInitializer implements CommandLineRunner {
         List<String> counseleeConsentIds = List.of(
                 "TEST-COUNSEL-CONSENT-01"
         );
-        addCounseleeConsent(counselSessionIds.getFirst()
-                , counseleeConsentIds.getFirst()
-                , counseleeIds.getFirst());
+        addCounseleeConsent(counselSessionIds.getFirst(),
+                 counseleeConsentIds.getFirst(),
+                 counseleeIds.getFirst());
 
         // add MedicationCounsel
         List<String> medicationCounselIds = List.of(
                 "TEST-COUNSEL-MEDICATION-01"
         );
-        addMedicationCounsel(counselSessionIds.getFirst()
-        ,medicationCounselIds.getFirst());
-
+        addMedicationCounsel(counselSessionIds.getFirst(), 
+                medicationCounselIds.getFirst());
 
         // add MedicationRecordHist
         List<String> medicationRecordHistIds = List.of(
-                "TEST-RECORD-HIST-01"
-                ,"TEST-RECORD-HIST-02"
-                ,"TEST-RECORD-HIST-03"
-                ,"TEST-RECORD-HIST-04"
-                ,"TEST-RECORD-HIST-05"
-                ,"TEST-RECORD-HIST-06"
-                ,"TEST-RECORD-HIST-07"
-                ,"TEST-RECORD-HIST-08"
-                ,"TEST-RECORD-HIST-09"
-                ,"TEST-RECORD-HIST-10"
+                "TEST-RECORD-HIST-01", 
+                "TEST-RECORD-HIST-02", 
+                "TEST-RECORD-HIST-03", 
+                "TEST-RECORD-HIST-04", 
+                "TEST-RECORD-HIST-05", 
+                "TEST-RECORD-HIST-06", 
+                "TEST-RECORD-HIST-07", 
+                "TEST-RECORD-HIST-08", 
+                "TEST-RECORD-HIST-09", 
+                "TEST-RECORD-HIST-10"
         );
         addMedicationRecordHist(counselSessionIds.getFirst(), medicationRecordHistIds);
 
@@ -104,29 +122,28 @@ public class TestDataInitializer implements CommandLineRunner {
 
         // add WasteMedicationRecord
         List<String> wasteMedicationRecordIds = List.of(
-                "TEST-WASTE-RECORD-HIST-01"
-                ,"TEST-WASTE-RECORD-HIST-02"
-                ,"TEST-WASTE-RECORD-HIST-03"
-                ,"TEST-WASTE-RECORD-HIST-04"
-                ,"TEST-WASTE-RECORD-HIST-05"
-                ,"TEST-WASTE-RECORD-HIST-06"
-                ,"TEST-WASTE-RECORD-HIST-07"
-                ,"TEST-WASTE-RECORD-HIST-08"
-                ,"TEST-WASTE-RECORD-HIST-09"
-                ,"TEST-WASTE-RECORD-HIST-10"
+                "TEST-WASTE-RECORD-HIST-01", 
+                "TEST-WASTE-RECORD-HIST-02", 
+                "TEST-WASTE-RECORD-HIST-03", 
+                "TEST-WASTE-RECORD-HIST-04", 
+                "TEST-WASTE-RECORD-HIST-05", 
+                "TEST-WASTE-RECORD-HIST-06", 
+                "TEST-WASTE-RECORD-HIST-07", 
+                "TEST-WASTE-RECORD-HIST-08", 
+                "TEST-WASTE-RECORD-HIST-09", 
+                "TEST-WASTE-RECORD-HIST-10"
         );
         addWasteMedicationRecord(counselSessionIds.getFirst(), wasteMedicationRecordIds);
-
 
     }
 
     private void addCounselor(String counselorId) {
 
-        if(entityManager.find(Counselor.class, counselorId) == null) {
+        if (entityManager.find(Counselor.class, counselorId) == null) {
 
             Counselor counselor = Counselor
                     .builder()
-                    .email(counselorId+"@gmail.com")
+                    .email(counselorId + "@gmail.com")
                     .phoneNumber(getRandomPhoneNumber())
                     .name(names.get(random.nextInt(names.size())))
                     .password(passwordEncoder.encode("1234qwer!@"))
@@ -141,12 +158,11 @@ public class TestDataInitializer implements CommandLineRunner {
 
         }
 
-
     }
 
     private void addCounselee(String counseleeId) {
 
-        if(entityManager.find(Counselee.class, counseleeId) == null) {
+        if (entityManager.find(Counselee.class, counseleeId) == null) {
             Counselee counselee = Counselee
                     .builder()
                     .name(names.get(random.nextInt(names.size())))
@@ -164,22 +180,22 @@ public class TestDataInitializer implements CommandLineRunner {
         }
     }
 
-    private void addCounselSession(String counselSessionId
-            , String counselorId
-            , String counseleeId
-    , ScheduleStatus scheduleStatus) {
+    private void addCounselSession(String counselSessionId,
+             String counselorId,
+             String counseleeId,
+             ScheduleStatus scheduleStatus) {
 
         Counselor counselor = entityManager.getReference(Counselor.class, counselorId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
-        LocalDate scheduleDate =
-                scheduleStatus == ScheduleStatus.SCHEDULED
-                        ? LocalDate.now() :
-                        getRandomDate("2024-12-01", LocalDate.now().toString());
+        LocalDate scheduleDate
+                = scheduleStatus == ScheduleStatus.SCHEDULED
+                        ? LocalDate.now()
+                        : getRandomDate("2024-12-01", LocalDate.now().toString());
 
-        LocalDateTime scheduleDateTime = scheduleDate.atTime(random.nextInt(9,19),0);
-;
+        LocalDateTime scheduleDateTime = scheduleDate.atTime(random.nextInt(9, 19), 0);
+        ;
 
-        if(entityManager.find(CounselSession.class, counselSessionId) == null) {
+        if (entityManager.find(CounselSession.class, counselSessionId) == null) {
             CounselSession counselSession = CounselSession
                     .builder()
                     .counselor(counselor)
@@ -201,9 +217,7 @@ public class TestDataInitializer implements CommandLineRunner {
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
 
-
-
-         JsonNode baseInformation = objectMapper.readTree(String.format("""
+        JsonNode baseInformation = objectMapper.readTree(String.format("""
                  {
                                   "version": "1.0",
                                   "baseInfo": {
@@ -219,9 +233,9 @@ public class TestDataInitializer implements CommandLineRunner {
                                       "MedicationNote": "복약 관련 메모"
                                   }
                  }
-                 """,counselee.getId(), counselee.getName(), counselee.getDateOfBirth().toString()));
+                 """, counselee.getId(), counselee.getName(), counselee.getDateOfBirth().toString()));
 
-         JsonNode healthInformation = objectMapper.readTree("""
+        JsonNode healthInformation = objectMapper.readTree("""
                  {
                                   "version": "1.0",
                                   "diseaseInfo": {
@@ -240,7 +254,7 @@ public class TestDataInitializer implements CommandLineRunner {
                                   }
                               }
                  """
-         );
+        );
 
         JsonNode livingInformation = objectMapper.readTree("""
                 {
@@ -270,7 +284,7 @@ public class TestDataInitializer implements CommandLineRunner {
                              }
                 """);
 
-        JsonNode independentLifeInformation = counselee.isDisability()? objectMapper.readTree("""
+        JsonNode independentLifeInformation = counselee.isDisability() ? objectMapper.readTree("""
                 {
                                  "version": "1.0",
                                  "walking": {
@@ -290,10 +304,9 @@ public class TestDataInitializer implements CommandLineRunner {
                                  }
                 }
                 """)
-                :null;
+                : null;
 
-
-        if(entityManager.find(CounselCard.class, counselCardId) == null) {
+        if (entityManager.find(CounselCard.class, counselCardId) == null) {
             CounselCard counselCard = CounselCard
                     .builder()
                     .counselSession(counselSession)
@@ -312,12 +325,12 @@ public class TestDataInitializer implements CommandLineRunner {
 
     }
 
-    private void addCounseleeConsent(String counselSessionId,String counseleeConsentId ,String counseleeId){
+    private void addCounseleeConsent(String counselSessionId, String counseleeConsentId, String counseleeId) {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
 
-        if(entityManager.find(CounseleeConsent.class, counseleeConsentId) == null) {
+        if (entityManager.find(CounseleeConsent.class, counseleeConsentId) == null) {
             CounseleeConsent counseleeConsent = CounseleeConsent.builder()
                     .isConsent(true)
                     .counselSession(counselSession)
@@ -331,11 +344,11 @@ public class TestDataInitializer implements CommandLineRunner {
 
     }
 
-    private void addMedicationCounsel(String counselSessionId, String medicationCounselId){
+    private void addMedicationCounsel(String counselSessionId, String medicationCounselId) {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
 
-        if(entityManager.find(MedicationCounsel.class, medicationCounselId) == null) {
+        if (entityManager.find(MedicationCounsel.class, medicationCounselId) == null) {
             MedicationCounsel medicationCounsel = MedicationCounsel
                     .builder()
                     .counselSession(counselSession)
@@ -350,7 +363,7 @@ public class TestDataInitializer implements CommandLineRunner {
         }
     }
 
-    private void addMedicationRecordHist(String counselSessionId,List<String> medicationRecordHistIds){
+    private void addMedicationRecordHist(String counselSessionId, List<String> medicationRecordHistIds) {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         String jpql = "SELECT m FROM Medication m";
@@ -360,7 +373,7 @@ public class TestDataInitializer implements CommandLineRunner {
         int idx = 0;
 
         for (Medication medication : medications) {
-            if(entityManager.find(MedicationRecordHist.class, medicationRecordHistIds.get(idx)) == null) {
+            if (entityManager.find(MedicationRecordHist.class, medicationRecordHistIds.get(idx)) == null) {
                 MedicationRecordHist medicationRecordHist = MedicationRecordHist.builder()
                         .counselSession(counselSession)
                         .medication(medication) // Associate with a Medication
@@ -381,11 +394,11 @@ public class TestDataInitializer implements CommandLineRunner {
 
     }
 
-    private void addWasteMedicationDisposal(String counselSessionId,String wasteMedicationDisposalId){
+    private void addWasteMedicationDisposal(String counselSessionId, String wasteMedicationDisposalId) {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
 
-        if(entityManager.find(WasteMedicationDisposal.class, wasteMedicationDisposalId) == null) {
+        if (entityManager.find(WasteMedicationDisposal.class, wasteMedicationDisposalId) == null) {
             WasteMedicationDisposal wasteMedicationDisposal = WasteMedicationDisposal
                     .builder()
                     .counselSession(counselSession)
@@ -402,7 +415,7 @@ public class TestDataInitializer implements CommandLineRunner {
         }
     }
 
-    private void addWasteMedicationRecord(String counselSessionId, List<String> wasteMedicationRecordIds){
+    private void addWasteMedicationRecord(String counselSessionId, List<String> wasteMedicationRecordIds) {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         String jpql = "SELECT m FROM Medication m";
@@ -413,15 +426,13 @@ public class TestDataInitializer implements CommandLineRunner {
 
         for (Medication medication : medications) {
 
-            if(entityManager.find(WasteMedicationRecord.class, wasteMedicationRecordIds.get(idx)) == null) {
-                WasteMedicationRecord wasteMedicationRecord = WasteMedicationRecord
-                        .builder()
-                        .counselSession(counselSession)
-                        .medication(medication)
-                        .medicationName(medication.getItemName())
-                        .disposalReason("그냥")
-                        .unit("mg")
-                        .build();
+            if (entityManager.find(WasteMedicationRecord.class, wasteMedicationRecordIds.get(idx)) == null) {
+                WasteMedicationRecord wasteMedicationRecord = new WasteMedicationRecord();
+                wasteMedicationRecord.setCounselSession(counselSession);
+                wasteMedicationRecord.setMedication(medication);
+                wasteMedicationRecord.setMedicationName(medication.getItemName());
+                wasteMedicationRecord.setDisposalReason("그냥");
+                wasteMedicationRecord.setUnit("mg");
 
                 wasteMedicationRecord.setId(wasteMedicationRecordIds.get(idx++));
 
@@ -430,7 +441,6 @@ public class TestDataInitializer implements CommandLineRunner {
         }
 
     }
-
 
     private LocalDate getRandomDate(String startDate, String endDate) {
 
@@ -444,8 +454,7 @@ public class TestDataInitializer implements CommandLineRunner {
     }
 
     private String getRandomPhoneNumber() {
-        return "010"+String.format("%08d", random.nextInt(100000000));
+        return "010" + String.format("%08d", random.nextInt(100000000));
     }
-
 
 }
