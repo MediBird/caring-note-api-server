@@ -41,8 +41,8 @@ public class SecurityConfig {
                 .permitAll()
                 .anyRequest().authenticated()
                 )
-                // .oauth2Login(oauth2 -> {
-                // })
+                 .oauth2Login(oauth2 -> {
+                })
                 .oauth2ResourceServer(oauth2 -> oauth2
                 .jwt(jwt -> jwt.decoder(jwtDecoder)
                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
