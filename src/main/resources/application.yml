@@ -73,7 +73,7 @@ security:
     - "/*/counselor/signup"
     - "/*/counselor/login"
     # - "/swagger-ui/**"
-    # - "/*/api-docs/**"
+    - "/*/api-docs/**"
     # - "/swagger-ui.html"
     - "/h2-console/**"
   

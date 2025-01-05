@@ -72,8 +72,8 @@ public class TestDataInitializer implements CommandLineRunner {
                 this::addCounselee
         );
         // add CounselSession
-        List<String> counselSessionIds = List.of("TEST-COUNSEL-SESSION-01", 
-                "TEST-COUNSEL-SESSION-02", 
+        List<String> counselSessionIds = List.of("TEST-COUNSEL-SESSION-01",
+                "TEST-COUNSEL-SESSION-02",
                 "TEST-COUNSEL-SESSION-03");
 
         addCounselSession(counselSessionIds.getFirst(), counselorId, counseleeIds.getFirst(), ScheduleStatus.COMPLETED);
@@ -91,27 +91,27 @@ public class TestDataInitializer implements CommandLineRunner {
                 "TEST-COUNSEL-CONSENT-01"
         );
         addCounseleeConsent(counselSessionIds.getFirst(),
-                 counseleeConsentIds.getFirst(),
-                 counseleeIds.getFirst());
+                counseleeConsentIds.getFirst(),
+                counseleeIds.getFirst());
 
         // add MedicationCounsel
         List<String> medicationCounselIds = List.of(
                 "TEST-COUNSEL-MEDICATION-01"
         );
-        addMedicationCounsel(counselSessionIds.getFirst(), 
+        addMedicationCounsel(counselSessionIds.getFirst(),
                 medicationCounselIds.getFirst());
 
         // add MedicationRecordHist
         List<String> medicationRecordHistIds = List.of(
-                "TEST-RECORD-HIST-01", 
-                "TEST-RECORD-HIST-02", 
-                "TEST-RECORD-HIST-03", 
-                "TEST-RECORD-HIST-04", 
-                "TEST-RECORD-HIST-05", 
-                "TEST-RECORD-HIST-06", 
-                "TEST-RECORD-HIST-07", 
-                "TEST-RECORD-HIST-08", 
-                "TEST-RECORD-HIST-09", 
+                "TEST-RECORD-HIST-01",
+                "TEST-RECORD-HIST-02",
+                "TEST-RECORD-HIST-03",
+                "TEST-RECORD-HIST-04",
+                "TEST-RECORD-HIST-05",
+                "TEST-RECORD-HIST-06",
+                "TEST-RECORD-HIST-07",
+                "TEST-RECORD-HIST-08",
+                "TEST-RECORD-HIST-09",
                 "TEST-RECORD-HIST-10"
         );
         addMedicationRecordHist(counselSessionIds.getFirst(), medicationRecordHistIds);
@@ -122,15 +122,15 @@ public class TestDataInitializer implements CommandLineRunner {
 
         // add WasteMedicationRecord
         List<String> wasteMedicationRecordIds = List.of(
-                "TEST-WASTE-RECORD-HIST-01", 
-                "TEST-WASTE-RECORD-HIST-02", 
-                "TEST-WASTE-RECORD-HIST-03", 
-                "TEST-WASTE-RECORD-HIST-04", 
-                "TEST-WASTE-RECORD-HIST-05", 
-                "TEST-WASTE-RECORD-HIST-06", 
-                "TEST-WASTE-RECORD-HIST-07", 
-                "TEST-WASTE-RECORD-HIST-08", 
-                "TEST-WASTE-RECORD-HIST-09", 
+                "TEST-WASTE-RECORD-HIST-01",
+                "TEST-WASTE-RECORD-HIST-02",
+                "TEST-WASTE-RECORD-HIST-03",
+                "TEST-WASTE-RECORD-HIST-04",
+                "TEST-WASTE-RECORD-HIST-05",
+                "TEST-WASTE-RECORD-HIST-06",
+                "TEST-WASTE-RECORD-HIST-07",
+                "TEST-WASTE-RECORD-HIST-08",
+                "TEST-WASTE-RECORD-HIST-09",
                 "TEST-WASTE-RECORD-HIST-10"
         );
         addWasteMedicationRecord(counselSessionIds.getFirst(), wasteMedicationRecordIds);
@@ -181,9 +181,9 @@ public class TestDataInitializer implements CommandLineRunner {
     }
 
     private void addCounselSession(String counselSessionId,
-             String counselorId,
-             String counseleeId,
-             ScheduleStatus scheduleStatus) {
+            String counselorId,
+            String counseleeId,
+            ScheduleStatus scheduleStatus) {
 
         Counselor counselor = entityManager.getReference(Counselor.class, counselorId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
@@ -427,12 +427,13 @@ public class TestDataInitializer implements CommandLineRunner {
         for (Medication medication : medications) {
 
             if (entityManager.find(WasteMedicationRecord.class, wasteMedicationRecordIds.get(idx)) == null) {
-                WasteMedicationRecord wasteMedicationRecord = new WasteMedicationRecord();
-                wasteMedicationRecord.setCounselSession(counselSession);
-                wasteMedicationRecord.setMedication(medication);
-                wasteMedicationRecord.setMedicationName(medication.getItemName());
-                wasteMedicationRecord.setDisposalReason("그냥");
-                wasteMedicationRecord.setUnit("mg");
+                WasteMedicationRecord wasteMedicationRecord = WasteMedicationRecord.builder()
+                        .counselSession(counselSession)
+                        .medication(medication)
+                        .medicationName(medication.getItemName())
+                        .disposalReason("그냥")
+                        .unit("mg")
+                        .build();
 
                 wasteMedicationRecord.setId(wasteMedicationRecordIds.get(idx++));
 
