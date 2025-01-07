@@ -35,7 +35,8 @@ import lombok.ToString;
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"email"}),
-    @UniqueConstraint(columnNames = {"phone_number"})
+    @UniqueConstraint(columnNames = {"phone_number"}),
+    @UniqueConstraint(columnNames = {"username"})
 })
 @Data
 @Builder
@@ -61,6 +62,9 @@ public class Counselor extends BaseEntity implements UserDetails {
     @Column(unique = true)
     @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
     private String phoneNumber;
+
+    @Column(unique = true)
+    private String username;
 
     // 프로필 사진 URL
     private String profileImageUrl;
@@ -120,7 +124,7 @@ public class Counselor extends BaseEntity implements UserDetails {
 
     @Override
     public String getUsername() {
-        return getId();
+        return username;
     }
 
     @Override
