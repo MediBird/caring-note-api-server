@@ -33,7 +33,7 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
 
         // DB에서 사용자 정보 조회
         UserDetails userDetails;
-        try{
+        try {
             userDetails = userDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             String email = jwt.getClaimAsString("email");
@@ -42,6 +42,7 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
             Counselor newCounselor = new Counselor();
             newCounselor.setUsername(username);
             newCounselor.setName(name);
+
             newCounselor.setEmail(email);
             newCounselor.setPhoneNumber(phoneNumber);
             newCounselor.setStatus(CounselorStatus.ACTIVE);

@@ -100,11 +100,9 @@ public class Counselor extends BaseEntity implements UserDetails {
     @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
     private int participationDays;
 
-
     // 상담자가 참여한 상담 세션들
     @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
     private List<CounselSession> counselSessions;
-
 
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist
@@ -120,11 +118,6 @@ public class Counselor extends BaseEntity implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Set.of(new SimpleGrantedAuthority(getRoleType().name()));
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
     }
 
     @Override
