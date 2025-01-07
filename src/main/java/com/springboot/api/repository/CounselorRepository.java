@@ -1,10 +1,10 @@
 package com.springboot.api.repository;
 
+import java.util.Optional;
 
-import com.springboot.api.domain.Counselor;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import com.springboot.api.domain.Counselor;
 
 public interface CounselorRepository extends JpaRepository<Counselor, String> {
 
@@ -12,5 +12,6 @@ public interface CounselorRepository extends JpaRepository<Counselor, String> {
 
     Optional<Counselor> findByEmail(String email);
 
+    Optional<Counselor> findByUsername(String username);
 
 }
