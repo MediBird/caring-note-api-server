@@ -13,13 +13,6 @@ spring:
             user-info-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/userinfo
             jwk-set-uri: https://caringnote.co.kr/keycloak/realms/caringnote/protocol/openid-connect/certs
             user-name-attribute: preferred_username
-        registration:
-          keycloak:
-            client-id: caringnote
-            client-name: caringnote
-            scope: openid,profile,email,phone
-            authorization-grant-type: authorization_code
-            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
   config:
     import: optional:application-secret.yml
   docker:
@@ -72,8 +65,8 @@ security:
     - "/user/**"
     - "/*/counselor/signup"
     - "/*/counselor/login"
-    # - "/swagger-ui/**"
+    - "/swagger-ui/**"
     - "/*/api-docs/**"
-    # - "/swagger-ui.html"
+    - "/swagger-ui.html"
     - "/h2-console/**"
   
