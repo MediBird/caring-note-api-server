@@ -7,7 +7,7 @@ import com.springboot.api.domain.CounseleeConsent;
 import com.springboot.api.dto.counseleeconsent.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeConsentRepository;
-import jakarta.persistence.EntityManager;
+import com.springboot.api.repository.CounseleeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +21,7 @@ public class CounseleeConsentService {
 
     private final CounseleeConsentRepository counseleeConsentRepository;
     private final CounselSessionRepository counselSessionRepository;
-    private final EntityManager entityManager;
+    private final CounseleeRepository counseleeRepository;
 
     public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId, String counseleeId) {
 
@@ -52,13 +52,17 @@ public class CounseleeConsentService {
 
     @Transactional
     public AddCounseleeConsentRes addCounseleeConsent(AddCounseleeConsentReq addCounseleeConsentReq) {
-        CounselSession proxyCounselSession = entityManager.getReference(CounselSession.class, addCounseleeConsentReq.getCounselSessionId());
-        Counselee proxyCounselee = entityManager.getReference(Counselee.class, addCounseleeConsentReq.getCounseleeId());
+
+        CounselSession counselSession = counselSessionRepository.findById(addCounseleeConsentReq.getCounselSessionId())
+                .orElseThrow(IllegalArgumentException::new);
+
+        Counselee counselee = counseleeRepository.findById(addCounseleeConsentReq.getCounseleeId())
+                .orElseThrow(IllegalArgumentException::new);
 
         CounseleeConsent counseleeConsent = CounseleeConsent
                 .builder()
-                .counselSession(proxyCounselSession)
-                .counselee(proxyCounselee)
+                .counselSession(counselSession)
+                .counselee(counselee)
                 .isConsent(addCounseleeConsentReq.isConsent())
                 .consentDateTime(LocalDateTime.now())
                 .build();
