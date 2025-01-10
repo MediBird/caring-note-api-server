@@ -5,6 +5,7 @@ import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.CounseleeConsent;
 import com.springboot.api.dto.counseleeconsent.*;
+import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeConsentRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -19,15 +20,25 @@ import java.util.Optional;
 public class CounseleeConsentService {
 
     private final CounseleeConsentRepository counseleeConsentRepository;
+    private final CounselSessionRepository counselSessionRepository;
     private final EntityManager entityManager;
 
     public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId, String counseleeId) {
 
-        CounseleeConsent counseleeConsent = counseleeConsentRepository.findByCounselSessionIdAndCounseleeId(counselSessionId, counseleeId)
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Counselee counselee = Optional.ofNullable(counseleeConsent.getCounselee()).orElseGet(Counselee::new);
-        CounselSession counselSession = Optional.ofNullable(counseleeConsent.getCounselSession()).orElseGet(CounselSession::new);
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+                .orElseThrow(IllegalArgumentException::new);
+
+        if(!counseleeId.equals(counselee.getId()))
+        {
+            throw new IllegalArgumentException();
+        }
+
+        CounseleeConsent counseleeConsent = counseleeConsentRepository.findByCounselSessionIdAndCounseleeId(counselSessionId, counseleeId)
+                .orElseThrow(NoContentException::new);
+
 
         return new SelectCounseleeConsentByCounseleeIdRes(counseleeConsent.getId(),
                 counselee.getId(),
