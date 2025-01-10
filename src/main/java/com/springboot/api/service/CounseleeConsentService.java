@@ -70,7 +70,7 @@ public class CounseleeConsentService {
     @Transactional
     public UpdateCounseleeConsentRes updateCounseleeConsent(UpdateCounseleeConsentReq updateCounseleeConsentReq) {
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(updateCounseleeConsentReq.getCounseleeConsentId())
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         counseleeConsent.setConsentDateTime(LocalDateTime.now());
         counseleeConsent.setConsent(updateCounseleeConsentReq.isConsent());
@@ -82,7 +82,7 @@ public class CounseleeConsentService {
     public DeleteCounseleeConsentRes deleteCounseleeConsent(DeleteCounseleeConsentReq deleteCounseleeConsentReq) {
 
         CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(deleteCounseleeConsentReq.getCounseleeConsentId())
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         counseleeConsentRepository.deleteById(deleteCounseleeConsentReq.getCounseleeConsentId());
 
