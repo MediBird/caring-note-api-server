@@ -33,5 +33,10 @@ public class CounseleeConsent extends BaseEntity {
     @NotNull
     private boolean isConsent;
 
+    @PrePersist
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+    }
 
 }
