@@ -49,7 +49,8 @@ class CounselCardRepositoryTest {
                      "name": "김늘픔",
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "2024-12-20"
+                     "lastCounselDate": "2024-12-20",
+                     "medicalCoverage": "VETERANS"
                  },
                  "counselPurposeAndMomo": {
                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
@@ -152,7 +153,8 @@ class CounselCardRepositoryTest {
                      "name": "김늘픔",
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "2024-12-20"
+                     "lastCounselDate": "2024-12-20",
+                     "medicalCoverage": "HEALTH_INSURANCE"
                  },
                  "counselPurposeAndNote": {
                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
