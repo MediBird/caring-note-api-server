@@ -1,15 +1,18 @@
 package com.springboot.api.dto.counselcard.information.base.item;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Builder;
-
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.springboot.enums.MedicalCoverageType;
+
+import lombok.Builder;
 
 @Builder
 public record BaseInfoDTO(
         String counseleeId
         ,String name
-        , @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
-        , String counselSessionOrder
-        , @JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate
+        ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
+        ,String counselSessionOrder
+        ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate
+        ,MedicalCoverageType medicalCoverage
 ){}

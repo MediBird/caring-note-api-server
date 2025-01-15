@@ -18,10 +18,11 @@ INSERT INTO counsel_cards (
                      "name": "김늘픔",
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "2024-12-19"
+                     "lastCounselDate": "2024-12-19",
+                     "medicalCoverage": "VETERANS"
                  },
                  "counselPurposeAndNote": {
-                     "counselPurpose": "약물 부작용 상담",
+                     "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
                  }
@@ -111,10 +112,11 @@ INSERT INTO counsel_cards (
                      "name": "김늘픔2",
                      "birthDate": "1995-07-18",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "2024-12-20"
+                     "lastCounselDate": "2024-12-20",
+                     "medicalCoverage": "HEALTH_INSURANCE"
                  },
                  "counselPurposeAndNote": {
-                     "counselPurpose": "약물 부작용 상담",
+                     "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
                  }
