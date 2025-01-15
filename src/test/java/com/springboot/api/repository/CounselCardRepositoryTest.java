@@ -1,11 +1,8 @@
 package com.springboot.api.repository;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.config.JpaTestAdditionalConfig;
-import com.springboot.api.domain.CounselCard;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -14,9 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.config.JpaTestAdditionalConfig;
+import com.springboot.api.domain.CounselCard;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
 
 @DataJpaTest
 @Import(JpaTestAdditionalConfig.class)
@@ -49,10 +49,11 @@ class CounselCardRepositoryTest {
                      "name": "김늘픔",
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "2024-12-20"
+                     "lastCounselDate": "2024-12-20",
+                     "healthInsuranceType": "VETERANS"
                  },
                  "counselPurposeAndMomo": {
-                     "counselPurpose": "약물 부작용 상담",
+                     "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
                  }
@@ -152,10 +153,11 @@ class CounselCardRepositoryTest {
                      "name": "김늘픔",
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
-                     "lastCounselDate": "2024-12-20"
+                     "lastCounselDate": "2024-12-20",
+                     "healthInsuranceType": "VETERANS_BENEFITS"
                  },
                  "counselPurposeAndNote": {
-                     "counselPurpose": "약물 부작용 상담",
+                     "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
                      "SignificantNote": "특이사항",
                      "MedicationNote": "복약 관련 메모"
                  }
