@@ -3,7 +3,7 @@ package com.springboot.api.dto.counselcard.information.base.item;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.springboot.enums.MedicalCoverageType;
+import com.springboot.enums.HealthInsuranceType;
 
 import lombok.Builder;
 
@@ -14,5 +14,5 @@ public record BaseInfoDTO(
         ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
         ,String counselSessionOrder
         ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate
-        ,MedicalCoverageType medicalCoverage
+        ,HealthInsuranceType healthInsuranceType
 ){}
