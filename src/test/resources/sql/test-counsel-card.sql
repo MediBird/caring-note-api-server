@@ -19,7 +19,7 @@ INSERT INTO counsel_cards (
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
                      "lastCounselDate": "2024-12-19",
-                     "medicalCoverage": "VETERANS"
+                     "healthInsuranceType": "VETERANS_BENEFITS"
                  },
                  "counselPurposeAndNote": {
                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
@@ -113,7 +113,7 @@ INSERT INTO counsel_cards (
                      "birthDate": "1995-07-18",
                      "counselSessionOrder": "1회차",
                      "lastCounselDate": "2024-12-20",
-                     "medicalCoverage": "HEALTH_INSURANCE"
+                     "healthInsuranceType": "MEDICAL_AID"
                  },
                  "counselPurposeAndNote": {
                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],

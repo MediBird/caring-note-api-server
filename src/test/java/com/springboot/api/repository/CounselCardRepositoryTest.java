@@ -50,7 +50,7 @@ class CounselCardRepositoryTest {
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
                      "lastCounselDate": "2024-12-20",
-                     "medicalCoverage": "VETERANS"
+                     "healthInsuranceType": "VETERANS"
                  },
                  "counselPurposeAndMomo": {
                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
@@ -154,7 +154,7 @@ class CounselCardRepositoryTest {
                      "birthDate": "1995-07-19",
                      "counselSessionOrder": "1회차",
                      "lastCounselDate": "2024-12-20",
-                     "medicalCoverage": "HEALTH_INSURANCE"
+                     "healthInsuranceType": "VETERANS_BENEFITS"
                  },
                  "counselPurposeAndNote": {
                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],

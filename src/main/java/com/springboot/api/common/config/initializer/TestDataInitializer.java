@@ -228,7 +228,7 @@ public class TestDataInitializer implements CommandLineRunner {
                                       "birthDate": "%s",
                                       "counselSessionOrder": "1회차",
                                      "lastCounselDate": "",
-                                     "medicalCoverage": "MEDICAL_CARE",
+                                     "healthInsuranceType": "MEDICAL_AID",
                                   },
                                   "counselPurposeAndNote": {
                                       "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
