@@ -11,7 +11,7 @@ import lombok.Builder;
 ||||||| parent of 2e8ea59 (refactor: :recycle: modify DTOs of the counsel card)
 =======
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.springboot.enums.MedicalCoverageType;
+import com.springboot.enums.HealthInsuranceType;
 
 import lombok.Builder;
 
@@ -33,6 +33,12 @@ public record BaseInfoDTO(
         ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
         ,String counselSessionOrder
         ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate
+<<<<<<< HEAD
         ,MedicalCoverageType medicalCoverage
 >>>>>>> 2e8ea59 (refactor: :recycle: modify DTOs of the counsel card)
+||||||| parent of 7db3ffe (fix:)
+        ,MedicalCoverageType medicalCoverage
+=======
+        ,HealthInsuranceType healthInsuranceType
+>>>>>>> 7db3ffe (fix:)
 ){}
