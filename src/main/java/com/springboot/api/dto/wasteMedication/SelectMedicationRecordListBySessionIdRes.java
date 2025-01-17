@@ -6,7 +6,7 @@ public record SelectMedicationRecordListBySessionIdRes(
         String rowId,
         String medicationId,
         String medicationName,
-        String unit,
+        Integer unit,
         String disposalReason,
         LocalDateTime createdDatetime,
         LocalDateTime updatedDatetime,

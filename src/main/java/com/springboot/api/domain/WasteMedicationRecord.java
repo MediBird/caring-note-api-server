@@ -33,7 +33,7 @@ public class WasteMedicationRecord extends BaseEntity {
 
     private String medicationName;
 
-    private String unit;
+    private Integer unit;
 
     private String disposalReason;
 
