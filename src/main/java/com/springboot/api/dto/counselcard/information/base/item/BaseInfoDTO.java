@@ -7,6 +7,7 @@ import com.springboot.enums.HealthInsuranceType;
 
 import lombok.Builder;
 
+
 @Builder
 public record BaseInfoDTO(
         String counseleeId

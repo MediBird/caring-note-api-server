@@ -11,7 +11,7 @@ public class AddAndUpdateWasteMedicationRecordReq {
     private String medicationId;
 
     @NotBlank
-    private String unit;
+    private Integer unit;
 
     @NotBlank
     private String disposalReason;

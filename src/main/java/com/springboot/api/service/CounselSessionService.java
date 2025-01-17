@@ -1,45 +1,60 @@
 package com.springboot.api.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.common.util.DateTimeUtil;
-import com.springboot.api.domain.*;
-import com.springboot.api.dto.counselsession.*;
-import com.springboot.api.repository.CounselSessionRepository;
-import com.springboot.api.repository.CounselorRepository;
-import com.springboot.enums.CardRecordStatus;
-import com.springboot.enums.ScheduleStatus;
-import jakarta.persistence.EntityManager;
-import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.domain.BaseEntity;
+import com.springboot.api.domain.CounselCard;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.domain.Counselor;
+import com.springboot.api.dto.counselsession.AddCounselSessionReq;
+import com.springboot.api.dto.counselsession.AddCounselSessionRes;
+import com.springboot.api.dto.counselsession.DeleteCounselSessionReq;
+import com.springboot.api.dto.counselsession.DeleteCounselSessionRes;
+import com.springboot.api.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
+import com.springboot.api.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeRes;
+import com.springboot.api.dto.counselsession.SelectCounselSessionListItem;
+import com.springboot.api.dto.counselsession.SelectCounselSessionRes;
+import com.springboot.api.dto.counselsession.SelectPreviousCounselSessionListRes;
+import com.springboot.api.dto.counselsession.UpdateCounselSessionReq;
+import com.springboot.api.dto.counselsession.UpdateCounselSessionRes;
+import com.springboot.api.dto.counselsession.UpdateCounselorInCounselSessionReq;
+import com.springboot.api.dto.counselsession.UpdateCounselorInCounselSessionRes;
+import com.springboot.api.dto.counselsession.UpdateStatusInCounselSessionReq;
+import com.springboot.api.dto.counselsession.UpdateStatusInCounselSessionRes;
+import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.CounselorRepository;
+import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.ScheduleStatus;
+
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 @Service
 @RequiredArgsConstructor
 public class CounselSessionService {
 
-    private static final Logger log = LoggerFactory.getLogger(CounselSessionService.class);
     private final CounselSessionRepository sessionRepository;
     private final EntityManager entityManager;
     private final DateTimeUtil dateTimeUtil;
     private final CounselSessionRepository counselSessionRepository;
     private final CounselorRepository counselorRepository;
 
-
     @Transactional
-    public AddCounselSessionRes addCounselSession(AddCounselSessionReq addCounselSessionReq)
-    {
+    public AddCounselSessionRes addCounselSession(AddCounselSessionReq addCounselSessionReq) {
         Counselor proxyCounselor = entityManager.getReference(Counselor.class, addCounselSessionReq.getCounselorId());
         Counselee proxyCounselee = entityManager.getReference(Counselee.class, addCounselSessionReq.getCounseleeId());
 
@@ -56,8 +71,7 @@ public class CounselSessionService {
         return new AddCounselSessionRes(savedCounselSession.getId());
     }
 
-    public SelectCounselSessionRes selectCounselSession(String id)
-    {
+    public SelectCounselSessionRes selectCounselSession(String id) {
         CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
                 IllegalArgumentException::new
         );
@@ -83,8 +97,7 @@ public class CounselSessionService {
 
     }
 
-    public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq)
-    {
+    public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq) {
         Pageable pageable = PageRequest.of(0, selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize());
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -95,80 +108,71 @@ public class CounselSessionService {
                 .orElse(null);
 
         LocalDateTime endOfDay = Optional.ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
-                .map(d->d.plusDays(1))
+                .map(d -> d.plusDays(1))
                 .map(LocalDate::atStartOfDay)
                 .orElse(null);
 
-
-        if(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate() ==  null)
-        {
+        if (selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate() == null) {
             sessions = sessionRepository.findByCursor(
-                    selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor()
-                    , null
-                    , pageable);
-        }
-        else
-        {
+                    selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor(),
+                    null,
+                    pageable);
+        } else {
             sessions = sessionRepository.findByDateAndCursor(
                     selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
-                            .atStartOfDay()
-                    ,Optional.of(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
-                            .atStartOfDay()).map(d->d.plusDays(1)).get()
-                    , selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor()
-                    , null
-                    , pageable);
+                            .atStartOfDay(),
+                    Optional.of(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
+                            .atStartOfDay()).map(d -> d.plusDays(1)).get(),
+                    selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor(),
+                    null,
+                    pageable);
         }
-
 
         String nextCursorId = null;
 
         if (!sessions.isEmpty()) {
             CounselSession lastSession = sessions.getLast();
             nextCursorId = lastSession.getId();
-            }
+        }
 
-            // hasNext 계산
-            boolean hasNext = sessions.size() == selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize();
+        // hasNext 계산
+        boolean hasNext = sessions.size() == selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize();
 
-            List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
-                    .map(s-> SelectCounselSessionListItem.builder()
-                            .counseleeId(Optional.ofNullable(s.getCounselee())
-                                    .map(BaseEntity::getId)
-                                    .orElse(""))
-                            .counselorName(Optional.ofNullable(s.getCounselor())
-                                    .map(Counselor::getName)
-                                    .orElse(""))
-                            .counselorId(Optional.ofNullable(s.getCounselor())
-                                    .map(Counselor::getId)
-                                    .orElse(""))
-                            .counseleeName(Optional.ofNullable(s.getCounselee())
-                                    .map(Counselee::getName)
-                                    .orElse(""))
-                            .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
-                            .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
-                            .counselSessionId(s.getId())
-                            .isCounselorAssign(Optional.ofNullable(s.getCounselor()).isPresent())
-                            .status(s.getStatus())
-                            .cardRecordStatus(Optional.ofNullable(s.getCounselCard())
-                                    .map(CounselCard::getCardRecordStatus)
-                                    .orElse(CardRecordStatus.UNRECORDED))
-                            .build())
-                    .toList();
+        List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
+                .map(s -> SelectCounselSessionListItem.builder()
+                .counseleeId(Optional.ofNullable(s.getCounselee())
+                        .map(BaseEntity::getId)
+                        .orElse(""))
+                .counselorName(Optional.ofNullable(s.getCounselor())
+                        .map(Counselor::getName)
+                        .orElse(""))
+                .counselorId(Optional.ofNullable(s.getCounselor())
+                        .map(Counselor::getId)
+                        .orElse(""))
+                .counseleeName(Optional.ofNullable(s.getCounselee())
+                        .map(Counselee::getName)
+                        .orElse(""))
+                .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
+                .scheduledTime(s.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
+                .counselSessionId(s.getId())
+                .isCounselorAssign(Optional.ofNullable(s.getCounselor()).isPresent())
+                .status(s.getStatus())
+                .cardRecordStatus(Optional.ofNullable(s.getCounselCard())
+                        .map(CounselCard::getCardRecordStatus)
+                        .orElse(CardRecordStatus.UNRECORDED))
+                .build())
+                .toList();
 
-        if(sessionListItems.isEmpty())
-        {
+        if (sessionListItems.isEmpty()) {
             throw new NoContentException();
         }
 
-            return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems,nextCursorId,hasNext);
+        return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems, nextCursorId, hasNext);
 
-        }
-
-
+    }
 
     @Transactional
-    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq)
-    {
+    public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
         CounselSession counselSession = sessionRepository.findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
                 NoContentException::new
         );
@@ -180,21 +184,18 @@ public class CounselSessionService {
         counselSession.setCounselor(proxyCounselor);
         counselSession.setCounselee(proxyCounselee);
 
-
         return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
     }
 
     @Transactional
-    public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(String userId
-            , UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq)
-    {
+    public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(String userId,
+            UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq) {
         CounselSession counselSession = counselSessionRepository
                 .findById(updateCounselorInCounselSessionReq.counselSessionId())
                 .orElseThrow(NoContentException::new);
 
         String counselorId = updateCounselorInCounselSessionReq.counselorId();
-        if(StringUtils.isBlank(counselorId))
-        {
+        if (StringUtils.isBlank(counselorId)) {
             counselorId = userId;
         }
         Counselor counselor = counselorRepository.findById(counselorId)
@@ -206,8 +207,7 @@ public class CounselSessionService {
     }
 
     @Transactional
-    public UpdateStatusInCounselSessionRes updateStatusInCounselSession(UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq)
-    {
+    public UpdateStatusInCounselSessionRes updateStatusInCounselSession(UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
 
         CounselSession counselSession = counselSessionRepository
                 .findById(updateStatusInCounselSessionReq.counselSessionId())
@@ -219,8 +219,7 @@ public class CounselSessionService {
     }
 
     @Transactional
-    public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq)
-    {
+    public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
 
         sessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
@@ -228,17 +227,14 @@ public class CounselSessionService {
 
     }
 
-
-
-    public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId)
-    {
+    public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
         CounselSession counselSession = sessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
         Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
 
-        List<CounselSession> previousCounselSessions = sessionRepository.findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),counselSession.getScheduledStartDateTime());
+        List<CounselSession> previousCounselSessions = sessionRepository.findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(), counselSession.getScheduledStartDateTime());
 
         List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                 .stream()
@@ -247,27 +243,21 @@ public class CounselSessionService {
 
                     JsonNode baseInfo = session.getCounselCard().getBaseInformation().get("baseInfo");
                     return new SelectPreviousCounselSessionListRes(
-                            session.getId()
-                            , baseInfo.get("counselSessionOrder").asText()
-                            , session.getScheduledStartDateTime().toLocalDate()
-                            , session.getCounselor().getName()
-                            , false
+                            session.getId(),
+                            baseInfo.get("counselSessionOrder").asText(),
+                            session.getScheduledStartDateTime().toLocalDate(),
+                            session.getCounselor().getName(),
+                            false
                     );
                 })
                 .toList();
 
-        if(selectPreviousCounselSessionListResList.isEmpty())
-        {
+        if (selectPreviousCounselSessionListResList.isEmpty()) {
             throw new NoContentException();
         }
 
         return selectPreviousCounselSessionListResList;
 
     }
-
-
-
-
-
 
 }

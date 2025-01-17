@@ -435,7 +435,7 @@ public class TestDataInitializer implements CommandLineRunner {
                         .medication(medication)
                         .medicationName(medication.getItemName())
                         .disposalReason("그냥")
-                        .unit("mg")
+                        .unit(100)
                         .build();
 
                 wasteMedicationRecord.setId(wasteMedicationRecordIds.get(idx++));
