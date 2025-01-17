@@ -1,11 +1,13 @@
 package com.springboot.api.service;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.springboot.api.common.exception.DuplicatedEmailException;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselor.AddCounselorReq;
 import com.springboot.api.dto.counselor.AddCounselorRes;
+import com.springboot.api.dto.counselor.GetCounselorRes;
 import com.springboot.api.repository.CounselorRepository;
 
 import jakarta.transaction.Transactional;
@@ -36,6 +38,15 @@ public class CounselorService {
 
         return new AddCounselorRes(savedCounselor.getId(), savedCounselor.getRoleType());
 
+    }
+
+    @Transactional
+    public GetCounselorRes getMyInfo() {
+        Counselor counselor = counselorRepository
+                .findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID"));
+
+        return new GetCounselorRes(counselor.getId(), counselor.getName(), counselor.getEmail(), counselor.getPhoneNumber(), counselor.getRoleType(), counselor.getMedicationCounselingCount(), counselor.getCounseledCounseleeCount(), counselor.getParticipationDays());
     }
 
 }
