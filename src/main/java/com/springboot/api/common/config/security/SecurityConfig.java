@@ -36,13 +36,13 @@ public class SecurityConfig {
                 .csrf(CsrfConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers(securityProperties.getPermitAllUrls().toArray(String[]::new))
-                .permitAll()
-                .anyRequest().authenticated()
-                )
-                .sessionManagement(sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        .requestMatchers(securityProperties.getPermitAllUrls().toArray(String[]::new))
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .sessionManagement(
+                        sessionManagement -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt
-                .jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter())))
                 .build();
     }
 
@@ -57,7 +57,8 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
-                List.of("https://caringnote.co.kr", "http://localhost:3000", "http://localhost:5173", "https://localhost:5173", "https://localhost:8080", "http://localhost:8080"));
+                List.of("https://caringnote.co.kr", "http://localhost:3000", "http://localhost:5173",
+                        "https://localhost:5173", "https://localhost:8080", "http://localhost:8080"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
