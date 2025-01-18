@@ -33,7 +33,6 @@ import com.springboot.api.repository.CounselCardRepository;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.enums.ScheduleStatus;
 
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -42,7 +41,6 @@ public class CounselCardService {
 
     private final CounselCardRepository counselCardRepository;
     private final CounselSessionRepository counselSessionRepository;
-    private final EntityManager entityManager;
     private final ObjectMapper objectMapper;
 
     public SelectCounselCardRes selectCounselCard(String counselSessionId) throws JsonProcessingException {
@@ -91,10 +89,10 @@ public class CounselCardService {
 
     @Transactional
     public AddCounselCardRes addCounselCard(AddCounselCardReq addCounselCardReq) {
-        CounselSession counselSessionProxy = entityManager.getReference(CounselSession.class, addCounselCardReq.getCounselSessionId());
+        CounselSession counselSession = counselSessionRepository.findById(addCounselCardReq.getCounselSessionId()).orElseThrow(IllegalArgumentException::new);
 
         CounselCard counselCard = CounselCard.builder()
-                .counselSession(counselSessionProxy)
+                .counselSession(counselSession)
                 .baseInformation(objectMapper.valueToTree(addCounselCardReq.getBaseInformation()))
                 .healthInformation(objectMapper.valueToTree(addCounselCardReq.getHealthInformation()))
                 .livingInformation(objectMapper.valueToTree(addCounselCardReq.getLivingInformation()))
@@ -111,7 +109,7 @@ public class CounselCardService {
     @Transactional
     public UpdateCounselCardRes updateCounselCard(UpdateCounselCardReq updateCounselCardReq) {
         CounselCard counselCard = counselCardRepository.findById(updateCounselCardReq.getCounselCardId())
-                .orElseThrow(NoContentException::new);
+                .orElseThrow(IllegalArgumentException::new);
 
         counselCard.setBaseInformation(objectMapper.valueToTree(updateCounselCardReq.getBaseInformation()));
         counselCard.setHealthInformation(objectMapper.valueToTree(updateCounselCardReq.getHealthInformation()));
