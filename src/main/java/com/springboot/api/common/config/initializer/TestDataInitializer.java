@@ -1,45 +1,26 @@
 package com.springboot.api.common.config.initializer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.domain.*;
+import com.springboot.enums.*;
+import com.springboot.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.enums.wasteMedication.RecoveryAgreementType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
-
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.domain.CounselCard;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.domain.CounseleeConsent;
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.Medication;
-import com.springboot.api.domain.MedicationCounsel;
-import com.springboot.api.domain.MedicationRecordHist;
-import com.springboot.api.domain.WasteMedicationDisposal;
-import com.springboot.api.domain.WasteMedicationRecord;
-import com.springboot.enums.CardRecordStatus;
-import com.springboot.enums.CounselNeedStatus;
-import com.springboot.enums.CounselorStatus;
-import com.springboot.enums.GenderType;
-import com.springboot.enums.HealthInsuranceType;
-import com.springboot.enums.MedicationDivision;
-import com.springboot.enums.MedicationUsageStatus;
-import com.springboot.enums.RoleType;
-import com.springboot.enums.ScheduleStatus;
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -357,7 +338,6 @@ public class TestDataInitializer implements CommandLineRunner {
                     .counselSession(counselSession)
                     .counselRecord("의약 상담을 진행합니다. 아주 좋습니다. 뭐가 문제일까요?")
                     .counselRecordHighlights(List.of("아주", "뭐가"))
-                    .counselNeedStatus(CounselNeedStatus.CONTINUOUS)
                     .build();
 
             medicationCounsel.setId(medicationCounselId);
