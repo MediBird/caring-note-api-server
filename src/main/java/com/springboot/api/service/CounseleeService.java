@@ -1,23 +1,26 @@
 package com.springboot.api.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
+import com.springboot.api.dto.counselee.AddAndUpdateCounseleeReq;
 import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -32,14 +35,14 @@ public class CounseleeService {
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
-                .orElseThrow(NoContentException::new);
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee()).orElseThrow(NoContentException::new);
 
         CounselCard currentCounselCard = counselSession.getCounselCard();
 
-        CounselCard targetCounselCard = (currentCounselCard == null || currentCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDING))
-                ? getPreviousCounselCard(counselee.getId(), counselSession.getScheduledStartDateTime())
-                : currentCounselCard;
+        CounselCard targetCounselCard = (currentCounselCard == null
+                || currentCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDING))
+                        ? getPreviousCounselCard(counselee.getId(), counselSession.getScheduledStartDateTime())
+                        : currentCounselCard;
 
         List<String> diseases = new ArrayList<>();
 
@@ -53,23 +56,42 @@ public class CounseleeService {
         }
 
         // Step 6: 결과 반환
-        return new SelectCounseleeBaseInformationByCounseleeIdRes(
-                counselee.getId(),
-                counselee.getName(),
+        return new SelectCounseleeBaseInformationByCounseleeIdRes(counselee.getId(), counselee.getName(),
                 dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()),
-                counselee.getDateOfBirth().toString(),
-                counselee.getGenderType(),
-                counselee.getAddress(),
-                counselee.getHealthInsuranceType(),
-                counselee.getCounselCount(),
-                counselee.getLastCounselDate(),
+                counselee.getDateOfBirth().toString(), counselee.getGenderType(), counselee.getAddress(),
+                counselee.getHealthInsuranceType(), counselee.getCounselCount(), counselee.getLastCounselDate(),
                 diseases // diseases 값 반환
-                , 
-                Optional.ofNullable(currentCounselCard)
-                        .map(CounselCard::getCardRecordStatus)
-                        .orElse(CardRecordStatus.UNRECORDED)
-                ,counselee.isDisability()
-        );
+                , Optional.ofNullable(currentCounselCard).map(CounselCard::getCardRecordStatus)
+                        .orElse(CardRecordStatus.UNRECORDED),
+                counselee.isDisability());
+    }
+
+    public String AddandUpdateCounselee(AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
+        Counselee targetCounselee;
+        if (addAndUpdateCounseleeReq.getCounseleeId() == null) {
+            targetCounselee = Counselee.builder().name(addAndUpdateCounseleeReq.getName())
+                    .phoneNumber(addAndUpdateCounseleeReq.getPhoneNumber())
+                    .dateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth())
+                    .genderType(addAndUpdateCounseleeReq.getGenderType()).address(addAndUpdateCounseleeReq.getAddress())
+                    .healthInsuranceType(addAndUpdateCounseleeReq.getHealthInsuranceType())
+                    .isDisability(addAndUpdateCounseleeReq.isDisability()).note(addAndUpdateCounseleeReq.getNotes())
+                    .careManagerName(addAndUpdateCounseleeReq.getCareManagerName()).build();
+            targetCounselee = counseleeRepository.save(targetCounselee);
+        } else {
+            targetCounselee = counseleeRepository.findById(addAndUpdateCounseleeReq.getCounseleeId())
+                    .orElseThrow(IllegalArgumentException::new);
+            targetCounselee.setName(addAndUpdateCounseleeReq.getName());
+            targetCounselee.setPhoneNumber(addAndUpdateCounseleeReq.getPhoneNumber());
+            targetCounselee.setDateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth());
+            targetCounselee.setGenderType(addAndUpdateCounseleeReq.getGenderType());
+            targetCounselee.setAddress(addAndUpdateCounseleeReq.getAddress());
+            targetCounselee.setHealthInsuranceType(addAndUpdateCounseleeReq.getHealthInsuranceType());
+            targetCounselee.setDisability(addAndUpdateCounseleeReq.isDisability());
+            targetCounselee.setNote(addAndUpdateCounseleeReq.getNotes());
+            targetCounselee.setCareManagerName(addAndUpdateCounseleeReq.getCareManagerName());
+            targetCounselee = counseleeRepository.save(targetCounselee);
+        }
+        return targetCounselee.getId();
     }
 
     private CounselCard getPreviousCounselCard(String counseleeId, LocalDateTime scheduledStartDateTime) {
@@ -80,7 +102,8 @@ public class CounseleeService {
 
         for (CounselSession previousSession : previousCounselSessions) {
             CounselCard previousCounselCard = previousSession.getCounselCard();
-            if (previousCounselCard != null && !previousCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDED)) {
+            if (previousCounselCard != null
+                    && !previousCounselCard.getCardRecordStatus().equals(CardRecordStatus.RECORDED)) {
                 return previousCounselCard;
             }
         }
