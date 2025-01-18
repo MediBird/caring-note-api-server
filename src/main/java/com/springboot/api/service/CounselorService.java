@@ -1,6 +1,9 @@
 package com.springboot.api.service;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import com.springboot.api.common.exception.DuplicatedEmailException;
@@ -42,11 +45,17 @@ public class CounselorService {
 
     @Transactional
     public GetCounselorRes getMyInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        String username = jwt.getClaimAsString("preferred_username");
+
         Counselor counselor = counselorRepository
-                .findByUsername(SecurityContextHolder.getContext().getAuthentication().getName())
+                .findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID"));
 
-        return new GetCounselorRes(counselor.getId(), counselor.getName(), counselor.getEmail(), counselor.getPhoneNumber(), counselor.getRoleType(), counselor.getMedicationCounselingCount(), counselor.getCounseledCounseleeCount(), counselor.getParticipationDays());
+        return new GetCounselorRes(counselor.getId(), counselor.getName(), counselor.getEmail(),
+                counselor.getPhoneNumber(), counselor.getRoleType(), counselor.getMedicationCounselingCount(),
+                counselor.getCounseledCounseleeCount(), counselor.getParticipationDays());
     }
 
 }
