@@ -1,7 +1,5 @@
 package com.springboot.api.dto.medicationcounsel;
 
-import com.springboot.api.common.annotation.ValidEnum;
-import com.springboot.enums.CounselNeedStatus;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +16,4 @@ public class UpdateMedicationCounselReq {
 
     private List<String> counselRecordHighlights;
 
-    @ValidEnum(enumClass = CounselNeedStatus.class)
-    private CounselNeedStatus counselNeedStatus;
 }
