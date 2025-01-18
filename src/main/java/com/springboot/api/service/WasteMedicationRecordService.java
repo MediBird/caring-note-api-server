@@ -38,15 +38,15 @@ public class WasteMedicationRecordService {
         }
         return wasteMedicationRecords.stream()
                 .map(wasteMedicationRecord -> new SelectMedicationRecordListBySessionIdRes(
-                wasteMedicationRecord.getId(),
-                wasteMedicationRecord.getMedication().getId(),
-                wasteMedicationRecord.getMedicationName(),
-                wasteMedicationRecord.getUnit(),
-                wasteMedicationRecord.getDisposalReason(),
-                wasteMedicationRecord.getCreatedDatetime(),
-                wasteMedicationRecord.getUpdatedDatetime(),
-                wasteMedicationRecord.getCreatedBy(),
-                wasteMedicationRecord.getUpdatedBy()))
+                        wasteMedicationRecord.getId(),
+                        wasteMedicationRecord.getMedication().getId(),
+                        wasteMedicationRecord.getMedicationName(),
+                        wasteMedicationRecord.getUnit(),
+                        wasteMedicationRecord.getDisposalReason(),
+                        wasteMedicationRecord.getCreatedDatetime(),
+                        wasteMedicationRecord.getUpdatedDatetime(),
+                        wasteMedicationRecord.getCreatedBy(),
+                        wasteMedicationRecord.getUpdatedBy()))
                 .collect(Collectors.toList());
     }
 
@@ -57,7 +57,7 @@ public class WasteMedicationRecordService {
         List<WasteMedicationRecord> wasteMedicationRecords = new ArrayList<>();
         WasteMedicationRecord wasteMedicationRecord;
         for (AddAndUpdateWasteMedicationRecordReq addAndUpdateWasteMedicationRecordReq : addAndUpdateWasteMedicationRecordReqs) {
-            if (addAndUpdateWasteMedicationRecordReq.getRowId() != null) {
+            if (addAndUpdateWasteMedicationRecordReq.getRowId() == null) {
 
                 wasteMedicationRecord = new WasteMedicationRecord();
                 wasteMedicationRecord.setCounselSession(counselSession);
@@ -83,7 +83,8 @@ public class WasteMedicationRecordService {
         wasteMedicationRecordRepository.saveAll(wasteMedicationRecords);
 
         return wasteMedicationRecords.stream()
-                .map(savedWasteMedicationRecord -> new AddAndUpdateWasteMedicationRecordRes(savedWasteMedicationRecord.getId()))
+                .map(savedWasteMedicationRecord -> new AddAndUpdateWasteMedicationRecordRes(
+                        savedWasteMedicationRecord.getId()))
                 .collect(Collectors.toList());
     }
 
