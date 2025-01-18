@@ -32,7 +32,6 @@ public class MedicationCounselService {
                 .counselSession(counselSession)
                 .counselRecord(addMedicationCounselReq.getCounselRecord())
                 .counselRecordHighlights(addMedicationCounselReq.getCounselRecordHighlights())
-                .counselNeedStatus(addMedicationCounselReq.getCounselNeedStatus())
                 .build();
 
         MedicationCounsel savedMedicationCounsel = medicationCounselRepository.save(medicationCounsel);
@@ -53,7 +52,6 @@ public class MedicationCounselService {
                 medicationCounsel.getId()
                 , medicationCounsel.getCounselRecord()
                 , medicationCounsel.getCounselRecordHighlights()
-                , medicationCounsel.getCounselNeedStatus()
         );
     }
 
@@ -95,7 +93,6 @@ public class MedicationCounselService {
 
         medicationCounsel.setCounselRecord(updateMedicationCounselReq.getCounselRecord());
         medicationCounsel.setCounselRecordHighlights(updateMedicationCounselReq.getCounselRecordHighlights());
-        medicationCounsel.setCounselNeedStatus(updateMedicationCounselReq.getCounselNeedStatus());
 
         return new UpdateMedicationCounselRes(medicationCounsel.getId());
     }
