@@ -11,7 +11,6 @@ import com.springboot.api.dto.medicationcounsel.DeleteMedicationCounselReq;
 import com.springboot.api.dto.medicationcounsel.UpdateMedicationCounselReq;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
-import com.springboot.enums.CounselNeedStatus;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +88,6 @@ public class MedicationCounselControllerTest {
         // 3️⃣ MedicationCounsel 등록 (CounselSession 관계 추가)
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
                 .counselSession(counselSession) // 실제 영속 상태의 CounselSession 사용
-                .counselNeedStatus(CounselNeedStatus.ONE)
                 .counselRecord("I'm counselor")
                 .counselRecordHighlights(List.of("I'm", "counselor"))
                 .build();
@@ -107,7 +105,6 @@ public class MedicationCounselControllerTest {
         AddMedicationCounselReq requestBody = AddMedicationCounselReq.builder()
                 .counselSessionId(testCounselSession.getId())
                 .counselRecord("I'm counselor")
-                .counselNeedStatus(CounselNeedStatus.ONE)
                 .counselRecordHighlights(List.of("I'm", "counselor"))
                 .build();
 
@@ -135,7 +132,6 @@ public class MedicationCounselControllerTest {
                 .andExpect(jsonPath("$.data.counselRecord").value(testMedicationCounsel.getCounselRecord()))
                 .andExpect(jsonPath("$.data.counselRecordHighlights[0]").value(testMedicationCounsel.getCounselRecordHighlights().getFirst()))
                 .andExpect(jsonPath("$.data.counselRecordHighlights[1]").value(testMedicationCounsel.getCounselRecordHighlights().get(1)))
-                .andExpect(jsonPath("$.data.counselNeedStatus").value(testMedicationCounsel.getCounselNeedStatus().name()))
                 .andDo(handler -> {
                     log.debug("Response Content: " + handler.getResponse().getContentAsString());
                 });
@@ -149,7 +145,6 @@ public class MedicationCounselControllerTest {
         UpdateMedicationCounselReq requestBody = UpdateMedicationCounselReq.builder()
                 .medicationCounselId(testMedicationCounsel.getId())
                 .counselRecord("I'm counselors")
-                .counselNeedStatus(CounselNeedStatus.ONE)
                 .counselRecordHighlights(List.of("I'm", "counselor"))
                 .build();
 
@@ -170,7 +165,6 @@ public class MedicationCounselControllerTest {
                 .andExpect(jsonPath("$.data.counselRecord").value(requestBody.getCounselRecord()))
                 .andExpect(jsonPath("$.data.counselRecordHighlights[0]").value(testMedicationCounsel.getCounselRecordHighlights().getFirst()))
                 .andExpect(jsonPath("$.data.counselRecordHighlights[1]").value(testMedicationCounsel.getCounselRecordHighlights().get(1)))
-                .andExpect(jsonPath("$.data.counselNeedStatus").value(testMedicationCounsel.getCounselNeedStatus().name()))
                 .andDo(handler -> {
                     log.debug("Response Content: " + handler.getResponse().getContentAsString());
                 });
