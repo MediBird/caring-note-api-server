@@ -1,7 +1,6 @@
 package com.springboot.api.domain;
 
 import com.springboot.api.common.converter.ListStringConverter;
-import com.springboot.enums.CounselNeedStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,9 +29,6 @@ public class MedicationCounsel extends BaseEntity {
     @Column(name= "counsel_record_highlights", columnDefinition = "TEXT")
     private List<String> counselRecordHighlights;
 
-
-    @Enumerated(EnumType.STRING)
-    private CounselNeedStatus counselNeedStatus;
 
     @PrePersist
     @Override
