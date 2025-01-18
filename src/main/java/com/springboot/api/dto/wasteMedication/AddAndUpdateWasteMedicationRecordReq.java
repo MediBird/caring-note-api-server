@@ -10,7 +10,6 @@ public class AddAndUpdateWasteMedicationRecordReq {
 
     private String medicationId;
 
-    @NotBlank
     private Integer unit;
 
     @NotBlank
