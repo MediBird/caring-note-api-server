@@ -24,11 +24,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@ApiController(
-        name = "WasteMedicationController",
-        path = "/v1/counsel/medication/waste",
-        description = "본상담 내 복약상담 관련 API를 제공하는 Controller"
-)
+@ApiController(name = "WasteMedicationController", path = "/v1/counsel/medication/waste", description = "본상담 내 복약상담 관련 API를 제공하는 Controller")
 @RequiredArgsConstructor
 public class WasteMedicationController {
 
@@ -36,8 +32,8 @@ public class WasteMedicationController {
     private final WasteMedicationDisposalService wasteMedicationDisposalService;
 
     @PostMapping("/{counselSessionId}")
-    @Operation(summary = "폐의약품 추가", tags = {"본상담 - 폐의약품 목록"})
-    public ResponseEntity<CommonRes<List<AddAndUpdateWasteMedicationRecordRes>>> addWasteMedicationRecord(
+    @Operation(summary = "폐의약품 추가 및 업데이트", tags = { "본상담 - 폐의약품 목록" })
+    public ResponseEntity<CommonRes<List<AddAndUpdateWasteMedicationRecordRes>>> addAndUpdateWasteMedicationRecord(
             @PathVariable("counselSessionId") String counselSessionId,
             @RequestBody @Valid List<AddAndUpdateWasteMedicationRecordReq> addAndUpdateWasteMedicationRecordReqs) {
 
@@ -48,7 +44,7 @@ public class WasteMedicationController {
     }
 
     @GetMapping("/{counselSessionId}")
-    @Operation(summary = "폐의약품 리스트 조회", tags = {"본상담 - 폐의약품 목록"})
+    @Operation(summary = "폐의약품 리스트 조회", tags = { "본상담 - 폐의약품 목록" })
     public ResponseEntity<CommonRes<List<SelectMedicationRecordListBySessionIdRes>>> selectMedicationRecordListBySessionId(
             @PathVariable("counselSessionId") String counselSessionId) {
 
@@ -58,7 +54,7 @@ public class WasteMedicationController {
     }
 
     @DeleteMapping("/{counselSessionId}/{wasteMedicationRecordId}")
-    @Operation(summary = "폐의약품 삭제", tags = {"본상담 - 폐의약품 목록"})
+    @Operation(summary = "폐의약품 삭제", tags = { "본상담 - 폐의약품 목록" })
     public ResponseEntity<CommonRes<Void>> deleteWasteMedicationRecord(
             @PathVariable("counselSessionId") String counselSessionId,
             @PathVariable("wasteMedicationRecordId") String wasteMedicationRecordId) {
@@ -68,7 +64,7 @@ public class WasteMedicationController {
     }
 
     @PostMapping("/disposal/{counselSessionId}")
-    @Operation(summary = "폐의약품 폐기 정보 추가 혹은 업데이트", tags = {"본상담 - 폐의약품 목록"})
+    @Operation(summary = "폐의약품 폐기 정보 추가 혹은 업데이트", tags = { "본상담 - 폐의약품 목록" })
     public ResponseEntity<CommonRes<String>> addWasteMedicationDisposal(
             @PathVariable("counselSessionId") String counselSessionId,
             @RequestBody @Valid WasteMedicationDisposalReq wasteMedicationDisposalReq) {
@@ -78,7 +74,7 @@ public class WasteMedicationController {
     }
 
     @DeleteMapping("/disposal/{counselSessionId}")
-    @Operation(summary = "폐의약품 폐기 정보 삭제", tags = {"본상담 - 폐의약품 목록"})
+    @Operation(summary = "폐의약품 폐기 정보 삭제", tags = { "본상담 - 폐의약품 목록" })
     public ResponseEntity<CommonRes<Void>> deleteWasteMedicationDisposal(
             @PathVariable("counselSessionId") String counselSessionId) {
         wasteMedicationDisposalService.delete(counselSessionId);
@@ -86,7 +82,7 @@ public class WasteMedicationController {
     }
 
     @GetMapping("/disposal/{counselSessionId}")
-    @Operation(summary = "폐의약품 폐기 정보 조회", tags = {"본상담 - 폐의약품 목록"})
+    @Operation(summary = "폐의약품 폐기 정보 조회", tags = { "본상담 - 폐의약품 목록" })
     public ResponseEntity<CommonRes<WasteMedicationDisposalRes>> getWasteMedicationDisposal(
             @PathVariable("counselSessionId") String counselSessionId) {
         WasteMedicationDisposal disposal = wasteMedicationDisposalService.get(counselSessionId);
