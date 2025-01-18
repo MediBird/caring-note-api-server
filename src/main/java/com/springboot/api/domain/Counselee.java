@@ -1,27 +1,43 @@
 package com.springboot.api.domain;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
-import jakarta.persistence.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
-
-import java.time.LocalDate;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"name", "date_of_birth", "phone_number"})
+        @UniqueConstraint(columnNames = { "name", "date_of_birth", "phone_number" })
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSessions", "medicationRecords",})
-@ToString(callSuper = true, exclude = {"counselSessions", "medicationRecords"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSessions", "medicationRecords", })
+@ToString(callSuper = true, exclude = { "counselSessions", "medicationRecords" })
 public class Counselee extends BaseEntity {
 
     @Column(nullable = false)
@@ -51,8 +67,8 @@ public class Counselee extends BaseEntity {
     private LocalDate registrationDate;
 
     // 메모
-    @Column(name = "notes", columnDefinition = "TEXT")
-    private String notes;
+    @Column(name = "note", columnDefinition = "TEXT")
+    private String note;
 
     @Enumerated(EnumType.STRING)
     private GenderType genderType;
@@ -63,6 +79,9 @@ public class Counselee extends BaseEntity {
     private String address;
 
     private boolean isDisability;
+
+    @Column(name = "care_manager_name")
+    private String careManagerName;
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<CounselSession> counselSessions;
