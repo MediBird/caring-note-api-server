@@ -51,7 +51,7 @@ public abstract class BaseEntity {
     private String getCurrentUserId() {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
                 .filter(Authentication::isAuthenticated)
-                .filter(auth -> auth instanceof JwtAuthenticationToken) // ✅ 타입 체크
+                .filter(auth -> auth instanceof JwtAuthenticationToken)
                 .map(auth -> (JwtAuthenticationToken) auth)
                 .map(JwtAuthenticationToken::getToken)
                 .map(jwt -> jwt.getClaimAsString("preferred_username"))
