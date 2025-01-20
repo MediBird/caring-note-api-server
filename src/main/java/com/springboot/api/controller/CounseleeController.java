@@ -37,7 +37,8 @@ public class CounseleeController {
         public ResponseEntity<CommonRes<String>> addAndUpdateCounselee(
                         @RequestBody AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
 
-                return ResponseEntity.ok(new CommonRes<>(addAndUpdateCounseleeReq.getCounseleeId()));
+                return ResponseEntity
+                                .ok(new CommonRes<>(counseleeService.addAndUpdateCounselee(addAndUpdateCounseleeReq)));
         }
 
 }
