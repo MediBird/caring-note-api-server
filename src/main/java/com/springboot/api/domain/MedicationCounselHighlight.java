@@ -21,7 +21,7 @@ public class MedicationCounselHighlight extends BaseEntity {
     @JoinColumn(name = "medication_counsel_id")
     private MedicationCounsel medicationCounsel;
 
-    private String highlightRecord;
+    private String highlight;
     private Integer startIndex;
     private Integer endIndex;
 

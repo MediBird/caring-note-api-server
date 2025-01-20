@@ -11,9 +11,6 @@ import java.util.List;
 public class AddMedicationCounselReq {
     @NotBlank
     private String counselSessionId;
-
     private String counselRecord;
-
-    private List<String> counselRecordHighlights;
-
+    private List<MedicationCounselHighlightDTO> counselRecordHighlights;
 }
