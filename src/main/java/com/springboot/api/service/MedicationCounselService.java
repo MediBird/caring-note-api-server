@@ -4,6 +4,7 @@ import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.MedicationCounsel;
+import com.springboot.api.domain.MedicationCounselHighlight;
 import com.springboot.api.dto.medicationcounsel.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
@@ -12,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class MedicationCounselService {
     private final CounselSessionRepository counselSessionRepository;
 
 
+    @Transactional
     public AddMedicationCounselRes addMedicationCounsel(AddMedicationCounselReq addMedicationCounselReq){
 
         CounselSession counselSession = counselSessionRepository.findById(addMedicationCounselReq.getCounselSessionId())
@@ -31,10 +35,23 @@ public class MedicationCounselService {
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
                 .counselSession(counselSession)
                 .counselRecord(addMedicationCounselReq.getCounselRecord())
-                .counselRecordHighlights(addMedicationCounselReq.getCounselRecordHighlights())
                 .build();
 
+        List<MedicationCounselHighlight> medicationCounselHighlights = Optional.ofNullable(addMedicationCounselReq.getCounselRecordHighlights())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(highlight -> MedicationCounselHighlight.builder()
+                            .medicationCounsel(medicationCounsel)
+                            .highlight(highlight.highlight())
+                            .startIndex(highlight.startIndex())
+                            .endIndex(highlight.endIndex())
+                            .build())
+                .collect(Collectors.toList());
+
+        medicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);
+
         MedicationCounsel savedMedicationCounsel = medicationCounselRepository.save(medicationCounsel);
+
 
         return new AddMedicationCounselRes(savedMedicationCounsel.getId());
     }
@@ -51,7 +68,16 @@ public class MedicationCounselService {
         return new SelectMedicationCounselRes(
                 medicationCounsel.getId()
                 , medicationCounsel.getCounselRecord()
-                , medicationCounsel.getCounselRecordHighlights()
+                , Optional.ofNullable(medicationCounsel.getMedicationCounselHighlights())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(h->MedicationCounselHighlightDTO
+                            .builder()
+                            .highlight(h.getHighlight())
+                            .startIndex(h.getStartIndex())
+                            .endIndex(h.getEndIndex())
+                            .build()
+                ).toList()
         );
     }
 
@@ -77,7 +103,16 @@ public class MedicationCounselService {
 
         return new SelectPreviousMedicationCounselRes(
                 previousCounselSession.getId()
-                ,medicationCounsel.getCounselRecordHighlights()
+                ,Optional.ofNullable(medicationCounsel.getMedicationCounselHighlights())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(h->MedicationCounselHighlightDTO
+                        .builder()
+                        .highlight(h.getHighlight())
+                        .startIndex(h.getStartIndex())
+                        .endIndex(h.getEndIndex())
+                        .build()
+                ).toList()
                 , medicationCounsel.getCounselRecord() //STT 도입 이후 STT 결과로 변경 예정
         );
 
@@ -92,7 +127,21 @@ public class MedicationCounselService {
                 .orElseThrow(NoContentException::new);
 
         medicationCounsel.setCounselRecord(updateMedicationCounselReq.getCounselRecord());
-        medicationCounsel.setCounselRecordHighlights(updateMedicationCounselReq.getCounselRecordHighlights());
+
+        medicationCounsel.getMedicationCounselHighlights().clear();
+
+        List<MedicationCounselHighlight> medicationCounselHighlights = Optional.ofNullable(updateMedicationCounselReq.getCounselRecordHighlights())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(highlight -> MedicationCounselHighlight.builder()
+                        .medicationCounsel(medicationCounsel)
+                        .highlight(highlight.highlight())
+                        .startIndex(highlight.startIndex())
+                        .endIndex(highlight.endIndex())
+                        .build())
+                .collect(Collectors.toList());
+
+        medicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);
 
         return new UpdateMedicationCounselRes(medicationCounsel.getId());
     }
