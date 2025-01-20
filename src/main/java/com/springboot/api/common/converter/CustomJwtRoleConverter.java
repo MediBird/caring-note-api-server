@@ -1,8 +1,11 @@
 package com.springboot.api.common.converter;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import com.springboot.api.domain.Counselor;
+import com.springboot.api.repository.CounselorRepository;
+import com.springboot.enums.CounselorStatus;
+import com.springboot.enums.RoleType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,13 +16,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.repository.CounselorRepository;
-import com.springboot.enums.CounselorStatus;
-import com.springboot.enums.RoleType;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
@@ -61,6 +59,7 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
             newCounselor.setPhoneNumber(phoneNumber);
             newCounselor.setStatus(CounselorStatus.ACTIVE);
             newCounselor.setRoleType(RoleType.ROLE_ADMIN);
+
             counselorRepository.save(newCounselor);
             return new ArrayList<>(newCounselor.getAuthorities());
         }

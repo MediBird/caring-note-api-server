@@ -1,12 +1,5 @@
 package com.springboot.api.domain;
 
-import java.time.LocalDateTime;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -14,6 +7,12 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 @MappedSuperclass
 @Data
@@ -35,31 +34,28 @@ public abstract class BaseEntity {
     private String updatedBy;
 
     protected void onCreate() {
-        if (this.id == null) {
-            ULID ulid = new ULID();
-            this.id = ulid.nextULID();
-        }
+        id = Optional.ofNullable(this.id).orElseGet(() -> new ULID().nextULID());
         createdDatetime = LocalDateTime.now();
+        createdBy = Optional.ofNullable(createdBy).orElseGet(this::getCurrentUserId);
         updatedDatetime = LocalDateTime.now();
-        createdBy = getCurrentUserId();
+        updatedBy = Optional.ofNullable(updatedBy).orElseGet(this::getCurrentUserId);
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedDatetime = LocalDateTime.now();
-        updatedBy = getCurrentUserId();
+        updatedBy = Optional.ofNullable(updatedBy).orElseGet(this::getCurrentUserId);
     }
 
+
     private String getCurrentUserId() {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
-        String username = jwt.getClaimAsString("preferred_username");
-        if (authentication != null && authentication.isAuthenticated()) {
-            return username;
-        }
-        return "system";
-
+        return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
+                .filter(Authentication::isAuthenticated)
+                .filter(auth -> auth instanceof JwtAuthenticationToken)
+                .map(auth -> (JwtAuthenticationToken) auth)
+                .map(JwtAuthenticationToken::getToken)
+                .map(jwt -> jwt.getClaimAsString("preferred_username"))
+                .orElse("system");
     }
 
 }
