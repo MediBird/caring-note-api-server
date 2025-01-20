@@ -19,6 +19,7 @@ import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounsele
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.HealthInsuranceType;
 
 import lombok.RequiredArgsConstructor;
 
@@ -66,14 +67,14 @@ public class CounseleeService {
                 counselee.isDisability());
     }
 
-    public String AddandUpdateCounselee(AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
+    public String addAndUpdateCounselee(AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
         Counselee targetCounselee;
         if (addAndUpdateCounseleeReq.getCounseleeId() == null) {
             targetCounselee = Counselee.builder().name(addAndUpdateCounseleeReq.getName())
                     .phoneNumber(addAndUpdateCounseleeReq.getPhoneNumber())
                     .dateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth())
                     .genderType(addAndUpdateCounseleeReq.getGenderType()).address(addAndUpdateCounseleeReq.getAddress())
-                    .healthInsuranceType(addAndUpdateCounseleeReq.getHealthInsuranceType())
+                    .healthInsuranceType(HealthInsuranceType.NON_COVERED)
                     .isDisability(addAndUpdateCounseleeReq.isDisability()).note(addAndUpdateCounseleeReq.getNotes())
                     .careManagerName(addAndUpdateCounseleeReq.getCareManagerName()).build();
             targetCounselee = counseleeRepository.save(targetCounselee);
@@ -85,7 +86,6 @@ public class CounseleeService {
             targetCounselee.setDateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth());
             targetCounselee.setGenderType(addAndUpdateCounseleeReq.getGenderType());
             targetCounselee.setAddress(addAndUpdateCounseleeReq.getAddress());
-            targetCounselee.setHealthInsuranceType(addAndUpdateCounseleeReq.getHealthInsuranceType());
             targetCounselee.setDisability(addAndUpdateCounseleeReq.isDisability());
             targetCounselee.setNote(addAndUpdateCounseleeReq.getNotes());
             targetCounselee.setCareManagerName(addAndUpdateCounseleeReq.getCareManagerName());
