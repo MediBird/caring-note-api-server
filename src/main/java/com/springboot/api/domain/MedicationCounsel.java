@@ -24,7 +24,7 @@ public class MedicationCounsel extends BaseEntity {
     private String counselRecord;
 
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MedicationCounselHighlight> medicationCounselHighlights;
 
     @PrePersist
