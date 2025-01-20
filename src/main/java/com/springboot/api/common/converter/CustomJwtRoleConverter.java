@@ -59,8 +59,6 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
             newCounselor.setPhoneNumber(phoneNumber);
             newCounselor.setStatus(CounselorStatus.ACTIVE);
             newCounselor.setRoleType(RoleType.ROLE_ADMIN);
-            newCounselor.setCreatedBy("keycloak");
-            newCounselor.setUpdatedBy("keycloak");
 
             counselorRepository.save(newCounselor);
             return new ArrayList<>(newCounselor.getAuthorities());
