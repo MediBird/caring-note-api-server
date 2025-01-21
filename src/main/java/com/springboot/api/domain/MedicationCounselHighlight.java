@@ -1,10 +1,7 @@
 package com.springboot.api.domain;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -25,7 +22,11 @@ public class MedicationCounselHighlight extends BaseEntity {
     private Integer startIndex;
     private Integer endIndex;
 
-
+    @PrePersist
+    @Override
+    protected void onCreate() {
+        super.onCreate();
+    }
 
 
 
