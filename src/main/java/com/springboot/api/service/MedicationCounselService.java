@@ -7,6 +7,7 @@ import com.springboot.api.domain.MedicationCounsel;
 import com.springboot.api.domain.MedicationCounselHighlight;
 import com.springboot.api.dto.medicationcounsel.*;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.MedicationCounselHighlightRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
 import com.springboot.enums.ScheduleStatus;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.stream.Collectors;
 public class MedicationCounselService {
 
     private final MedicationCounselRepository medicationCounselRepository;
+    private final MedicationCounselHighlightRepository medicationCounselHighlightRepository;
     private final CounselSessionRepository counselSessionRepository;
 
 
@@ -31,6 +33,7 @@ public class MedicationCounselService {
 
         CounselSession counselSession = counselSessionRepository.findById(addMedicationCounselReq.getCounselSessionId())
                 .orElseThrow(IllegalArgumentException::new);
+
 
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
                 .counselSession(counselSession)
@@ -126,9 +129,9 @@ public class MedicationCounselService {
         MedicationCounsel medicationCounsel = medicationCounselRepository.findById(updateMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);
 
-        medicationCounsel.setCounselRecord(updateMedicationCounselReq.getCounselRecord());
+        medicationCounselHighlightRepository.deleteAll(medicationCounsel.getMedicationCounselHighlights());
 
-        medicationCounsel.getMedicationCounselHighlights().clear();
+        medicationCounsel.setCounselRecord(updateMedicationCounselReq.getCounselRecord());
 
         List<MedicationCounselHighlight> medicationCounselHighlights = Optional.ofNullable(updateMedicationCounselReq.getCounselRecordHighlights())
                 .orElse(Collections.emptyList())
@@ -139,10 +142,9 @@ public class MedicationCounselService {
                         .startIndex(highlight.startIndex())
                         .endIndex(highlight.endIndex())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
 
         medicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);
-
         return new UpdateMedicationCounselRes(medicationCounsel.getId());
     }
 

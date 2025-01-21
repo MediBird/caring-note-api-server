@@ -2,14 +2,13 @@ package com.springboot.api.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.MedicationCounsel;
+import com.springboot.api.domain.*;
 import com.springboot.api.dto.medicationcounsel.AddMedicationCounselReq;
 import com.springboot.api.dto.medicationcounsel.DeleteMedicationCounselReq;
+import com.springboot.api.dto.medicationcounsel.MedicationCounselHighlightDTO;
 import com.springboot.api.dto.medicationcounsel.UpdateMedicationCounselReq;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.MedicationCounselHighlightRepository;
 import com.springboot.api.repository.MedicationCounselRepository;
 import com.springboot.enums.ScheduleStatus;
 import jakarta.persistence.EntityManager;
@@ -52,6 +51,9 @@ public class MedicationCounselControllerTest {
     private MedicationCounselRepository medicationCounselRepository;
 
     @Autowired
+    private MedicationCounselHighlightRepository medicationCounselHighlightRepository;
+
+    @Autowired
     private EntityManager entityManager;
 
     private CounselSession testCounselSession;
@@ -85,14 +87,34 @@ public class MedicationCounselControllerTest {
         testCounselSession = counselSessionRepository.save(counselSession); // 영속 상태로 추가
         entityManager.flush(); // flush를 통해 DB에 반영
 
+
         // 3️⃣ MedicationCounsel 등록 (CounselSession 관계 추가)
         MedicationCounsel medicationCounsel = MedicationCounsel.builder()
                 .counselSession(counselSession) // 실제 영속 상태의 CounselSession 사용
                 .counselRecord("I'm counselor")
-                .counselRecordHighlights(List.of("I'm", "counselor"))
                 .build();
         testMedicationCounsel = medicationCounselRepository.save(medicationCounsel);
         entityManager.flush(); // flush를 통해 DB에 반영
+
+        List<MedicationCounselHighlight> medicationCounselHighlights =
+                List.of(
+                        MedicationCounselHighlight.builder()
+                                .medicationCounsel(testMedicationCounsel)
+                                .highlight("I'm")
+                                .startIndex(0)
+                                .endIndex(2)
+                                .build()
+                        ,MedicationCounselHighlight.builder()
+                                .medicationCounsel(testMedicationCounsel)
+                                .highlight("counselor")
+                                .startIndex(4)
+                                .endIndex(12)
+                                .build()
+                );
+
+        testMedicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);
+        entityManager.flush();
+
     }
 
 
@@ -105,7 +127,11 @@ public class MedicationCounselControllerTest {
         AddMedicationCounselReq requestBody = AddMedicationCounselReq.builder()
                 .counselSessionId(testCounselSession.getId())
                 .counselRecord("I'm counselor")
-                .counselRecordHighlights(List.of("I'm", "counselor"))
+                .counselRecordHighlights(List.of(MedicationCounselHighlightDTO.builder()
+                        .highlight("I'm")
+                        .startIndex(0)
+                        .endIndex(2)
+                        .build()))
                 .build();
 
 
@@ -122,7 +148,6 @@ public class MedicationCounselControllerTest {
     @WithMockUser(username = "sunpil", roles = {"ADMIN"})
     void testSelectByCounselSessionId() throws Exception{
 
-
         // Then
         mockMvc.perform(get("/v1/counsel/record")
                         .param("counselSessionId", testCounselSession.getId())
@@ -130,8 +155,6 @@ public class MedicationCounselControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.medicationCounselId").value(testMedicationCounsel.getId()))
                 .andExpect(jsonPath("$.data.counselRecord").value(testMedicationCounsel.getCounselRecord()))
-                .andExpect(jsonPath("$.data.counselRecordHighlights[0]").value(testMedicationCounsel.getCounselRecordHighlights().getFirst()))
-                .andExpect(jsonPath("$.data.counselRecordHighlights[1]").value(testMedicationCounsel.getCounselRecordHighlights().get(1)))
                 .andDo(handler -> {
                     log.debug("Response Content: " + handler.getResponse().getContentAsString());
                 });
@@ -145,7 +168,11 @@ public class MedicationCounselControllerTest {
         UpdateMedicationCounselReq requestBody = UpdateMedicationCounselReq.builder()
                 .medicationCounselId(testMedicationCounsel.getId())
                 .counselRecord("I'm counselors")
-                .counselRecordHighlights(List.of("I'm", "counselor"))
+                .counselRecordHighlights(List.of(MedicationCounselHighlightDTO.builder()
+                        .highlight("'m")
+                        .startIndex(1)
+                        .endIndex(2)
+                        .build()))
                 .build();
 
 
@@ -163,8 +190,7 @@ public class MedicationCounselControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.medicationCounselId").value(testMedicationCounsel.getId()))
                 .andExpect(jsonPath("$.data.counselRecord").value(requestBody.getCounselRecord()))
-                .andExpect(jsonPath("$.data.counselRecordHighlights[0]").value(testMedicationCounsel.getCounselRecordHighlights().getFirst()))
-                .andExpect(jsonPath("$.data.counselRecordHighlights[1]").value(testMedicationCounsel.getCounselRecordHighlights().get(1)))
+                .andExpect(jsonPath("$.data.counselRecordHighlights[0].highlight").value(requestBody.getCounselRecordHighlights().getFirst().highlight()))
                 .andDo(handler -> {
                     log.debug("Response Content: " + handler.getResponse().getContentAsString());
                 });

@@ -184,7 +184,7 @@ class CounselSessionServiceTest {
         when(counselorRepository.findById(anyString())).thenReturn(Optional.of(mockCounselor2));
 
         // Act
-        UpdateCounselorInCounselSessionRes response = service.updateCounselorInCounselSession(userId, updateCounselorInCounselSessionReq);
+        UpdateCounselorInCounselSessionRes response = service.updateCounselorInCounselSession(updateCounselorInCounselSessionReq);
 
         // Assert
         assertNotNull(response);

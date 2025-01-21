@@ -337,12 +337,36 @@ public class TestDataInitializer implements CommandLineRunner {
                     .builder()
                     .counselSession(counselSession)
                     .counselRecord("의약 상담을 진행합니다. 아주 좋습니다. 뭐가 문제일까요?")
-                    .counselRecordHighlights(List.of("아주", "뭐가"))
                     .build();
 
             medicationCounsel.setId(medicationCounselId);
-
             entityManager.persist(medicationCounsel);
+
+            List<MedicationCounselHighlight> medicationCounselHighlights =
+                    List.of(
+                            MedicationCounselHighlight.builder()
+                                    .medicationCounsel(medicationCounsel)
+                                    .highlight("I'm")
+                                    .startIndex(0)
+                                    .endIndex(2)
+                                    .build()
+                            ,MedicationCounselHighlight.builder()
+                                    .medicationCounsel(medicationCounsel)
+                                    .highlight("counselor")
+                                    .startIndex(4)
+                                    .endIndex(12)
+                                    .build()
+                    );
+
+            IntStream.range(0,medicationCounselHighlights.size())
+                            .forEach(i -> medicationCounselHighlights.get(i).setId(medicationCounsel.getId()+"_HIGHLIGHT_"+i));
+
+
+            medicationCounselHighlights.forEach(entityManager::persist);
+
+
+
+
         }
     }
 
