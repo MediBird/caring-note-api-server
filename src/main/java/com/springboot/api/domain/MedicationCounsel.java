@@ -11,8 +11,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession","counselCardHighlights"})
-@ToString(callSuper = true, exclude = {"counselSession","counselCardHighlights"})
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession","medicationCounselHighlights"})
+@ToString(callSuper = true, exclude = {"counselSession","medicationCounselHighlights"})
 public class MedicationCounsel extends BaseEntity {
 
     @OneToOne
