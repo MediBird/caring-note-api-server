@@ -98,7 +98,7 @@ public class CounseleeService {
         return targetCounselee.getId();
     }
 
-    public SelectCounseleeRes selectCounselees(String counseleeId) {
+    public SelectCounseleeRes selectCounselee(String counseleeId) {
         Counselee counselee = counseleeRepository.findById(counseleeId)
                 .orElseThrow(IllegalArgumentException::new);
         return SelectCounseleeRes.builder()
@@ -118,6 +118,10 @@ public class CounseleeService {
                 .note(counselee.getNote())
                 .isDisability(counselee.isDisability())
                 .build();
+    }
+
+    public void deleteCounselee(String counseleeId) {
+        counseleeRepository.deleteById(counseleeId);
     }
 
     private CounselCard getPreviousCounselCard(String counseleeId, LocalDateTime scheduledStartDateTime) {

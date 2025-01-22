@@ -1,10 +1,10 @@
 package com.springboot.api.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
@@ -37,7 +37,8 @@ public class CounseleeController {
         }
 
         @PostMapping("/")
-        @Operation(summary = "내담자 기본 정보 생성", tags = { "상담 카드 작성", "상담 노트" })
+        @Operation(summary = "내담자 기본 정보 생성", tags = { "내담자 관리" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> addAndUpdateCounselee(
                         @RequestBody AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
 
@@ -45,13 +46,21 @@ public class CounseleeController {
                                 .ok(new CommonRes<>(counseleeService.addAndUpdateCounselee(addAndUpdateCounseleeReq)));
         }
 
-        @GetMapping("/")
-        @Operation(summary = "내담자 기본 정보 생성", tags = { "상담 카드 작성", "상담 노트" })
+        @GetMapping("/{counseleeId}")
+        @Operation(summary = "내담자 상세 정보 조회", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<SelectCounseleeRes>> selectCounselees(
-                        @RequestParam("counseleeId") String counseleeId) {
+        public ResponseEntity<CommonRes<SelectCounseleeRes>> selectCounselee(
+                        @PathVariable("counseleeId") String counseleeId) {
                 return ResponseEntity
-                                .ok(new CommonRes<>(counseleeService.selectCounselees(counseleeId)));
+                                .ok(new CommonRes<>(counseleeService.selectCounselee(counseleeId)));
         }
 
+        @DeleteMapping("/{counseleeId}")
+        @Operation(summary = "내담자 삭제", tags = { "내담자 관리" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<String>> deleteCounselee(
+                        @PathVariable("counseleeId") String counseleeId) {
+                counseleeService.deleteCounselee(counseleeId);
+                return ResponseEntity.ok(new CommonRes<>("delete the counselee success"));
+        }
 }
