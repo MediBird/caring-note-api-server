@@ -66,6 +66,9 @@ public class Counselee extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private LocalDate registrationDate;
 
+    @Column(name = "affiliated_welfare_institution")
+    private String affiliatedWelfareInstitution;
+
     // 메모
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;

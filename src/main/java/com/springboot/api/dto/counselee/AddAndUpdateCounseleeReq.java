@@ -21,6 +21,7 @@ public class AddAndUpdateCounseleeReq {
     private GenderType genderType;
     private String address;
     private boolean isDisability;
-    private String notes;
+    private String note;
     private String careManagerName;
+    private String affiliatedWelfareInstitution;
 }

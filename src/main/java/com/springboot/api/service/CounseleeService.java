@@ -5,7 +5,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -16,6 +19,7 @@ import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselee.AddAndUpdateCounseleeReq;
 import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleeRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
@@ -75,8 +79,10 @@ public class CounseleeService {
                     .dateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth())
                     .genderType(addAndUpdateCounseleeReq.getGenderType()).address(addAndUpdateCounseleeReq.getAddress())
                     .healthInsuranceType(HealthInsuranceType.NON_COVERED)
-                    .isDisability(addAndUpdateCounseleeReq.isDisability()).note(addAndUpdateCounseleeReq.getNotes())
-                    .careManagerName(addAndUpdateCounseleeReq.getCareManagerName()).build();
+                    .isDisability(addAndUpdateCounseleeReq.isDisability()).note(addAndUpdateCounseleeReq.getNote())
+                    .careManagerName(addAndUpdateCounseleeReq.getCareManagerName())
+                    .affiliatedWelfareInstitution(addAndUpdateCounseleeReq.getAffiliatedWelfareInstitution())
+                    .build();
             targetCounselee = counseleeRepository.save(targetCounselee);
         } else {
             targetCounselee = counseleeRepository.findById(addAndUpdateCounseleeReq.getCounseleeId())
@@ -87,11 +93,63 @@ public class CounseleeService {
             targetCounselee.setGenderType(addAndUpdateCounseleeReq.getGenderType());
             targetCounselee.setAddress(addAndUpdateCounseleeReq.getAddress());
             targetCounselee.setDisability(addAndUpdateCounseleeReq.isDisability());
-            targetCounselee.setNote(addAndUpdateCounseleeReq.getNotes());
+            targetCounselee.setNote(addAndUpdateCounseleeReq.getNote());
             targetCounselee.setCareManagerName(addAndUpdateCounseleeReq.getCareManagerName());
+            targetCounselee.setAffiliatedWelfareInstitution(addAndUpdateCounseleeReq.getAffiliatedWelfareInstitution());
             targetCounselee = counseleeRepository.save(targetCounselee);
         }
         return targetCounselee.getId();
+    }
+
+    public SelectCounseleeRes selectCounselee(String counseleeId) {
+        Counselee counselee = counseleeRepository.findById(counseleeId)
+                .orElseThrow(IllegalArgumentException::new);
+        return SelectCounseleeRes.builder()
+                .id(counselee.getId())
+                .name(counselee.getName())
+                .age(dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
+                .dateOfBirth(counselee.getDateOfBirth())
+                .phoneNumber(counselee.getPhoneNumber())
+                .gender(counselee.getGenderType())
+                .address(counselee.getAddress())
+                .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
+                .healthInsuranceType(counselee.getHealthInsuranceType())
+                .counselCount(counselee.getCounselCount())
+                .lastCounselDate(counselee.getLastCounselDate())
+                .registrationDate(counselee.getRegistrationDate())
+                .careManagerName(counselee.getCareManagerName())
+                .note(counselee.getNote())
+                .isDisability(counselee.isDisability())
+                .build();
+    }
+
+    public List<SelectCounseleeRes> selectCounselees(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Counselee> counseleePage = counseleeRepository.findAll(pageRequest);
+
+        return counseleePage.getContent().stream()
+                .map(counselee -> SelectCounseleeRes.builder()
+                        .id(counselee.getId())
+                        .name(counselee.getName())
+                        .age(dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
+                        .dateOfBirth(counselee.getDateOfBirth())
+                        .phoneNumber(counselee.getPhoneNumber())
+                        .gender(counselee.getGenderType())
+                        .address(counselee.getAddress())
+                        .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
+                        .healthInsuranceType(counselee.getHealthInsuranceType())
+                        .counselCount(counselee.getCounselCount())
+                        .lastCounselDate(counselee.getLastCounselDate())
+                        .registrationDate(counselee.getRegistrationDate())
+                        .careManagerName(counselee.getCareManagerName())
+                        .note(counselee.getNote())
+                        .isDisability(counselee.isDisability())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+    public void deleteCounselee(String counseleeId) {
+        counseleeRepository.deleteById(counseleeId);
     }
 
     private CounselCard getPreviousCounselCard(String counseleeId, LocalDateTime scheduledStartDateTime) {
