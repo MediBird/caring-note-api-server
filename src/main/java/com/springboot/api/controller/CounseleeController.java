@@ -4,12 +4,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
+import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselee.AddAndUpdateCounseleeReq;
 import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleeRes;
 import com.springboot.api.service.CounseleeService;
+import com.springboot.enums.RoleType;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -39,6 +43,15 @@ public class CounseleeController {
 
                 return ResponseEntity
                                 .ok(new CommonRes<>(counseleeService.addAndUpdateCounselee(addAndUpdateCounseleeReq)));
+        }
+
+        @GetMapping("/")
+        @Operation(summary = "내담자 기본 정보 생성", tags = { "상담 카드 작성", "상담 노트" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<SelectCounseleeRes>> selectCounselees(
+                        @RequestParam("counseleeId") String counseleeId) {
+                return ResponseEntity
+                                .ok(new CommonRes<>(counseleeService.selectCounselees(counseleeId)));
         }
 
 }
