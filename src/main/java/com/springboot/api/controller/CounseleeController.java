@@ -1,10 +1,13 @@
 package com.springboot.api.controller;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
@@ -53,6 +56,16 @@ public class CounseleeController {
                         @PathVariable("counseleeId") String counseleeId) {
                 return ResponseEntity
                                 .ok(new CommonRes<>(counseleeService.selectCounselee(counseleeId)));
+        }
+
+        @GetMapping("/")
+        @Operation(summary = "내담자 목록 조회", tags = { "내담자 관리" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<List<SelectCounseleeRes>>> selectCounselees(
+                        @RequestParam("page") int page,
+                        @RequestParam("size") int size) {
+                return ResponseEntity
+                                .ok(new CommonRes<>(counseleeService.selectCounselees(page, size)));
         }
 
         @DeleteMapping("/{counseleeId}")
