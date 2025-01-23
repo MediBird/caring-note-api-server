@@ -14,6 +14,6 @@ public class UpdateMedicationCounselReq {
 
     private String counselRecord;
 
-    private List<String> counselRecordHighlights;
+    private List<MedicationCounselHighlightDTO> counselRecordHighlights;
 
 }

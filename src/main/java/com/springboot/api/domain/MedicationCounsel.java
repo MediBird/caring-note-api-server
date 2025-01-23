@@ -1,6 +1,5 @@
 package com.springboot.api.domain;
 
-import com.springboot.api.common.converter.ListStringConverter;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,8 +11,8 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
-@ToString(callSuper = true, exclude = {"counselSession"})
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession","medicationCounselHighlights"})
+@ToString(callSuper = true, exclude = {"counselSession","medicationCounselHighlights"})
 public class MedicationCounsel extends BaseEntity {
 
     @OneToOne
@@ -25,10 +24,8 @@ public class MedicationCounsel extends BaseEntity {
     private String counselRecord;
 
 
-    @Convert(converter = ListStringConverter.class)
-    @Column(name= "counsel_record_highlights", columnDefinition = "TEXT")
-    private List<String> counselRecordHighlights;
-
+    @OneToMany(mappedBy = "medicationCounsel", cascade = CascadeType.REMOVE)
+    private List<MedicationCounselHighlight> medicationCounselHighlights;
 
     @PrePersist
     @Override

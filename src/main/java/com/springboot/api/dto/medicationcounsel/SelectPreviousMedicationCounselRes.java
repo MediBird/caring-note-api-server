@@ -4,7 +4,7 @@ import java.util.List;
 
 public record SelectPreviousMedicationCounselRes(
         String previousCounselSessionId
-        , List<String> counselRecordHighlights
+        , List<MedicationCounselHighlightDTO> counselRecordHighlights
         , String counselNoteSummary
 ) {
 }
