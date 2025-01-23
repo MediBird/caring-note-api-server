@@ -4,15 +4,11 @@ import java.time.LocalDate;
 
 import com.springboot.enums.GenderType;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class UpdateCounseleeReq {
     private String counseleeId;
     private String name;
