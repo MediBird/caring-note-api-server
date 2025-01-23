@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddAndUpdateCounseleeReq {
-    private String counseleeId;
+public class AddCounseleeReq {
     private String name;
     private String phoneNumber;
     private LocalDate dateOfBirth;
