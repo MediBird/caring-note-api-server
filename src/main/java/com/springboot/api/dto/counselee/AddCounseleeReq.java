@@ -15,7 +15,7 @@ public class AddCounseleeReq {
     private LocalDate dateOfBirth;
     private GenderType genderType;
     private String address;
-    private boolean isDisability;
+    private boolean disability;
     private String note;
     private String careManagerName;
     private String affiliatedWelfareInstitution;
