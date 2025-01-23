@@ -24,6 +24,6 @@ public class SelectCounseleeRes {
     private LocalDate registrationDate;
     private String careManagerName;
     private String note;
-    private boolean isDisability;
+    private boolean disability;
 }
 
