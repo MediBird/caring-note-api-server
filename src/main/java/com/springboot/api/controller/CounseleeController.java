@@ -7,14 +7,16 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.counselee.AddAndUpdateCounseleeReq;
+import com.springboot.api.dto.counselee.AddCounseleeReq;
 import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.dto.counselee.SelectCounseleeRes;
+import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 import com.springboot.api.service.CounseleeService;
 import com.springboot.enums.RoleType;
 
@@ -43,10 +45,19 @@ public class CounseleeController {
         @Operation(summary = "내담자 기본 정보 생성", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> addAndUpdateCounselee(
-                        @RequestBody AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
+                        @RequestBody AddCounseleeReq addCounseleeReq) {
 
                 return ResponseEntity
-                                .ok(new CommonRes<>(counseleeService.addAndUpdateCounselee(addAndUpdateCounseleeReq)));
+                                .ok(new CommonRes<>(counseleeService.addCounselee(addCounseleeReq)));
+        }
+
+        @PutMapping("/")
+        @Operation(summary = "내담자 기본 정보 수정", tags = { "내담자 관리" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<String>> updateCounselee(
+                        @RequestBody UpdateCounseleeReq updateCounseleeReq) {
+                return ResponseEntity
+                                .ok(new CommonRes<>(counseleeService.updateCounselee(updateCounseleeReq)));
         }
 
         @GetMapping("/{counseleeId}")

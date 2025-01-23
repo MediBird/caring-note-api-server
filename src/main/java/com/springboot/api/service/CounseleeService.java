@@ -17,9 +17,10 @@ import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselee.AddAndUpdateCounseleeReq;
+import com.springboot.api.dto.counselee.AddCounseleeReq;
 import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.dto.counselee.SelectCounseleeRes;
+import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
@@ -71,33 +72,35 @@ public class CounseleeService {
                 counselee.isDisability());
     }
 
-    public String addAndUpdateCounselee(AddAndUpdateCounseleeReq addAndUpdateCounseleeReq) {
-        Counselee targetCounselee;
-        if (addAndUpdateCounseleeReq.getCounseleeId() == null) {
-            targetCounselee = Counselee.builder().name(addAndUpdateCounseleeReq.getName())
-                    .phoneNumber(addAndUpdateCounseleeReq.getPhoneNumber())
-                    .dateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth())
-                    .genderType(addAndUpdateCounseleeReq.getGenderType()).address(addAndUpdateCounseleeReq.getAddress())
-                    .healthInsuranceType(HealthInsuranceType.NON_COVERED)
-                    .isDisability(addAndUpdateCounseleeReq.isDisability()).note(addAndUpdateCounseleeReq.getNote())
-                    .careManagerName(addAndUpdateCounseleeReq.getCareManagerName())
-                    .affiliatedWelfareInstitution(addAndUpdateCounseleeReq.getAffiliatedWelfareInstitution())
-                    .build();
-            targetCounselee = counseleeRepository.save(targetCounselee);
-        } else {
-            targetCounselee = counseleeRepository.findById(addAndUpdateCounseleeReq.getCounseleeId())
-                    .orElseThrow(IllegalArgumentException::new);
-            targetCounselee.setName(addAndUpdateCounseleeReq.getName());
-            targetCounselee.setPhoneNumber(addAndUpdateCounseleeReq.getPhoneNumber());
-            targetCounselee.setDateOfBirth(addAndUpdateCounseleeReq.getDateOfBirth());
-            targetCounselee.setGenderType(addAndUpdateCounseleeReq.getGenderType());
-            targetCounselee.setAddress(addAndUpdateCounseleeReq.getAddress());
-            targetCounselee.setDisability(addAndUpdateCounseleeReq.isDisability());
-            targetCounselee.setNote(addAndUpdateCounseleeReq.getNote());
-            targetCounselee.setCareManagerName(addAndUpdateCounseleeReq.getCareManagerName());
-            targetCounselee.setAffiliatedWelfareInstitution(addAndUpdateCounseleeReq.getAffiliatedWelfareInstitution());
-            targetCounselee = counseleeRepository.save(targetCounselee);
-        }
+    public String addCounselee(AddCounseleeReq addCounseleeReq) {
+        Counselee targetCounselee = Counselee.builder().name(addCounseleeReq.getName())
+                .phoneNumber(addCounseleeReq.getPhoneNumber())
+                .dateOfBirth(addCounseleeReq.getDateOfBirth())
+                .genderType(addCounseleeReq.getGenderType())
+                .address(addCounseleeReq.getAddress())
+                .healthInsuranceType(HealthInsuranceType.NON_COVERED)
+                .isDisability(addCounseleeReq.isDisability()).note(addCounseleeReq.getNote())
+                .careManagerName(addCounseleeReq.getCareManagerName())
+                .affiliatedWelfareInstitution(addCounseleeReq.getAffiliatedWelfareInstitution())
+                .build();
+        targetCounselee = counseleeRepository.save(targetCounselee);
+
+        return targetCounselee.getId();
+    }
+
+    public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
+        Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
+                .orElseThrow(IllegalArgumentException::new);
+        targetCounselee.setName(updateCounseleeReq.getName());
+        targetCounselee.setPhoneNumber(updateCounseleeReq.getPhoneNumber());
+        targetCounselee.setDateOfBirth(updateCounseleeReq.getDateOfBirth());
+        targetCounselee.setGenderType(updateCounseleeReq.getGenderType());
+        targetCounselee.setAddress(updateCounseleeReq.getAddress());
+        targetCounselee.setDisability(updateCounseleeReq.isDisability());
+        targetCounselee.setNote(updateCounseleeReq.getNote());
+        targetCounselee.setCareManagerName(updateCounseleeReq.getCareManagerName());
+        targetCounselee.setAffiliatedWelfareInstitution(updateCounseleeReq.getAffiliatedWelfareInstitution());
+        targetCounselee = counseleeRepository.save(targetCounselee);
         return targetCounselee.getId();
     }
 
