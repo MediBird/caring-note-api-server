@@ -73,13 +73,16 @@ public class CounseleeService {
     }
 
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
-        Counselee targetCounselee = Counselee.builder().name(addCounseleeReq.getName())
+        Counselee targetCounselee = Counselee.builder()
+                .registrationDate(LocalDate.now())
+                .name(addCounseleeReq.getName())
                 .phoneNumber(addCounseleeReq.getPhoneNumber())
                 .dateOfBirth(addCounseleeReq.getDateOfBirth())
                 .genderType(addCounseleeReq.getGenderType())
                 .address(addCounseleeReq.getAddress())
                 .healthInsuranceType(HealthInsuranceType.NON_COVERED)
-                .isDisability(addCounseleeReq.isDisability()).note(addCounseleeReq.getNote())
+                .isDisability(addCounseleeReq.isDisability())
+                .note(addCounseleeReq.getNote())
                 .careManagerName(addCounseleeReq.getCareManagerName())
                 .affiliatedWelfareInstitution(addCounseleeReq.getAffiliatedWelfareInstitution())
                 .build();
