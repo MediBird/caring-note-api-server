@@ -84,7 +84,7 @@ public class CounseleeService {
                 .genderType(addCounseleeReq.getGenderType())
                 .address(addCounseleeReq.getAddress())
                 .healthInsuranceType(HealthInsuranceType.NON_COVERED)
-                .disability(addCounseleeReq.isDisability())
+                .isDisability(addCounseleeReq.isDisability())
                 .note(addCounseleeReq.getNote())
                 .careManagerName(addCounseleeReq.getCareManagerName())
                 .affiliatedWelfareInstitution(addCounseleeReq.getAffiliatedWelfareInstitution())
@@ -129,7 +129,7 @@ public class CounseleeService {
                 .registrationDate(counselee.getRegistrationDate())
                 .careManagerName(counselee.getCareManagerName())
                 .note(counselee.getNote())
-                .disability(counselee.isDisability())
+                .isDisability(counselee.isDisability())
                 .build();
     }
 
@@ -153,7 +153,7 @@ public class CounseleeService {
                         .registrationDate(counselee.getRegistrationDate())
                         .careManagerName(counselee.getCareManagerName())
                         .note(counselee.getNote())
-                        .disability(counselee.isDisability())
+                        .isDisability(counselee.isDisability())
                         .build())
                 .collect(Collectors.toList());
     }

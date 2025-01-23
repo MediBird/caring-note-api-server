@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
@@ -21,7 +22,6 @@ import com.springboot.api.service.CounseleeService;
 import com.springboot.enums.RoleType;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import lombok.RequiredArgsConstructor;
 
 @ApiController(name = "CounseleeController", description = "내담자 관련 API를 제공하는 Controller", path = "/v1/counsel/counselee")
@@ -81,7 +81,7 @@ public class CounseleeController {
 
         @DeleteMapping("/{counseleeId}")
         @Operation(summary = "내담자 삭제", tags = { "내담자 관리" })
-        // @RoleSecured(RoleType.ROLE_ADMIN)
+        @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> deleteCounselee(
                         @PathVariable("counseleeId") String counseleeId) {
                 counseleeService.deleteCounselee(counseleeId);

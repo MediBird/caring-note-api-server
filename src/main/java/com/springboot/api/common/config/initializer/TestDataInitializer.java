@@ -163,7 +163,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .name(names.get(random.nextInt(names.size())))
                     .dateOfBirth(getRandomDate("1930-01-01", "2000-01-01"))
                     .genderType(GenderType.MALE)
-                    .disability(isDisability)
+                    .isDisability(isDisability)
                     .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
                     .phoneNumber(getRandomPhoneNumber())
                     .registrationDate(LocalDate.now())
@@ -298,8 +298,7 @@ public class TestDataInitializer implements CommandLineRunner {
                                      "Usingkoreans": ["읽기 가능", "쓰기 가능"]
                                  }
                 }
-                """)
-                : null;
+                """) : null;
 
         if (entityManager.find(CounselCard.class, counselCardId) == null) {
             CounselCard counselCard = CounselCard
