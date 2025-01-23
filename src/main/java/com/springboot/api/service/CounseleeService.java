@@ -27,9 +27,11 @@ import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.HealthInsuranceType;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CounseleeService {
 
     public final CounseleeRepository counseleeRepository;
@@ -73,6 +75,7 @@ public class CounseleeService {
     }
 
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
+        log.info("addCounseleeReq: {}", addCounseleeReq);
         Counselee targetCounselee = Counselee.builder()
                 .registrationDate(LocalDate.now())
                 .name(addCounseleeReq.getName())
@@ -86,6 +89,7 @@ public class CounseleeService {
                 .careManagerName(addCounseleeReq.getCareManagerName())
                 .affiliatedWelfareInstitution(addCounseleeReq.getAffiliatedWelfareInstitution())
                 .build();
+        log.info("targetCounselee: {}", targetCounselee);
         targetCounselee = counseleeRepository.save(targetCounselee);
 
         return targetCounselee.getId();
