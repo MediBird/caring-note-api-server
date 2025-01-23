@@ -43,7 +43,7 @@ public class CounseleeController {
 
         @PostMapping("/")
         @Operation(summary = "내담자 기본 정보 생성", tags = { "내담자 관리" })
-        // @RoleSecured(RoleType.ROLE_ADMIN)
+        @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> addCounselee(
                         @RequestBody AddCounseleeReq addCounseleeReq) {
 
@@ -53,7 +53,7 @@ public class CounseleeController {
 
         @PutMapping("/")
         @Operation(summary = "내담자 기본 정보 수정", tags = { "내담자 관리" })
-        // @RoleSecured(RoleType.ROLE_ADMIN)
+        @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> updateCounselee(
                         @RequestBody UpdateCounseleeReq updateCounseleeReq) {
                 return ResponseEntity

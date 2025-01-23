@@ -71,7 +71,7 @@ public class CounseleeService {
                 diseases // diseases 값 반환
                 , Optional.ofNullable(currentCounselCard).map(CounselCard::getCardRecordStatus)
                         .orElse(CardRecordStatus.UNRECORDED),
-                counselee.isDisability());
+                counselee.getDisability());
     }
 
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
@@ -84,7 +84,7 @@ public class CounseleeService {
                 .genderType(addCounseleeReq.getGenderType())
                 .address(addCounseleeReq.getAddress())
                 .healthInsuranceType(HealthInsuranceType.NON_COVERED)
-                .isDisability(addCounseleeReq.isDisability())
+                .disability(addCounseleeReq.getDisability())
                 .note(addCounseleeReq.getNote())
                 .careManagerName(addCounseleeReq.getCareManagerName())
                 .affiliatedWelfareInstitution(addCounseleeReq.getAffiliatedWelfareInstitution())
@@ -103,7 +103,7 @@ public class CounseleeService {
         targetCounselee.setDateOfBirth(updateCounseleeReq.getDateOfBirth());
         targetCounselee.setGenderType(updateCounseleeReq.getGenderType());
         targetCounselee.setAddress(updateCounseleeReq.getAddress());
-        targetCounselee.setDisability(updateCounseleeReq.isDisability());
+        targetCounselee.setDisability(updateCounseleeReq.getDisability());
         targetCounselee.setNote(updateCounseleeReq.getNote());
         targetCounselee.setCareManagerName(updateCounseleeReq.getCareManagerName());
         targetCounselee.setAffiliatedWelfareInstitution(updateCounseleeReq.getAffiliatedWelfareInstitution());
@@ -129,7 +129,7 @@ public class CounseleeService {
                 .registrationDate(counselee.getRegistrationDate())
                 .careManagerName(counselee.getCareManagerName())
                 .note(counselee.getNote())
-                .isDisability(counselee.isDisability())
+                .disability(counselee.getDisability())
                 .build();
     }
 
@@ -153,7 +153,7 @@ public class CounseleeService {
                         .registrationDate(counselee.getRegistrationDate())
                         .careManagerName(counselee.getCareManagerName())
                         .note(counselee.getNote())
-                        .isDisability(counselee.isDisability())
+                        .disability(counselee.getDisability())
                         .build())
                 .collect(Collectors.toList());
     }
