@@ -81,7 +81,7 @@ public class Counselee extends BaseEntity {
 
     private String address;
 
-    private boolean disability;
+    private boolean isDisability;
 
     @Column(name = "care_manager_name")
     private String careManagerName;
