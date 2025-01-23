@@ -1,26 +1,44 @@
 package com.springboot.api.common.config.initializer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.domain.*;
-import com.springboot.enums.*;
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.IntStream;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.domain.CounselCard;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.domain.CounseleeConsent;
+import com.springboot.api.domain.Counselor;
+import com.springboot.api.domain.Medication;
+import com.springboot.api.domain.MedicationCounsel;
+import com.springboot.api.domain.MedicationRecordHist;
+import com.springboot.api.domain.WasteMedicationDisposal;
+import com.springboot.api.domain.WasteMedicationRecord;
+import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.CounselorStatus;
+import com.springboot.enums.GenderType;
+import com.springboot.enums.HealthInsuranceType;
+import com.springboot.enums.MedicationDivision;
+import com.springboot.enums.MedicationUsageStatus;
+import com.springboot.enums.RoleType;
+import com.springboot.enums.ScheduleStatus;
+import com.springboot.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.enums.wasteMedication.RecoveryAgreementType;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.TypedQuery;
+import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -30,8 +48,7 @@ public class TestDataInitializer implements CommandLineRunner {
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
     private final List<String> names = List.of(
-            "김철수", "김바비", "김을동", "박찬수", "장덕구", "임꺽정", "송사리", "송새벽", "한여름", "오로라", "이루리"
-    );
+            "김철수", "김바비", "김을동", "박찬수", "장덕구", "임꺽정", "송사리", "송새벽", "한여름", "오로라", "이루리");
     private final Random random = new Random();
 
     @Override
@@ -65,22 +82,19 @@ public class TestDataInitializer implements CommandLineRunner {
 
         // add CounselCard
         List<String> counselCardIds = List.of(
-                "TEST-COUNSEL-CARD-01"
-        );
+                "TEST-COUNSEL-CARD-01");
         addCounselCard(counselSessionIds.getFirst(), counselCardIds.getFirst(), counseleeIds.getFirst());
 
         // add CounseleeConsent
         List<String> counseleeConsentIds = List.of(
-                "TEST-COUNSEL-CONSENT-01"
-        );
+                "TEST-COUNSEL-CONSENT-01");
         addCounseleeConsent(counselSessionIds.getFirst(),
                 counseleeConsentIds.getFirst(),
                 counseleeIds.getFirst());
 
         // add MedicationCounsel
         List<String> medicationCounselIds = List.of(
-                "TEST-COUNSEL-MEDICATION-01"
-        );
+                "TEST-COUNSEL-MEDICATION-01");
         addMedicationCounsel(counselSessionIds.getFirst(),
                 medicationCounselIds.getFirst());
 
@@ -95,8 +109,7 @@ public class TestDataInitializer implements CommandLineRunner {
                 "TEST-RECORD-HIST-07",
                 "TEST-RECORD-HIST-08",
                 "TEST-RECORD-HIST-09",
-                "TEST-RECORD-HIST-10"
-        );
+                "TEST-RECORD-HIST-10");
         addMedicationRecordHist(counselSessionIds.getFirst(), medicationRecordHistIds);
 
         // add WasteMedicationDisposal
@@ -114,8 +127,7 @@ public class TestDataInitializer implements CommandLineRunner {
                 "TEST-WASTE-RECORD-HIST-07",
                 "TEST-WASTE-RECORD-HIST-08",
                 "TEST-WASTE-RECORD-HIST-09",
-                "TEST-WASTE-RECORD-HIST-10"
-        );
+                "TEST-WASTE-RECORD-HIST-10");
         addWasteMedicationRecord(counselSessionIds.getFirst(), wasteMedicationRecordIds);
 
     }
@@ -151,7 +163,7 @@ public class TestDataInitializer implements CommandLineRunner {
                     .name(names.get(random.nextInt(names.size())))
                     .dateOfBirth(getRandomDate("1930-01-01", "2000-01-01"))
                     .genderType(GenderType.MALE)
-                    .isDisability(isDisability)
+                    .disability(isDisability)
                     .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
                     .phoneNumber(getRandomPhoneNumber())
                     .registrationDate(LocalDate.now())
@@ -170,10 +182,9 @@ public class TestDataInitializer implements CommandLineRunner {
 
         Counselor counselor = entityManager.getReference(Counselor.class, counselorId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
-        LocalDate scheduleDate
-                = scheduleStatus == ScheduleStatus.SCHEDULED
-                        ? LocalDate.now()
-                        : getRandomDate("2024-12-01", LocalDate.now().toString());
+        LocalDate scheduleDate = scheduleStatus == ScheduleStatus.SCHEDULED
+                ? LocalDate.now()
+                : getRandomDate("2024-12-01", LocalDate.now().toString());
 
         LocalDateTime scheduleDateTime = scheduleDate.atTime(random.nextInt(9, 19), 0);
         ;
@@ -195,50 +206,50 @@ public class TestDataInitializer implements CommandLineRunner {
         }
     }
 
-    private void addCounselCard(String counselSessionId, String counselCardId, String counseleeId) throws JsonProcessingException {
+    private void addCounselCard(String counselSessionId, String counselCardId, String counseleeId)
+            throws JsonProcessingException {
 
         CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
 
         JsonNode baseInformation = objectMapper.readTree(String.format("""
-                 {
-                                  "version": "1.0",
-                                  "baseInfo": {
-                                      "counseleeId": "%s",
-                                      "name": "%s",
-                                      "birthDate": "%s",
-                                      "counselSessionOrder": "1회차",
-                                     "lastCounselDate": "",
-                                     "healthInsuranceType": "MEDICAL_AID",
-                                  },
-                                  "counselPurposeAndNote": {
-                                      "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
-                                      "SignificantNote": "특이사항",
-                                      "MedicationNote": "복약 관련 메모"
-                                  }
-                 }
-                 """, counselee.getId(), counselee.getName(), counselee.getDateOfBirth().toString()));
+                {
+                                 "version": "1.0",
+                                 "baseInfo": {
+                                     "counseleeId": "%s",
+                                     "name": "%s",
+                                     "birthDate": "%s",
+                                     "counselSessionOrder": "1회차",
+                                    "lastCounselDate": "",
+                                    "healthInsuranceType": "MEDICAL_AID",
+                                 },
+                                 "counselPurposeAndNote": {
+                                     "counselPurpose": ["약물 부작용 상담", "약물 복용 관련 상담"],
+                                     "SignificantNote": "특이사항",
+                                     "MedicationNote": "복약 관련 메모"
+                                 }
+                }
+                """, counselee.getId(), counselee.getName(), counselee.getDateOfBirth().toString()));
 
         JsonNode healthInformation = objectMapper.readTree("""
-                 {
-                                  "version": "1.0",
-                                  "diseaseInfo": {
-                                      "diseases": ["고혈압", "고지혈증"],
-                                      "historyNote": "고혈압, 당뇨, 고관절, 염증 수술",
-                                      "mainInconvenienceNote": "고관절 통증으로 걷기가 힘듦"
-                                  },
-                                  "allergy": {
-                                      "isAllergy": true,
-                                      "allergyNote": "땅콩, 돼지고기"
-                                  },
-                                  "medicationSideEffect": {
-                                      "isSideEffect": true,
-                                      "suspectedMedicationNote": "타미플루",
-                                      "symptomsNote": "온 몸이 붓고, 특히 얼굴이 가렵고 붉어짐"
-                                  }
-                              }
-                 """
-        );
+                {
+                                 "version": "1.0",
+                                 "diseaseInfo": {
+                                     "diseases": ["고혈압", "고지혈증"],
+                                     "historyNote": "고혈압, 당뇨, 고관절, 염증 수술",
+                                     "mainInconvenienceNote": "고관절 통증으로 걷기가 힘듦"
+                                 },
+                                 "allergy": {
+                                     "isAllergy": true,
+                                     "allergyNote": "땅콩, 돼지고기"
+                                 },
+                                 "medicationSideEffect": {
+                                     "isSideEffect": true,
+                                     "suspectedMedicationNote": "타미플루",
+                                     "symptomsNote": "온 몸이 붓고, 특히 얼굴이 가렵고 붉어짐"
+                                 }
+                             }
+                """);
 
         JsonNode livingInformation = objectMapper.readTree("""
                 {
@@ -299,7 +310,8 @@ public class TestDataInitializer implements CommandLineRunner {
                     .livingInformation(livingInformation)
                     .independentLifeInformation(independentLifeInformation)
                     .cardRecordStatus(counselSession.getStatus() == ScheduleStatus.CANCELED
-                            ? CardRecordStatus.RECORDED : CardRecordStatus.RECORDING)
+                            ? CardRecordStatus.RECORDED
+                            : CardRecordStatus.RECORDING)
                     .build();
 
             counselCard.setId(counselCardId);
