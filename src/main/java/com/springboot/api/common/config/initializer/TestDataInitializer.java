@@ -279,7 +279,7 @@ public class TestDataInitializer implements CommandLineRunner {
                              }
                 """);
 
-        JsonNode independentLifeInformation = counselee.getIsDisability() ? objectMapper.readTree("""
+        JsonNode independentLifeInformation = counselee.isDisability() ? objectMapper.readTree("""
                 {
                                  "version": "1.0",
                                  "walking": {
@@ -298,8 +298,7 @@ public class TestDataInitializer implements CommandLineRunner {
                                      "Usingkoreans": ["읽기 가능", "쓰기 가능"]
                                  }
                 }
-                """)
-                : null;
+                """) : null;
 
         if (entityManager.find(CounselCard.class, counselCardId) == null) {
             CounselCard counselCard = CounselCard
