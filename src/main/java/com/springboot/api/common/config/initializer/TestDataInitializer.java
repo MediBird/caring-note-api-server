@@ -22,6 +22,7 @@ import com.springboot.api.domain.CounseleeConsent;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.domain.Medication;
 import com.springboot.api.domain.MedicationCounsel;
+import com.springboot.api.domain.MedicationCounselHighlight;
 import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.domain.WasteMedicationDisposal;
 import com.springboot.api.domain.WasteMedicationRecord;
@@ -353,30 +354,25 @@ public class TestDataInitializer implements CommandLineRunner {
             medicationCounsel.setId(medicationCounselId);
             entityManager.persist(medicationCounsel);
 
-            List<MedicationCounselHighlight> medicationCounselHighlights =
-                    List.of(
-                            MedicationCounselHighlight.builder()
-                                    .medicationCounsel(medicationCounsel)
-                                    .highlight("I'm")
-                                    .startIndex(0)
-                                    .endIndex(2)
-                                    .build()
-                            ,MedicationCounselHighlight.builder()
-                                    .medicationCounsel(medicationCounsel)
-                                    .highlight("counselor")
-                                    .startIndex(4)
-                                    .endIndex(12)
-                                    .build()
-                    );
+            List<MedicationCounselHighlight> medicationCounselHighlights = List.of(
+                    MedicationCounselHighlight.builder()
+                            .medicationCounsel(medicationCounsel)
+                            .highlight("I'm")
+                            .startIndex(0)
+                            .endIndex(2)
+                            .build(),
+                    MedicationCounselHighlight.builder()
+                            .medicationCounsel(medicationCounsel)
+                            .highlight("counselor")
+                            .startIndex(4)
+                            .endIndex(12)
+                            .build());
 
-            IntStream.range(0,medicationCounselHighlights.size())
-                            .forEach(i -> medicationCounselHighlights.get(i).setId(medicationCounsel.getId()+"_HIGHLIGHT_"+i));
-
+            IntStream.range(0, medicationCounselHighlights.size())
+                    .forEach(i -> medicationCounselHighlights.get(i)
+                            .setId(medicationCounsel.getId() + "_HIGHLIGHT_" + i));
 
             medicationCounselHighlights.forEach(entityManager::persist);
-
-
-
 
         }
     }
