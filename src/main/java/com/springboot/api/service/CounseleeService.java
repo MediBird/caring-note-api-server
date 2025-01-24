@@ -1,33 +1,29 @@
 package com.springboot.api.service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselee.AddCounseleeReq;
-import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.dto.counselee.SelectCounseleeRes;
-import com.springboot.api.dto.counselee.UpdateCounseleeReq;
+import com.springboot.api.dto.counselee.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.HealthInsuranceType;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -161,6 +157,25 @@ public class CounseleeService {
     public void deleteCounselee(String counseleeId) {
         counseleeRepository.deleteById(counseleeId);
     }
+
+    @Transactional
+    public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
+
+        List<DeleteCounseleeBatchRes> deleteCounseleeBatchResList = new ArrayList<>();
+
+        deleteCounseleeBatchReqList.forEach(deleteCounseleeBatchReq -> {
+            deleteCounselee(deleteCounseleeBatchReq.getCounseleeId());
+            deleteCounseleeBatchResList.add(DeleteCounseleeBatchRes
+                    .builder()
+                    .deletedCounseleeId(deleteCounseleeBatchReq.getCounseleeId())
+                    .build());
+        });
+
+        return deleteCounseleeBatchResList;
+
+    }
+
+
 
     private CounselCard getPreviousCounselCard(String counseleeId, LocalDateTime scheduledStartDateTime) {
 
