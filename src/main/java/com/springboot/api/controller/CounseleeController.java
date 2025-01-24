@@ -1,28 +1,19 @@
 package com.springboot.api.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.counselee.AddCounseleeReq;
-import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.dto.counselee.SelectCounseleeRes;
-import com.springboot.api.dto.counselee.UpdateCounseleeReq;
+import com.springboot.api.common.message.HttpMessages;
+import com.springboot.api.dto.counselee.*;
 import com.springboot.api.service.CounseleeService;
 import com.springboot.enums.RoleType;
-
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @ApiController(name = "CounseleeController", description = "내담자 관련 API를 제공하는 Controller", path = "/v1/counsel/counselee")
 @RequiredArgsConstructor
@@ -87,4 +78,20 @@ public class CounseleeController {
                 counseleeService.deleteCounselee(counseleeId);
                 return ResponseEntity.ok(new CommonRes<>("delete the counselee success"));
         }
+
+        @DeleteMapping("/batch")
+        @Operation(summary = "내담자 삭제(batch)", tags={"내담자 관리"})
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<List<DeleteCounseleeBatchRes>>> deleteCounseleeBatch(
+                @RequestBody @Valid List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList
+        ){
+
+                List<DeleteCounseleeBatchRes> deleteCounseleeBatchResList = counseleeService
+                        .deleteCounseleeBatch(deleteCounseleeBatchReqList);
+
+                return ResponseEntity.ok(new CommonRes<>(HttpMessages.SUCCESS_DELETE, deleteCounseleeBatchResList));
+
+        }
+
+
 }
