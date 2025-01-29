@@ -10,6 +10,9 @@ import lombok.Data;
 public class AddCounseleeConsentReq {
 
     @NotBlank
+    private String counselSessionId;
+
+    @NotBlank
     private String counseleeId;
 
     @NotNull
