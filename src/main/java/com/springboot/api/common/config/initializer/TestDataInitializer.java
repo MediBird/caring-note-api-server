@@ -329,7 +329,6 @@ public class TestDataInitializer implements CommandLineRunner {
         if (entityManager.find(CounseleeConsent.class, counseleeConsentId) == null) {
             CounseleeConsent counseleeConsent = CounseleeConsent.builder()
                     .isConsent(true)
-                    .counselSession(counselSession)
                     .counselee(counselee)
                     .consentDateTime(counselSession.getStartDateTime())
                     .build();

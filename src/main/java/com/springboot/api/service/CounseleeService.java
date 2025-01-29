@@ -65,10 +65,13 @@ public class CounseleeService {
                 dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()),
                 counselee.getDateOfBirth().toString(), counselee.getGenderType(), counselee.getAddress(),
                 counselee.getHealthInsuranceType(), counselee.getCounselCount(), counselee.getLastCounselDate(),
-                diseases // diseases 값 반환
+                diseases // diseases
+                         // 값
+                         // 반환
                 , Optional.ofNullable(currentCounselCard).map(CounselCard::getCardRecordStatus)
                         .orElse(CardRecordStatus.UNRECORDED),
                 counselee.isDisability());
+
     }
 
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
