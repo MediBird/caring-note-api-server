@@ -80,6 +80,9 @@ public class CounselSession extends BaseEntity {
     @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
     private List<WasteMedicationRecord> wasteMedicationRecords;
 
+    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    private CounseleeConsent counseleeConsent;
+
     @PrePersist
     @Override
     protected void onCreate() {
