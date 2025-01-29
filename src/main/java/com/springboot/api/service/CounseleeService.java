@@ -50,8 +50,9 @@ public class CounseleeService {
 
         List<String> diseases = new ArrayList<>();
 
-        if (targetCounselCard != null) {
-            JsonNode diseasesInfoJson = targetCounselCard.getHealthInformation().get("diseaseInfo");
+        if (targetCounselCard != null && targetCounselCard.getHealthInformation() != null) {
+            JsonNode healthInfo = targetCounselCard.getHealthInformation();
+            JsonNode diseasesInfoJson = healthInfo.get("diseaseInfo");
             JsonNode diseasesJson = diseasesInfoJson != null ? diseasesInfoJson.get("diseases") : null;
 
             if (diseasesJson != null && diseasesJson.isArray()) {
@@ -159,7 +160,8 @@ public class CounseleeService {
     }
 
     @Transactional
-    public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
+    public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(
+            List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
 
         List<DeleteCounseleeBatchRes> deleteCounseleeBatchResList = new ArrayList<>();
 
@@ -174,8 +176,6 @@ public class CounseleeService {
         return deleteCounseleeBatchResList;
 
     }
-
-
 
     private CounselCard getPreviousCounselCard(String counseleeId, LocalDateTime scheduledStartDateTime) {
 
