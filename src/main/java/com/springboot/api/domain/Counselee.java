@@ -12,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -91,6 +92,9 @@ public class Counselee extends BaseEntity {
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
     private List<MedicationRecord> medicationRecords;
+
+    @OneToOne(mappedBy = "counselee", cascade = CascadeType.ALL)
+    private CounseleeConsent counseleeConsent;
 
     @PrePersist
     @Override
