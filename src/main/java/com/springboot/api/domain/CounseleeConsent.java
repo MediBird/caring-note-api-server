@@ -3,6 +3,8 @@ package com.springboot.api.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -18,8 +20,9 @@ import java.time.LocalDateTime;
 @ToString(callSuper = true, exclude = { "counselee" })
 public class CounseleeConsent extends BaseEntity {
 
-    @ManyToOne
-    @JoinColumn(name = "counselee_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "counselee_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private Counselee counselee;
 
     @NotNull
