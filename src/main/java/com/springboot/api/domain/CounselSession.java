@@ -27,15 +27,15 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"counselor_id", "scheduled_start_datetime"}),
-    @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime"})
+        @UniqueConstraint(columnNames = { "counselor_id", "scheduled_start_datetime" }),
+        @UniqueConstraint(columnNames = { "counselee_id", "scheduled_start_datetime" })
 })
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee"})
-@ToString(callSuper = true, exclude = {"counselor", "counselee"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselor", "counselee" })
+@ToString(callSuper = true, exclude = { "counselor", "counselee" })
 public class CounselSession extends BaseEntity {
 
     @ManyToOne
@@ -47,7 +47,7 @@ public class CounselSession extends BaseEntity {
     @JoinColumn(name = "counselee_id")
     private Counselee counselee;
 
-    //상담 일정 날짜 및 시간
+    // 상담 일정 날짜 및 시간
     @Column(name = "scheduled_start_datetime", nullable = false)
     @NotNull(message = "상담 시작 시간은 필수 입력 항목입니다.")
     private LocalDateTime scheduledStartDateTime;
