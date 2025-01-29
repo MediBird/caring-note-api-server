@@ -1,11 +1,9 @@
 package com.springboot.api.service;
 
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.CounseleeConsent;
 import com.springboot.api.dto.counseleeconsent.*;
-import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeConsentRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import jakarta.transaction.Transactional;
@@ -13,23 +11,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CounseleeConsentService {
 
         private final CounseleeConsentRepository counseleeConsentRepository;
-        private final CounselSessionRepository counselSessionRepository;
         private final CounseleeRepository counseleeRepository;
 
-        public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId,
+        public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(
                         String counseleeId) {
 
-                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                                .orElseThrow(IllegalArgumentException::new);
-
-                Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+                Counselee counselee = counseleeRepository.findById(counseleeId)
                                 .orElseThrow(IllegalArgumentException::new);
 
                 if (!counseleeId.equals(counselee.getId())) {
@@ -37,13 +30,12 @@ public class CounseleeConsentService {
                 }
 
                 CounseleeConsent counseleeConsent = counseleeConsentRepository
-                                .findByCounselSessionIdAndCounseleeId(counselSessionId, counseleeId)
+                                .findByCounseleeId(counseleeId)
                                 .orElseThrow(NoContentException::new);
 
                 return new SelectCounseleeConsentByCounseleeIdRes(counseleeConsent.getId(),
                                 counselee.getId(),
                                 counselee.getName(),
-                                counselSession.getId(),
                                 counseleeConsent.getConsentDateTime(),
                                 counseleeConsent.isConsent());
 
