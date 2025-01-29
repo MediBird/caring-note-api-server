@@ -10,14 +10,14 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "counselee_consents", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "counsel_session_id", "counselee_id" })
+        @UniqueConstraint(columnNames = { "counselee_id" })
 })
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "counselee", })
-@ToString(callSuper = true, exclude = { "counselSession", "counselee" })
+@EqualsAndHashCode(callSuper = true, exclude = { "counselee" })
+@ToString(callSuper = true, exclude = { "counselee" })
 public class CounseleeConsent extends BaseEntity {
 
     @OneToOne
