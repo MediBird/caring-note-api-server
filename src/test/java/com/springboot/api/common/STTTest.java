@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.springboot.api.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.service.NaverClovaService;
+import com.springboot.api.infra.external.NaverClovaExternalService;
 import lombok.Builder;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -54,7 +54,7 @@ public class STTTest {
         RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 
-        NaverClovaService service = factory.createClient(NaverClovaService.class);
+        NaverClovaExternalService service = factory.createClient(NaverClovaExternalService.class);
 
 
         Map<String, String> headers = new HashMap<>();
@@ -80,7 +80,7 @@ public class STTTest {
                 .build();
 
 
-        SpeechToTextRes speechToTextRes = service.transformSpeechToText(headers, multipartFile, speechToTextReq).getBody();
+        SpeechToTextRes speechToTextRes = service.convertSpeechToText(headers, multipartFile, speechToTextReq).getBody();
 
 
         ObjectMapper objectMapper = new ObjectMapper();
