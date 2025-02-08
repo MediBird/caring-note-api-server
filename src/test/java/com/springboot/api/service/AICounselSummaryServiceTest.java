@@ -29,10 +29,10 @@ import static org.mockito.Mockito.*;
 @SpringBootTest
 @EnableAsync
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)// 비동기 테스트 위해 필요
-public class AIServiceTest {
+public class AICounselSummaryServiceTest {
 
     @Autowired
-    private AIService aiService; // 실제 서비스 주입
+    private AICounselSummaryService aiCounselSummaryService; // 실제 서비스 주입
 
     @MockBean
     private CounselSessionRepository counselSessionRepository;
@@ -74,7 +74,7 @@ public class AIServiceTest {
 
 
         // ✅ 4. 메서드 실행
-        aiService.convertSpeechToText(file, request);
+        aiCounselSummaryService.convertSpeechToText(file, request);
 
         // ✅ 5. Assertions
         // AICounselSummary 저장 확인 (STT_PROGRESS)

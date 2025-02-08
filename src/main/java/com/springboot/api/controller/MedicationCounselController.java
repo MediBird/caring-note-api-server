@@ -2,16 +2,14 @@ package com.springboot.api.controller;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.common.dto.SuccessRes;
 import com.springboot.api.dto.medicationcounsel.*;
-import com.springboot.api.service.AIService;
+import com.springboot.api.service.AICounselSummaryService;
 import com.springboot.api.service.MedicationCounselService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @ApiController(
         name = "MedicationCounselController",
@@ -22,7 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MedicationCounselController {
 
     private final MedicationCounselService medicationCounselService;
-    private final AIService aiService;
+    private final AICounselSummaryService aiCounselSummaryService;
 
     @PostMapping
     @Operation(summary = "복약 상담 추가", tags = {"본상담 - 복약 상담"})
@@ -78,15 +76,6 @@ public class MedicationCounselController {
 
     }
 
-    @PostMapping("/stt")
-    @Operation(summary = "convert Speech to Text", tags ={"본상담 - 복약 상담"})
-    public ResponseEntity<SuccessRes> convertSpeechToText(
-            @RequestPart("audio") MultipartFile file
-            , @RequestPart("body") @Valid ConvertSpeechToTextReq convertSpeechToTextReq
-    ){
-        aiService.convertSpeechToText(file, convertSpeechToTextReq);
 
-        return ResponseEntity.ok(new SuccessRes());
-    }
 
 }

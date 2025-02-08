@@ -23,7 +23,7 @@ import static com.springboot.enums.AICounselSummaryStatus.STT_PROGRESS;
 
 @Service
 @RequiredArgsConstructor
-public class AIService {
+public class AICounselSummaryService {
 
     private final AICounselSummaryRepository aiCounselSummaryRepository;
     private final CounselSessionRepository counselSessionRepository;
