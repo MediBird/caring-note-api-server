@@ -23,6 +23,7 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/snapshot' }
 }
 
 dependencies {
@@ -56,6 +57,9 @@ dependencies {
     implementation 'de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
     implementation 'org.springframework.security:spring-security-oauth2-jose'
+
+    //Spring AI
+    implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
 }
 tasks.named('test') {
     useJUnitPlatform()
