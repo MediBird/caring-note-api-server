@@ -2,9 +2,12 @@ package com.springboot.api.domain;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.converter.JsonStringConverter;
+import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.enums.AICounselSummaryStatus;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "ai_counsel_summarys")
@@ -24,9 +27,13 @@ public class AICounselSummary extends BaseEntity {
     @Convert(converter = JsonStringConverter.class)
     private JsonNode sttResult;
 
-    @Column(name= "ai_Counsel_summmay_status")
+    @Column(name= "ai_counsel_summary_status")
     @Enumerated(EnumType.STRING)
     private AICounselSummaryStatus aiCounselSummaryStatus;
+
+    @Column(name= "speakers", columnDefinition = "TEXT")
+    @Convert(converter = ListStringConverter.class)
+    private List<String> speakers;
 
     @PrePersist
     @Override
