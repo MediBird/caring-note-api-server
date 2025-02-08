@@ -1,9 +1,13 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
+import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
+import com.springboot.api.dto.naverClova.SegmentDTO;
 import com.springboot.api.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
@@ -15,8 +19,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static com.springboot.enums.AICounselSummaryStatus.STT_COMPLETE;
 import static com.springboot.enums.AICounselSummaryStatus.STT_PROGRESS;
@@ -72,6 +78,35 @@ public class AICounselSummaryService {
 
         SpeechToTextRes response = naverClovaExternalService.convertSpeechToText(headers, file, request).getBody();
         return CompletableFuture.completedFuture(response);
+    }
+
+    public List<SelectSpeakerListRes> selectSpeakerList(String counselSessionId) throws JsonProcessingException {
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        if(aiCounselSummary.getAiCounselSummaryStatus().equals(STT_PROGRESS)){
+            throw new NoContentException();
+        }
+
+        SpeechToTextRes speechToTextRes = objectMapper.treeToValue(aiCounselSummary.getSttResult(),SpeechToTextRes.class);
+
+        Map<String, String> longestTexts = speechToTextRes.segments().stream()
+                .collect(Collectors.toMap(
+                        // `name`을 키로 사용
+                        segmentDTO -> segmentDTO.speaker().name(),
+                        SegmentDTO::text,
+                        // 기존 값과 새로운 값 중 더 긴 문자열을 선택
+                        (existing, replacement) -> existing.length() >= replacement.length() ? existing : replacement
+                ));
+
+        return   longestTexts.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
+                    .map(map -> new SelectSpeakerListRes(map.getKey(), map.getValue())).toList();
+
     }
 
 
