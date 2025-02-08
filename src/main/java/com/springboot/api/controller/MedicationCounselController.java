@@ -1,29 +1,17 @@
 package com.springboot.api.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.medicationcounsel.AddMedicationCounselReq;
-import com.springboot.api.dto.medicationcounsel.AddMedicationCounselRes;
-import com.springboot.api.dto.medicationcounsel.DeleteMedicationCounselReq;
-import com.springboot.api.dto.medicationcounsel.DeleteMedicationCounselRes;
-import com.springboot.api.dto.medicationcounsel.SelectMedicationCounselRes;
-import com.springboot.api.dto.medicationcounsel.SelectPreviousMedicationCounselRes;
-import com.springboot.api.dto.medicationcounsel.UpdateMedicationCounselReq;
-import com.springboot.api.dto.medicationcounsel.UpdateMedicationCounselRes;
+import com.springboot.api.common.dto.SuccessRes;
+import com.springboot.api.dto.medicationcounsel.*;
+import com.springboot.api.service.AIService;
 import com.springboot.api.service.MedicationCounselService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @ApiController(
         name = "MedicationCounselController",
@@ -34,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 public class MedicationCounselController {
 
     private final MedicationCounselService medicationCounselService;
+    private final AIService aiService;
 
     @PostMapping
     @Operation(summary = "복약 상담 추가", tags = {"본상담 - 복약 상담"})
@@ -87,6 +76,17 @@ public class MedicationCounselController {
 
         return ResponseEntity.ok(new CommonRes<>(deleteMedicationCounselRes));
 
+    }
+
+    @PostMapping("/stt")
+    @Operation(summary = "convert Speech to Text", tags ={"본상담 - 복약 상담"})
+    public ResponseEntity<SuccessRes> convertSpeechToText(
+            @RequestPart("audio") MultipartFile file
+            , @RequestPart("body") @Valid ConvertSpeechToTextReq convertSpeechToTextReq
+    ){
+        aiService.convertSpeechToText(file, convertSpeechToTextReq);
+
+        return ResponseEntity.ok(new SuccessRes());
     }
 
 }
