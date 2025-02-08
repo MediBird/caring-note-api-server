@@ -1,4 +1,4 @@
-package com.springboot.api.service;
+package com.springboot.api.infra.external;
 
 
 //secret-key : 796d7a638753441eb241a266f1f10d49
@@ -14,10 +14,10 @@ import org.springframework.web.service.annotation.PostExchange;
 
 import java.util.Map;
 
-public interface NaverClovaService {
+public interface NaverClovaExternalService {
 
     @PostExchange("/recognizer/upload")
-    ResponseEntity<SpeechToTextRes> transformSpeechToText(@RequestHeader Map<String,String> headers,
+    ResponseEntity<SpeechToTextRes> convertSpeechToText(@RequestHeader Map<String,String> headers,
                                                           @RequestPart("media") MultipartFile multipartFile,
                                                           @RequestPart("params") SpeechToTextReq speechToTextReq);
 }
