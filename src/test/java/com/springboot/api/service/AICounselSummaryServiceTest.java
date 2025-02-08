@@ -1,16 +1,25 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
+import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
+import com.springboot.api.dto.naverClova.SegmentDTO;
+import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.repository.AICounselSummaryRepository;
 import com.springboot.api.repository.CounselSessionRepository;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.annotation.DirtiesContext;
@@ -20,7 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.springboot.enums.AICounselSummaryStatus.STT_PROGRESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -31,6 +44,7 @@ import static org.mockito.Mockito.*;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)// 비동기 테스트 위해 필요
 public class AICounselSummaryServiceTest {
 
+    private static final Logger log = LoggerFactory.getLogger(AICounselSummaryServiceTest.class);
     @Autowired
     private AICounselSummaryService aiCounselSummaryService; // 실제 서비스 주입
 
@@ -39,6 +53,7 @@ public class AICounselSummaryServiceTest {
 
     @MockBean
     private AICounselSummaryRepository aiCounselSummaryRepository;
+
 
 
     @ParameterizedTest
@@ -89,5 +104,29 @@ public class AICounselSummaryServiceTest {
         // 로그 출력 (디버깅용)
         System.out.println("✅ AICounselSummary 상태: " + captor.getValue().getAiCounselSummaryStatus());
         System.out.println("✅ STT 결과: " + captor.getValue().getSttResult());
+    }
+
+    @Test
+    public void selectSpeakerList() throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Resource resource = new ClassPathResource("stt/output/test4.m4a.json");
+        SpeechToTextRes speechToTextRes = objectMapper.readValue(resource.getFile(), SpeechToTextRes.class);
+
+        Map<String, String> longestTexts = speechToTextRes.segments().stream()
+                .collect(Collectors.toMap(
+                        // `name`을 키로 사용
+                        segmentDTO -> segmentDTO.speaker().name(),
+                        SegmentDTO::text,
+                        // 기존 값과 새로운 값 중 더 긴 문자열을 선택
+                        (existing, replacement) -> existing.length() >= replacement.length() ? existing : replacement
+                ));
+
+        List<SelectSpeakerListRes> selectSpeakerListResList = longestTexts.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(map -> new SelectSpeakerListRes(map.getKey(), map.getValue())).toList();
+
+
+        log.debug(selectSpeakerListResList.toString());
     }
 }
