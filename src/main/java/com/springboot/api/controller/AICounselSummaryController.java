@@ -5,6 +5,7 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.SuccessRes;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
 import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
 import com.springboot.api.service.AICounselSummaryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,6 +49,17 @@ public class AICounselSummaryController {
         List<SelectSpeakerListRes> selectSpeakerListResList = aiCounselSummaryService.selectSpeakerList(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectSpeakerListResList));
+    }
+
+    @GetMapping("{counselSessionId}/stt")
+    @Operation(summary = "stt 결과 조회",tags={"AI요약"})
+    public ResponseEntity<CommonRes<List<SelectSpeechToTextRes>>> selectSpeechToText(
+            @PathVariable String counselSessionId
+    ) throws JsonProcessingException {
+
+        List<SelectSpeechToTextRes> selectSpeechToTextResList = aiCounselSummaryService.selectSpeechToText(counselSessionId);
+
+        return ResponseEntity.ok(new CommonRes<>(selectSpeechToTextResList));
     }
 
 

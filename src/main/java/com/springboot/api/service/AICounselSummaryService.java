@@ -3,9 +3,11 @@ package com.springboot.api.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
 import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
 import com.springboot.api.dto.naverClova.SegmentDTO;
 import com.springboot.api.dto.naverClova.SpeechToTextReq;
@@ -35,6 +37,7 @@ public class AICounselSummaryService {
     private final CounselSessionRepository counselSessionRepository;
     private final ObjectMapper objectMapper;
     private final NaverClovaExternalService naverClovaExternalService;
+    private final DateTimeUtil dateTimeUtil;
 
     public void convertSpeechToText(MultipartFile file, ConvertSpeechToTextReq convertSpeechToTextReq){
 
@@ -106,6 +109,34 @@ public class AICounselSummaryService {
         return   longestTexts.entrySet().stream()
                     .sorted(Map.Entry.comparingByKey())
                     .map(map -> new SelectSpeakerListRes(map.getKey(), map.getValue())).toList();
+
+    }
+
+    public List<SelectSpeechToTextRes> selectSpeechToText(String counselSessionId) throws JsonProcessingException {
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        if(aiCounselSummary.getAiCounselSummaryStatus().equals(STT_PROGRESS)){
+            throw new NoContentException();
+        }
+
+        List<String> speakers = aiCounselSummary.getSpeakers();
+
+        SpeechToTextRes speechToTextRes = objectMapper.treeToValue(aiCounselSummary.getSttResult(),SpeechToTextRes.class);
+
+        return  speechToTextRes.segments().stream()
+                .filter(segmentDTO -> speakers.contains(segmentDTO.speaker().name()))
+                .map(segmentDTO -> new SelectSpeechToTextRes(segmentDTO.speaker().name()
+                        ,segmentDTO.text()
+                        ,dateTimeUtil.msToHMS(segmentDTO.start())
+                        ,dateTimeUtil.msToHMS(segmentDTO.end())
+                )).toList();
+
+
 
     }
 
