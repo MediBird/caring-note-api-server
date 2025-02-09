@@ -28,6 +28,7 @@ replay_pid*
 build/
 logs/
 .vscode/
-
+src/test/resources/stt/
+src/test/resources/ta/
 
 src/main/resources/application-secret.yml
