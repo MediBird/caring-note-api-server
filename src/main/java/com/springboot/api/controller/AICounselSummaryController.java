@@ -30,15 +30,15 @@ public class AICounselSummaryController {
 
     private final AICounselSummaryService aiCounselSummaryService;
 
-    @PostMapping("/stt")
+    @PostMapping(value = "/stt", consumes = "multipart/form-data")
     @Operation(summary = "convert Speech to Text", tags ={"AI요약"})
     public ResponseEntity<SuccessRes> convertSpeechToText(
             @RequestPart("audio") MultipartFile file
             , @RequestPart("body") @Valid ConvertSpeechToTextReq convertSpeechToTextReq
     ){
         aiCounselSummaryService.convertSpeechToText(file, convertSpeechToTextReq);
-
         return ResponseEntity.ok(new SuccessRes());
+
     }
 
     @GetMapping("{counselSessionId}/stt/speaker/list")
