@@ -60,6 +60,7 @@ public class CounselSessionController {
 
         @GetMapping("/list")
         @Operation(summary = "상담일정 목록 조회", tags = { "로그인/홈" })
+        @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
         public ResponseEntity<CommonCursorRes<List<SelectCounselSessionListItem>>> selectCounselSessionListByBaseDateAndCursorAndSize(
                         @RequestParam(required = false) LocalDate baseDate,
                         @RequestParam(required = false) String cursor,

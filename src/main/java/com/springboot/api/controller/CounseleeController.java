@@ -23,6 +23,7 @@ public class CounseleeController {
 
         @GetMapping("/{counselSessionId}/base/information")
         @Operation(summary = "내담자 기본 정보 조회", tags = { "상담 카드 작성", "상담 노트" })
+        @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ASSISTANT, RoleType.ROLE_USER })
         public ResponseEntity<CommonRes<SelectCounseleeBaseInformationByCounseleeIdRes>> selectCounseleeBaseInformation(
                         @PathVariable("counselSessionId") String counselSessionId) {
 
@@ -80,18 +81,16 @@ public class CounseleeController {
         }
 
         @DeleteMapping("/batch")
-        @Operation(summary = "내담자 삭제(batch)", tags={"내담자 관리"})
+        @Operation(summary = "내담자 삭제(batch)", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<List<DeleteCounseleeBatchRes>>> deleteCounseleeBatch(
-                @RequestBody @Valid List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList
-        ){
+                        @RequestBody @Valid List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
 
                 List<DeleteCounseleeBatchRes> deleteCounseleeBatchResList = counseleeService
-                        .deleteCounseleeBatch(deleteCounseleeBatchReqList);
+                                .deleteCounseleeBatch(deleteCounseleeBatchReqList);
 
                 return ResponseEntity.ok(new CommonRes<>(HttpMessages.SUCCESS_DELETE, deleteCounseleeBatchResList));
 
         }
-
 
 }
