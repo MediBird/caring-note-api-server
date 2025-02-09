@@ -2,6 +2,7 @@ package com.springboot.api.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.MedicationRecord;
 import com.springboot.api.domain.MedicationRecordHist;
+import com.springboot.api.domain.WasteMedicationRecord;
 import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistReq;
 import com.springboot.api.dto.medicationRecordHist.AddAndUpdateMedicationRecordHistRes;
 import com.springboot.api.dto.medicationRecordHist.SelectMedicationRecordHistRes;
@@ -30,27 +33,30 @@ public class MedicationRecordHistService {
     private final MedicationRepository medicationRepository;
 
     public List<SelectMedicationRecordHistRes> selectMedicationRecordHistByCounselSessionId(String counselSessionId) {
-        List<MedicationRecordHist> medicationRecordHists = medicationRecordHistRepository.findByCounselSessionId(counselSessionId);
+        List<MedicationRecordHist> medicationRecordHists = medicationRecordHistRepository
+                .findByCounselSessionId(counselSessionId);
 
         if (medicationRecordHists.isEmpty()) {
             throw new NoContentException("No medication record history found");
         }
 
-        return medicationRecordHists.stream().map(medicationRecordHist -> new SelectMedicationRecordHistRes(
-                medicationRecordHist.getId(),
-                medicationRecordHist.getMedication().getId(),
-                medicationRecordHist.getName(),
-                medicationRecordHist.getMedicationDivision(),
-                medicationRecordHist.getUsageObject(),
-                medicationRecordHist.getPrescriptionDate(),
-                medicationRecordHist.getPrescriptionDays(),
-                medicationRecordHist.getUnit(),
-                medicationRecordHist.getUsageStatus(),
-                medicationRecordHist.getUpdatedDatetime(),
-                medicationRecordHist.getCreatedDatetime(),
-                medicationRecordHist.getCreatedBy(),
-                medicationRecordHist.getUpdatedBy()
-        )).collect(Collectors.toList());
+        return medicationRecordHists.stream()
+                .sorted(Comparator.comparing(MedicationRecordHist::getId))
+                .map(medicationRecordHist -> new SelectMedicationRecordHistRes(
+                        medicationRecordHist.getId(),
+                        medicationRecordHist.getMedication().getId(),
+                        medicationRecordHist.getName(),
+                        medicationRecordHist.getMedicationDivision(),
+                        medicationRecordHist.getUsageObject(),
+                        medicationRecordHist.getPrescriptionDate(),
+                        medicationRecordHist.getPrescriptionDays(),
+                        medicationRecordHist.getUnit(),
+                        medicationRecordHist.getUsageStatus(),
+                        medicationRecordHist.getUpdatedDatetime(),
+                        medicationRecordHist.getCreatedDatetime(),
+                        medicationRecordHist.getCreatedBy(),
+                        medicationRecordHist.getUpdatedBy()))
+                .collect(Collectors.toList());
     }
 
     public void deleteMedicationRecordHist(String counselSessionId, String id) {

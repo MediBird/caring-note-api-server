@@ -1,6 +1,7 @@
 package com.springboot.api.service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,69 +27,79 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WasteMedicationRecordService {
 
-    private final WasteMedicationRecordRepository wasteMedicationRecordRepository;
-    private final CounselSessionRepository counselSessionRepository;
-    private final MedicationRepository medicationRepository;
+        private final WasteMedicationRecordRepository wasteMedicationRecordRepository;
+        private final CounselSessionRepository counselSessionRepository;
+        private final MedicationRepository medicationRepository;
 
-    public List<SelectMedicationRecordListBySessionIdRes> getWasteMedicationRecord(String counselSessionId) {
-        List<WasteMedicationRecord> wasteMedicationRecords = wasteMedicationRecordRepository
-                .findByCounselSessionId(counselSessionId);
-        if (wasteMedicationRecords.isEmpty()) {
-            throw new NoContentException("Waste medication record not found");
+        public List<SelectMedicationRecordListBySessionIdRes> getWasteMedicationRecord(String counselSessionId) {
+                List<WasteMedicationRecord> wasteMedicationRecords = wasteMedicationRecordRepository
+                                .findByCounselSessionId(counselSessionId);
+                if (wasteMedicationRecords.isEmpty()) {
+                        throw new NoContentException("Waste medication record not found");
+                }
+                return wasteMedicationRecords.stream()
+                                .sorted(Comparator.comparing(WasteMedicationRecord::getId))
+                                .map(wasteMedicationRecord -> new SelectMedicationRecordListBySessionIdRes(
+                                                wasteMedicationRecord.getId(),
+                                                wasteMedicationRecord.getMedication().getId(),
+                                                wasteMedicationRecord.getMedicationName(),
+                                                wasteMedicationRecord.getUnit(),
+                                                wasteMedicationRecord.getDisposalReason(),
+                                                wasteMedicationRecord.getCreatedDatetime(),
+                                                wasteMedicationRecord.getUpdatedDatetime(),
+                                                wasteMedicationRecord.getCreatedBy(),
+                                                wasteMedicationRecord.getUpdatedBy()))
+                                .collect(Collectors.toList());
         }
-        return wasteMedicationRecords.stream()
-                .map(wasteMedicationRecord -> new SelectMedicationRecordListBySessionIdRes(
-                        wasteMedicationRecord.getId(),
-                        wasteMedicationRecord.getMedication().getId(),
-                        wasteMedicationRecord.getMedicationName(),
-                        wasteMedicationRecord.getUnit(),
-                        wasteMedicationRecord.getDisposalReason(),
-                        wasteMedicationRecord.getCreatedDatetime(),
-                        wasteMedicationRecord.getUpdatedDatetime(),
-                        wasteMedicationRecord.getCreatedBy(),
-                        wasteMedicationRecord.getUpdatedBy()))
-                .collect(Collectors.toList());
-    }
 
-    public List<AddAndUpdateWasteMedicationRecordRes> addAndUpdateWasteMedicationRecords(String counselSessionId,
-            List<AddAndUpdateWasteMedicationRecordReq> addAndUpdateWasteMedicationRecordReqs) {
-        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
-        List<WasteMedicationRecord> wasteMedicationRecords = new ArrayList<>();
-        WasteMedicationRecord wasteMedicationRecord;
-        for (AddAndUpdateWasteMedicationRecordReq addAndUpdateWasteMedicationRecordReq : addAndUpdateWasteMedicationRecordReqs) {
-            if (addAndUpdateWasteMedicationRecordReq.getRowId() == null) {
+        public List<AddAndUpdateWasteMedicationRecordRes> addAndUpdateWasteMedicationRecords(String counselSessionId,
+                        List<AddAndUpdateWasteMedicationRecordReq> addAndUpdateWasteMedicationRecordReqs) {
+                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                                .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
+                List<WasteMedicationRecord> wasteMedicationRecords = new ArrayList<>();
+                WasteMedicationRecord wasteMedicationRecord;
+                for (AddAndUpdateWasteMedicationRecordReq addAndUpdateWasteMedicationRecordReq : addAndUpdateWasteMedicationRecordReqs) {
+                        if (addAndUpdateWasteMedicationRecordReq.getRowId() == null) {
 
-                wasteMedicationRecord = new WasteMedicationRecord();
-                wasteMedicationRecord.setCounselSession(counselSession);
-                wasteMedicationRecord.setMedication(
-                        medicationRepository.findById(addAndUpdateWasteMedicationRecordReq.getMedicationId())
-                                .orElse(null));
-                wasteMedicationRecord.setUnit(addAndUpdateWasteMedicationRecordReq.getUnit());
-                wasteMedicationRecord.setDisposalReason(addAndUpdateWasteMedicationRecordReq.getDisposalReason());
-                wasteMedicationRecord.setMedicationName(addAndUpdateWasteMedicationRecordReq.getMedicationName());
-            } else {
-                wasteMedicationRecord = wasteMedicationRecordRepository
-                        .findById(addAndUpdateWasteMedicationRecordReq.getRowId())
-                        .orElseThrow(() -> new IllegalArgumentException("Invalid waste medication record ID"));
-                wasteMedicationRecord.setMedication(
-                        medicationRepository.findById(addAndUpdateWasteMedicationRecordReq.getMedicationId())
-                                .orElse(null));
-                wasteMedicationRecord.setUnit(addAndUpdateWasteMedicationRecordReq.getUnit());
-                wasteMedicationRecord.setDisposalReason(addAndUpdateWasteMedicationRecordReq.getDisposalReason());
-                wasteMedicationRecord.setMedicationName(addAndUpdateWasteMedicationRecordReq.getMedicationName());
-            }
-            wasteMedicationRecords.add(wasteMedicationRecord);
+                                wasteMedicationRecord = new WasteMedicationRecord();
+                                wasteMedicationRecord.setCounselSession(counselSession);
+                                wasteMedicationRecord.setMedication(
+                                                medicationRepository
+                                                                .findById(addAndUpdateWasteMedicationRecordReq
+                                                                                .getMedicationId())
+                                                                .orElse(null));
+                                wasteMedicationRecord.setUnit(addAndUpdateWasteMedicationRecordReq.getUnit());
+                                wasteMedicationRecord.setDisposalReason(
+                                                addAndUpdateWasteMedicationRecordReq.getDisposalReason());
+                                wasteMedicationRecord.setMedicationName(
+                                                addAndUpdateWasteMedicationRecordReq.getMedicationName());
+                        } else {
+                                wasteMedicationRecord = wasteMedicationRecordRepository
+                                                .findById(addAndUpdateWasteMedicationRecordReq.getRowId())
+                                                .orElseThrow(() -> new IllegalArgumentException(
+                                                                "Invalid waste medication record ID"));
+                                wasteMedicationRecord.setMedication(
+                                                medicationRepository
+                                                                .findById(addAndUpdateWasteMedicationRecordReq
+                                                                                .getMedicationId())
+                                                                .orElse(null));
+                                wasteMedicationRecord.setUnit(addAndUpdateWasteMedicationRecordReq.getUnit());
+                                wasteMedicationRecord.setDisposalReason(
+                                                addAndUpdateWasteMedicationRecordReq.getDisposalReason());
+                                wasteMedicationRecord.setMedicationName(
+                                                addAndUpdateWasteMedicationRecordReq.getMedicationName());
+                        }
+                        wasteMedicationRecords.add(wasteMedicationRecord);
+                }
+                wasteMedicationRecordRepository.saveAll(wasteMedicationRecords);
+
+                return wasteMedicationRecords.stream()
+                                .map(savedWasteMedicationRecord -> new AddAndUpdateWasteMedicationRecordRes(
+                                                savedWasteMedicationRecord.getId()))
+                                .collect(Collectors.toList());
         }
-        wasteMedicationRecordRepository.saveAll(wasteMedicationRecords);
 
-        return wasteMedicationRecords.stream()
-                .map(savedWasteMedicationRecord -> new AddAndUpdateWasteMedicationRecordRes(
-                        savedWasteMedicationRecord.getId()))
-                .collect(Collectors.toList());
-    }
-
-    public void deleteWasteMedicationRecord(String counselSessionId, String id) {
-        wasteMedicationRecordRepository.deleteById(id);
-    }
+        public void deleteWasteMedicationRecord(String counselSessionId, String id) {
+                wasteMedicationRecordRepository.deleteById(id);
+        }
 }

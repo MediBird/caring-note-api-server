@@ -130,6 +130,7 @@ public class MedicationCounselService {
                 .orElseThrow(NoContentException::new);
 
         medicationCounselHighlightRepository.deleteAll(medicationCounsel.getMedicationCounselHighlights());
+        medicationCounselRepository.flush();
 
         medicationCounsel.setCounselRecord(updateMedicationCounselReq.getCounselRecord());
 
@@ -144,7 +145,9 @@ public class MedicationCounselService {
                         .build())
                 .toList();
 
+        medicationCounselHighlightRepository.saveAll(medicationCounselHighlights);
         medicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);
+
         return new UpdateMedicationCounselRes(medicationCounsel.getId());
     }
 
