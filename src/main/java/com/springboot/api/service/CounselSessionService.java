@@ -3,6 +3,7 @@ package com.springboot.api.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
+import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionReq;
@@ -219,6 +221,18 @@ public class CounselSessionService {
                                 .orElseThrow(NoContentException::new);
 
                 counselSession.setStatus(updateStatusInCounselSessionReq.status());
+                if (ScheduleStatus.COMPLETED.equals(updateStatusInCounselSessionReq.status())) {
+                        Counselee counselee = counselSession.getCounselee();
+                        if (counselee != null) {
+                                // 완료된 상담 세션 수 계산
+                                long completedCount = counselee.getCounselSessions().stream()
+                                                .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
+                                                .count();
+
+                                counselee.setCounselCount((int) completedCount);
+                                counselee.setLastCounselDate(counselSession.getScheduledStartDateTime().toLocalDate());
+                        }
+                }
 
                 return new UpdateStatusInCounselSessionRes(counselSession.getId());
         }
@@ -246,6 +260,7 @@ public class CounselSessionService {
                 List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                                 .stream()
                                 .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
+                                .sorted(Comparator.comparing(CounselSession::getEndDateTime).reversed())
                                 .map(session -> {
 
                                         JsonNode baseInfo = session.getCounselCard().getBaseInformation()

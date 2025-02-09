@@ -1,5 +1,7 @@
 package com.springboot.api.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -11,10 +13,14 @@ import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselor.AddCounselorReq;
 import com.springboot.api.dto.counselor.AddCounselorRes;
 import com.springboot.api.dto.counselor.GetCounselorRes;
+import com.springboot.api.dto.counselor.SelectCounselorRes;
 import com.springboot.api.repository.CounselorRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -56,6 +62,26 @@ public class CounselorService {
         return new GetCounselorRes(counselor.getId(), counselor.getName(), counselor.getEmail(),
                 counselor.getPhoneNumber(), counselor.getRoleType(), counselor.getMedicationCounselingCount(),
                 counselor.getCounseledCounseleeCount(), counselor.getParticipationDays());
+    }
+
+    @Transactional
+    public List<SelectCounselorRes> selectCounselors(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Counselor> counselorPage = counselorRepository.findAll(pageRequest);
+
+        return counselorPage.getContent().stream()
+                .sorted(Comparator.comparing(Counselor::getCreatedDatetime).reversed())
+                .map(counselor -> SelectCounselorRes.builder()
+                        .id(counselor.getId())
+                        .name(counselor.getName())
+                        .email(counselor.getEmail())
+                        .phoneNumber(counselor.getPhoneNumber())
+                        .roleType(counselor.getRoleType())
+                        .medicationCounselingCount(counselor.getMedicationCounselingCount())
+                        .counseledCounseleeCount(counselor.getCounseledCounseleeCount())
+                        .participationDays(counselor.getParticipationDays())
+                        .build())
+                .collect(Collectors.toList());
     }
 
 }
