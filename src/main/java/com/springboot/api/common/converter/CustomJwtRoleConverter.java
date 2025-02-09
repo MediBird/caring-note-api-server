@@ -58,7 +58,7 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
             newCounselor.setEmail(email);
             newCounselor.setPhoneNumber(phoneNumber);
             newCounselor.setStatus(CounselorStatus.ACTIVE);
-            newCounselor.setRoleType(RoleType.ROLE_ADMIN);
+            newCounselor.setRoleType(RoleType.ROLE_NONE);
 
             counselorRepository.save(newCounselor);
             return new ArrayList<>(newCounselor.getAuthorities());
