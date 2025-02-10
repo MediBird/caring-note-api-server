@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.dto.ByteArrayMultipartFile;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
-import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
@@ -20,6 +19,7 @@ import com.springboot.api.repository.CounselSessionRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,7 +43,8 @@ public class AICounselSummaryService {
     private final ObjectMapper objectMapper;
     private final NaverClovaExternalService naverClovaExternalService;
     private final DateTimeUtil dateTimeUtil;
-    private final FileUtil fileUtil;
+    @Value("${naver.clova.api-key}")
+    private String clovaApiKey;
 
     public void convertSpeechToText(MultipartFile file, ConvertSpeechToTextReq convertSpeechToTextReq){
 
@@ -61,7 +62,7 @@ public class AICounselSummaryService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept","application/json");
-        headers.put("X-CLOVASPEECH-API-KEY","6c294a231c7d42989a5ef003fd09c3d4"); //암호화 및 Property 추후에 뺄 예정
+        headers.put("X-CLOVASPEECH-API-KEY",clovaApiKey); //암호화 및 Property 추후에 뺄 예정
 
         SpeechToTextReq speechToTextReq = SpeechToTextReq
                 .builder()
