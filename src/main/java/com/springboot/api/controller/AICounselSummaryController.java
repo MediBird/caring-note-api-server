@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.SuccessRes;
+import com.springboot.api.dto.aiCounselSummary.SelectAICounselSummaryStatusRes;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
 import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
@@ -60,6 +61,15 @@ public class AICounselSummaryController {
         List<SelectSpeechToTextRes> selectSpeechToTextResList = aiCounselSummaryService.selectSpeechToText(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectSpeechToTextResList));
+    }
+
+    @GetMapping("{counselSessionId}/status")
+    @Operation(summary = "AI 요약 상태 조회",tags={"AI요약"})
+    public ResponseEntity<CommonRes<SelectAICounselSummaryStatusRes>> selectAICounselSummaryStatus(
+            @PathVariable String counselSessionId
+    ){
+        SelectAICounselSummaryStatusRes selectAICounselSummaryStatusRes = aiCounselSummaryService.selectAICounselSummaryStatus(counselSessionId);
+        return ResponseEntity.ok(new CommonRes<>(selectAICounselSummaryStatusRes));
     }
 
 

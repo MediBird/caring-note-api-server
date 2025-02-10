@@ -7,6 +7,7 @@ import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
+import com.springboot.api.dto.aiCounselSummary.SelectAICounselSummaryStatusRes;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
 import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
@@ -160,8 +161,17 @@ public class AICounselSummaryService {
                         ,dateTimeUtil.msToHMS(segmentDTO.end())
                 )).toList();
 
+    }
 
+    public SelectAICounselSummaryStatusRes selectAICounselSummaryStatus(String counselSessionId){
 
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        return new SelectAICounselSummaryStatusRes(aiCounselSummary.getAiCounselSummaryStatus());
     }
 
 
