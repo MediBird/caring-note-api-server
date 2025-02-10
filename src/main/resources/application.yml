@@ -50,8 +50,10 @@ spring:
       max-request-size: 100MB
   ai:
     openai:
-      api-key: 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
-
+      api-key: open_api_key
+naver:
+  clova:
+    api-key: clova_api_key
 api:
   userdetails:
     implementation: counselorUserDetailsService
