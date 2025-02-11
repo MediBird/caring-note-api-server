@@ -23,7 +23,7 @@ public class CounseleeController {
 
         @GetMapping("/{counselSessionId}/base/information")
         @Operation(summary = "내담자 기본 정보 조회", tags = { "상담 카드 작성", "상담 노트" })
-        @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ASSISTANT, RoleType.ROLE_USER })
+        @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
         public ResponseEntity<CommonRes<SelectCounseleeBaseInformationByCounseleeIdRes>> selectCounseleeBaseInformation(
                         @PathVariable("counselSessionId") String counselSessionId) {
 
