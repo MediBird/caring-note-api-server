@@ -87,7 +87,7 @@ public class MedicationRecordHistService {
                                                                 .getPrescriptionDate()));
                                 medicationRecordHist.setPrescriptionDays(
                                                 addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
-                                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getName());
+                                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getMedicationName());
                                 medicationRecordHist
                                                 .setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
                                 medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());
@@ -106,7 +106,7 @@ public class MedicationRecordHistService {
                                                                 .getPrescriptionDate()));
                                 medicationRecordHist.setPrescriptionDays(
                                                 addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
-                                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getName());
+                                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getMedicationName());
                                 medicationRecordHist
                                                 .setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
                                 medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());

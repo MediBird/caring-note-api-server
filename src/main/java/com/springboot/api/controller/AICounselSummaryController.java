@@ -16,44 +16,39 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.List;
 
-@ApiController(
-        name = "AICounselSummaryController",
-        path = "/v1/counsel/ai",
-        description = "본상담 내 AI요약 관련 API를 제공하는 Controller"
-)
+@ApiController(name = "AICounselSummaryController", path = "/v1/counsel/ai", description = "본상담 내 AI요약 관련 API를 제공하는 Controller")
 @RequiredArgsConstructor
 public class AICounselSummaryController {
 
     private final AICounselSummaryService aiCounselSummaryService;
 
     @PostMapping(value = "/stt", consumes = "multipart/form-data")
-    @Operation(summary = "convert Speech to Text", tags ={"AI요약"})
+    @Operation(summary = "convert Speech to Text", tags = { "AI요약" })
     public ResponseEntity<SuccessRes> convertSpeechToText(
-            @RequestPart("audio") MultipartFile file
-            , @RequestPart("body") @Valid ConvertSpeechToTextReq convertSpeechToTextReq
-    ){
+            @RequestPart("audio") MultipartFile file,
+            @RequestPart("body") @Valid ConvertSpeechToTextReq convertSpeechToTextReq) {
         aiCounselSummaryService.convertSpeechToText(file, convertSpeechToTextReq);
         return ResponseEntity.ok(new SuccessRes());
 
     }
 
     @GetMapping("{counselSessionId}/stt/speaker/list")
-    @Operation(summary = "발화자 별 발화 내용 조회",tags={"AI요약"})
+    @Operation(summary = "발화자 별 발화 내용 조회", tags = { "AI요약" })
     public ResponseEntity<CommonRes<List<SelectSpeakerListRes>>> selectSpeakerList(
-            @PathVariable String counselSessionId
-    ) throws JsonProcessingException {
-        List<SelectSpeakerListRes> selectSpeakerListResList = aiCounselSummaryService.selectSpeakerList(counselSessionId);
+            @PathVariable String counselSessionId) throws JsonProcessingException {
+        List<SelectSpeakerListRes> selectSpeakerListResList = aiCounselSummaryService
+                .selectSpeakerList(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectSpeakerListResList));
     }
 
     @GetMapping("{counselSessionId}/stt")
-    @Operation(summary = "stt 결과 조회",tags={"AI요약"})
+    @Operation(summary = "stt 결과 조회", tags = { "AI요약" })
     public ResponseEntity<CommonRes<List<SelectSpeechToTextRes>>> selectSpeechToText(
-            @PathVariable String counselSessionId
-    ) throws JsonProcessingException {
+            @PathVariable String counselSessionId) throws JsonProcessingException {
 
-        List<SelectSpeechToTextRes> selectSpeechToTextResList = aiCounselSummaryService.selectSpeechToText(counselSessionId);
+        List<SelectSpeechToTextRes> selectSpeechToTextResList = aiCounselSummaryService
+                .selectSpeechToText(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectSpeechToTextResList));
     }
