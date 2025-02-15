@@ -204,6 +204,7 @@ public class CounselSessionService {
                 return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
         }
 
+        @CacheEvict(value = { "sessionList" }, allEntries = true)
         @Transactional
         public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(
                         UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq) {
