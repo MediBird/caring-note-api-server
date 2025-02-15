@@ -1,5 +1,7 @@
 package com.springboot.api.controller;
 
+import org.springframework.data.convert.ReadingConverter;
+
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
@@ -12,6 +14,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -60,14 +63,14 @@ public class CounseleeConsentController {
 
         }
 
-        @DeleteMapping
-        @Operation(summary = "내담자 개인정보 수집 동의 여부 삭제")
+        @DeleteMapping("/{counseleeConsentId}")
+        @Operation(summary = "내담자 개인정보 수집 동의 여부 삭제", tags = { "개인 정보 수집 동의" })
         @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
         public ResponseEntity<CommonRes<DeleteCounseleeConsentRes>> deleteCounseleeConsent(
-                        @RequestBody @Valid DeleteCounseleeConsentReq deleteCounseleeConsentReq) {
+                        @PathVariable @NotBlank(message = "내담자 동의 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 동의 ID는 26자여야 합니다") String counseleeConsentId) {
 
                 DeleteCounseleeConsentRes deleteCounseleeConsentRes = counseleeConsentService
-                                .deleteCounseleeConsent(deleteCounseleeConsentReq);
+                                .deleteCounseleeConsent(counseleeConsentId);
 
                 return ResponseEntity.ok(new CommonRes<>(deleteCounseleeConsentRes));
 

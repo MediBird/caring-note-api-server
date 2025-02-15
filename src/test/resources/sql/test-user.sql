@@ -1,2 +1,0 @@
-INSERT INTO users (id, email, username, password) VALUES (1, 'example1@gmail.com', 'Example User 1', 'password123');
-INSERT INTO users (id, email, username, password) VALUES (2, 'example2@gmail.com', 'Example User 2', 'password456');

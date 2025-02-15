@@ -5,8 +5,10 @@ import com.springboot.api.dto.counselcard.information.health.HealthInformationDT
 import com.springboot.api.dto.counselcard.information.independentlife.IndependentLifeInformationDTO;
 import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
 
+import lombok.Builder;
+
+@Builder
 public record SelectPreviousCounselCardRes(
-        BaseInformationDTO baseInformation
-        , HealthInformationDTO healthInformation
-        , LivingInformationDTO livingInformation
-        , IndependentLifeInformationDTO independentLifeInformation){}
+                BaseInformationDTO baseInformation, HealthInformationDTO healthInformation,
+                LivingInformationDTO livingInformation, IndependentLifeInformationDTO independentLifeInformation) {
+}

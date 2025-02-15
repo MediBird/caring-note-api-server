@@ -1,15 +1,8 @@
 package com.springboot.api.controller;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
-import java.util.HashMap;
-
-import org.junit.jupiter.api.BeforeEach;
-
-import com.springboot.api.dto.counselee.AddCounseleeReq;
-import com.springboot.api.service.CounseleeService;
-import com.springboot.api.repository.CounselorRepository;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +13,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -35,6 +26,7 @@ import java.util.List;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
@@ -44,202 +36,346 @@ import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounsele
 import com.springboot.api.dto.counselee.SelectCounseleeRes;
 import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import com.springboot.api.common.config.security.SecurityConfig;
+import com.springboot.api.config.TestSecurityConfig;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+import com.springboot.api.dto.counselee.AddCounseleeReq;
+import com.springboot.api.service.CounseleeService;
+import com.springboot.enums.GenderType;
+
 @WebMvcTest(CounseleeController.class)
+@Import({ SecurityConfig.class, TestSecurityConfig.class })
 public class CounseleeControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private CounseleeService counseleeService;
+        @MockBean
+        private CounseleeService counseleeService;
 
-    @MockBean
-    private CounselorRepository counselorRepository;
+        @MockBean
+        private JwtDecoder jwtDecoder;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
+        @MockBean
+        private CustomJwtRoleConverter customJwtRoleConverter;
 
-    @MockBean
-    private JwtDecoder jwtDecoder;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @BeforeEach
-    public void setUp() {
-        when(userDetailsService.loadUserByUsername(any(String.class)))
-                .thenReturn(new UserDetails() {
-                    @Override
-                    public Collection<? extends GrantedAuthority> getAuthorities() {
-                        return Collections.emptyList();
-                    }
+        private final String VALID_COUNSEL_SESSION_ID = "01HQ7YXHG8ZYXM5T2Q3X4KDJPL";
+        private final String INVALID_COUNSEL_SESSION_ID = "invalid-id";
 
-                    @Override
-                    public String getPassword() {
-                        return "password";
-                    }
+        @Test
+        public void testAddCounseleeSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-                    @Override
-                    public String getUsername() {
-                        return "sanghoon";
-                    }
+                String requestBody = "{ \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\", \"genderType\": \"MALE\" }";
 
-                });
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
+                when(counseleeService.addCounselee(any(AddCounseleeReq.class))).thenReturn("Success");
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claims(claimsMap -> claimsMap.putAll(claims))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
-    }
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer token")
+                                .content(requestBody))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    public void testAddCounseleeSuccess() throws Exception {
+        @Test
+        public void testAddCounseleeWithMissingFields() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
+                String requestBody = "{ \"name\": \"\", \"phoneNumber\": \"\", \"dateOfBirth\": \"\" }";
 
-        String requestBody = "{ \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\", \"genderType\": \"MALE\" }";
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer mock-token")
+                                .content(requestBody))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.data.errors").isArray());
+        }
 
-        when(counseleeService.addCounselee(any(AddCounseleeReq.class))).thenReturn("Success");
+        @Test
+        public void testUpdateCounseleeSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
+                String requestBody = "{ \"counseleeId\": \"01HQ7YXHG8ZYXM5T2Q3X4KDJPJ\", \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\" , \"genderType\": \"MALE\"}";
 
-        mockMvc.perform(post("/v1/counsel/counselee/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer token")
-                .content(requestBody))
-                .andExpect(status().isOk());
-    }
+                when(counseleeService.updateCounselee(any(UpdateCounseleeReq.class))).thenReturn("Success");
 
-    @Test
-    public void testAddCounseleeWithMissingFields() throws Exception {
+                mockMvc.perform(put("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer token")
+                                .content(requestBody))
+                                .andExpect(status().isOk());
+        }
 
-        String requestBody = "{ \"name\": \"\", \"phoneNumber\": \"\", \"dateOfBirth\": \"\" }";
+        @Test
+        public void testSelectCounseleeSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-        mockMvc.perform(post("/v1/counsel/counselee/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer mock-token")
-                .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.data.errors").isArray());
-    }
+                SelectCounseleeRes mockResponse = SelectCounseleeRes.builder()
+                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .name("John Doe")
+                                .phoneNumber("010-1234-5678")
+                                .build();
 
-    @Test
-    public void testUpdateCounseleeSuccess() throws Exception {
+                when(counseleeService.selectCounselee(anyString())).thenReturn(mockResponse);
 
-        String requestBody = "{ \"counseleeId\": \"123\", \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\" }";
+                mockMvc.perform(get("/v1/counsel/counselee/{counseleeId}", "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data.id").value("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ"))
+                                .andExpect(jsonPath("$.data.name").value("John Doe"))
+                                .andExpect(jsonPath("$.data.phoneNumber").value("010-1234-5678"));
+        }
 
-        when(counseleeService.updateCounselee(any(UpdateCounseleeReq.class))).thenReturn("Success");
+        @Test
+        public void testSelectCounseleeListSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
+                List<SelectCounseleeRes> mockList = Arrays.asList(
+                                SelectCounseleeRes.builder()
+                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                                .name("John Doe")
+                                                .build(),
+                                SelectCounseleeRes.builder()
+                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
+                                                .name("Jane Doe")
+                                                .build());
 
-        mockMvc.perform(put("/v1/counsel/counselee/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer token")
-                .content(requestBody))
-                .andExpect(status().isOk());
-    }
+                when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockList);
 
-    @Test
-    public void testSelectCounseleeSuccess() throws Exception {
+                mockMvc.perform(get("/v1/counsel/counselee/")
+                                .param("page", "0")
+                                .param("size", "10")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").isArray())
+                                .andExpect(jsonPath("$.data.length()").value(2));
+        }
 
-        SelectCounseleeRes mockResponse = SelectCounseleeRes.builder()
-                .id("123")
-                .name("John Doe")
-                .phoneNumber("010-1234-5678")
-                .build();
+        @Test
+        public void testDeleteCounseleeSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-        when(counseleeService.selectCounselee(anyString())).thenReturn(mockResponse);
+                mockMvc.perform(delete("/v1/counsel/counselee/{counseleeId}", "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").value("delete the counselee success"));
+        }
 
-        mockMvc.perform(get("/v1/counsel/counselee/{counseleeId}", "123")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value("123"))
-                .andExpect(jsonPath("$.data.name").value("John Doe"))
-                .andExpect(jsonPath("$.data.phoneNumber").value("010-1234-5678"));
-    }
+        @Test
+        public void testDeleteCounseleeBatchSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-    @Test
-    public void testSelectCounseleeListSuccess() throws Exception {
+                String requestBody = "[{\"counseleeId\": \"01HQ7YXHG8ZYXM5T2Q3X4KDJPJ\"}, {\"counseleeId\": \"01HQ7YXHG8ZYXM5T2Q3X4KDJPK\"}]";
 
-        List<SelectCounseleeRes> mockList = Arrays.asList(
-                SelectCounseleeRes.builder()
-                        .id("123")
-                        .name("John Doe")
-                        .build(),
-                SelectCounseleeRes.builder()
-                        .id("456")
-                        .name("Jane Doe")
-                        .build());
+                List<DeleteCounseleeBatchRes> mockResponse = Arrays.asList(
+                                DeleteCounseleeBatchRes.builder()
+                                                .deletedCounseleeId("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                                .build(),
+                                DeleteCounseleeBatchRes.builder()
+                                                .deletedCounseleeId("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
+                                                .build());
 
-        when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockList);
+                when(counseleeService.deleteCounseleeBatch(anyList())).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/v1/counsel/counselee/")
-                .param("page", "0")
-                .param("size", "10")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()").value(2));
-    }
+                mockMvc.perform(delete("/v1/counsel/counselee/batch")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer token")
+                                .content(requestBody))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").isArray())
+                                .andExpect(jsonPath("$.data.length()").value(2));
+        }
 
-    @Test
-    public void testDeleteCounseleeSuccess() throws Exception {
+        @Test
+        public void testSelectCounseleeBaseInformationSuccess() throws Exception {
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-        mockMvc.perform(delete("/v1/counsel/counselee/{counseleeId}", "123")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value("delete the counselee success"));
-    }
+                SelectCounseleeBaseInformationByCounseleeIdRes mockResponse = SelectCounseleeBaseInformationByCounseleeIdRes
+                                .builder()
+                                .counseleeId("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .name("John Doe")
+                                .build();
 
-    @Test
-    public void testDeleteCounseleeBatchSuccess() throws Exception {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
+                when(counseleeService.selectCounseleeBaseInformation(anyString())).thenReturn(mockResponse);
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claims(claimsMap -> claimsMap.putAll(claims))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information",
+                                "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data.counseleeId").value("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ"))
+                                .andExpect(jsonPath("$.data.name").value("John Doe"));
+        }
 
-        String requestBody = "[{\"counseleeId\": \"123\"}, {\"counseleeId\": \"456\"}]";
+        @Test
+        public void testSelectBaseInfo_WithAdminRole_Success() throws Exception {
+                // Given
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-        List<DeleteCounseleeBatchRes> mockResponse = Arrays.asList(
-                DeleteCounseleeBatchRes.builder()
-                        .deletedCounseleeId("123")
-                        .build(),
-                DeleteCounseleeBatchRes.builder()
-                        .deletedCounseleeId("456")
-                        .build());
+                SelectCounseleeBaseInformationByCounseleeIdRes mockResponse = SelectCounseleeBaseInformationByCounseleeIdRes
+                                .builder()
+                                .counseleeId("testId")
+                                .name("홍길동")
+                                .build();
 
-        when(counseleeService.deleteCounseleeBatch(anyList())).thenReturn(mockResponse);
+                when(counseleeService.selectCounseleeBaseInformation(VALID_COUNSEL_SESSION_ID))
+                                .thenReturn(mockResponse);
 
-        mockMvc.perform(delete("/v1/counsel/counselee/batch")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer token")
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()").value(2));
-    }
+                // When & Then
+                mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information",
+                                VALID_COUNSEL_SESSION_ID)
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data.name").value("홍길동"));
+        }
 
-    @Test
-    public void testSelectCounseleeBaseInformationSuccess() throws Exception {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
+        @Test
+        public void testSelectBaseInfo_WithInvalidRole_Forbidden() throws Exception {
+                // Given
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_NONE"));
+                mockJwtToken(authorities);
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claims(claimsMap -> claimsMap.putAll(claims))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                // When & Then
+                mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information",
+                                VALID_COUNSEL_SESSION_ID)
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isForbidden());
+        }
 
-        SelectCounseleeBaseInformationByCounseleeIdRes mockResponse = SelectCounseleeBaseInformationByCounseleeIdRes
-                .builder()
-                .counseleeId("123")
-                .name("John Doe")
-                .build();
+        @Test
+        public void testSelectBaseInfo_WithInvalidSessionId_BadRequest() throws Exception {
+                // Given
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
 
-        when(counseleeService.selectCounseleeBaseInformation(anyString())).thenReturn(mockResponse);
+                // When & Then
+                mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information",
+                                INVALID_COUNSEL_SESSION_ID)
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isBadRequest());
+        }
 
-        mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information", "123")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.counseleeId").value("123"))
-                .andExpect(jsonPath("$.data.name").value("John Doe"));
-    }
+        @Test
+        public void testSelectBaseInfo_WithoutToken_Unauthorized() throws Exception {
+                // When & Then
+                mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information",
+                                VALID_COUNSEL_SESSION_ID))
+                                .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        public void testAddCounselee_WithAdminRole_Success() throws Exception {
+                // Given
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
+
+                AddCounseleeReq request = AddCounseleeReq.builder()
+                                .name("홍길동")
+                                .phoneNumber("010-1234-5678")
+                                .genderType(GenderType.MALE)
+                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                .build();
+
+                when(counseleeService.addCounselee(any(AddCounseleeReq.class)))
+                                .thenReturn("success");
+
+                // When & Then
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").value("success"));
+        }
+
+        @Test
+        public void testAddCounselee_WithUserRole_Forbidden() throws Exception {
+                // Given
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_USER"));
+                mockJwtToken(authorities);
+
+                AddCounseleeReq request = AddCounseleeReq.builder()
+                                .name("홍길동")
+                                .phoneNumber("010-1234-5678")
+                                .genderType(GenderType.MALE)
+                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                .build();
+
+                // When & Then
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isForbidden());
+        }
+
+        @Test
+        public void testAddCounselee_WithInvalidRequest_BadRequest() throws Exception {
+                // Given
+                Collection<GrantedAuthority> authorities = Collections.singletonList(
+                                new SimpleGrantedAuthority("ROLE_ADMIN"));
+                mockJwtToken(authorities);
+
+                AddCounseleeReq request = AddCounseleeReq.builder()
+                                .name("") // 빈 이름
+                                .phoneNumber("invalid") // 잘못된 전화번호 형식
+                                .build();
+
+                // When & Then
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request))
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        public void testAddCounselee_WithoutToken_Unauthorized() throws Exception {
+                // Given
+                AddCounseleeReq request = AddCounseleeReq.builder()
+                                .name("홍길동")
+                                .phoneNumber("01012345678")
+                                .build();
+
+                // When & Then
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                                .andExpect(status().isUnauthorized());
+        }
+
+        private void mockJwtToken(Collection<GrantedAuthority> authorities) {
+                Jwt jwt = Jwt.withTokenValue("token")
+                                .header("alg", "none")
+                                .claim("preferred_username", "testUser")
+                                .build();
+
+                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                when(customJwtRoleConverter.convert(jwt)).thenReturn(authorities);
+        }
 }

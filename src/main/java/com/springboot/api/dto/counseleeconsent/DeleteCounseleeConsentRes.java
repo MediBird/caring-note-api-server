@@ -1,3 +1,7 @@
 package com.springboot.api.dto.counseleeconsent;
 
-public record DeleteCounseleeConsentRes(String deletedCounseleeConsentId){}
+import lombok.Builder;
+
+@Builder
+public record DeleteCounseleeConsentRes(String deletedCounseleeConsentId) {
+}
