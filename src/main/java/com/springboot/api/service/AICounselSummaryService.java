@@ -255,6 +255,7 @@ public class AICounselSummaryService {
         callGpt(messages)
                 .thenAcceptAsync(
                         chatResponse -> {
+                            aiCounselSummary.setSpeakers(analyseTextReq.getSpeakers());
                             aiCounselSummary.setTaResult(objectMapper.valueToTree(chatResponse));
                             aiCounselSummary.setAiCounselSummaryStatus(GPT_COMPLETE);
                             aiCounselSummaryRepository.save(aiCounselSummary);
@@ -262,6 +263,7 @@ public class AICounselSummaryService {
                 )
                 .exceptionally(ex ->{
                             log.error("error",ex);
+                            aiCounselSummary.setSpeakers(analyseTextReq.getSpeakers());
                             aiCounselSummary.setAiCounselSummaryStatus(GPT_FAILED);
                             aiCounselSummaryRepository.save(aiCounselSummary);
                             return null;
