@@ -18,7 +18,7 @@ import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.dto.counselsession.AddCounselSessionRes;
-import com.springboot.api.dto.counselsession.CounselSessionStat;
+import com.springboot.api.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionRes;
 import com.springboot.api.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
@@ -72,7 +72,7 @@ public class CounselSessionController {
         @GetMapping("/sessions/stats")
         @Operation(summary = "상담 세션 통계 조회")
         @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_ASSISTANT })
-        public ResponseEntity<CommonRes<CounselSessionStat>> getSessionStats() {
+        public ResponseEntity<CommonRes<CounselSessionStatRes>> getSessionStats() {
                 return ResponseEntity.ok(new CommonRes<>(null));
         }
 
