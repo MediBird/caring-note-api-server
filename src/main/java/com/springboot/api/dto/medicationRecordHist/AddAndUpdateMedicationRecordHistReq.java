@@ -12,8 +12,6 @@ import lombok.Data;
 
 @Data
 public class AddAndUpdateMedicationRecordHistReq {
-    @NotBlank(message = "행 ID는 필수 입력값입니다")
-    @Size(min = 26, max = 26, message = "행 ID는 26자여야 합니다")
     private String rowId;
 
     @NotBlank(message = "약물 ID는 필수 입력값입니다")

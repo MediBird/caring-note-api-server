@@ -63,19 +63,22 @@ public class TestDataInitializer implements CommandLineRunner {
 
     private void initTestData() throws JsonProcessingException {
         // add Counselor
-        String counselorId = "TEST-COUNSELOR-01";
+        String counselorId = "01HQ7YXHG8ZYXM5T2Q3X4KDJPH";
         addCounselor(counselorId);
 
         // add Counselee
-        List<String> counseleeIds = List.of("TEST-COUNSELEE-01", "TEST-COUNSELEE-02");
+        List<String> counseleeIds = List.of(
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPK");
 
         IntStream.range(0, counseleeIds.size())
                 .forEach(index -> addCounselee(counseleeIds.get(index), index % 2 == 0));
 
         // add CounselSession
-        List<String> counselSessionIds = List.of("TEST-COUNSEL-SESSION-01",
-                "TEST-COUNSEL-SESSION-02",
-                "TEST-COUNSEL-SESSION-03");
+        List<String> counselSessionIds = List.of(
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPL",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPM",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPN");
 
         addCounselSession(counselSessionIds.getFirst(), counselorId, counseleeIds.getFirst(), ScheduleStatus.COMPLETED);
         addCounselSession(counselSessionIds.get(1), counselorId, counseleeIds.getFirst(), ScheduleStatus.SCHEDULED);
@@ -83,54 +86,54 @@ public class TestDataInitializer implements CommandLineRunner {
 
         // add CounselCard
         List<String> counselCardIds = List.of(
-                "TEST-COUNSEL-CARD-01");
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPP");
         addCounselCard(counselSessionIds.getFirst(), counselCardIds.getFirst(), counseleeIds.getFirst());
 
         // add CounseleeConsent
         List<String> counseleeConsentIds = List.of(
-                "TEST-COUNSEL-CONSENT-01");
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPQ");
         addCounseleeConsent(counselSessionIds.getFirst(),
                 counseleeConsentIds.getFirst(),
                 counseleeIds.getFirst());
 
         // add MedicationCounsel
         List<String> medicationCounselIds = List.of(
-                "TEST-COUNSEL-MEDICATION-01");
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPR");
         addMedicationCounsel(counselSessionIds.getFirst(),
                 medicationCounselIds.getFirst());
 
         // add MedicationRecordHist
         List<String> medicationRecordHistIds = List.of(
-                "TEST-RECORD-HIST-01",
-                "TEST-RECORD-HIST-02",
-                "TEST-RECORD-HIST-03",
-                "TEST-RECORD-HIST-04",
-                "TEST-RECORD-HIST-05",
-                "TEST-RECORD-HIST-06",
-                "TEST-RECORD-HIST-07",
-                "TEST-RECORD-HIST-08",
-                "TEST-RECORD-HIST-09",
-                "TEST-RECORD-HIST-10");
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPS",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPT",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPU",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPV",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPW",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPX",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPY",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJPZ",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ0",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ1");
         addMedicationRecordHist(counselSessionIds.getFirst(), medicationRecordHistIds);
 
         // add WasteMedicationDisposal
-        List<String> wasteMedicationDisposalIds = List.of("TEST-WASTE-DISPOSAL-01");
+        List<String> wasteMedicationDisposalIds = List.of(
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ2");
         addWasteMedicationDisposal(counselSessionIds.getFirst(), wasteMedicationDisposalIds.getFirst());
 
         // add WasteMedicationRecord
         List<String> wasteMedicationRecordIds = List.of(
-                "TEST-WASTE-RECORD-HIST-01",
-                "TEST-WASTE-RECORD-HIST-02",
-                "TEST-WASTE-RECORD-HIST-03",
-                "TEST-WASTE-RECORD-HIST-04",
-                "TEST-WASTE-RECORD-HIST-05",
-                "TEST-WASTE-RECORD-HIST-06",
-                "TEST-WASTE-RECORD-HIST-07",
-                "TEST-WASTE-RECORD-HIST-08",
-                "TEST-WASTE-RECORD-HIST-09",
-                "TEST-WASTE-RECORD-HIST-10");
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ3",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ4",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ5",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ6",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ7",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ8",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQ9",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQA",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQB",
+                "01HQ7YXHG8ZYXM5T2Q3X4KDJQC");
         addWasteMedicationRecord(counselSessionIds.getFirst(), wasteMedicationRecordIds);
-
     }
 
     private void addCounselor(String counselorId) {
