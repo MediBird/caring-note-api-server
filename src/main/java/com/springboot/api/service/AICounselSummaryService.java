@@ -289,9 +289,9 @@ public class AICounselSummaryService {
         JsonNode taResult = Optional.ofNullable(aiCounselSummary.getTaResult())
                 .orElseThrow(NoContentException::new);
 
-        ChatResponse chatResponse = objectMapper.treeToValue(taResult, ChatResponse.class);
+        String taResultText = taResult.get("result").get("output").get("text").asText();
 
-        return new SelectAnalysedTextRes(chatResponse.getResult().getOutput().getText());
+        return new SelectAnalysedTextRes(taResultText);
     }
 
     @Transactional
