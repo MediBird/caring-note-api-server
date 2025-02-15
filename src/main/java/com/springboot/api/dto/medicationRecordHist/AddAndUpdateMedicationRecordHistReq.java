@@ -6,6 +6,8 @@ import com.springboot.enums.MedicationUsageStatus;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 @Data
@@ -24,7 +26,8 @@ public class AddAndUpdateMedicationRecordHistReq {
     @NotBlank(message = "처방일자는 필수 입력값입니다")
     private String prescriptionDate;
 
-    @NotBlank(message = "처방일수는 필수 입력값입니다")
+    @NotNull(message = "처방일수는 필수 입력값입니다")
+    @Min(value = 1, message = "처방일수는 1일 이상이어야 합니다")
     private int prescriptionDays;
 
     @NotBlank(message = "약물 이름은 필수 입력값입니다")
