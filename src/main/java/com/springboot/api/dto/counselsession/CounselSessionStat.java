@@ -10,6 +10,6 @@ public class CounselSessionStat {
     private int totalSessionCount;
     private int counseleeCountForThisMonth;
     private int totalCaringMessageCount;
-    private int totalCounselHours;
+    private int counselHoursForThisMonth;
 
 }

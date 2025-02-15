@@ -1,6 +1,8 @@
 package com.springboot.api.repository;
 
 import com.springboot.api.domain.CounselSession;
+import com.springboot.enums.ScheduleStatus;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -62,6 +64,20 @@ public interface CounselSessionRepository extends JpaRepository<CounselSession, 
       ORDER BY cs.scheduledStartDateTime.toLocalDate() ASC
       """)
   List<LocalDate> findDistinctDatesByYearAndMonth(
+      @Param("year") int year,
+      @Param("month") int month);
+
+  int countByStatus(ScheduleStatus scheduledStatus);
+
+  @Query("""
+          SELECT cs FROM CounselSession cs
+          WHERE YEAR(cs.startDateTime) = :year
+          AND MONTH(cs.startDateTime) = :month
+          AND cs.status = 'COMPLETED'
+          AND cs.startDateTime IS NOT NULL
+          AND cs.endDateTime IS NOT NULL
+      """)
+  List<CounselSession> findCompletedSessionsByYearAndMonth(
       @Param("year") int year,
       @Param("month") int month);
 

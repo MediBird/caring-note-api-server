@@ -29,7 +29,6 @@ import java.time.LocalDate;
 public class CounselorService {
 
     private final CounselorRepository counselorRepository;
-    private final CounselSessionRepository counselSessionRepository;
 
     @Transactional
     public AddCounselorRes addCounselor(AddCounselorReq addCounselorReq) {
