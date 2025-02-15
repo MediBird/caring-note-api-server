@@ -9,6 +9,8 @@ import com.springboot.api.service.CounselCardService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
@@ -27,7 +29,8 @@ public class CounselCardController {
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담 카드 조회", tags = { "상담 카드 작성", "본상담 - 상담 카드" })
     @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
-    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(@PathVariable String counselSessionId)
+    ResponseEntity<CommonRes<SelectCounselCardRes>> selectCounselCard(
+            @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId)
             throws JsonProcessingException {
 
         SelectCounselCardRes selectCounselCardRes = counselCardService.selectCounselCard(counselSessionId);
@@ -39,7 +42,8 @@ public class CounselCardController {
     @Operation(summary = "이전 상담 카드 조회", tags = { "상담 카드 작성" })
     @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
     ResponseEntity<CommonRes<SelectPreviousCounselCardRes>> selectPreviousCounselCard(
-            @PathVariable String counselSessionId) throws JsonProcessingException {
+            @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId)
+            throws JsonProcessingException {
 
         SelectPreviousCounselCardRes selectPreviousCounselCardRes = counselCardService
                 .selectPreviousCounselCard(counselSessionId);
@@ -84,7 +88,8 @@ public class CounselCardController {
     @Operation(summary = "이전 상담 카드 item 목록 조회", tags = { "본상담 - 상담 카드" })
     @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
     ResponseEntity<CommonRes<List<SelectPreviousItemListByInformationNameAndItemNameRes>>> selectPreviousItemListByInformationNameAndItemName(
-            @PathVariable String counselSessionId, @RequestParam(required = true) String informationName,
+            @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId,
+            @RequestParam(required = true) String informationName,
             @RequestParam(required = true) String itemName) {
 
         List<SelectPreviousItemListByInformationNameAndItemNameRes> selectPreviousItemListResListByInformationNameAndInformationItemName = counselCardService

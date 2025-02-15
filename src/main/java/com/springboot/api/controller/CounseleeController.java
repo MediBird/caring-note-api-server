@@ -9,6 +9,10 @@ import com.springboot.api.service.CounseleeService;
 import com.springboot.enums.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,7 +29,7 @@ public class CounseleeController {
         @Operation(summary = "내담자 기본 정보 조회", tags = { "상담 카드 작성", "상담 노트" })
         @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
         public ResponseEntity<CommonRes<SelectCounseleeBaseInformationByCounseleeIdRes>> selectCounseleeBaseInformation(
-                        @PathVariable("counselSessionId") String counselSessionId) {
+                        @PathVariable("counselSessionId") @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
 
                 SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformationByCounseleeIdRes = counseleeService
                                 .selectCounseleeBaseInformation(counselSessionId);
@@ -37,7 +41,7 @@ public class CounseleeController {
         @Operation(summary = "내담자 기본 정보 생성", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> addCounselee(
-                        @RequestBody AddCounseleeReq addCounseleeReq) {
+                        @Valid @RequestBody AddCounseleeReq addCounseleeReq) {
 
                 return ResponseEntity
                                 .ok(new CommonRes<>(counseleeService.addCounselee(addCounseleeReq)));
@@ -47,7 +51,7 @@ public class CounseleeController {
         @Operation(summary = "내담자 기본 정보 수정", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<String>> updateCounselee(
-                        @RequestBody UpdateCounseleeReq updateCounseleeReq) {
+                        @Valid @RequestBody UpdateCounseleeReq updateCounseleeReq) {
                 return ResponseEntity
                                 .ok(new CommonRes<>(counseleeService.updateCounselee(updateCounseleeReq)));
         }
@@ -65,8 +69,8 @@ public class CounseleeController {
         @Operation(summary = "내담자 목록 조회", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<List<SelectCounseleeRes>>> selectCounselees(
-                        @RequestParam("page") int page,
-                        @RequestParam("size") int size) {
+                        @RequestParam("page") @Min(0) int page,
+                        @RequestParam("size") @Min(1) @Max(100) int size) {
                 return ResponseEntity
                                 .ok(new CommonRes<>(counseleeService.selectCounselees(page, size)));
         }
