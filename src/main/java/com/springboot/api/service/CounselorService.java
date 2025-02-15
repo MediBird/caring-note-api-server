@@ -15,14 +15,12 @@ import com.springboot.api.dto.counselor.AddCounselorRes;
 import com.springboot.api.dto.counselor.GetCounselorRes;
 import com.springboot.api.dto.counselor.SelectCounselorRes;
 import com.springboot.api.repository.CounselorRepository;
-import com.springboot.api.repository.CounselSessionRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
