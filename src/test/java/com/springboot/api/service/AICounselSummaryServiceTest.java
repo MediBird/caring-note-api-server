@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
+import com.springboot.api.dto.aiCounselSummary.ConvertSpeechToTextReq;
 import com.springboot.api.dto.naverClova.SegmentDTO;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.repository.AICounselSummaryRepository;
@@ -106,11 +106,12 @@ public class AICounselSummaryServiceTest {
         System.out.println("✅ STT 결과: " + captor.getValue().getSttResult());
     }
 
-    @Test
-    public void selectSpeakerList() throws IOException {
+    @ParameterizedTest
+    @ValueSource(strings = {"test1.m4a.json", "test2.m4a.json", "test3.m4a.json","test4.m4a.json"})
+    public void selectSpeakerList(String filename) throws IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
-        Resource resource = new ClassPathResource("stt/output/test4.m4a.json");
+        Resource resource = new ClassPathResource("stt/output/"+filename);
         SpeechToTextRes speechToTextRes = objectMapper.readValue(resource.getFile(), SpeechToTextRes.class);
 
         Map<String, String> longestTexts = speechToTextRes.segments().stream()
@@ -128,5 +129,31 @@ public class AICounselSummaryServiceTest {
 
 
         log.debug(selectSpeakerListResList.toString());
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"test1.m4a.json", "test2.m4a.json", "test3.m4a.json","test4.m4a.json"})
+    public void selectSpeakCount(String filename) throws IOException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        Resource resource = new ClassPathResource("stt/output/"+filename);
+        SpeechToTextRes speechToTextRes = objectMapper.readValue(resource.getFile(), SpeechToTextRes.class);
+
+        Map<String, Long> speakerTextCount = speechToTextRes.segments().stream()
+                .collect(Collectors.groupingBy(segment -> segment.speaker().label(), Collectors.counting()));
+
+        log.debug(speakerTextCount.toString());
+    }
+
+
+
+    @Test
+    void testAnalyseText() {
+
+
+
+
+
+
     }
 }
