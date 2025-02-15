@@ -23,7 +23,7 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
 import com.springboot.api.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.dto.counselsession.AddCounselSessionRes;
-import com.springboot.api.dto.counselsession.CounselSessionStat;
+import com.springboot.api.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionRes;
 import com.springboot.api.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
@@ -300,8 +300,8 @@ public class CounselSessionService {
 
         @Cacheable(value = "sessionStats")
         @Transactional
-        public CounselSessionStat getSessionStats() {
-                return CounselSessionStat.builder()
+        public CounselSessionStatRes getSessionStats() {
+                return CounselSessionStatRes.builder()
                                 .totalSessionCount(calculateTotalSessionCount())
                                 .counseleeCountForThisMonth(calculateCounseleeCountForThisMonth())
                                 .totalCaringMessageCount(calculateTotalCaringMessageCount())

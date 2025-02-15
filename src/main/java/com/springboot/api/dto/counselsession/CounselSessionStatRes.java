@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CounselSessionStat {
+public class CounselSessionStatRes {
 
     private int totalSessionCount;
     private int counseleeCountForThisMonth;
