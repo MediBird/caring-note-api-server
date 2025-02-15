@@ -28,6 +28,7 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -117,7 +118,7 @@ public class AICounselSummaryService {
 
     public List<SelectSpeakerListRes> selectSpeakerList(String counselSessionId) throws JsonProcessingException {
 
-        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+        counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
         AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
@@ -146,7 +147,7 @@ public class AICounselSummaryService {
 
     public List<SelectSpeechToTextRes> selectSpeechToText(String counselSessionId) throws JsonProcessingException {
 
-        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+        counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
         AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
@@ -174,7 +175,7 @@ public class AICounselSummaryService {
 
     public void analyseText(AnalyseTextReq analyseTextReq) throws JsonProcessingException {
 
-        CounselSession counselSession = counselSessionRepository.findById(analyseTextReq.getCounselSessionId())
+        counselSessionRepository.findById(analyseTextReq.getCounselSessionId())
                 .orElseThrow(IllegalArgumentException::new);
 
         AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(analyseTextReq.getCounselSessionId())
@@ -279,7 +280,7 @@ public class AICounselSummaryService {
 
     public SelectAnalysedTextRes selectAnalysedText(String counselSessionId) throws JsonProcessingException {
 
-        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+        counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
         AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
@@ -291,6 +292,16 @@ public class AICounselSummaryService {
         ChatResponse chatResponse = objectMapper.treeToValue(taResult, ChatResponse.class);
 
         return new SelectAnalysedTextRes(chatResponse.getResult().getOutput().getText());
+    }
+
+    @Transactional
+    public void deleteAICounselSummary(DeleteAICounselSummaryReq deleteAICounselSummaryReq) {
+
+        counselSessionRepository.findById(deleteAICounselSummaryReq.counselSessionId())
+                .orElseThrow(IllegalArgumentException::new);
+
+        aiCounselSummaryRepository.deleteByCounselSessionId(deleteAICounselSummaryReq.counselSessionId());
+
     }
 
 

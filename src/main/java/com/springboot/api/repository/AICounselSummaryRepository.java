@@ -9,4 +9,6 @@ public interface AICounselSummaryRepository extends JpaRepository<AICounselSumma
 
     Optional<AICounselSummary> findByCounselSessionId(String counselSessionId);
 
+    void deleteByCounselSessionId(String counselSessionId);
+
 }

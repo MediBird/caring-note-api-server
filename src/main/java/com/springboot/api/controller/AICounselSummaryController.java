@@ -81,4 +81,15 @@ public class AICounselSummaryController {
     }
 
 
+    @DeleteMapping
+    @Operation(summary = "counselSessionId 기준 AI요약 삭제",tags = {"AI요약"})
+    public ResponseEntity<SuccessRes> deleteAICounselSummary(
+            @RequestBody DeleteAICounselSummaryReq deleteAICounselSummaryReq
+    ){
+
+        aiCounselSummaryService.deleteAICounselSummary(deleteAICounselSummaryReq);
+        return ResponseEntity.ok(new SuccessRes());
+    }
+
+
 }
