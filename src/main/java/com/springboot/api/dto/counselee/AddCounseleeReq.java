@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import jakarta.annotation.Nullable;
 
 import lombok.Builder;
 import lombok.Data;
@@ -38,14 +39,14 @@ public class AddCounseleeReq {
     private boolean isDisability;
 
     @Size(max = 1000, message = "비고는 1000자를 초과할 수 없습니다")
+    @Nullable
     private String note;
 
     @Size(max = 50, message = "담당자 이름은 50자를 초과할 수 없습니다")
+    @Nullable
     private String careManagerName;
 
     @Size(max = 100, message = "복지기관명은 100자를 초과할 수 없습니다")
+    @Nullable
     private String affiliatedWelfareInstitution;
-
-    @NotNull(message = "상담 일정 날짜 및 시간은 필수 입력값입니다")
-    private LocalDateTime scheduledStartDateTime;
 }
