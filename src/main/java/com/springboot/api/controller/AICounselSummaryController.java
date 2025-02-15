@@ -4,18 +4,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.SuccessRes;
+import com.springboot.api.dto.aiCounselSummary.AnalyseTextReq;
+import com.springboot.api.dto.aiCounselSummary.ConvertSpeechToTextReq;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
-import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
 import com.springboot.api.service.AICounselSummaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -62,7 +60,15 @@ public class AICounselSummaryController {
         return ResponseEntity.ok(new CommonRes<>(selectSpeechToTextResList));
     }
 
+    @PostMapping("/ta")
+    @Operation(summary = "선택 발화자 기준 TA",tags = {"AI요약"})
+    public ResponseEntity<SuccessRes> analyseText(
+            @Valid @RequestBody AnalyseTextReq analyseTextReq) throws JsonProcessingException {
 
+        aiCounselSummaryService.analyseText(analyseTextReq);
+        return ResponseEntity.ok(new SuccessRes());
+
+    }
 
 
 }
