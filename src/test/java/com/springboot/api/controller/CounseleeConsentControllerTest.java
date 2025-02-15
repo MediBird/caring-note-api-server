@@ -130,7 +130,7 @@ public class CounseleeConsentControllerTest {
         mockMvc.perform(get("/v1/counselee/consent/{counselSessionId}", VALID_COUNSEL_SESSION_ID)
                 .param("counseleeId", VALID_COUNSELEE_ID)
                 .header("Authorization", "Bearer token"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -215,7 +215,7 @@ public class CounseleeConsentControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(request))
                 .header("Authorization", "Bearer token"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
