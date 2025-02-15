@@ -1,10 +1,13 @@
 package com.springboot.api.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
-import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.dto.aiCounselSummary.AnalyseTextReq;
 import com.springboot.api.dto.aiCounselSummary.ConvertSpeechToTextReq;
+import com.springboot.api.dto.aiCounselSummary.DeleteAICounselSummaryReq;
+import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.dto.naverClova.SegmentDTO;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.repository.AICounselSummaryRepository;
@@ -41,8 +44,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
-@Disabled
 @EnableAsync
+@Disabled
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)// 비동기 테스트 위해 필요
 public class AICounselSummaryServiceTest {
 
@@ -147,15 +150,35 @@ public class AICounselSummaryServiceTest {
         log.debug(speakerTextCount.toString());
     }
 
-
-
     @Test
-    void testAnalyseText() {
+    void testAnalyseText() throws JsonProcessingException {
 
+        AnalyseTextReq analyseTextReq = AnalyseTextReq
+                .builder()
+                .counselSessionId("TEST-COUNSEL-SESSION-02")
+                .speakers(List.of("A","E"))
+                .build();
 
-
-
+        aiCounselSummaryService.analyseText(analyseTextReq);
 
 
     }
+
+    @Test
+    void deleteAISummary(){
+
+
+        String testCounselSessionId = "TEST-COUNSEL-SESSION-02";
+        CounselSession mockCounselSession = new CounselSession();
+        mockCounselSession.setId(testCounselSessionId);
+
+        when(counselSessionRepository.findById(testCounselSessionId)).thenReturn(Optional.of(mockCounselSession));
+
+
+        DeleteAICounselSummaryReq deleteAICounselSummaryReq = new DeleteAICounselSummaryReq(testCounselSessionId);
+
+        aiCounselSummaryService.deleteAICounselSummary(deleteAICounselSummaryReq);
+    }
+
+
 }
