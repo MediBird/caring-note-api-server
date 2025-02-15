@@ -277,5 +277,21 @@ public class AICounselSummaryService {
                 .chatResponse());
     }
 
+    public SelectAnalysedTextRes selectAnalysedText(String counselSessionId) throws JsonProcessingException {
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        JsonNode taResult = Optional.ofNullable(aiCounselSummary.getTaResult())
+                .orElseThrow(NoContentException::new);
+
+        ChatResponse chatResponse = objectMapper.treeToValue(taResult, ChatResponse.class);
+
+        return new SelectAnalysedTextRes(chatResponse.getResult().getOutput().getText());
+    }
+
 
 }

@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.SuccessRes;
-import com.springboot.api.dto.aiCounselSummary.AnalyseTextReq;
-import com.springboot.api.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
+import com.springboot.api.dto.aiCounselSummary.*;
 import com.springboot.api.service.AICounselSummaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -59,6 +56,19 @@ public class AICounselSummaryController {
 
         return ResponseEntity.ok(new CommonRes<>(selectSpeechToTextResList));
     }
+
+
+    @GetMapping("{counselSessionId}/ta")
+    @Operation(summary = "ta 결과 조회",tags={"AI요약"})
+    public ResponseEntity<CommonRes<SelectAnalysedTextRes>> selectAnalysedText(
+            @PathVariable String counselSessionId
+    ) throws JsonProcessingException {
+
+        SelectAnalysedTextRes selectAnalysedTextRes = aiCounselSummaryService.selectAnalysedText(counselSessionId);
+
+        return ResponseEntity.ok(new CommonRes<>(selectAnalysedTextRes));
+    }
+
 
     @PostMapping("/ta")
     @Operation(summary = "선택 발화자 기준 TA",tags = {"AI요약"})

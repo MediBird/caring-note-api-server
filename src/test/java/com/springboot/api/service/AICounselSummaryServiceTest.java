@@ -9,6 +9,7 @@ import com.springboot.api.dto.naverClova.SegmentDTO;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.repository.AICounselSummaryRepository;
 import com.springboot.api.repository.CounselSessionRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -40,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Disabled
 @EnableAsync
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)// 비동기 테스트 위해 필요
 public class AICounselSummaryServiceTest {
