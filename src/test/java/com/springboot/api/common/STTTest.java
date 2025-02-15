@@ -2,6 +2,7 @@ package com.springboot.api.common;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.springboot.api.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
@@ -42,6 +43,7 @@ public class STTTest {
 
     @Autowired
     ChatModel chatModel;
+
 
     private static final Logger log = LoggerFactory.getLogger(STTTest.class);
 
@@ -92,8 +94,9 @@ public class STTTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"test2.m4a.json"})
+    @ValueSource(strings = {"test1.m4a.json"})
     public void testAnalyzeText(String filename) throws IOException, SecurityException {
+
 
         ChatClient chatClient = ChatClient.builder(this.chatModel).build();
 
@@ -102,9 +105,48 @@ public class STTTest {
         복약상담 내용을 요약하는 시스템이야.
         내가 여러명의 대화를 Speech To Text 한 결과 json을 전달해줄테니
         내용을 요약해줘. 참고로 해당 요약정보를 보는 사람은 10년차 약사야.
+        그리고 요약 정보는 아래 sample 과 동일한 양식의 markdown 으로 만들어줘
         """);
+        SystemMessage systemMessage2 = new SystemMessage(
+                """
+                        ## 👨‍⚕️ 약사
+                                                
+                        - 현재 복용 중인 약이 **뇌졸중 예방**에 중요하며, 지속적인 복용이 필요하다고 언급했어요.
+                        - **당뇨약 복용 조정 가능성**에 대한 의견을 제시하고, 혈당이 잘 조절되고 있다고 안내했어요.
+                        - **약 복용 유지 및 건강한 생활습관**을 위해 주의할 점을 강조했어요.
+                                                
+                        ### 📌 안내가 더 필요해요
+                                                
+                        - 해당 약을 복용해야 하는 이유
+                                                
+                        ### ✅ 다음 상담 때 체크하면 좋아요
+                                                
+                        - 최근 혈압
+                        - 혈당 변화치
+                        - 복용 약 변화
+                                                
+                        ---
+                                                
+                        ## 💊 내담자
+                                                
+                        - **혈압이 상황에 따라 변한다**고 언급했어요.
+                        - 과거 **뇌경색 발병 경험**이 있다고 언급했으며, 현재는 큰 문제 없이 생활 중이에요.
+                        - **약물을 계속 복용할 것**이라고 했어요.
+                        - **당뇨약과 혈압약 복용 중**이며, **보건소에서 약 복용 여부에 대한 의견**을 들었다고 해요.
+                        - 현재 혈압 수치(130~140)와 관련하여 **약을 줄일 수 있는지 질문**했어요.
+                                                
+                        ---
+                                                
+                        ## 📌 주요 키워드
+                                                
+                        - **혈압, 뇌경색, 당뇨**
+                      
+                        """
+
+        );
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         Resource resource = new ClassPathResource("stt/output/"+filename);
 
@@ -128,16 +170,26 @@ public class STTTest {
 
 
 
-        List<Message> messages = List.of(systemMessage, userMessage);
+        List<Message> messages = List.of(systemMessage,systemMessage2, userMessage);
 
         Prompt prompt = new Prompt(messages);
 
+        ;
 
         ChatResponse chatResponse = chatClient.prompt(prompt)
                 .call()
                 .chatResponse();
 
-        log.info(Objects.requireNonNull(chatResponse).toString());
+        log.info(chatClient.prompt(prompt)
+                .call().content());
+
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+        File file = new File("src/test/resources/ta/output/"+filename+".md");
+        objectMapper.writeValue(file, Objects.requireNonNull(chatResponse).getResult().getOutput().getText());
+
+        log.info(Objects.requireNonNull(chatResponse).getResult().getOutput().getText());
+
 
     }
 
