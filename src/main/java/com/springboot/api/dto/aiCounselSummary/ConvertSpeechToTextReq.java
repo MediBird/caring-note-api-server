@@ -1,4 +1,4 @@
-package com.springboot.api.dto.medicationcounsel;
+package com.springboot.api.dto.aiCounselSummary;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

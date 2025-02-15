@@ -4,19 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.SuccessRes;
-import com.springboot.api.dto.aiCounselSummary.SelectAICounselSummaryStatusRes;
-import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.dto.aiCounselSummary.SelectSpeechToTextRes;
-import com.springboot.api.dto.medicationcounsel.ConvertSpeechToTextReq;
+import com.springboot.api.dto.aiCounselSummary.*;
 import com.springboot.api.service.AICounselSummaryService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -63,16 +57,39 @@ public class AICounselSummaryController {
         return ResponseEntity.ok(new CommonRes<>(selectSpeechToTextResList));
     }
 
-    @GetMapping("{counselSessionId}/status")
-    @Operation(summary = "AI 요약 상태 조회",tags={"AI요약"})
-    public ResponseEntity<CommonRes<SelectAICounselSummaryStatusRes>> selectAICounselSummaryStatus(
+
+    @GetMapping("{counselSessionId}/ta")
+    @Operation(summary = "ta 결과 조회",tags={"AI요약"})
+    public ResponseEntity<CommonRes<SelectAnalysedTextRes>> selectAnalysedText(
             @PathVariable String counselSessionId
-    ){
-        SelectAICounselSummaryStatusRes selectAICounselSummaryStatusRes = aiCounselSummaryService.selectAICounselSummaryStatus(counselSessionId);
-        return ResponseEntity.ok(new CommonRes<>(selectAICounselSummaryStatusRes));
+    ) throws JsonProcessingException {
+
+        SelectAnalysedTextRes selectAnalysedTextRes = aiCounselSummaryService.selectAnalysedText(counselSessionId);
+
+        return ResponseEntity.ok(new CommonRes<>(selectAnalysedTextRes));
     }
 
 
+    @PostMapping("/ta")
+    @Operation(summary = "선택 발화자 기준 TA",tags = {"AI요약"})
+    public ResponseEntity<SuccessRes> analyseText(
+            @Valid @RequestBody AnalyseTextReq analyseTextReq) throws JsonProcessingException {
+
+        aiCounselSummaryService.analyseText(analyseTextReq);
+        return ResponseEntity.ok(new SuccessRes());
+
+    }
+
+
+    @DeleteMapping
+    @Operation(summary = "counselSessionId 기준 AI요약 삭제",tags = {"AI요약"})
+    public ResponseEntity<SuccessRes> deleteAICounselSummary(
+            @RequestBody DeleteAICounselSummaryReq deleteAICounselSummaryReq
+    ){
+
+        aiCounselSummaryService.deleteAICounselSummary(deleteAICounselSummaryReq);
+        return ResponseEntity.ok(new SuccessRes());
+    }
 
 
 }

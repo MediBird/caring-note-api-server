@@ -27,6 +27,10 @@ public class AICounselSummary extends BaseEntity {
     @Convert(converter = JsonStringConverter.class)
     private JsonNode sttResult;
 
+    @Column(name ="ta_result", columnDefinition = "text")
+    @Convert(converter = JsonStringConverter.class)
+    private JsonNode taResult;
+
     @Column(name= "ai_counsel_summary_status")
     @Enumerated(EnumType.STRING)
     private AICounselSummaryStatus aiCounselSummaryStatus;
