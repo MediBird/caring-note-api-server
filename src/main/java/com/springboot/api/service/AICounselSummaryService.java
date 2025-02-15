@@ -15,6 +15,7 @@ import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
 import com.springboot.api.repository.AICounselSummaryRepository;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.enums.AICounselSummaryStatus;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,11 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import static com.springboot.enums.AICounselSummaryStatus.*;
@@ -60,12 +63,16 @@ public class AICounselSummaryService {
         CounselSession counselSession = counselSessionRepository.findById(convertSpeechToTextReq.getCounselSessionId())
                 .orElseThrow(IllegalArgumentException::new);
 
-        AICounselSummary aiCounselSummary = AICounselSummary
-                .builder()
-                .counselSession(counselSession)
-                .aiCounselSummaryStatus(STT_PROGRESS)
-                .build();
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(convertSpeechToTextReq.getCounselSessionId())
+                .orElse( AICounselSummary
+                        .builder()
+                        .counselSession(counselSession)
+                        .build());
 
+        aiCounselSummary.setAiCounselSummaryStatus(STT_PROGRESS);
+        aiCounselSummary.setSpeakers(null);
+        aiCounselSummary.setTaResult(null);
+        aiCounselSummary.setSttResult(null);
         aiCounselSummaryRepository.save(aiCounselSummary);
 
 
@@ -82,38 +89,37 @@ public class AICounselSummaryService {
                 .build();
 
         callNaverClovaAsync(headers, file, speechToTextReq)
-                .thenAcceptAsync(
-                        speechToTextRes -> {
-                            aiCounselSummary.setSttResult(objectMapper.valueToTree(speechToTextRes));
-                            aiCounselSummary.setAiCounselSummaryStatus(STT_COMPLETE);
-                            aiCounselSummaryRepository.save(aiCounselSummary);
-                        }
+                .thenAcceptAsync(speechToTextRes -> updateAiCounselSummaryStatus(aiCounselSummary
+                            , "COMPLETED".equals(speechToTextRes.result())?STT_COMPLETE:STT_FAILED
+                            , objectMapper.valueToTree(speechToTextRes))
+
                 )
-                .exceptionally(ex ->{
-                            log.error("error",ex);
-                            aiCounselSummary.setAiCounselSummaryStatus(STT_FAILED);
-                            aiCounselSummaryRepository.save(aiCounselSummary);
-                            return null;
-                        }
-                );
+                .exceptionally(ex -> {
+                    log.error("Speech-to-text processing error", ex);
+                    updateAiCounselSummaryStatus(aiCounselSummary, STT_FAILED, null);
+                    return null;
+                });
 
     }
 
     @Async
-    public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, MultipartFile file, SpeechToTextReq request)  {
+    public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, MultipartFile file, SpeechToTextReq request) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                byte[] fileBytes = file.getBytes();
+                MultipartFile newMultipartFile = new ByteArrayMultipartFile(file.getName(), file.getOriginalFilename(), file.getContentType(), fileBytes);
+                return naverClovaExternalService.convertSpeechToText(headers, newMultipartFile, request).getBody();
+            } catch (IOException e) {
+                log.error("Error while reading file bytes", e);
+                throw new CompletionException(e);
+            }
+        });
+    }
 
-        try {
-
-            byte[] fileBytes = file.getBytes();
-            MultipartFile newMultipartFile = new ByteArrayMultipartFile(file.getName(), file.getOriginalFilename(), file.getContentType(), fileBytes);
-
-            return CompletableFuture.supplyAsync(() -> naverClovaExternalService.convertSpeechToText(headers, newMultipartFile, request).getBody());
-
-        } catch (IOException e) {
-            log.error("Error while reading file bytes", e);
-            return CompletableFuture.failedFuture(e);
-        }
-
+    private void updateAiCounselSummaryStatus(AICounselSummary aiCounselSummary, AICounselSummaryStatus status, JsonNode sttResult) {
+        aiCounselSummary.setAiCounselSummaryStatus(status);
+        aiCounselSummary.setSttResult(sttResult);
+        aiCounselSummaryRepository.save(aiCounselSummary);
     }
 
     public List<SelectSpeakerListRes> selectSpeakerList(String counselSessionId) throws JsonProcessingException {
@@ -173,6 +179,7 @@ public class AICounselSummaryService {
 
     }
 
+    @Transactional
     public void analyseText(AnalyseTextReq analyseTextReq) throws JsonProcessingException {
 
         counselSessionRepository.findById(analyseTextReq.getCounselSessionId())
@@ -180,6 +187,9 @@ public class AICounselSummaryService {
 
         AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(analyseTextReq.getCounselSessionId())
                 .orElseThrow(NoContentException::new);
+
+        aiCounselSummary.setAiCounselSummaryStatus(GPT_PROGRESS);
+
 
         JsonNode sttResult = Optional.ofNullable(aiCounselSummary.getSttResult())
                 .orElseThrow(NoContentException::new);
@@ -255,6 +265,7 @@ public class AICounselSummaryService {
         callGpt(messages)
                 .thenAcceptAsync(
                         chatResponse -> {
+                            aiCounselSummary.setSpeakers(analyseTextReq.getSpeakers());
                             aiCounselSummary.setTaResult(objectMapper.valueToTree(chatResponse));
                             aiCounselSummary.setAiCounselSummaryStatus(GPT_COMPLETE);
                             aiCounselSummaryRepository.save(aiCounselSummary);
@@ -262,6 +273,7 @@ public class AICounselSummaryService {
                 )
                 .exceptionally(ex ->{
                             log.error("error",ex);
+                            aiCounselSummary.setSpeakers(analyseTextReq.getSpeakers());
                             aiCounselSummary.setAiCounselSummaryStatus(GPT_FAILED);
                             aiCounselSummaryRepository.save(aiCounselSummary);
                             return null;
@@ -289,9 +301,9 @@ public class AICounselSummaryService {
         JsonNode taResult = Optional.ofNullable(aiCounselSummary.getTaResult())
                 .orElseThrow(NoContentException::new);
 
-        ChatResponse chatResponse = objectMapper.treeToValue(taResult, ChatResponse.class);
+        String taResultText = taResult.get("result").get("output").get("text").asText();
 
-        return new SelectAnalysedTextRes(chatResponse.getResult().getOutput().getText());
+        return new SelectAnalysedTextRes(taResultText);
     }
 
     @Transactional
@@ -301,6 +313,26 @@ public class AICounselSummaryService {
                 .orElseThrow(IllegalArgumentException::new);
 
         aiCounselSummaryRepository.deleteByCounselSessionId(deleteAICounselSummaryReq.counselSessionId());
+
+    }
+
+    public SelectAICounselSummaryPopUpRes selectAICounselSummaryPopUp(String counselSessionId, LocalDate localDate) {
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        Optional<AICounselSummary> aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId);
+
+        LocalDate currentDate = Optional.ofNullable(localDate)
+                .orElse(LocalDate.now());
+
+
+
+        boolean isPopup = aiCounselSummary.isEmpty() && counselSession.getScheduledStartDateTime().toLocalDate().isEqual(currentDate);
+
+        return new SelectAICounselSummaryPopUpRes(isPopup);
+
+
 
     }
 
