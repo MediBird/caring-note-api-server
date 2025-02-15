@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -312,6 +313,26 @@ public class AICounselSummaryService {
                 .orElseThrow(IllegalArgumentException::new);
 
         aiCounselSummaryRepository.deleteByCounselSessionId(deleteAICounselSummaryReq.counselSessionId());
+
+    }
+
+    public SelectAICounselSummaryPopUpRes selectAICounselSummaryPopUp(String counselSessionId, LocalDate localDate) {
+
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        Optional<AICounselSummary> aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId);
+
+        LocalDate currentDate = Optional.ofNullable(localDate)
+                .orElse(LocalDate.now());
+
+
+
+        boolean isPopup = aiCounselSummary.isEmpty() && counselSession.getScheduledStartDateTime().toLocalDate().isEqual(currentDate);
+
+        return new SelectAICounselSummaryPopUpRes(isPopup);
+
+
 
     }
 

@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @ApiController(
@@ -89,6 +90,18 @@ public class AICounselSummaryController {
 
         aiCounselSummaryService.deleteAICounselSummary(deleteAICounselSummaryReq);
         return ResponseEntity.ok(new SuccessRes());
+    }
+
+
+    @GetMapping("{counselSessionId}/popup")
+    @Operation(summary = "counselSessionId 기준 AI요약 삭제",tags = {"AI요약"})
+    public ResponseEntity<CommonRes<SelectAICounselSummaryPopUpRes>> selectAICounselSummaryPopUp(
+            @PathVariable String counselSessionId,
+            @RequestParam(required = false) LocalDate baseDate
+    ){
+
+        SelectAICounselSummaryPopUpRes selectAICounselSummaryPopUpRes = aiCounselSummaryService.selectAICounselSummaryPopUp(counselSessionId, baseDate);
+        return ResponseEntity.ok(new CommonRes<>(selectAICounselSummaryPopUpRes));
     }
 
 
