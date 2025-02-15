@@ -4,6 +4,7 @@ import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.NotNull;
@@ -12,6 +13,7 @@ import lombok.Data;
 
 @Data
 public class AddAndUpdateMedicationRecordHistReq {
+    @Nullable
     private String rowId;
 
     @NotBlank(message = "약물 ID는 필수 입력값입니다")

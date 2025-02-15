@@ -27,6 +27,8 @@ import com.springboot.api.dto.error.ValidationErrorRes;
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+
 @RestControllerAdvice
 @Slf4j
 @Order(2)
@@ -91,6 +93,31 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
         return buildErrorResponse(HttpMessages.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<CommonRes<ValidationErrorRes>> handleMethodValidationException(
+            HandlerMethodValidationException ex) {
+        List<ValidationError> errors = ex.getAllValidationResults()
+                .stream()
+                .map(error -> ValidationError.builder()
+                        .field(error.getMethodParameter().getParameterName())
+                        .message(error.getResolvableErrors()
+                                .stream()
+                                .findFirst()
+                                .map(err -> err.getDefaultMessage())
+                                .orElse("Invalid request"))
+                        .build())
+                .collect(Collectors.toList());
+
+        ValidationErrorRes errorResponse = ValidationErrorRes.builder()
+                .errors(errors)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new CommonRes<>(errorResponse));
     }
 
     // 500 - 서버 에러 처리
