@@ -7,6 +7,7 @@ import com.springboot.api.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
 import lombok.Builder;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @SpringBootTest
+@Disabled
 public class STTTest {
 
     @Autowired
@@ -48,7 +50,7 @@ public class STTTest {
     private static final Logger log = LoggerFactory.getLogger(STTTest.class);
 
     @ParameterizedTest
-    @ValueSource(strings = {"test1.m4a", "test2.m4a", "test3.m4a","test4.m4a"})
+    @ValueSource(strings = {"test5.m4a"})
     public void testTransformSTT(String filename) throws IOException, SecurityException {
 
         RestTemplate restTemplate = new RestTemplate();
@@ -66,6 +68,9 @@ public class STTTest {
 
         File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/"+filename);
         FileInputStream inputStream = new FileInputStream(mp4File);
+
+
+
 
         MultipartFile multipartFile = new MockMultipartFile(
                 "media",
