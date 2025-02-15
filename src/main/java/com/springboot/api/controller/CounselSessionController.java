@@ -18,6 +18,7 @@ import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.dto.counselsession.AddCounselSessionRes;
+import com.springboot.api.dto.counselsession.CounselSessionStat;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionRes;
 import com.springboot.api.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
@@ -56,6 +57,23 @@ public class CounselSessionController {
                 CommonRes<AddCounselSessionRes> commonRes = new CommonRes<>(addCounselSessionRes);
                 return ResponseEntity.ok(commonRes);
 
+        }
+
+        @GetMapping("/sessions/dates")
+        @Operation(summary = "특정 연월의 상담 세션이 있는 날짜 목록 조회")
+        @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+        public ResponseEntity<CommonRes<List<LocalDate>>> getSessionDatesByYearAndMonth(
+                        @RequestParam int year,
+                        @RequestParam int month) {
+                List<LocalDate> dates = counselSessionService.getSessionDatesByYearAndMonth(year, month);
+                return ResponseEntity.ok(new CommonRes<>(dates));
+        }
+
+        @GetMapping("/sessions/stats")
+        @Operation(summary = "상담 세션 통계 조회")
+        @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_ASSISTANT })
+        public ResponseEntity<CommonRes<CounselSessionStat>> getSessionStats() {
+                return ResponseEntity.ok(new CommonRes<>(null));
         }
 
         @GetMapping("/list")
