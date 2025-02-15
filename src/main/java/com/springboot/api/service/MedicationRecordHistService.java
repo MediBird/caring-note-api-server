@@ -74,7 +74,7 @@ public class MedicationRecordHistService {
                                 .orElseThrow(() -> new IllegalArgumentException("Invalid counsel session ID"));
                 MedicationRecordHist medicationRecordHist;
                 for (AddAndUpdateMedicationRecordHistReq addAndUpdateMedicationRecordHistReq : addAndUpdateMedicationRecordHistReqs) {
-                        if (addAndUpdateMedicationRecordHistReq.getRowId().isEmpty()) {
+                        if (addAndUpdateMedicationRecordHistReq.getRowId() == null) {
                                 medicationRecordHist = new MedicationRecordHist();
                                 medicationRecordHist.setCounselSession(counselSession);
                                 medicationRecordHist.setMedication(medicationRepository
