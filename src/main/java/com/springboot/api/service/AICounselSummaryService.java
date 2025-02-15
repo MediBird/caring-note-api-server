@@ -60,12 +60,15 @@ public class AICounselSummaryService {
         CounselSession counselSession = counselSessionRepository.findById(convertSpeechToTextReq.getCounselSessionId())
                 .orElseThrow(IllegalArgumentException::new);
 
-        AICounselSummary aiCounselSummary = AICounselSummary
-                .builder()
-                .counselSession(counselSession)
-                .aiCounselSummaryStatus(STT_PROGRESS)
-                .build();
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(convertSpeechToTextReq.getCounselSessionId())
+                .orElse( AICounselSummary
+                        .builder()
+                        .counselSession(counselSession)
+                        .build());
 
+        aiCounselSummary.setAiCounselSummaryStatus(STT_PROGRESS);
+        aiCounselSummary.setSpeakers(null);
+        aiCounselSummary.setTaResult(null);
         aiCounselSummaryRepository.save(aiCounselSummary);
 
 
@@ -173,6 +176,7 @@ public class AICounselSummaryService {
 
     }
 
+    @Transactional
     public void analyseText(AnalyseTextReq analyseTextReq) throws JsonProcessingException {
 
         counselSessionRepository.findById(analyseTextReq.getCounselSessionId())
@@ -180,6 +184,9 @@ public class AICounselSummaryService {
 
         AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(analyseTextReq.getCounselSessionId())
                 .orElseThrow(NoContentException::new);
+
+        aiCounselSummary.setAiCounselSummaryStatus(GPT_PROGRESS);
+
 
         JsonNode sttResult = Optional.ofNullable(aiCounselSummary.getSttResult())
                 .orElseThrow(NoContentException::new);
