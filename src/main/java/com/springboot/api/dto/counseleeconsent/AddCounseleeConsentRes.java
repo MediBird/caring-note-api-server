@@ -1,3 +1,7 @@
 package com.springboot.api.dto.counseleeconsent;
 
-public record AddCounseleeConsentRes(String counseleeConsentId){}
+import lombok.Builder;
+
+@Builder
+public record AddCounseleeConsentRes(String counseleeConsentId) {
+}

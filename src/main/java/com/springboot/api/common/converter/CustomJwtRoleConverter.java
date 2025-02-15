@@ -41,6 +41,7 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
                     authorities.add(new SimpleGrantedAuthority(authority));
                 }
             }
+            log.info("authorities: {}", authorities);
             return authorities;
         }
 

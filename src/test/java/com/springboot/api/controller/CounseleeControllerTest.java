@@ -47,199 +47,200 @@ import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 @WebMvcTest(CounseleeController.class)
 public class CounseleeControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @MockBean
-    private CounseleeService counseleeService;
+        @MockBean
+        private CounseleeService counseleeService;
 
-    @MockBean
-    private CounselorRepository counselorRepository;
+        @MockBean
+        private CounselorRepository counselorRepository;
 
-    @MockBean
-    private UserDetailsService userDetailsService;
+        @MockBean
+        private UserDetailsService userDetailsService;
 
-    @MockBean
-    private JwtDecoder jwtDecoder;
+        @MockBean
+        private JwtDecoder jwtDecoder;
 
-    @BeforeEach
-    public void setUp() {
-        when(userDetailsService.loadUserByUsername(any(String.class)))
-                .thenReturn(new UserDetails() {
-                    @Override
-                    public Collection<? extends GrantedAuthority> getAuthorities() {
-                        return Collections.emptyList();
-                    }
+        @BeforeEach
+        public void setUp() {
+                when(userDetailsService.loadUserByUsername(any(String.class)))
+                                .thenReturn(new UserDetails() {
+                                        @Override
+                                        public Collection<? extends GrantedAuthority> getAuthorities() {
+                                                return Collections.emptyList();
+                                        }
 
-                    @Override
-                    public String getPassword() {
-                        return "password";
-                    }
+                                        @Override
+                                        public String getPassword() {
+                                                return "password";
+                                        }
 
-                    @Override
-                    public String getUsername() {
-                        return "sanghoon";
-                    }
+                                        @Override
+                                        public String getUsername() {
+                                                return "sanghoon";
+                                        }
 
-                });
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
+                                });
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claims(claimsMap -> claimsMap.putAll(claims))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
-    }
+                Jwt jwt = Jwt.withTokenValue("token")
+                                .header("alg", "none")
+                                .claims(claimsMap -> claimsMap.putAll(claims))
+                                .build();
+                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+        }
 
-    @Test
-    public void testAddCounseleeSuccess() throws Exception {
+        @Test
+        public void testAddCounseleeSuccess() throws Exception {
 
-        String requestBody = "{ \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\", \"genderType\": \"MALE\" }";
+                String requestBody = "{ \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\", \"genderType\": \"MALE\" }";
 
-        when(counseleeService.addCounselee(any(AddCounseleeReq.class))).thenReturn("Success");
+                when(counseleeService.addCounselee(any(AddCounseleeReq.class))).thenReturn("Success");
 
-        mockMvc.perform(post("/v1/counsel/counselee/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer token")
-                .content(requestBody))
-                .andExpect(status().isOk());
-    }
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer token")
+                                .content(requestBody))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    public void testAddCounseleeWithMissingFields() throws Exception {
+        @Test
+        public void testAddCounseleeWithMissingFields() throws Exception {
 
-        String requestBody = "{ \"name\": \"\", \"phoneNumber\": \"\", \"dateOfBirth\": \"\" }";
+                String requestBody = "{ \"name\": \"\", \"phoneNumber\": \"\", \"dateOfBirth\": \"\" }";
 
-        mockMvc.perform(post("/v1/counsel/counselee/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer mock-token")
-                .content(requestBody))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.data.errors").isArray());
-    }
+                mockMvc.perform(post("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer mock-token")
+                                .content(requestBody))
+                                .andExpect(status().isBadRequest())
+                                .andExpect(jsonPath("$.data.errors").isArray());
+        }
 
-    @Test
-    public void testUpdateCounseleeSuccess() throws Exception {
+        @Test
+        public void testUpdateCounseleeSuccess() throws Exception {
 
-        String requestBody = "{ \"counseleeId\": \"123\", \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\" }";
+                String requestBody = "{ \"counseleeId\": \"01HQ7YXHG8ZYXM5T2Q3X4KDJPJ\", \"name\": \"John Doe\", \"phoneNumber\": \"010-1234-5678\", \"dateOfBirth\": \"1990-01-01\" , \"genderType\": \"MALE\"}";
 
-        when(counseleeService.updateCounselee(any(UpdateCounseleeReq.class))).thenReturn("Success");
+                when(counseleeService.updateCounselee(any(UpdateCounseleeReq.class))).thenReturn("Success");
 
-        mockMvc.perform(put("/v1/counsel/counselee/")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer token")
-                .content(requestBody))
-                .andExpect(status().isOk());
-    }
+                mockMvc.perform(put("/v1/counsel/counselee/")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer token")
+                                .content(requestBody))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    public void testSelectCounseleeSuccess() throws Exception {
+        @Test
+        public void testSelectCounseleeSuccess() throws Exception {
 
-        SelectCounseleeRes mockResponse = SelectCounseleeRes.builder()
-                .id("123")
-                .name("John Doe")
-                .phoneNumber("010-1234-5678")
-                .build();
+                SelectCounseleeRes mockResponse = SelectCounseleeRes.builder()
+                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .name("John Doe")
+                                .phoneNumber("010-1234-5678")
+                                .build();
 
-        when(counseleeService.selectCounselee(anyString())).thenReturn(mockResponse);
+                when(counseleeService.selectCounselee(anyString())).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/v1/counsel/counselee/{counseleeId}", "123")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value("123"))
-                .andExpect(jsonPath("$.data.name").value("John Doe"))
-                .andExpect(jsonPath("$.data.phoneNumber").value("010-1234-5678"));
-    }
+                mockMvc.perform(get("/v1/counsel/counselee/{counseleeId}", "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data.id").value("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ"))
+                                .andExpect(jsonPath("$.data.name").value("John Doe"))
+                                .andExpect(jsonPath("$.data.phoneNumber").value("010-1234-5678"));
+        }
 
-    @Test
-    public void testSelectCounseleeListSuccess() throws Exception {
+        @Test
+        public void testSelectCounseleeListSuccess() throws Exception {
 
-        List<SelectCounseleeRes> mockList = Arrays.asList(
-                SelectCounseleeRes.builder()
-                        .id("123")
-                        .name("John Doe")
-                        .build(),
-                SelectCounseleeRes.builder()
-                        .id("456")
-                        .name("Jane Doe")
-                        .build());
+                List<SelectCounseleeRes> mockList = Arrays.asList(
+                                SelectCounseleeRes.builder()
+                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                                .name("John Doe")
+                                                .build(),
+                                SelectCounseleeRes.builder()
+                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
+                                                .name("Jane Doe")
+                                                .build());
 
-        when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockList);
+                when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockList);
 
-        mockMvc.perform(get("/v1/counsel/counselee/")
-                .param("page", "0")
-                .param("size", "10")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()").value(2));
-    }
+                mockMvc.perform(get("/v1/counsel/counselee/")
+                                .param("page", "0")
+                                .param("size", "10")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").isArray())
+                                .andExpect(jsonPath("$.data.length()").value(2));
+        }
 
-    @Test
-    public void testDeleteCounseleeSuccess() throws Exception {
+        @Test
+        public void testDeleteCounseleeSuccess() throws Exception {
 
-        mockMvc.perform(delete("/v1/counsel/counselee/{counseleeId}", "123")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value("delete the counselee success"));
-    }
+                mockMvc.perform(delete("/v1/counsel/counselee/{counseleeId}", "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").value("delete the counselee success"));
+        }
 
-    @Test
-    public void testDeleteCounseleeBatchSuccess() throws Exception {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
+        @Test
+        public void testDeleteCounseleeBatchSuccess() throws Exception {
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claims(claimsMap -> claimsMap.putAll(claims))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                Jwt jwt = Jwt.withTokenValue("token")
+                                .header("alg", "none")
+                                .claims(claimsMap -> claimsMap.putAll(claims))
+                                .build();
+                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
 
-        String requestBody = "[{\"counseleeId\": \"123\"}, {\"counseleeId\": \"456\"}]";
+                String requestBody = "[{\"counseleeId\": \"01HQ7YXHG8ZYXM5T2Q3X4KDJPJ\"}, {\"counseleeId\": \"01HQ7YXHG8ZYXM5T2Q3X4KDJPK\"}]";
 
-        List<DeleteCounseleeBatchRes> mockResponse = Arrays.asList(
-                DeleteCounseleeBatchRes.builder()
-                        .deletedCounseleeId("123")
-                        .build(),
-                DeleteCounseleeBatchRes.builder()
-                        .deletedCounseleeId("456")
-                        .build());
+                List<DeleteCounseleeBatchRes> mockResponse = Arrays.asList(
+                                DeleteCounseleeBatchRes.builder()
+                                                .deletedCounseleeId("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                                .build(),
+                                DeleteCounseleeBatchRes.builder()
+                                                .deletedCounseleeId("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
+                                                .build());
 
-        when(counseleeService.deleteCounseleeBatch(anyList())).thenReturn(mockResponse);
+                when(counseleeService.deleteCounseleeBatch(anyList())).thenReturn(mockResponse);
 
-        mockMvc.perform(delete("/v1/counsel/counselee/batch")
-                .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Bearer token")
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").isArray())
-                .andExpect(jsonPath("$.data.length()").value(2));
-    }
+                mockMvc.perform(delete("/v1/counsel/counselee/batch")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .header("Authorization", "Bearer token")
+                                .content(requestBody))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data").isArray())
+                                .andExpect(jsonPath("$.data.length()").value(2));
+        }
 
-    @Test
-    public void testSelectCounseleeBaseInformationSuccess() throws Exception {
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
+        @Test
+        public void testSelectCounseleeBaseInformationSuccess() throws Exception {
+                Map<String, Object> claims = new HashMap<>();
+                claims.put("Granted Authorities", Collections.singletonList("ROLE_ADMIN"));
 
-        Jwt jwt = Jwt.withTokenValue("token")
-                .header("alg", "none")
-                .claims(claimsMap -> claimsMap.putAll(claims))
-                .build();
-        when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+                Jwt jwt = Jwt.withTokenValue("token")
+                                .header("alg", "none")
+                                .claims(claimsMap -> claimsMap.putAll(claims))
+                                .build();
+                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
 
-        SelectCounseleeBaseInformationByCounseleeIdRes mockResponse = SelectCounseleeBaseInformationByCounseleeIdRes
-                .builder()
-                .counseleeId("123")
-                .name("John Doe")
-                .build();
+                SelectCounseleeBaseInformationByCounseleeIdRes mockResponse = SelectCounseleeBaseInformationByCounseleeIdRes
+                                .builder()
+                                .counseleeId("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .name("John Doe")
+                                .build();
 
-        when(counseleeService.selectCounseleeBaseInformation(anyString())).thenReturn(mockResponse);
+                when(counseleeService.selectCounseleeBaseInformation(anyString())).thenReturn(mockResponse);
 
-        mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information", "123")
-                .header("Authorization", "Bearer token"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.counseleeId").value("123"))
-                .andExpect(jsonPath("$.data.name").value("John Doe"));
-    }
+                mockMvc.perform(get("/v1/counsel/counselee/{counselSessionId}/base/information",
+                                "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
+                                .header("Authorization", "Bearer token"))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.data.counseleeId").value("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ"))
+                                .andExpect(jsonPath("$.data.name").value("John Doe"));
+        }
 }
