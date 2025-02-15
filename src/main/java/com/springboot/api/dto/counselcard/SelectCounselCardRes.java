@@ -6,10 +6,11 @@ import com.springboot.api.dto.counselcard.information.independentlife.Independen
 import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
 import com.springboot.enums.CardRecordStatus;
 
+import lombok.Builder;
+
+@Builder
 public record SelectCounselCardRes(
-        String counselCardId
-        , BaseInformationDTO baseInformation
-        , HealthInformationDTO healthInformation
-        , LivingInformationDTO livingInformation
-        , IndependentLifeInformationDTO independentLifeInformation
-        , CardRecordStatus cardRecordStatus){}
+                String counselCardId, BaseInformationDTO baseInformation, HealthInformationDTO healthInformation,
+                LivingInformationDTO livingInformation, IndependentLifeInformationDTO independentLifeInformation,
+                CardRecordStatus cardRecordStatus) {
+}
