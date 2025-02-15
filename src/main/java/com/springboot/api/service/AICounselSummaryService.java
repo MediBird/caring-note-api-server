@@ -15,6 +15,7 @@ import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
 import com.springboot.api.repository.AICounselSummaryRepository;
 import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.enums.AICounselSummaryStatus;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
 
 import static com.springboot.enums.AICounselSummaryStatus.*;
@@ -69,6 +71,7 @@ public class AICounselSummaryService {
         aiCounselSummary.setAiCounselSummaryStatus(STT_PROGRESS);
         aiCounselSummary.setSpeakers(null);
         aiCounselSummary.setTaResult(null);
+        aiCounselSummary.setSttResult(null);
         aiCounselSummaryRepository.save(aiCounselSummary);
 
 
@@ -85,38 +88,37 @@ public class AICounselSummaryService {
                 .build();
 
         callNaverClovaAsync(headers, file, speechToTextReq)
-                .thenAcceptAsync(
-                        speechToTextRes -> {
-                            aiCounselSummary.setSttResult(objectMapper.valueToTree(speechToTextRes));
-                            aiCounselSummary.setAiCounselSummaryStatus(STT_COMPLETE);
-                            aiCounselSummaryRepository.save(aiCounselSummary);
-                        }
+                .thenAcceptAsync(speechToTextRes -> updateAiCounselSummaryStatus(aiCounselSummary
+                            , "COMPLETED".equals(speechToTextRes.result())?STT_COMPLETE:STT_FAILED
+                            , objectMapper.valueToTree(speechToTextRes))
+
                 )
-                .exceptionally(ex ->{
-                            log.error("error",ex);
-                            aiCounselSummary.setAiCounselSummaryStatus(STT_FAILED);
-                            aiCounselSummaryRepository.save(aiCounselSummary);
-                            return null;
-                        }
-                );
+                .exceptionally(ex -> {
+                    log.error("Speech-to-text processing error", ex);
+                    updateAiCounselSummaryStatus(aiCounselSummary, STT_FAILED, null);
+                    return null;
+                });
 
     }
 
     @Async
-    public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, MultipartFile file, SpeechToTextReq request)  {
+    public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, MultipartFile file, SpeechToTextReq request) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                byte[] fileBytes = file.getBytes();
+                MultipartFile newMultipartFile = new ByteArrayMultipartFile(file.getName(), file.getOriginalFilename(), file.getContentType(), fileBytes);
+                return naverClovaExternalService.convertSpeechToText(headers, newMultipartFile, request).getBody();
+            } catch (IOException e) {
+                log.error("Error while reading file bytes", e);
+                throw new CompletionException(e);
+            }
+        });
+    }
 
-        try {
-
-            byte[] fileBytes = file.getBytes();
-            MultipartFile newMultipartFile = new ByteArrayMultipartFile(file.getName(), file.getOriginalFilename(), file.getContentType(), fileBytes);
-
-            return CompletableFuture.supplyAsync(() -> naverClovaExternalService.convertSpeechToText(headers, newMultipartFile, request).getBody());
-
-        } catch (IOException e) {
-            log.error("Error while reading file bytes", e);
-            return CompletableFuture.failedFuture(e);
-        }
-
+    private void updateAiCounselSummaryStatus(AICounselSummary aiCounselSummary, AICounselSummaryStatus status, JsonNode sttResult) {
+        aiCounselSummary.setAiCounselSummaryStatus(status);
+        aiCounselSummary.setSttResult(sttResult);
+        aiCounselSummaryRepository.save(aiCounselSummary);
     }
 
     public List<SelectSpeakerListRes> selectSpeakerList(String counselSessionId) throws JsonProcessingException {
