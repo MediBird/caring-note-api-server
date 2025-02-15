@@ -21,7 +21,7 @@ public class CacheConfig {
         cacheManager.setCaffeine(Caffeine.newBuilder()
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .maximumSize(100));
-        cacheManager.setCacheNames(Arrays.asList("sessionDates", "sessionStats", "sessionList"));
+        cacheManager.setCacheNames(Arrays.asList("sessionDates", "sessionStats", "sessionList", "medicationSearch"));
         return cacheManager;
     }
 }
