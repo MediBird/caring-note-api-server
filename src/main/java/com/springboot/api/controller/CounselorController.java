@@ -52,4 +52,5 @@ public class CounselorController {
     public ResponseEntity<GetCounselorRes> getMyInfo() {
         return ResponseEntity.ok(counselorService.getMyInfo());
     }
+
 }

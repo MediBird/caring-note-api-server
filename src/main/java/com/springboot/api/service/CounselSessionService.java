@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,9 +21,9 @@ import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.dto.counselsession.AddCounselSessionRes;
+import com.springboot.api.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.dto.counselsession.DeleteCounselSessionRes;
 import com.springboot.api.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
@@ -44,6 +46,9 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+
 @Service
 @RequiredArgsConstructor
 public class CounselSessionService {
@@ -54,6 +59,7 @@ public class CounselSessionService {
         private final CounselSessionRepository counselSessionRepository;
         private final CounselorRepository counselorRepository;
 
+        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public AddCounselSessionRes addCounselSession(AddCounselSessionReq addCounselSessionReq) {
                 Counselor proxyCounselor = entityManager.getReference(Counselor.class,
@@ -99,36 +105,38 @@ public class CounselSessionService {
 
         }
 
+        @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
+        @Transactional
         public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(
-                        SelectCounselSessionListByBaseDateAndCursorAndSizeReq selectCounselSessionListByBaseDateAndCursorAndSizeReq) {
-                Pageable pageable = PageRequest.of(0, selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize());
+                        SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
+                Pageable pageable = PageRequest.of(0, req.getSize());
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
                 List<CounselSession> sessions;
 
                 LocalDateTime startOfDay = Optional
-                                .ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
+                                .ofNullable(req.getBaseDate())
                                 .map(LocalDate::atStartOfDay)
                                 .orElse(null);
 
                 LocalDateTime endOfDay = Optional
-                                .ofNullable(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate())
+                                .ofNullable(req.getBaseDate())
                                 .map(d -> d.plusDays(1))
                                 .map(LocalDate::atStartOfDay)
                                 .orElse(null);
 
-                if (selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate() == null) {
+                if (req.getBaseDate() == null) {
                         sessions = sessionRepository.findByCursor(
-                                        selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor(),
+                                        req.getCursor(),
                                         null,
                                         pageable);
                 } else {
                         sessions = sessionRepository.findByDateAndCursor(
-                                        selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
+                                        req.getBaseDate()
                                                         .atStartOfDay(),
-                                        Optional.of(selectCounselSessionListByBaseDateAndCursorAndSizeReq.getBaseDate()
+                                        Optional.of(req.getBaseDate()
                                                         .atStartOfDay()).map(d -> d.plusDays(1)).get(),
-                                        selectCounselSessionListByBaseDateAndCursorAndSizeReq.getCursor(),
+                                        req.getCursor(),
                                         null,
                                         pageable);
                 }
@@ -141,7 +149,7 @@ public class CounselSessionService {
                 }
 
                 // hasNext 계산
-                boolean hasNext = sessions.size() == selectCounselSessionListByBaseDateAndCursorAndSizeReq.getSize();
+                boolean hasNext = sessions.size() == req.getSize();
 
                 List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
                                 .map(s -> SelectCounselSessionListItem.builder()
@@ -175,9 +183,9 @@ public class CounselSessionService {
 
                 return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems, nextCursorId,
                                 hasNext);
-
         }
 
+        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
                 CounselSession counselSession = sessionRepository
@@ -196,6 +204,7 @@ public class CounselSessionService {
                 return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
         }
 
+        @CacheEvict(value = { "sessionList" }, allEntries = true)
         @Transactional
         public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(
                         UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq) {
@@ -212,6 +221,7 @@ public class CounselSessionService {
                 return new UpdateCounselorInCounselSessionRes(counselSession.getId());
         }
 
+        @CacheEvict(value = { "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public UpdateStatusInCounselSessionRes updateStatusInCounselSession(
                         UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
@@ -237,6 +247,7 @@ public class CounselSessionService {
                 return new UpdateStatusInCounselSessionRes(counselSession.getId());
         }
 
+        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
 
@@ -280,6 +291,66 @@ public class CounselSessionService {
 
                 return selectPreviousCounselSessionListResList;
 
+        }
+
+        @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
+        @Transactional
+        public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
+                return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+        }
+
+        @Cacheable(value = "sessionStats")
+        @Transactional
+        public CounselSessionStatRes getSessionStats() {
+                return CounselSessionStatRes.builder()
+                                .totalSessionCount(calculateTotalSessionCount())
+                                .counseleeCountForThisMonth(calculateCounseleeCountForThisMonth())
+                                .totalCaringMessageCount(calculateTotalCaringMessageCount())
+                                .counselHoursForThisMonth(calculateCounselHoursForThisMonth())
+                                .build();
+        }
+
+        private int calculateTotalSessionCount() {
+                return sessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+        }
+
+        private int calculateCounseleeCountForThisMonth() {
+                return sessionRepository.findAll().size();
+        }
+
+        private int calculateCounselHoursForThisMonth() {
+                int year = LocalDateTime.now().getYear();
+                int month = LocalDateTime.now().getMonthValue();
+                List<CounselSession> completedSessions = counselSessionRepository
+                                .findCompletedSessionsByYearAndMonth(year, month);
+                return (int) completedSessions.stream()
+                                .mapToDouble(session -> {
+                                        Duration duration = Duration.between(session.getStartDateTime(),
+                                                        session.getEndDateTime());
+                                        return duration.toMinutes() / 60.0;
+                                })
+                                .sum();
+        }
+
+        private int calculateTotalCaringMessageCount() {
+                return sessionRepository.findAll().size();
+        }
+
+        @Scheduled(cron = "0 0 * * * *") // 매시간 실행
+        @Transactional
+        public void cancelOverdueSessions() {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime twentyFourHoursAgo = now.minusHours(24);
+
+                List<CounselSession> overdueSessions = counselSessionRepository
+                                .findByStatusAndScheduledStartDateTimeBefore(
+                                                ScheduleStatus.SCHEDULED,
+                                                twentyFourHoursAgo);
+
+                overdueSessions.forEach(session -> {
+                        session.setStatus(ScheduleStatus.CANCELED);
+                        counselSessionRepository.save(session);
+                });
         }
 
 }
