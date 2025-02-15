@@ -10,6 +10,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +21,6 @@ import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.MedicationRecordHist;
 import com.springboot.api.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.dto.counselsession.CounselSessionStat;
@@ -333,6 +333,23 @@ public class CounselSessionService {
 
         private int calculateTotalCaringMessageCount() {
                 return sessionRepository.findAll().size();
+        }
+
+        @Scheduled(cron = "0 0 * * * *") // 매시간 실행
+        @Transactional
+        public void cancelOverdueSessions() {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime twentyFourHoursAgo = now.minusHours(24);
+
+                List<CounselSession> overdueSessions = counselSessionRepository
+                                .findByStatusAndScheduledStartDateTimeBefore(
+                                                ScheduleStatus.SCHEDULED,
+                                                twentyFourHoursAgo);
+
+                overdueSessions.forEach(session -> {
+                        session.setStatus(ScheduleStatus.CANCELED);
+                        counselSessionRepository.save(session);
+                });
         }
 
 }
