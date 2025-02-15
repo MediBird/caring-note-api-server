@@ -2,6 +2,7 @@ package com.springboot.api.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
@@ -12,6 +13,9 @@ import com.springboot.enums.RoleType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @ApiController(name = "CounselorController", description = "유저 관리 API를 제공하는 Controller", path = "/v1/counselor")
 @RequiredArgsConstructor
@@ -52,4 +56,5 @@ public class CounselorController {
     public ResponseEntity<GetCounselorRes> getMyInfo() {
         return ResponseEntity.ok(counselorService.getMyInfo());
     }
+
 }

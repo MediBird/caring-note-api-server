@@ -282,4 +282,9 @@ public class CounselSessionService {
 
         }
 
+        @Transactional
+        public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
+                return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+        }
+
 }
