@@ -18,7 +18,6 @@ public class UpdateMedicationCounselReq {
     @NotBlank(message = "상담 노트는 필수 입력값입니다")
     private String counselRecord;
 
-    @NotEmpty(message = "상담 노트 하이라이트는 필수 입력값입니다")
     private List<MedicationCounselHighlightDTO> counselRecordHighlights;
 
 }
