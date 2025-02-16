@@ -60,6 +60,7 @@ dependencies {
 
     //Spring AI
     implementation 'org.springframework.ai:spring-ai-openai-spring-boot-starter:1.0.0-SNAPSHOT'
+    implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
 }
 tasks.named('test') {
     useJUnitPlatform()
