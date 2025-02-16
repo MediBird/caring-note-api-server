@@ -50,7 +50,7 @@ public class STTTest {
     private static final Logger log = LoggerFactory.getLogger(STTTest.class);
 
     @ParameterizedTest
-    @ValueSource(strings = {"test5.m4a"})
+    @ValueSource(strings = {"test5.webm"})
     public void testTransformSTT(String filename) throws IOException, SecurityException {
 
         RestTemplate restTemplate = new RestTemplate();

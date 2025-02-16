@@ -57,6 +57,16 @@ naver:
 api:
   userdetails:
     implementation: counselorUserDetailsService
+
+stt:
+  file:
+    path:
+      origin: /data/stt/audio/origin/
+      convert: /data/stt/audio/convert/
+
+ffmpeg:
+  path: /usr/local/bin/ffmpeg
+
 logging:
   level:
     org.springframework.security: DEBUG

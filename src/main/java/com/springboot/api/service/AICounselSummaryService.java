@@ -5,7 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.dto.ByteArrayMultipartFile;
 import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.properties.NaverClovaProperties;
+import com.springboot.api.common.properties.SttFileProperties;
 import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.domain.AICounselSummary;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.dto.aiCounselSummary.*;
@@ -26,7 +29,6 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,10 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.stream.Collectors;
@@ -54,9 +53,11 @@ public class AICounselSummaryService {
     private final ObjectMapper objectMapper;
     private final NaverClovaExternalService naverClovaExternalService;
     private final DateTimeUtil dateTimeUtil;
-    @Value("${naver.clova.api-key}")
-    private String clovaApiKey;
+    private final NaverClovaProperties naverClovaProperties;
     private final ChatModel chatModel;
+    private final SttFileProperties sttFileProperties;
+
+    private final FileUtil fileUtil;
 
     public void convertSpeechToText(MultipartFile file, ConvertSpeechToTextReq convertSpeechToTextReq){
 
@@ -78,7 +79,7 @@ public class AICounselSummaryService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept","application/json");
-        headers.put("X-CLOVASPEECH-API-KEY",clovaApiKey); //암호화 및 Property 추후에 뺄 예정
+        headers.put("X-CLOVASPEECH-API-KEY",naverClovaProperties.getApiKey());
 
         SpeechToTextReq speechToTextReq = SpeechToTextReq
                 .builder()
@@ -102,13 +103,23 @@ public class AICounselSummaryService {
 
     }
 
+
     @Async
     public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, MultipartFile file, SpeechToTextReq request) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                byte[] fileBytes = file.getBytes();
-                MultipartFile newMultipartFile = new ByteArrayMultipartFile(file.getName(), file.getOriginalFilename(), file.getContentType(), fileBytes);
-                return naverClovaExternalService.convertSpeechToText(headers, newMultipartFile, request).getBody();
+                MultipartFile multipartFile;
+
+                if (Objects.requireNonNull(file.getContentType()).contains("webm"))
+                {
+                    multipartFile = fileUtil.convertWebmToMp4(file,sttFileProperties.getOrigin(),sttFileProperties.getCovert());
+                }
+                else
+                {
+                    byte[] fileBytes = file.getBytes();
+                    multipartFile = new ByteArrayMultipartFile(file.getName(), file.getOriginalFilename(), file.getContentType(), fileBytes);
+                }
+                return naverClovaExternalService.convertSpeechToText(headers, multipartFile, request).getBody();
             } catch (IOException e) {
                 log.error("Error while reading file bytes", e);
                 throw new CompletionException(e);
