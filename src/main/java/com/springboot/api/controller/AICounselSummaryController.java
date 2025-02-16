@@ -89,7 +89,7 @@ public class AICounselSummaryController {
 
 
     @GetMapping("{counselSessionId}/popup")
-    @Operation(summary = "counselSessionId 기준 AI요약 삭제",tags = {"AI요약"})
+    @Operation(summary = "녹음 popup 조건 충족 여부",tags = {"AI요약"})
     public ResponseEntity<CommonRes<SelectAICounselSummaryPopUpRes>> selectAICounselSummaryPopUp(
             @PathVariable String counselSessionId,
             @RequestParam(required = false) LocalDate baseDate
@@ -97,6 +97,15 @@ public class AICounselSummaryController {
 
         SelectAICounselSummaryPopUpRes selectAICounselSummaryPopUpRes = aiCounselSummaryService.selectAICounselSummaryPopUp(counselSessionId, baseDate);
         return ResponseEntity.ok(new CommonRes<>(selectAICounselSummaryPopUpRes));
+    }
+
+    @GetMapping("{counselSessionId}/status")
+    @Operation(summary = "AI 요약 상태 조회",tags={"AI요약"})
+    public ResponseEntity<CommonRes<SelectAICounselSummaryStatusRes>> selectAICounselSummaryStatus(
+            @PathVariable String counselSessionId
+    ){
+        SelectAICounselSummaryStatusRes selectAICounselSummaryStatusRes = aiCounselSummaryService.selectAICounselSummaryStatus(counselSessionId);
+        return ResponseEntity.ok(new CommonRes<>(selectAICounselSummaryStatusRes));
     }
 
 
