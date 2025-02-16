@@ -336,5 +336,16 @@ public class AICounselSummaryService {
 
     }
 
+    public SelectAICounselSummaryStatusRes selectAICounselSummaryStatus(String counselSessionId){
+
+        counselSessionRepository.findById(counselSessionId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository.findByCounselSessionId(counselSessionId)
+                .orElseThrow(NoContentException::new);
+
+        return new SelectAICounselSummaryStatusRes(aiCounselSummary.getAiCounselSummaryStatus());
+    }
+
 
 }
