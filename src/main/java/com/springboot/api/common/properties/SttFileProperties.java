@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="naver.clova")
+@ConfigurationProperties(prefix="stt.file.path")
 @Getter
 @Setter
 public class SttFileProperties {
