@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConfigurationProperties(prefix="stt.file.path")
+@ConfigurationProperties(prefix="ffmpeg")
 @Getter
 @Setter
 public class FfmpegProperties {
