@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.dto.ByteArrayMultipartFile;
 import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.properties.NaverClovaProperties;
+import com.springboot.api.common.properties.SttFileProperties;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.domain.AICounselSummary;
@@ -27,7 +29,6 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,15 +53,9 @@ public class AICounselSummaryService {
     private final ObjectMapper objectMapper;
     private final NaverClovaExternalService naverClovaExternalService;
     private final DateTimeUtil dateTimeUtil;
-    @Value("${naver.clova.api-key}")
-    private String clovaApiKey;
+    private final NaverClovaProperties naverClovaProperties;
     private final ChatModel chatModel;
-
-    @Value("${stt.file.path.origin}")
-    private String sttOriginPath;
-
-    @Value("${stt.file.path.convert}")
-    private String sttConvertPath;
+    private final SttFileProperties sttFileProperties;
 
     private final FileUtil fileUtil;
 
@@ -84,7 +79,7 @@ public class AICounselSummaryService {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Accept","application/json");
-        headers.put("X-CLOVASPEECH-API-KEY",clovaApiKey);
+        headers.put("X-CLOVASPEECH-API-KEY",naverClovaProperties.getApiKey());
 
         SpeechToTextReq speechToTextReq = SpeechToTextReq
                 .builder()
@@ -117,7 +112,7 @@ public class AICounselSummaryService {
 
                 if (Objects.requireNonNull(file.getContentType()).contains("webm"))
                 {
-                    multipartFile = fileUtil.convertWebmToMp4(file,sttOriginPath,sttConvertPath);
+                    multipartFile = fileUtil.convertWebmToMp4(file,sttFileProperties.getOrigin(),sttFileProperties.getCovert());
                 }
                 else
                 {

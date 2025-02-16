@@ -1,12 +1,13 @@
 package com.springboot.api.common.util;
 
 import com.springboot.api.common.dto.ByteArrayMultipartFile;
+import com.springboot.api.common.properties.FfmpegProperties;
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,11 +18,12 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 @Component
+@RequiredArgsConstructor
 public class FileUtil {
 
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(FileUtil.class);
-    @Value("${ffmpeg.path}")
-    private String ffmpegPath;
+
+    private final FfmpegProperties ffmpegProperties;
 
     public File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
         File tempFile = File.createTempFile("upload_", multipartFile.getOriginalFilename());
@@ -63,7 +65,7 @@ public class FileUtil {
         String savedMultipartFileName = saveMultipartFile(multipartFile, originFilePath);
         String convertedMultipartFileName = savedMultipartFileName.replace(".webm",".mp4");
 
-        FFmpeg ffmpeg = new FFmpeg(ffmpegPath);
+        FFmpeg ffmpeg = new FFmpeg(ffmpegProperties.getPath());
 
         FFmpegBuilder builder = new FFmpegBuilder()
                 .setInput(originFilePath+savedMultipartFileName)
