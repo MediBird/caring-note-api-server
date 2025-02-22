@@ -162,7 +162,8 @@ public class CounseleeControllerTest {
                                 .hasNext(false)
                                 .hasPrevious(false)
                                 .build();
-                when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockPageRes);
+                when(counseleeService.selectCounselees(anyInt(), anyInt(), anyString(), anyList(), anyList()))
+                                .thenReturn(mockPageRes);
 
                 mockMvc.perform(get("/v1/counsel/counselee/")
                                 .param("page", "0")
