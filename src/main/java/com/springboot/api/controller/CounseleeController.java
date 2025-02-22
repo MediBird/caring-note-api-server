@@ -14,9 +14,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @ApiController(name = "CounseleeController", description = "내담자 관련 API를 제공하는 Controller", path = "/v1/counsel/counselee")
@@ -70,9 +72,13 @@ public class CounseleeController {
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<SelectCounseleePageRes>> selectCounselees(
                         @RequestParam("page") @Min(0) int page,
-                        @RequestParam("size") @Min(1) @Max(100) int size) {
+                        @RequestParam("size") @Min(1) @Max(100) int size,
+                        @RequestParam(required = false) String name,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") List<LocalDate> birthDates,
+                        @RequestParam(required = false) List<String> affiliatedWelfareInstitutions) {
                 return ResponseEntity
-                                .ok(new CommonRes<>(counseleeService.selectCounselees(page, size)));
+                                .ok(new CommonRes<>(counseleeService.selectCounselees(page, size, name,
+                                                birthDates, affiliatedWelfareInstitutions)));
         }
 
         @DeleteMapping("/{counseleeId}")
@@ -95,6 +101,20 @@ public class CounseleeController {
 
                 return ResponseEntity.ok(new CommonRes<>(HttpMessages.SUCCESS_DELETE, deleteCounseleeBatchResList));
 
+        }
+
+        @GetMapping("/birth-dates")
+        @Operation(summary = "등록된 생년월일 목록 조회", tags = { "내담자 관리" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<List<LocalDate>>> getBirthDates() {
+                return ResponseEntity.ok(new CommonRes<>(counseleeService.getDistinctBirthDates()));
+        }
+
+        @GetMapping("/affiliated-welfare-institutions")
+        @Operation(summary = "연계 기관 목록 조회", tags = { "내담자 관리" })
+        @RoleSecured(RoleType.ROLE_ADMIN)
+        public ResponseEntity<CommonRes<List<String>>> getAffiliatedWelfareInstitutions() {
+                return ResponseEntity.ok(new CommonRes<>(counseleeService.getDistinctAffiliatedWelfareInstitutions()));
         }
 
 }
