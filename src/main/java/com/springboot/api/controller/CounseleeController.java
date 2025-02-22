@@ -12,14 +12,18 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApiController(name = "CounseleeController", description = "내담자 관련 API를 제공하는 Controller", path = "/v1/counsel/counselee")
 @RequiredArgsConstructor
@@ -67,18 +71,46 @@ public class CounseleeController {
                                 .ok(new CommonRes<>(counseleeService.selectCounselee(counseleeId)));
         }
 
-        @GetMapping("/")
+        @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
         @Operation(summary = "내담자 목록 조회", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<SelectCounseleePageRes>> selectCounselees(
                         @RequestParam("page") @Min(0) int page,
                         @RequestParam("size") @Min(1) @Max(100) int size,
-                        @RequestParam(required = false) String name,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") List<LocalDate> birthDates,
-                        @RequestParam(required = false) List<String> affiliatedWelfareInstitutions) {
+                        @RequestParam(required = false, name = "name") @Pattern(regexp = "^[가-힣a-zA-Z\\s]*$", message = "이름은 한글과 영문만 허용됩니다") String name,
+                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") List<@Past(message = "생년월일은 과거 날짜여야 합니다") LocalDate> birthDates,
+                        @RequestParam(required = false) List<@Size(max = 100, message = "기관명은 100자를 초과할 수 없습니다") String> affiliatedWelfareInstitutions) {
+
+                if (name != null) {
+                        try {
+                                name = name.trim();
+                                if (name.isEmpty()) {
+                                        name = null;
+                                }
+                        } catch (Exception e) {
+                                throw new IllegalArgumentException("잘못된 이름 형식입니다");
+                        }
+                }
+
+                if (affiliatedWelfareInstitutions != null) {
+                        affiliatedWelfareInstitutions = affiliatedWelfareInstitutions.stream()
+                                        .filter(inst -> inst != null && !inst.trim().isEmpty())
+                                        .map(String::trim)
+                                        .collect(Collectors.toList());
+                        if (affiliatedWelfareInstitutions.isEmpty()) {
+                                affiliatedWelfareInstitutions = null;
+                        }
+                }
+
                 return ResponseEntity
-                                .ok(new CommonRes<>(counseleeService.selectCounselees(page, size, name,
-                                                birthDates, affiliatedWelfareInstitutions)));
+                                .ok()
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(new CommonRes<>(counseleeService.selectCounselees(
+                                                page,
+                                                size,
+                                                name,
+                                                birthDates,
+                                                affiliatedWelfareInstitutions)));
         }
 
         @DeleteMapping("/{counseleeId}")

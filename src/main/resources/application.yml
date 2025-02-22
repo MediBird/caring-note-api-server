@@ -48,6 +48,10 @@ spring:
     multipart:
       max-file-size: 50MB
       max-request-size: 100MB
+    encoding:
+      charset: UTF-8
+      force: true
+      enabled: true
   ai:
     openai:
       api-key: open_api_key
