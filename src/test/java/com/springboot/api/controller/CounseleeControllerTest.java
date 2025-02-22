@@ -33,6 +33,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 
 import com.springboot.api.dto.counselee.DeleteCounseleeBatchRes;
 import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleePageRes;
 import com.springboot.api.dto.counselee.SelectCounseleeRes;
 import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 
@@ -153,16 +154,27 @@ public class CounseleeControllerTest {
                                                 .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
                                                 .name("Jane Doe")
                                                 .build());
-
-                when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockList);
+                SelectCounseleePageRes mockPageRes = SelectCounseleePageRes.builder()
+                                .content(mockList)
+                                .totalPages(1)
+                                .totalElements(2)
+                                .currentPage(0)
+                                .hasNext(false)
+                                .hasPrevious(false)
+                                .build();
+                when(counseleeService.selectCounselees(anyInt(), anyInt())).thenReturn(mockPageRes);
 
                 mockMvc.perform(get("/v1/counsel/counselee/")
                                 .param("page", "0")
                                 .param("size", "10")
                                 .header("Authorization", "Bearer token"))
                                 .andExpect(status().isOk())
-                                .andExpect(jsonPath("$.data").isArray())
-                                .andExpect(jsonPath("$.data.length()").value(2));
+                                .andExpect(jsonPath("$.data.content").isArray())
+                                .andExpect(jsonPath("$.data.totalPages").value(1))
+                                .andExpect(jsonPath("$.data.totalElements").value(2))
+                                .andExpect(jsonPath("$.data.currentPage").value(0))
+                                .andExpect(jsonPath("$.data.hasNext").value(false))
+                                .andExpect(jsonPath("$.data.hasPrevious").value(false));
         }
 
         @Test
