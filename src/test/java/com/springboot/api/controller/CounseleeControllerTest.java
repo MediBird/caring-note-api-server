@@ -48,6 +48,9 @@ import com.springboot.api.dto.counselee.AddCounseleeReq;
 import com.springboot.api.service.CounseleeService;
 import com.springboot.enums.GenderType;
 
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+
 @WebMvcTest(CounseleeController.class)
 @Import({ SecurityConfig.class, TestSecurityConfig.class })
 public class CounseleeControllerTest {
@@ -162,8 +165,12 @@ public class CounseleeControllerTest {
                                 .hasNext(false)
                                 .hasPrevious(false)
                                 .build();
-                when(counseleeService.selectCounselees(anyInt(), anyInt(), anyString(), anyList(), anyList()))
-                                .thenReturn(mockPageRes);
+                when(counseleeService.selectCounselees(
+                                eq(0),
+                                eq(10),
+                                isNull(),
+                                isNull(),
+                                isNull())).thenReturn(mockPageRes);
 
                 mockMvc.perform(get("/v1/counsel/counselee/")
                                 .param("page", "0")
