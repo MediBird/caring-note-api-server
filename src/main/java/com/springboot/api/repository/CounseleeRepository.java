@@ -12,25 +12,36 @@ import java.util.List;
 
 public interface CounseleeRepository extends JpaRepository<Counselee, String> {
 
-    @Query("""
-                SELECT c FROM Counselee c
-                WHERE (:name IS NULL OR LOWER(c.name) LIKE LOWER(CONCAT('%', :name, '%')))
-                AND (:birthDates IS NULL OR c.dateOfBirth IN :birthDates)
-                AND (:affiliatedWelfareInstitutions IS NULL OR
-                     c.affiliatedWelfareInstitution IN :affiliatedWelfareInstitutions)
-            """)
-    Page<Counselee> findWithFilters(
-            @Param("name") String name,
-            @Param("birthDates") List<LocalDate> birthDates,
-            @Param("affiliatedWelfareInstitutions") List<String> affiliatedWelfareInstitutions,
-            Pageable pageable);
+        @Query(value = """
+                            SELECT * FROM counselees c
+                            WHERE (:name IS NULL OR c.name ILIKE CONCAT('%', :name, '%'))
+                            AND (CAST(:birthDates AS date[]) IS NULL OR ARRAY_LENGTH(CAST(:birthDates AS date[]), 1) IS NULL
+                                OR c.date_of_birth = ANY(CAST(:birthDates AS date[])))
+                            AND (CAST(:affiliatedWelfareInstitutions AS varchar[]) IS NULL
+                                OR ARRAY_LENGTH(CAST(:affiliatedWelfareInstitutions AS varchar[]), 1) IS NULL
+                                OR c.affiliated_welfare_institution = ANY(CAST(:affiliatedWelfareInstitutions AS varchar[])))
+                            ORDER BY c.registration_date DESC
+                        """, countQuery = """
+                            SELECT COUNT(*) FROM counselees c
+                            WHERE (:name IS NULL OR c.name ILIKE CONCAT('%', :name, '%'))
+                            AND (CAST(:birthDates AS date[]) IS NULL OR ARRAY_LENGTH(CAST(:birthDates AS date[]), 1) IS NULL
+                                OR c.date_of_birth = ANY(CAST(:birthDates AS date[])))
+                            AND (CAST(:affiliatedWelfareInstitutions AS varchar[]) IS NULL
+                                OR ARRAY_LENGTH(CAST(:affiliatedWelfareInstitutions AS varchar[]), 1) IS NULL
+                                OR c.affiliated_welfare_institution = ANY(CAST(:affiliatedWelfareInstitutions AS varchar[])))
+                        """, nativeQuery = true)
+        Page<Counselee> findWithFilters(
+                        @Param("name") String name,
+                        @Param("birthDates") List<LocalDate> birthDates,
+                        @Param("affiliatedWelfareInstitutions") List<String> affiliatedWelfareInstitutions,
+                        Pageable pageable);
 
-    @Query("SELECT DISTINCT c.dateOfBirth FROM Counselee c ORDER BY c.dateOfBirth DESC")
-    List<LocalDate> findDistinctBirthDates();
+        @Query("SELECT DISTINCT c.dateOfBirth FROM Counselee c ORDER BY c.dateOfBirth DESC")
+        List<LocalDate> findDistinctBirthDates();
 
-    @Query("SELECT DISTINCT c.affiliatedWelfareInstitution FROM Counselee c " +
-            "WHERE c.affiliatedWelfareInstitution IS NOT NULL " +
-            "ORDER BY c.affiliatedWelfareInstitution")
-    List<String> findDistinctAffiliatedWelfareInstitutions();
+        @Query("SELECT DISTINCT c.affiliatedWelfareInstitution FROM Counselee c " +
+                        "WHERE c.affiliatedWelfareInstitution IS NOT NULL " +
+                        "ORDER BY c.affiliatedWelfareInstitution")
+        List<String> findDistinctAffiliatedWelfareInstitutions();
 
 }
