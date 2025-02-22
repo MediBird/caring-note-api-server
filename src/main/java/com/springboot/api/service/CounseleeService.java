@@ -35,8 +35,8 @@ import java.util.stream.Collectors;
 public class CounseleeService {
 
     private final CounseleeRepository counseleeRepository;
-    public final CounselSessionRepository counselSessionRepository;
-    public final DateTimeUtil dateTimeUtil;
+    private final CounselSessionRepository counselSessionRepository;
+    private final DateTimeUtil dateTimeUtil;
 
     public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId) {
 
@@ -64,7 +64,6 @@ public class CounseleeService {
             }
         }
 
-        // Step 6: 결과 반환
         return new SelectCounseleeBaseInformationByCounseleeIdRes(counselee.getId(), counselee.getName(),
                 dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()),
                 counselee.getDateOfBirth().toString(), counselee.getGenderType(), counselee.getAddress(),
@@ -143,17 +142,10 @@ public class CounseleeService {
             List<LocalDate> birthDates, List<String> affiliatedWelfareInstitutions) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Counselee> counseleePage;
-        if (name == null && (birthDates == null || birthDates.isEmpty())
-                && (affiliatedWelfareInstitutions == null || affiliatedWelfareInstitutions.isEmpty())) {
-            counseleePage = counseleeRepository.findAll(pageRequest);
-        } else {
-            counseleePage = counseleeRepository.findWithFilters(name, birthDates,
-                    affiliatedWelfareInstitutions, pageRequest);
-        }
+        Page<Counselee> counseleePage = counseleeRepository.findWithFilters(name, birthDates,
+                affiliatedWelfareInstitutions, pageRequest);
 
         List<SelectCounseleeRes> content = counseleePage.getContent().stream()
-                .sorted(Comparator.comparing(Counselee::getRegistrationDate).reversed())
                 .map(counselee -> SelectCounseleeRes.builder()
                         .id(counselee.getId())
                         .name(counselee.getName())
