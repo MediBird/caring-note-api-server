@@ -13,4 +13,8 @@ public interface CounseleeRepositoryCustom {
             List<LocalDate> birthDates,
             List<String> affiliatedWelfareInstitutions,
             Pageable pageable);
+
+    List<LocalDate> findDistinctBirthDates();
+
+    List<String> findDistinctAffiliatedWelfareInstitutions();
 }

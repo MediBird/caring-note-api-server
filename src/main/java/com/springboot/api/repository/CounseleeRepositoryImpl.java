@@ -64,4 +64,27 @@ public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implement
 
         return new PageImpl<>(results, pageable, total);
     }
+
+    @Override
+    public List<LocalDate> findDistinctBirthDates() {
+        QCounselee counselee = QCounselee.counselee;
+        return queryFactory
+                .select(counselee.dateOfBirth)
+                .distinct()
+                .from(counselee)
+                .orderBy(counselee.dateOfBirth.desc())
+                .fetch();
+    }
+
+    @Override
+    public List<String> findDistinctAffiliatedWelfareInstitutions() {
+        QCounselee counselee = QCounselee.counselee;
+        return queryFactory
+                .select(counselee.affiliatedWelfareInstitution)
+                .distinct()
+                .from(counselee)
+                .where(counselee.affiliatedWelfareInstitution.isNotNull())
+                .orderBy(counselee.affiliatedWelfareInstitution.asc())
+                .fetch();
+    }
 }

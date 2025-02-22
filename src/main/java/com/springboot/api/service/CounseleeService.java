@@ -226,11 +226,11 @@ public class CounseleeService {
 
     @Cacheable(value = "birthDates")
     public List<LocalDate> getDistinctBirthDates() {
-        return counseleeRepository.findDistinctBirthDates();
+        return counseleeRepositoryCustom.findDistinctBirthDates();
     }
 
     @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
-        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions();
+        return counseleeRepositoryCustom.findDistinctAffiliatedWelfareInstitutions();
     }
 }
