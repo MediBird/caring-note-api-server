@@ -31,7 +31,7 @@ public class SelectCounseleeRes {
     private String note;
     private boolean isDisability;
 
-    public static SelectCounseleeRes of(Counselee counselee) {
+    public static SelectCounseleeRes from (Counselee counselee) {
         return SelectCounseleeRes.builder()
                 .id(counselee.getId())
                 .name(counselee.getName())

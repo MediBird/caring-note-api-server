@@ -17,7 +17,7 @@ public record SelectCounseleeBaseInformationByCounseleeIdRes(
                 HealthInsuranceType healthInsuranceType, int counselCount, LocalDate lastCounselDate,
                 List<String> diseases, CardRecordStatus cardRecordStatus, boolean isDisability) {
 
-    public static SelectCounseleeBaseInformationByCounseleeIdRes of(Counselee counselee, List<String> diseases, CardRecordStatus cardRecordStatus) {
+    public static SelectCounseleeBaseInformationByCounseleeIdRes from(Counselee counselee, List<String> diseases, CardRecordStatus cardRecordStatus) {
         return SelectCounseleeBaseInformationByCounseleeIdRes.builder()
                 .counseleeId(counselee.getId())
                 .name(counselee.getName())

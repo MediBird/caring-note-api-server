@@ -2,7 +2,6 @@ package com.springboot.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselee.*;
@@ -53,7 +52,7 @@ public class CounseleeService {
             }
         }
 
-        return SelectCounseleeBaseInformationByCounseleeIdRes.of(counselee, diseases,
+        return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, diseases,
                 Optional.ofNullable(counselCard).map(CounselCard::getCardRecordStatus)
                         .orElse(CardRecordStatus.UNRECORDED));
     }
@@ -77,7 +76,7 @@ public class CounseleeService {
     public SelectCounseleeRes selectCounselee(String counseleeId) {
         Counselee counselee = counseleeRepository.findById(counseleeId)
                 .orElseThrow(IllegalArgumentException::new);
-        return SelectCounseleeRes.of(counselee);
+        return SelectCounseleeRes.from(counselee);
     }
 
     public SelectCounseleePageRes selectCounselees(int page, int size, String name,
@@ -87,7 +86,7 @@ public class CounseleeService {
                 affiliatedWelfareInstitutions, PageRequest.of(page, size));
 
         List<SelectCounseleeRes> content = counseleePage.getContent().stream()
-                .map(counselee -> SelectCounseleeRes.of(counselee))
+                .map(SelectCounseleeRes::from)
                 .collect(Collectors.toList());
 
         return new SelectCounseleePageRes(
