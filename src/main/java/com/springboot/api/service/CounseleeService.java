@@ -134,9 +134,18 @@ public class CounseleeService {
                 .build();
     }
 
-    public SelectCounseleePageRes selectCounselees(int page, int size) {
+    public SelectCounseleePageRes selectCounselees(int page, int size, String name,
+            List<LocalDate> birthDates, List<String> affiliatedWelfareInstitutions) {
+
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Counselee> counseleePage = counseleeRepository.findAll(pageRequest);
+        Page<Counselee> counseleePage;
+        if (name == null && (birthDates == null || birthDates.isEmpty())
+                && (affiliatedWelfareInstitutions == null || affiliatedWelfareInstitutions.isEmpty())) {
+            counseleePage = counseleeRepository.findAll(pageRequest);
+        } else {
+            counseleePage = counseleeRepository.findWithFilters(name, birthDates,
+                    affiliatedWelfareInstitutions, pageRequest);
+        }
 
         List<SelectCounseleeRes> content = counseleePage.getContent().stream()
                 .sorted(Comparator.comparing(Counselee::getRegistrationDate).reversed())
@@ -205,5 +214,13 @@ public class CounseleeService {
         }
 
         return null;
+    }
+
+    public List<LocalDate> getDistinctBirthDates() {
+        return counseleeRepository.findDistinctBirthDates();
+    }
+
+    public List<String> getDistinctAffiliatedWelfareInstitutions() {
+        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions();
     }
 }
