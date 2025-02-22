@@ -11,6 +11,7 @@ import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.HealthInsuranceType;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CounseleeService {
 
-    public final CounseleeRepository counseleeRepository;
+    private final CounseleeRepository counseleeRepository;
     public final CounselSessionRepository counselSessionRepository;
     public final DateTimeUtil dateTimeUtil;
 
