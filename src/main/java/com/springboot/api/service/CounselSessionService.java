@@ -234,13 +234,7 @@ public class CounselSessionService {
                 if (ScheduleStatus.COMPLETED.equals(updateStatusInCounselSessionReq.status())) {
                         Counselee counselee = counselSession.getCounselee();
                         if (counselee != null) {
-                                // 완료된 상담 세션 수 계산
-                                long completedCount = counselee.getCounselSessions().stream()
-                                                .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
-                                                .count();
-
-                                counselee.setCounselCount((int) completedCount);
-                                counselee.setLastCounselDate(counselSession.getScheduledStartDateTime().toLocalDate());
+                                counselee.counselSessionComplete(counselSession.getScheduledStartDateTime().toLocalDate());
                         }
                 }
 

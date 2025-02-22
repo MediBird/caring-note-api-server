@@ -24,7 +24,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -73,45 +72,22 @@ public class CounseleeService {
                          // 반환
                 , Optional.ofNullable(currentCounselCard).map(CounselCard::getCardRecordStatus)
                         .orElse(CardRecordStatus.UNRECORDED),
-                counselee.isDisability());
+                counselee.getIsDisability());
 
     }
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
-        log.info("addCounseleeReq: {}", addCounseleeReq);
-        Counselee targetCounselee = Counselee.builder()
-                .registrationDate(LocalDate.now())
-                .name(addCounseleeReq.getName())
-                .phoneNumber(addCounseleeReq.getPhoneNumber())
-                .dateOfBirth(addCounseleeReq.getDateOfBirth())
-                .genderType(addCounseleeReq.getGenderType())
-                .address(addCounseleeReq.getAddress())
-                .healthInsuranceType(HealthInsuranceType.NON_COVERED)
-                .isDisability(addCounseleeReq.isDisability())
-                .note(addCounseleeReq.getNote())
-                .careManagerName(addCounseleeReq.getCareManagerName())
-                .affiliatedWelfareInstitution(addCounseleeReq.getAffiliatedWelfareInstitution())
-                .build();
-        log.info("targetCounselee: {}", targetCounselee);
-        targetCounselee = counseleeRepository.save(targetCounselee);
-
-        return targetCounselee.getId();
+        Counselee targetCounselee = new Counselee(addCounseleeReq);
+        return counseleeRepository.save(targetCounselee).getId();
     }
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
         Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
                 .orElseThrow(IllegalArgumentException::new);
-        targetCounselee.setName(updateCounseleeReq.getName());
-        targetCounselee.setPhoneNumber(updateCounseleeReq.getPhoneNumber());
-        targetCounselee.setDateOfBirth(updateCounseleeReq.getDateOfBirth());
-        targetCounselee.setGenderType(updateCounseleeReq.getGenderType());
-        targetCounselee.setAddress(updateCounseleeReq.getAddress());
-        targetCounselee.setDisability(updateCounseleeReq.isDisability());
-        targetCounselee.setNote(updateCounseleeReq.getNote());
-        targetCounselee.setCareManagerName(updateCounseleeReq.getCareManagerName());
-        targetCounselee.setAffiliatedWelfareInstitution(updateCounseleeReq.getAffiliatedWelfareInstitution());
+
+        targetCounselee.update(updateCounseleeReq);
         targetCounselee = counseleeRepository.save(targetCounselee);
         return targetCounselee.getId();
     }
@@ -141,9 +117,8 @@ public class CounseleeService {
     public SelectCounseleePageRes selectCounselees(int page, int size, String name,
             List<LocalDate> birthDates, List<String> affiliatedWelfareInstitutions) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
         Page<Counselee> counseleePage = counseleeRepository.findWithFilters(name, birthDates,
-                affiliatedWelfareInstitutions, pageRequest);
+                affiliatedWelfareInstitutions, PageRequest.of(page, size));
 
         List<SelectCounseleeRes> content = counseleePage.getContent().stream()
                 .map(counselee -> SelectCounseleeRes.builder()
