@@ -9,9 +9,9 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselee.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
-import com.springboot.api.repository.CounseleeRepositoryCustom;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.HealthInsuranceType;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -34,9 +34,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class CounseleeService {
 
-    public final CounseleeRepository counseleeRepository;
+    private final CounseleeRepository counseleeRepository;
     public final CounselSessionRepository counselSessionRepository;
-    public final CounseleeRepositoryCustom counseleeRepositoryCustom;
     public final DateTimeUtil dateTimeUtil;
 
     public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId) {
@@ -149,7 +148,7 @@ public class CounseleeService {
                 && (affiliatedWelfareInstitutions == null || affiliatedWelfareInstitutions.isEmpty())) {
             counseleePage = counseleeRepository.findAll(pageRequest);
         } else {
-            counseleePage = counseleeRepositoryCustom.findWithFilters(name, birthDates,
+            counseleePage = counseleeRepository.findWithFilters(name, birthDates,
                     affiliatedWelfareInstitutions, pageRequest);
         }
 
@@ -226,11 +225,11 @@ public class CounseleeService {
 
     @Cacheable(value = "birthDates")
     public List<LocalDate> getDistinctBirthDates() {
-        return counseleeRepositoryCustom.findDistinctBirthDates();
+        return counseleeRepository.findDistinctBirthDates();
     }
 
     @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
-        return counseleeRepositoryCustom.findDistinctAffiliatedWelfareInstitutions();
+        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions();
     }
 }
