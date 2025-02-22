@@ -17,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,6 +77,7 @@ public class CounseleeService {
 
     }
 
+    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
         log.info("addCounseleeReq: {}", addCounseleeReq);
         Counselee targetCounselee = Counselee.builder()
@@ -96,6 +99,7 @@ public class CounseleeService {
         return targetCounselee.getId();
     }
 
+    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
         Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
                 .orElseThrow(IllegalArgumentException::new);
@@ -177,10 +181,12 @@ public class CounseleeService {
                 counseleePage.hasPrevious());
     }
 
+    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public void deleteCounselee(String counseleeId) {
         counseleeRepository.deleteById(counseleeId);
     }
 
+    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     @Transactional
     public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(
             List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
@@ -216,10 +222,12 @@ public class CounseleeService {
         return null;
     }
 
+    @Cacheable(value = "birthDates")
     public List<LocalDate> getDistinctBirthDates() {
         return counseleeRepository.findDistinctBirthDates();
     }
 
+    @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
         return counseleeRepository.findDistinctAffiliatedWelfareInstitutions();
     }
