@@ -12,28 +12,6 @@ import java.util.List;
 
 public interface CounseleeRepository extends JpaRepository<Counselee, String> {
 
-        @Query(value = """
-                            SELECT * FROM counselees c
-                            WHERE (:name IS NULL OR c.name ILIKE CONCAT('%', :name, '%'))
-                            AND (:birthDates IS NULL OR CARDINALITY(:birthDates) = 0
-                                OR c.date_of_birth = ANY(:birthDates))
-                            AND (:affiliatedWelfareInstitutions IS NULL OR CARDINALITY(:affiliatedWelfareInstitutions) = 0
-                                OR c.affiliated_welfare_institution = ANY(:affiliatedWelfareInstitutions))
-                            ORDER BY c.registration_date DESC
-                        """, countQuery = """
-                            SELECT COUNT(*) FROM counselees c
-                            WHERE (:name IS NULL OR c.name ILIKE CONCAT('%', :name, '%'))
-                            AND (:birthDates IS NULL OR CARDINALITY(:birthDates) = 0
-                                OR c.date_of_birth = ANY(:birthDates))
-                            AND (:affiliatedWelfareInstitutions IS NULL OR CARDINALITY(:affiliatedWelfareInstitutions) = 0
-                                OR c.affiliated_welfare_institution = ANY(:affiliatedWelfareInstitutions))
-                        """, nativeQuery = true)
-        Page<Counselee> findWithFilters(
-                        @Param("name") String name,
-                        @Param("birthDates") List<LocalDate> birthDates,
-                        @Param("affiliatedWelfareInstitutions") List<String> affiliatedWelfareInstitutions,
-                        Pageable pageable);
-
         @Query("SELECT DISTINCT c.dateOfBirth FROM Counselee c ORDER BY c.dateOfBirth DESC")
         List<LocalDate> findDistinctBirthDates();
 

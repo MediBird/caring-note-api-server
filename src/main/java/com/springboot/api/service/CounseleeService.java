@@ -9,6 +9,7 @@ import com.springboot.api.domain.Counselee;
 import com.springboot.api.dto.counselee.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
+import com.springboot.api.repository.CounseleeRepositoryCustom;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.HealthInsuranceType;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class CounseleeService {
 
     public final CounseleeRepository counseleeRepository;
     public final CounselSessionRepository counselSessionRepository;
+    public final CounseleeRepositoryCustom counseleeRepositoryCustom;
     public final DateTimeUtil dateTimeUtil;
 
     public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId) {
@@ -147,7 +149,7 @@ public class CounseleeService {
                 && (affiliatedWelfareInstitutions == null || affiliatedWelfareInstitutions.isEmpty())) {
             counseleePage = counseleeRepository.findAll(pageRequest);
         } else {
-            counseleePage = counseleeRepository.findWithFilters(name, birthDates,
+            counseleePage = counseleeRepositoryCustom.findWithFilters(name, birthDates,
                     affiliatedWelfareInstitutions, pageRequest);
         }
 

@@ -1,0 +1,67 @@
+package com.springboot.api.repository;
+
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.domain.QCounselee;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+
+import java.time.LocalDate;
+import java.util.List;
+
+public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implements CounseleeRepositoryCustom {
+
+    private final JPAQueryFactory queryFactory;
+
+    public CounseleeRepositoryImpl(JPAQueryFactory queryFactory) {
+        super(Counselee.class);
+        this.queryFactory = queryFactory;
+    }
+
+    @Override
+    public Page<Counselee> findWithFilters(
+            String name,
+            List<LocalDate> birthDates,
+            List<String> affiliatedWelfareInstitutions,
+            Pageable pageable) {
+
+        QCounselee counselee = QCounselee.counselee;
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (name != null) {
+            builder.and(counselee.name.containsIgnoreCase(name));
+        }
+
+        if (birthDates != null && !birthDates.isEmpty()) {
+            builder.and(counselee.dateOfBirth.in(birthDates));
+        }
+
+        if (affiliatedWelfareInstitutions != null && !affiliatedWelfareInstitutions.isEmpty()) {
+            builder.and(counselee.affiliatedWelfareInstitution.in(affiliatedWelfareInstitutions));
+        }
+
+        JPAQuery<Counselee> query = queryFactory
+                .selectFrom(counselee)
+                .where(builder)
+                .orderBy(counselee.registrationDate.desc());
+
+        long total = queryFactory
+                .select(counselee.count())
+                .from(counselee)
+                .where(builder)
+                .fetchOne();
+
+        List<Counselee> results = query
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        return new PageImpl<>(results, pageable, total);
+    }
+}
