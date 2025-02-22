@@ -95,23 +95,7 @@ public class CounseleeService {
     public SelectCounseleeRes selectCounselee(String counseleeId) {
         Counselee counselee = counseleeRepository.findById(counseleeId)
                 .orElseThrow(IllegalArgumentException::new);
-        return SelectCounseleeRes.builder()
-                .id(counselee.getId())
-                .name(counselee.getName())
-                .age(dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
-                .dateOfBirth(counselee.getDateOfBirth())
-                .phoneNumber(counselee.getPhoneNumber())
-                .gender(counselee.getGenderType())
-                .address(counselee.getAddress())
-                .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
-                .healthInsuranceType(counselee.getHealthInsuranceType())
-                .counselCount(counselee.getCounselCount())
-                .lastCounselDate(counselee.getLastCounselDate())
-                .registrationDate(counselee.getRegistrationDate())
-                .careManagerName(counselee.getCareManagerName())
-                .note(counselee.getNote())
-                .isDisability(counselee.isDisability())
-                .build();
+        return SelectCounseleeRes.of(counselee, dateTimeUtil);
     }
 
     public SelectCounseleePageRes selectCounselees(int page, int size, String name,
@@ -121,23 +105,7 @@ public class CounseleeService {
                 affiliatedWelfareInstitutions, PageRequest.of(page, size));
 
         List<SelectCounseleeRes> content = counseleePage.getContent().stream()
-                .map(counselee -> SelectCounseleeRes.builder()
-                        .id(counselee.getId())
-                        .name(counselee.getName())
-                        .age(dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
-                        .dateOfBirth(counselee.getDateOfBirth())
-                        .phoneNumber(counselee.getPhoneNumber())
-                        .gender(counselee.getGenderType())
-                        .address(counselee.getAddress())
-                        .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
-                        .healthInsuranceType(counselee.getHealthInsuranceType())
-                        .counselCount(counselee.getCounselCount())
-                        .lastCounselDate(counselee.getLastCounselDate())
-                        .registrationDate(counselee.getRegistrationDate())
-                        .careManagerName(counselee.getCareManagerName())
-                        .note(counselee.getNote())
-                        .isDisability(counselee.isDisability())
-                        .build())
+                .map(counselee -> SelectCounseleeRes.of(counselee, dateTimeUtil))
                 .collect(Collectors.toList());
 
         return new SelectCounseleePageRes(

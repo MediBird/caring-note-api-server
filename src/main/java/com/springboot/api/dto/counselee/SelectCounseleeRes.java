@@ -2,13 +2,19 @@ package com.springboot.api.dto.counselee;
 
 import java.time.LocalDate;
 
+import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.domain.Counselee;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+
+@Getter
 @Builder
-@Data
+@AllArgsConstructor
 public class SelectCounseleeRes {
     private String id;
     private String name;
@@ -25,5 +31,25 @@ public class SelectCounseleeRes {
     private String careManagerName;
     private String note;
     private boolean isDisability;
+
+    public static SelectCounseleeRes of(Counselee counselee, DateTimeUtil dateTimeUtil) {
+        return SelectCounseleeRes.builder()
+                .id(counselee.getId())
+                .name(counselee.getName())
+                .age(dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
+                .dateOfBirth(counselee.getDateOfBirth())
+                .phoneNumber(counselee.getPhoneNumber())
+                .gender(counselee.getGenderType())
+                .address(counselee.getAddress())
+                .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
+                .healthInsuranceType(counselee.getHealthInsuranceType())
+                .counselCount(counselee.getCounselCount())
+                .lastCounselDate(counselee.getLastCounselDate())
+                .registrationDate(counselee.getRegistrationDate())
+                .careManagerName(counselee.getCareManagerName())
+                .note(counselee.getNote())
+                .isDisability(counselee.getIsDisability())
+                .build();
+    }
 }
 
