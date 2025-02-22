@@ -9,7 +9,6 @@ import com.springboot.enums.HealthInsuranceType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 
 @Getter
@@ -32,11 +31,11 @@ public class SelectCounseleeRes {
     private String note;
     private boolean isDisability;
 
-    public static SelectCounseleeRes of(Counselee counselee, DateTimeUtil dateTimeUtil) {
+    public static SelectCounseleeRes of(Counselee counselee) {
         return SelectCounseleeRes.builder()
                 .id(counselee.getId())
                 .name(counselee.getName())
-                .age(dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
+                .age(DateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
                 .dateOfBirth(counselee.getDateOfBirth())
                 .phoneNumber(counselee.getPhoneNumber())
                 .gender(counselee.getGenderType())
