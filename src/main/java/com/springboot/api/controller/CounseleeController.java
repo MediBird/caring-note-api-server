@@ -68,7 +68,7 @@ public class CounseleeController {
         @GetMapping("/")
         @Operation(summary = "내담자 목록 조회", tags = { "내담자 관리" })
         @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<List<SelectCounseleeRes>>> selectCounselees(
+        public ResponseEntity<CommonRes<SelectCounseleePageRes>> selectCounselees(
                         @RequestParam("page") @Min(0) int page,
                         @RequestParam("size") @Min(1) @Max(100) int size) {
                 return ResponseEntity
