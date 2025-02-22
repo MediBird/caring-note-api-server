@@ -134,12 +134,12 @@ public class CounseleeService {
                 .build();
     }
 
-    public List<SelectCounseleeRes> selectCounselees(int page, int size) {
+    public SelectCounseleePageRes selectCounselees(int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<Counselee> counseleePage = counseleeRepository.findAll(pageRequest);
 
-        return counseleePage.getContent().stream()
-                .sorted(Comparator.comparing(Counselee::getCreatedDatetime).reversed())
+        List<SelectCounseleeRes> content = counseleePage.getContent().stream()
+                .sorted(Comparator.comparing(Counselee::getRegistrationDate).reversed())
                 .map(counselee -> SelectCounseleeRes.builder()
                         .id(counselee.getId())
                         .name(counselee.getName())
@@ -158,6 +158,14 @@ public class CounseleeService {
                         .isDisability(counselee.isDisability())
                         .build())
                 .collect(Collectors.toList());
+
+        return new SelectCounseleePageRes(
+                content,
+                counseleePage.getTotalPages(),
+                counseleePage.getTotalElements(),
+                counseleePage.getNumber(),
+                counseleePage.hasNext(),
+                counseleePage.hasPrevious());
     }
 
     public void deleteCounselee(String counseleeId) {
