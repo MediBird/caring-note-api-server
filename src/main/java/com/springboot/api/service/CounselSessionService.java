@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,14 +48,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-
 @Service
 @RequiredArgsConstructor
 public class CounselSessionService {
 
-        private final CounselSessionRepository sessionRepository;
         private final EntityManager entityManager;
         private final DateTimeUtil dateTimeUtil;
         private final CounselSessionRepository counselSessionRepository;
@@ -75,13 +73,13 @@ public class CounselSessionService {
                                 .status(addCounselSessionReq.getStatus())
                                 .build();
 
-                CounselSession savedCounselSession = sessionRepository.save(counselSession);
+                CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
                 return new AddCounselSessionRes(savedCounselSession.getId());
         }
 
         public SelectCounselSessionRes selectCounselSession(String id) {
-                CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
+                CounselSession counselSession = counselSessionRepository.findById(id).orElseThrow(
                                 IllegalArgumentException::new);
 
                 return SelectCounselSessionRes
@@ -126,12 +124,12 @@ public class CounselSessionService {
                                 .orElse(null);
 
                 if (req.getBaseDate() == null) {
-                        sessions = sessionRepository.findByCursor(
+                        sessions = counselSessionRepository.findByCursor(
                                         req.getCursor(),
                                         null,
                                         pageable);
                 } else {
-                        sessions = sessionRepository.findByDateAndCursor(
+                        sessions = counselSessionRepository.findByDateAndCursor(
                                         req.getBaseDate()
                                                         .atStartOfDay(),
                                         Optional.of(req.getBaseDate()
@@ -188,7 +186,7 @@ public class CounselSessionService {
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
-                CounselSession counselSession = sessionRepository
+                CounselSession counselSession = counselSessionRepository
                                 .findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
                                                 NoContentException::new);
 
@@ -251,20 +249,20 @@ public class CounselSessionService {
         @Transactional
         public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
 
-                sessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
+                counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
                 return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
 
         }
 
         public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
-                CounselSession counselSession = sessionRepository.findById(counselSessionId)
+                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                                 .orElseThrow(IllegalArgumentException::new);
 
                 Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                                 .orElseThrow(NoContentException::new);
 
-                List<CounselSession> previousCounselSessions = sessionRepository
+                List<CounselSession> previousCounselSessions = counselSessionRepository
                                 .findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),
                                                 counselSession.getScheduledStartDateTime());
 
@@ -310,12 +308,12 @@ public class CounselSessionService {
                                 .build();
         }
 
-        private int calculateTotalSessionCount() {
-                return sessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+        private long calculateTotalSessionCount() {
+                return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
         }
 
         private int calculateCounseleeCountForThisMonth() {
-                return sessionRepository.findAll().size();
+                return counselSessionRepository.findAll().size();
         }
 
         private int calculateCounselHoursForThisMonth() {
@@ -333,7 +331,7 @@ public class CounselSessionService {
         }
 
         private int calculateTotalCaringMessageCount() {
-                return sessionRepository.findAll().size();
+                return counselSessionRepository.findAll().size();
         }
 
         @Scheduled(cron = "0 0 * * * *") // 매시간 실행
