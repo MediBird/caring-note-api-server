@@ -110,7 +110,7 @@ public class Counselee extends BaseEntity {
         this.genderType = addCounseleeReq.getGenderType();
         this.healthInsuranceType = HealthInsuranceType.NON_COVERED;
         this.address = addCounseleeReq.getAddress();
-        this.isDisability = addCounseleeReq.isDisability();
+        this.isDisability = addCounseleeReq.getIsDisability();
         this.careManagerName = addCounseleeReq.getCareManagerName();
     }
 
