@@ -84,12 +84,12 @@ public class CounseleeService {
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
         log.info("addCounseleeReq: {}", addCounseleeReq);
-
+        
         boolean exists = counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber());
         if (exists) {
             throw new IllegalArgumentException("이미 등록된 전화번호입니다");
         }
-
+        
         Counselee targetCounselee = Counselee.builder()
                 .registrationDate(LocalDate.now())
                 .name(addCounseleeReq.getName())
