@@ -292,46 +292,67 @@ public class CounselSessionService {
         }
 
         @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
-        @Transactional
         public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
-                return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+                // 입력값 유효성 검사
+                if (month < 1 || month > 12) {
+                        throw new IllegalArgumentException("월은 1-12 사이여야 합니다");
+                }
+                if (year < 1900 || year > 9999) {
+                        throw new IllegalArgumentException("연도가 유효하지 않습니다");
+                }
+
+                try {
+                        return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+                } catch (Exception e) {
+                        throw new RuntimeException("상담 일정 조회 중 오류가 발생했습니다", e);
+                }
         }
 
         @Cacheable(value = "sessionStats")
-        @Transactional
         public CounselSessionStatRes getSessionStats() {
-                return CounselSessionStatRes.builder()
-                                .totalSessionCount(calculateTotalSessionCount())
-                                .counseleeCountForThisMonth(calculateCounseleeCountForThisMonth())
-                                .totalCaringMessageCount(calculateTotalCaringMessageCount())
-                                .counselHoursForThisMonth(calculateCounselHoursForThisMonth())
-                                .build();
+                try {
+                        long totalSessionCount = calculateTotalSessionCount();
+                        long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
+                        long totalCaringMessageCount = counselSessionRepository.count();
+                        double counselHours = calculateCounselHoursForThisMonth();
+
+                        return CounselSessionStatRes.builder()
+                                        .totalSessionCount(totalSessionCount)
+                                        .counseleeCountForThisMonth(counseleeCount)
+                                        .totalCaringMessageCount(totalCaringMessageCount)
+                                        .counselHoursForThisMonth((long) counselHours)
+                                        .build();
+                } catch (Exception e) {
+                        throw new RuntimeException("통계 정보 조회 중 오류가 발생했습니다", e);
+                }
         }
 
         private long calculateTotalSessionCount() {
-                return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+                try {
+                        return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+                } catch (Exception e) {
+                        throw new RuntimeException("완료된 상담 세션 수 계산 중 오류 발생", e);
+                }
         }
 
-        private long calculateCounseleeCountForThisMonth() {
-                return counselSessionRepository.findAll().size();
-        }
+        private double calculateCounselHoursForThisMonth() {
+                try {
+                        int year = LocalDateTime.now().getYear();
+                        int month = LocalDateTime.now().getMonthValue();
+                        List<CounselSession> completedSessions = counselSessionRepository
+                                        .findCompletedSessionsByYearAndMonth(year, month);
 
-        private long calculateCounselHoursForThisMonth() {
-                int year = LocalDateTime.now().getYear();
-                int month = LocalDateTime.now().getMonthValue();
-                List<CounselSession> completedSessions = counselSessionRepository
-                                .findCompletedSessionsByYearAndMonth(year, month);
-                return (long) completedSessions.stream()
-                                .mapToDouble(session -> {
-                                        Duration duration = Duration.between(session.getStartDateTime(),
-                                                        session.getEndDateTime());
-                                        return duration.toMinutes() / 60.0;
-                                })
-                                .sum();
-        }
-
-        private long calculateTotalCaringMessageCount() {
-                return counselSessionRepository.findAll().size();
+                        return completedSessions.stream()
+                                        .mapToDouble(session -> {
+                                                Duration duration = Duration.between(
+                                                                session.getStartDateTime(),
+                                                                session.getEndDateTime());
+                                                return duration.toMinutes() / 60.0;
+                                        })
+                                        .sum();
+                } catch (Exception e) {
+                        throw new RuntimeException("이번 달 상담 시간 계산 중 오류 발생", e);
+                }
         }
 
         @Scheduled(cron = "0 0 * * * *") // 매시간 실행
