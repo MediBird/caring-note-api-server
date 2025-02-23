@@ -312,7 +312,7 @@ public class CounselSessionService {
                 return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
         }
 
-        private int calculateCounseleeCountForThisMonth() {
+        private long calculateCounseleeCountForThisMonth() {
                 return counselSessionRepository.findAll().size();
         }
 
