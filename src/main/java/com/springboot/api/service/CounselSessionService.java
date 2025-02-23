@@ -312,16 +312,16 @@ public class CounselSessionService {
                 return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
         }
 
-        private int calculateCounseleeCountForThisMonth() {
+        private long calculateCounseleeCountForThisMonth() {
                 return counselSessionRepository.findAll().size();
         }
 
-        private int calculateCounselHoursForThisMonth() {
+        private long calculateCounselHoursForThisMonth() {
                 int year = LocalDateTime.now().getYear();
                 int month = LocalDateTime.now().getMonthValue();
                 List<CounselSession> completedSessions = counselSessionRepository
                                 .findCompletedSessionsByYearAndMonth(year, month);
-                return (int) completedSessions.stream()
+                return (long) completedSessions.stream()
                                 .mapToDouble(session -> {
                                         Duration duration = Duration.between(session.getStartDateTime(),
                                                         session.getEndDateTime());
@@ -330,7 +330,7 @@ public class CounselSessionService {
                                 .sum();
         }
 
-        private int calculateTotalCaringMessageCount() {
+        private long calculateTotalCaringMessageCount() {
                 return counselSessionRepository.findAll().size();
         }
 
