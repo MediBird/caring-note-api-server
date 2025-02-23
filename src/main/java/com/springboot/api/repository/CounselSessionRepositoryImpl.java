@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import com.querydsl.core.types.dsl.DateTemplate;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.domain.CounselSession;
@@ -23,9 +24,12 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
 
         @Override
         public List<LocalDate> findDistinctDatesByYearAndMonth(int year, int month) {
+                DateTemplate<LocalDate> dateOnly = Expressions.dateTemplate(
+                                LocalDate.class,
+                                "DATE({0})",
+                                counselSession.scheduledStartDateTime);
                 return queryFactory
-                                .select(Expressions.dateTemplate(LocalDate.class, "DATE({0})",
-                                                counselSession.scheduledStartDateTime))
+                                .select(dateOnly)
                                 .distinct()
                                 .from(counselSession)
                                 .where(
@@ -54,6 +58,18 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                                 .select(counselSession.count())
                                 .from(counselSession)
                                 .where(counselSession.status.eq(status))
+                                .fetchOne();
+        }
+
+        @Override
+        public long countDistinctCounseleeForCurrentMonth() {
+                LocalDate now = LocalDate.now();
+                return queryFactory
+                                .select(counselSession.counselee.countDistinct())
+                                .from(counselSession)
+                                .where(
+                                                counselSession.scheduledStartDateTime.year().eq(now.getYear()),
+                                                counselSession.scheduledStartDateTime.month().eq(now.getMonthValue()))
                                 .fetchOne();
         }
 }

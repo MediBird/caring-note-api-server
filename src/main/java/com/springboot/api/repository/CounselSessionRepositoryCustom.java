@@ -12,4 +12,6 @@ public interface CounselSessionRepositoryCustom {
     List<CounselSession> findCompletedSessionsByYearAndMonth(int year, int month);
 
     long countByStatus(ScheduleStatus status);
+
+    long countDistinctCounseleeForCurrentMonth();
 }
