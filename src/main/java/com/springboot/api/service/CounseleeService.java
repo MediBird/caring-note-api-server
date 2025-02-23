@@ -1,26 +1,5 @@
 package com.springboot.api.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.common.util.DateTimeUtil;
-import com.springboot.api.domain.CounselCard;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselee.*;
-import com.springboot.api.repository.CounselSessionRepository;
-import com.springboot.api.repository.CounseleeRepository;
-import com.springboot.enums.CardRecordStatus;
-import com.springboot.enums.HealthInsuranceType;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CacheEvict;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +7,34 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.domain.CounselCard;
+import com.springboot.api.domain.CounselSession;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.dto.counselee.AddCounseleeReq;
+import com.springboot.api.dto.counselee.DeleteCounseleeBatchReq;
+import com.springboot.api.dto.counselee.DeleteCounseleeBatchRes;
+import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleePageRes;
+import com.springboot.api.dto.counselee.SelectCounseleeRes;
+import com.springboot.api.dto.counselee.UpdateCounseleeReq;
+import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.repository.CounseleeRepository;
+import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.HealthInsuranceType;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
@@ -64,15 +71,11 @@ public class CounseleeService {
             }
         }
 
-        // Step 6: 결과 반환
         return new SelectCounseleeBaseInformationByCounseleeIdRes(counselee.getId(), counselee.getName(),
                 dateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()),
                 counselee.getDateOfBirth().toString(), counselee.getGenderType(), counselee.getAddress(),
                 counselee.getHealthInsuranceType(), counselee.getCounselCount(), counselee.getLastCounselDate(),
-                diseases // diseases
-                         // 값
-                         // 반환
-                , Optional.ofNullable(currentCounselCard).map(CounselCard::getCardRecordStatus)
+                diseases, Optional.ofNullable(currentCounselCard).map(CounselCard::getCardRecordStatus)
                         .orElse(CardRecordStatus.UNRECORDED),
                 counselee.isDisability());
 
@@ -81,6 +84,12 @@ public class CounseleeService {
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
         log.info("addCounseleeReq: {}", addCounseleeReq);
+
+        boolean exists = counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber());
+        if (exists) {
+            throw new IllegalArgumentException("이미 등록된 전화번호입니다");
+        }
+
         Counselee targetCounselee = Counselee.builder()
                 .registrationDate(LocalDate.now())
                 .name(addCounseleeReq.getName())
@@ -101,20 +110,49 @@ public class CounseleeService {
     }
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
+    @Transactional
     public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
-        Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
-                .orElseThrow(IllegalArgumentException::new);
-        targetCounselee.setName(updateCounseleeReq.getName());
-        targetCounselee.setPhoneNumber(updateCounseleeReq.getPhoneNumber());
-        targetCounselee.setDateOfBirth(updateCounseleeReq.getDateOfBirth());
-        targetCounselee.setGenderType(updateCounseleeReq.getGenderType());
-        targetCounselee.setAddress(updateCounseleeReq.getAddress());
-        targetCounselee.setDisability(updateCounseleeReq.isDisability());
-        targetCounselee.setNote(updateCounseleeReq.getNote());
-        targetCounselee.setCareManagerName(updateCounseleeReq.getCareManagerName());
-        targetCounselee.setAffiliatedWelfareInstitution(updateCounseleeReq.getAffiliatedWelfareInstitution());
-        targetCounselee = counseleeRepository.save(targetCounselee);
-        return targetCounselee.getId();
+        Counselee existingCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
+                .orElseThrow(() -> new NoContentException("상담자를 찾을 수 없습니다"));
+
+        if (isPhoneNumberChanged(existingCounselee, updateCounseleeReq)) {
+            boolean exists = counseleeRepository.existsByPhoneNumber(updateCounseleeReq.getPhoneNumber());
+
+            if (exists) {
+                throw new IllegalArgumentException("이미 등록된 전화번호입니다");
+            }
+        }
+
+        // 4. 변경된 값만 업데이트
+        if (updateCounseleeReq.getName() != null) {
+            existingCounselee.setName(updateCounseleeReq.getName());
+        }
+        if (updateCounseleeReq.getPhoneNumber() != null) {
+            existingCounselee.setPhoneNumber(updateCounseleeReq.getPhoneNumber());
+        }
+        if (updateCounseleeReq.getDateOfBirth() != null) {
+            existingCounselee.setDateOfBirth(updateCounseleeReq.getDateOfBirth());
+        }
+        if (updateCounseleeReq.getGenderType() != null) {
+            existingCounselee.setGenderType(updateCounseleeReq.getGenderType());
+        }
+        if (updateCounseleeReq.getAddress() != null) {
+            existingCounselee.setAddress(updateCounseleeReq.getAddress());
+        }
+
+        // boolean 타입은 항상 업데이트
+        existingCounselee.setDisability(updateCounseleeReq.isDisability());
+
+        // null 허용 필드들
+        existingCounselee.setNote(updateCounseleeReq.getNote());
+        existingCounselee.setCareManagerName(updateCounseleeReq.getCareManagerName());
+        existingCounselee.setAffiliatedWelfareInstitution(updateCounseleeReq.getAffiliatedWelfareInstitution());
+
+        return counseleeRepository.save(existingCounselee).getId();
+    }
+
+    private boolean isPhoneNumberChanged(Counselee existingCounselee, UpdateCounseleeReq updateCounseleeReq) {
+        return !existingCounselee.getPhoneNumber().equals(updateCounseleeReq.getPhoneNumber());
     }
 
     public SelectCounseleeRes selectCounselee(String counseleeId) {
@@ -225,11 +263,15 @@ public class CounseleeService {
 
     @Cacheable(value = "birthDates")
     public List<LocalDate> getDistinctBirthDates() {
-        return counseleeRepository.findDistinctBirthDates();
+        return counseleeRepository.findDistinctBirthDates().stream()
+                .filter(date -> date != null)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
-        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions();
+        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions().stream()
+                .filter(institution -> institution != null)
+                .collect(Collectors.toList());
     }
 }
