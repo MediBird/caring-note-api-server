@@ -59,6 +59,11 @@ public class CounseleeService {
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
+
+        if(counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber())){
+            throw new IllegalArgumentException("Phone number already exists");
+        }
+
         Counselee targetCounselee = new Counselee(addCounseleeReq);
         return counseleeRepository.save(targetCounselee).getId();
     }
@@ -67,6 +72,10 @@ public class CounseleeService {
     public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
         Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
                 .orElseThrow(IllegalArgumentException::new);
+
+        if(counseleeRepository.existsByPhoneNumber(updateCounseleeReq.getPhoneNumber())){
+            throw new IllegalArgumentException("Phone number already exists");
+        }
 
         targetCounselee.update(updateCounseleeReq);
         targetCounselee = counseleeRepository.save(targetCounselee);
