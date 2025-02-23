@@ -1,12 +1,12 @@
 package com.springboot.api.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
-import com.querydsl.core.types.dsl.DateTemplate;
-import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.QCounselSession;
@@ -24,19 +24,18 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
 
         @Override
         public List<LocalDate> findDistinctDatesByYearAndMonth(int year, int month) {
-                DateTemplate<LocalDate> dateOnly = Expressions.dateTemplate(
-                                LocalDate.class,
-                                "DATE({0})",
-                                counselSession.scheduledStartDateTime);
                 return queryFactory
-                                .select(dateOnly)
-                                .distinct()
+                                .select(counselSession.scheduledStartDateTime)
                                 .from(counselSession)
                                 .where(
                                                 counselSession.scheduledStartDateTime.year().eq(year),
                                                 counselSession.scheduledStartDateTime.month().eq(month))
                                 .orderBy(counselSession.scheduledStartDateTime.asc())
-                                .fetch();
+                                .fetch()
+                                .stream()
+                                .map(LocalDateTime::toLocalDate)
+                                .distinct()
+                                .collect(Collectors.toList());
         }
 
         @Override
