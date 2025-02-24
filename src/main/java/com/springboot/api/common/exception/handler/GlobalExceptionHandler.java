@@ -35,103 +35,103 @@ import org.springframework.web.method.annotation.HandlerMethodValidationExceptio
 @Order(2)
 public class GlobalExceptionHandler extends CommonHandler {
 
-        // 400 - 잘못된 요청 예외 처리
-        @ExceptionHandler(MethodArgumentNotValidException.class)
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        public ResponseEntity<CommonRes<ValidationErrorRes>> handleValidationException(
-                        MethodArgumentNotValidException ex) {
-                List<ValidationError> errors = ex.getBindingResult()
-                                .getFieldErrors()
+    // 400 - 잘못된 요청 예외 처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<CommonRes<ValidationErrorRes>> handleValidationException(
+            MethodArgumentNotValidException ex) {
+        List<ValidationError> errors = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(error -> ValidationError.builder()
+                        .field(error.getField())
+                        .message("Invalid request")
+                        .build())
+                .collect(Collectors.toList());
+
+        ValidationErrorRes errorResponse = ValidationErrorRes.builder()
+                .errors(errors)
+                .build();
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new CommonRes<>(errorResponse));
+    }
+
+    // 잘못된 요청 파라미터 처리
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
+            IllegalArgumentException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorRes handleBadRequest(Exception ex) {
+        return buildErrorResponse(ex.getMessage());
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorRes handleNotFound(Exception ex) {
+        return buildErrorResponse(HttpMessages.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorRes handleAccessDenied(Exception ex) {
+        return buildErrorResponse(HttpMessages.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public ErrorRes handleAuthenticationCredentialsNotFoundException(Exception ex) {
+        return buildErrorResponse(HttpMessages.UNAUTHORIZED);
+    }
+
+    // JPA 엔터티가 이미 존재할 때 처리
+    @ExceptionHandler(EntityExistsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorRes handleEntityExistsException(EntityExistsException ex) {
+        return buildErrorResponse(HttpMessages.CONFLICT_DUPLICATE);
+    }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorRes handleJsonProcessingException(JsonProcessingException ex) {
+        return buildErrorResponse(ExceptionMessages.FAIL_JSON_CONVERT);
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorRes handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        return buildErrorResponse(HttpMessages.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<CommonRes<ValidationErrorRes>> handleMethodValidationException(
+            HandlerMethodValidationException ex) {
+        List<ValidationError> errors = ex.getAllValidationResults()
+                .stream()
+                .map(error -> ValidationError.builder()
+                        .field(error.getMethodParameter().getParameterName())
+                        .message(error.getResolvableErrors()
                                 .stream()
-                                .map(error -> ValidationError.builder()
-                                                .field(error.getField())
-                                                .message("Invalid request")
-                                                .build())
-                                .collect(Collectors.toList());
+                                .findFirst()
+                                .map(err -> err.getDefaultMessage())
+                                .orElse("Invalid request"))
+                        .build())
+                .collect(Collectors.toList());
 
-                ValidationErrorRes errorResponse = ValidationErrorRes.builder()
-                                .errors(errors)
-                                .build();
+        ValidationErrorRes errorResponse = ValidationErrorRes.builder()
+                .errors(errors)
+                .build();
 
-                return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(new CommonRes<>(errorResponse));
-        }
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new CommonRes<>(errorResponse));
+    }
 
-        // 잘못된 요청 파라미터 처리
-        @ExceptionHandler({ MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
-                        IllegalArgumentException.class })
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        public ErrorRes handleBadRequest(Exception ex) {
-                return buildErrorResponse(HttpMessages.BAD_REQUEST_PARAMETER);
-        }
-
-        @ExceptionHandler(NoResourceFoundException.class)
-        @ResponseStatus(HttpStatus.NOT_FOUND)
-        public ErrorRes handleNotFound(Exception ex) {
-                return buildErrorResponse(HttpMessages.NOT_FOUND);
-        }
-
-        @ExceptionHandler(AccessDeniedException.class)
-        @ResponseStatus(HttpStatus.FORBIDDEN)
-        public ErrorRes handleAccessDenied(Exception ex) {
-                return buildErrorResponse(HttpMessages.FORBIDDEN);
-        }
-
-        @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
-        @ResponseStatus(HttpStatus.UNAUTHORIZED)
-        public ErrorRes handleAuthenticationCredentialsNotFoundException(Exception ex) {
-                return buildErrorResponse(HttpMessages.UNAUTHORIZED);
-        }
-
-        // JPA 엔터티가 이미 존재할 때 처리
-        @ExceptionHandler(EntityExistsException.class)
-        @ResponseStatus(HttpStatus.CONFLICT)
-        public ErrorRes handleEntityExistsException(EntityExistsException ex) {
-                return buildErrorResponse(HttpMessages.CONFLICT_DUPLICATE);
-        }
-
-        @ExceptionHandler(JsonProcessingException.class)
-        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        public ErrorRes handleJsonProcessingException(JsonProcessingException ex) {
-                return buildErrorResponse(ExceptionMessages.FAIL_JSON_CONVERT);
-        }
-
-        @ExceptionHandler(HttpMessageNotReadableException.class)
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        public ErrorRes handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-                return buildErrorResponse(HttpMessages.BAD_REQUEST);
-        }
-
-        @ExceptionHandler(HandlerMethodValidationException.class)
-        @ResponseStatus(HttpStatus.BAD_REQUEST)
-        public ResponseEntity<CommonRes<ValidationErrorRes>> handleMethodValidationException(
-                        HandlerMethodValidationException ex) {
-                List<ValidationError> errors = ex.getAllValidationResults()
-                                .stream()
-                                .map(error -> ValidationError.builder()
-                                                .field(error.getMethodParameter().getParameterName())
-                                                .message(error.getResolvableErrors()
-                                                                .stream()
-                                                                .findFirst()
-                                                                .map(err -> err.getDefaultMessage())
-                                                                .orElse("Invalid request"))
-                                                .build())
-                                .collect(Collectors.toList());
-
-                ValidationErrorRes errorResponse = ValidationErrorRes.builder()
-                                .errors(errors)
-                                .build();
-
-                return ResponseEntity
-                                .status(HttpStatus.BAD_REQUEST)
-                                .body(new CommonRes<>(errorResponse));
-        }
-
-        // 500 - 서버 에러 처리
-        @ExceptionHandler(Exception.class)
-        @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-        public ErrorRes handleGeneralException(Exception ex) {
-                return buildErrorResponse(HttpMessages.INTERNAL_SERVER_ERROR);
-        }
+    // 500 - 서버 에러 처리
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorRes handleGeneralException(Exception ex) {
+        return buildErrorResponse(HttpMessages.INTERNAL_SERVER_ERROR);
+    }
 }
