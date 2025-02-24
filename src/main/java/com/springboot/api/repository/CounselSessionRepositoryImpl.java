@@ -1,9 +1,11 @@
 package com.springboot.api.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.QCounselSession;
 import com.springboot.enums.ScheduleStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -47,6 +49,35 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                         counselSession.status.eq(ScheduleStatus.COMPLETED),
                         counselSession.startDateTime.isNotNull(),
                         counselSession.endDateTime.isNotNull())
+                .fetch();
+    }
+
+    @Override
+    public List<CounselSession> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId, Pageable pageable) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (date != null) {
+            LocalDateTime startOfDay = date.atStartOfDay();
+            LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+            builder.and(counselSession.scheduledStartDateTime.goe(startOfDay));
+            builder.and(counselSession.scheduledStartDateTime.lt(endOfDay));
+        }
+
+        if (cursorId != null) {
+            builder.and(counselSession.id.gt(cursorId));
+        }
+
+        if (counselorId != null) {
+            builder.and(counselSession.counselor.id.eq(counselorId));
+        }
+
+        return queryFactory
+                .selectFrom(counselSession)
+                .where(builder)
+                .orderBy(counselSession.id.asc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize() + 1)
                 .fetch();
     }
 

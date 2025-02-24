@@ -1,6 +1,7 @@
 package com.springboot.api.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.domain.*;
@@ -107,59 +108,17 @@ public class CounselSessionService {
 
     @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
     @Transactional
-    public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(
+    public CommonCursorRes<List<SelectCounselSessionListItem>> selectCounselSessionListByBaseDateAndCursorAndSize(
             SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
         Pageable pageable = PageRequest.of(0, req.getSize());
 
-        List<CounselSession> sessions;
+        List<CounselSession> sessions = counselSessionRepository.findSessionByCursorAndDate(req.getBaseDate(), req.getCursor(), null, pageable);
 
-        LocalDateTime startOfDay = Optional
-                .ofNullable(req.getBaseDate())
-                .map(LocalDate::atStartOfDay)
-                .orElse(null);
+        boolean hasNext = sessions.size() > pageable.getPageSize();
+        List<CounselSession> content = hasNext ? sessions.subList(0, pageable.getPageSize()) : sessions;
+        String nextCursor = content.isEmpty() ? null : content.getLast().getId();
 
-        LocalDateTime endOfDay = Optional
-                .ofNullable(req.getBaseDate())
-                .map(d -> d.plusDays(1))
-                .map(LocalDate::atStartOfDay)
-                .orElse(null);
-
-        if (req.getBaseDate() == null) {
-            sessions = counselSessionRepository.findByCursor(
-                    req.getCursor(),
-                    null,
-                    pageable);
-        } else {
-            sessions = counselSessionRepository.findByDateAndCursor(
-                    req.getBaseDate()
-                            .atStartOfDay(),
-                    Optional.of(req.getBaseDate()
-                            .atStartOfDay()).map(d -> d.plusDays(1)).get(),
-                    req.getCursor(),
-                    null,
-                    pageable);
-        }
-
-        String nextCursorId = null;
-
-        if (!sessions.isEmpty()) {
-            CounselSession lastSession = sessions.getLast();
-            nextCursorId = lastSession.getId();
-        }
-
-        // hasNext 계산
-        boolean hasNext = sessions.size() == req.getSize();
-
-        List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
-                .map(SelectCounselSessionListItem::from)
-                .toList();
-
-        if (sessionListItems.isEmpty()) {
-            throw new NoContentException();
-        }
-
-        return new SelectCounselSessionListByBaseDateAndCursorAndSizeRes(sessionListItems, nextCursorId,
-                hasNext);
+        return new CommonCursorRes<>(content.stream().map(SelectCounselSessionListItem::from).toList(), nextCursor, hasNext);
     }
 
 

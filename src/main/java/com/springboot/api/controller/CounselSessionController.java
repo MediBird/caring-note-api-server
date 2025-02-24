@@ -73,14 +73,8 @@ public class CounselSessionController {
                 .size(size)
                 .build();
 
-        SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSizeRes = counselSessionService
-                .selectCounselSessionListByBaseDateAndCursorAndSize(
-                        selectCounselSessionListByBaseDateAndCursorAndSizeReq);
-
-        return ResponseEntity.ok(new CommonCursorRes<>(
-                selectCounselSessionListByBaseDateAndCursorAndSizeRes.sessionListItems(),
-                selectCounselSessionListByBaseDateAndCursorAndSizeRes.nextCursor(),
-                selectCounselSessionListByBaseDateAndCursorAndSizeRes.hasNext()));
+        return ResponseEntity.ok(counselSessionService.selectCounselSessionListByBaseDateAndCursorAndSize(
+                selectCounselSessionListByBaseDateAndCursorAndSizeReq));
     }
 
     @GetMapping("/{counselSessionId}")
