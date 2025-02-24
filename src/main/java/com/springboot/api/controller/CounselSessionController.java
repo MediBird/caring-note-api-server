@@ -73,7 +73,8 @@ public class CounselSessionController {
         @Operation(summary = "상담 세션 통계 조회")
         @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_ASSISTANT })
         public ResponseEntity<CommonRes<CounselSessionStatRes>> getSessionStats() {
-                return ResponseEntity.ok(new CommonRes<>(null));
+                CounselSessionStatRes stats = counselSessionService.getSessionStats();
+                return ResponseEntity.ok(new CommonRes<>(stats));
         }
 
         @GetMapping("/list")

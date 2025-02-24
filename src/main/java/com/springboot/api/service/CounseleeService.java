@@ -1,5 +1,20 @@
 package com.springboot.api.service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselCard;
@@ -59,7 +74,6 @@ public class CounseleeService {
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
-
         if(counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber())){
             throw new IllegalArgumentException("Phone number already exists");
         }
@@ -69,6 +83,7 @@ public class CounseleeService {
     }
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
+    @Transactional
     public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
         Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
                 .orElseThrow(IllegalArgumentException::new);
@@ -133,11 +148,15 @@ public class CounseleeService {
 
     @Cacheable(value = "birthDates")
     public List<LocalDate> getDistinctBirthDates() {
-        return counseleeRepository.findDistinctBirthDates();
+        return counseleeRepository.findDistinctBirthDates().stream()
+                .filter(date -> date != null)
+                .collect(Collectors.toList());
     }
 
     @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
-        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions();
+        return counseleeRepository.findDistinctAffiliatedWelfareInstitutions().stream()
+                .filter(institution -> institution != null)
+                .collect(Collectors.toList());
     }
 }

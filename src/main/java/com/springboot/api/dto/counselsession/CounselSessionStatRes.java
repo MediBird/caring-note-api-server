@@ -7,9 +7,9 @@ import lombok.Data;
 @Builder
 public class CounselSessionStatRes {
 
-    private int totalSessionCount;
-    private int counseleeCountForThisMonth;
-    private int totalCaringMessageCount;
-    private int counselHoursForThisMonth;
+    private long totalSessionCount;
+    private long counseleeCountForThisMonth;
+    private long totalCaringMessageCount;
+    private long counselHoursForThisMonth;
 
 }

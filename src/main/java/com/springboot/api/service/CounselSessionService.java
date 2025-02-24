@@ -8,6 +8,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,14 +48,10 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-
 @Service
 @RequiredArgsConstructor
 public class CounselSessionService {
 
-        private final CounselSessionRepository sessionRepository;
         private final EntityManager entityManager;
         private final DateTimeUtil dateTimeUtil;
         private final CounselSessionRepository counselSessionRepository;
@@ -75,13 +73,13 @@ public class CounselSessionService {
                                 .status(addCounselSessionReq.getStatus())
                                 .build();
 
-                CounselSession savedCounselSession = sessionRepository.save(counselSession);
+                CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
                 return new AddCounselSessionRes(savedCounselSession.getId());
         }
 
         public SelectCounselSessionRes selectCounselSession(String id) {
-                CounselSession counselSession = sessionRepository.findById(id).orElseThrow(
+                CounselSession counselSession = counselSessionRepository.findById(id).orElseThrow(
                                 IllegalArgumentException::new);
 
                 return SelectCounselSessionRes
@@ -126,12 +124,12 @@ public class CounselSessionService {
                                 .orElse(null);
 
                 if (req.getBaseDate() == null) {
-                        sessions = sessionRepository.findByCursor(
+                        sessions = counselSessionRepository.findByCursor(
                                         req.getCursor(),
                                         null,
                                         pageable);
                 } else {
-                        sessions = sessionRepository.findByDateAndCursor(
+                        sessions = counselSessionRepository.findByDateAndCursor(
                                         req.getBaseDate()
                                                         .atStartOfDay(),
                                         Optional.of(req.getBaseDate()
@@ -188,7 +186,7 @@ public class CounselSessionService {
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
-                CounselSession counselSession = sessionRepository
+                CounselSession counselSession = counselSessionRepository
                                 .findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
                                                 NoContentException::new);
 
@@ -245,20 +243,20 @@ public class CounselSessionService {
         @Transactional
         public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
 
-                sessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
+                counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
                 return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
 
         }
 
         public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
-                CounselSession counselSession = sessionRepository.findById(counselSessionId)
+                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                                 .orElseThrow(IllegalArgumentException::new);
 
                 Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                                 .orElseThrow(NoContentException::new);
 
-                List<CounselSession> previousCounselSessions = sessionRepository
+                List<CounselSession> previousCounselSessions = counselSessionRepository
                                 .findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),
                                                 counselSession.getScheduledStartDateTime());
 
@@ -288,46 +286,67 @@ public class CounselSessionService {
         }
 
         @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
-        @Transactional
         public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
-                return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+                // 입력값 유효성 검사
+                if (month < 1 || month > 12) {
+                        throw new IllegalArgumentException("월은 1-12 사이여야 합니다");
+                }
+                if (year < 1900 || year > 9999) {
+                        throw new IllegalArgumentException("연도가 유효하지 않습니다");
+                }
+
+                try {
+                        return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+                } catch (Exception e) {
+                        throw new RuntimeException("상담 일정 조회 중 오류가 발생했습니다", e);
+                }
         }
 
         @Cacheable(value = "sessionStats")
-        @Transactional
         public CounselSessionStatRes getSessionStats() {
-                return CounselSessionStatRes.builder()
-                                .totalSessionCount(calculateTotalSessionCount())
-                                .counseleeCountForThisMonth(calculateCounseleeCountForThisMonth())
-                                .totalCaringMessageCount(calculateTotalCaringMessageCount())
-                                .counselHoursForThisMonth(calculateCounselHoursForThisMonth())
-                                .build();
+                try {
+                        long totalSessionCount = calculateTotalSessionCount();
+                        long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
+                        long totalCaringMessageCount = counselSessionRepository.count();
+                        double counselHours = calculateCounselHoursForThisMonth();
+
+                        return CounselSessionStatRes.builder()
+                                        .totalSessionCount(totalSessionCount)
+                                        .counseleeCountForThisMonth(counseleeCount)
+                                        .totalCaringMessageCount(totalCaringMessageCount)
+                                        .counselHoursForThisMonth((long) counselHours)
+                                        .build();
+                } catch (Exception e) {
+                        throw new RuntimeException("통계 정보 조회 중 오류가 발생했습니다", e);
+                }
         }
 
-        private int calculateTotalSessionCount() {
-                return sessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+        private long calculateTotalSessionCount() {
+                try {
+                        return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+                } catch (Exception e) {
+                        throw new RuntimeException("완료된 상담 세션 수 계산 중 오류 발생", e);
+                }
         }
 
-        private int calculateCounseleeCountForThisMonth() {
-                return sessionRepository.findAll().size();
-        }
+        private double calculateCounselHoursForThisMonth() {
+                try {
+                        int year = LocalDateTime.now().getYear();
+                        int month = LocalDateTime.now().getMonthValue();
+                        List<CounselSession> completedSessions = counselSessionRepository
+                                        .findCompletedSessionsByYearAndMonth(year, month);
 
-        private int calculateCounselHoursForThisMonth() {
-                int year = LocalDateTime.now().getYear();
-                int month = LocalDateTime.now().getMonthValue();
-                List<CounselSession> completedSessions = counselSessionRepository
-                                .findCompletedSessionsByYearAndMonth(year, month);
-                return (int) completedSessions.stream()
-                                .mapToDouble(session -> {
-                                        Duration duration = Duration.between(session.getStartDateTime(),
-                                                        session.getEndDateTime());
-                                        return duration.toMinutes() / 60.0;
-                                })
-                                .sum();
-        }
-
-        private int calculateTotalCaringMessageCount() {
-                return sessionRepository.findAll().size();
+                        return completedSessions.stream()
+                                        .mapToDouble(session -> {
+                                                Duration duration = Duration.between(
+                                                                session.getStartDateTime(),
+                                                                session.getEndDateTime());
+                                                return duration.toMinutes() / 60.0;
+                                        })
+                                        .sum();
+                } catch (Exception e) {
+                        throw new RuntimeException("이번 달 상담 시간 계산 중 오류 발생", e);
+                }
         }
 
         @Scheduled(cron = "0 0 * * * *") // 매시간 실행
