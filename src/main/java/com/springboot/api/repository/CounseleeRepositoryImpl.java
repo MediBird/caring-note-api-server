@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implements CounseleeRepositoryCustom {
@@ -88,5 +89,15 @@ public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implement
                 .where(counselee.affiliatedWelfareInstitution.isNotNull())
                 .orderBy(counselee.affiliatedWelfareInstitution.asc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<Counselee> findByCounselSessionId(String counselSessionId) {
+        QCounselee counselee = QCounselee.counselee;
+        return Optional.ofNullable(queryFactory
+                .selectFrom(counselee)
+                .innerJoin(counselee.counselSessions)
+                .where(counselee.counselSessions.any().id.eq(counselSessionId))
+                .fetchOne());
     }
 }

@@ -2,7 +2,10 @@ package com.springboot.api.domain;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
+import com.springboot.api.dto.counselee.AddCounseleeReq;
+import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
 
@@ -21,23 +24,18 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "name", "date_of_birth", "phone_number" })
+        @UniqueConstraint(columnNames = {"name", "date_of_birth", "phone_number"})
 })
-@Data
+@Getter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSessions", "medicationRecords", })
-@ToString(callSuper = true, exclude = { "counselSessions", "medicationRecords" })
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSessions", "medicationRecords",})
+@ToString(callSuper = true, exclude = {"counselSessions", "medicationRecords"})
 public class Counselee extends BaseEntity {
 
     @Column(nullable = false)
@@ -81,12 +79,12 @@ public class Counselee extends BaseEntity {
 
     private String address;
 
-    private boolean isDisability;
+    private Boolean isDisability;
 
     @Column(name = "care_manager_name")
     private String careManagerName;
 
-    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CounselSession> counselSessions;
 
     @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
@@ -99,5 +97,37 @@ public class Counselee extends BaseEntity {
     @Override
     protected void onCreate() {
         super.onCreate();
+    }
+
+    public Counselee(AddCounseleeReq addCounseleeReq) {
+        this.name = addCounseleeReq.getName();
+        this.dateOfBirth = addCounseleeReq.getDateOfBirth();
+        this.phoneNumber = addCounseleeReq.getPhoneNumber();
+        this.counselCount = 0;
+        this.registrationDate = LocalDate.now();
+        this.affiliatedWelfareInstitution = addCounseleeReq.getAffiliatedWelfareInstitution();
+        this.note = addCounseleeReq.getNote();
+        this.genderType = addCounseleeReq.getGenderType();
+        this.healthInsuranceType = HealthInsuranceType.NON_COVERED;
+        this.address = addCounseleeReq.getAddress();
+        this.isDisability = addCounseleeReq.getIsDisability();
+        this.careManagerName = addCounseleeReq.getCareManagerName();
+    }
+
+    public void update(UpdateCounseleeReq updateCounseleeReq) {
+        this.name = Objects.requireNonNullElse(updateCounseleeReq.getName(), this.name);
+        this.phoneNumber = Objects.requireNonNullElse(updateCounseleeReq.getPhoneNumber(), this.phoneNumber);
+        this.dateOfBirth = Objects.requireNonNullElse(updateCounseleeReq.getDateOfBirth(), this.dateOfBirth);
+        this.genderType = Objects.requireNonNullElse(updateCounseleeReq.getGenderType(), this.genderType);
+        this.address = Objects.requireNonNullElse(updateCounseleeReq.getAddress(), this.address);
+        this.isDisability = Objects.requireNonNullElse(updateCounseleeReq.getIsDisability(), this.isDisability);
+        this.note = Objects.requireNonNullElse(updateCounseleeReq.getNote(), this.note);
+        this.careManagerName = Objects.requireNonNullElse(updateCounseleeReq.getCareManagerName(), this.careManagerName);
+        this.affiliatedWelfareInstitution = Objects.requireNonNullElse(updateCounseleeReq.getAffiliatedWelfareInstitution(), this.affiliatedWelfareInstitution);
+    }
+
+    public void counselSessionComplete(LocalDate lastCounselDate) {
+        this.counselCount++;
+        this.lastCounselDate = lastCounselDate;
     }
 }

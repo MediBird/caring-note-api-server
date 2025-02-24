@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface CounseleeRepositoryCustom {
     Page<Counselee> findWithFilters(
@@ -17,4 +18,6 @@ public interface CounseleeRepositoryCustom {
     List<LocalDate> findDistinctBirthDates();
 
     List<String> findDistinctAffiliatedWelfareInstitutions();
+
+    Optional<Counselee> findByCounselSessionId(String counselSessionId);
 }

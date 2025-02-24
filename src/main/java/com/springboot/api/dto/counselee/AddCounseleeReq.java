@@ -1,7 +1,6 @@
 package com.springboot.api.dto.counselee;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.enums.GenderType;
@@ -36,7 +35,7 @@ public class AddCounseleeReq {
     @Size(max = 200, message = "주소는 200자를 초과할 수 없습니다")
     private String address;
 
-    private boolean isDisability;
+    private Boolean isDisability;
 
     @Size(max = 1000, message = "비고는 1000자를 초과할 수 없습니다")
     @Nullable
