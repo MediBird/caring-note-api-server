@@ -8,9 +8,7 @@ import com.springboot.api.dto.counselsession.*;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.api.repository.CounselorRepository;
-import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -24,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -105,25 +102,7 @@ public class CounselSessionService {
         CounselSession counselSession = counselSessionRepository.findById(id).orElseThrow(
                 IllegalArgumentException::new);
 
-        return SelectCounselSessionRes
-                .builder()
-                .counselSessionId(counselSession.getId())
-                .scheduledTime(counselSession.getScheduledStartDateTime().toLocalDate().toString())
-                .scheduledDate(counselSession.getScheduledStartDateTime().toLocalTime().toString())
-                .counseleeId(Optional.ofNullable(counselSession.getCounselee())
-                        .map(Counselee::getId)
-                        .orElse(""))
-                .counseleeName(Optional.ofNullable(counselSession.getCounselee())
-                        .map(Counselee::getName)
-                        .orElse(""))
-                .counselorId(Optional.ofNullable(counselSession.getCounselor())
-                        .map(Counselor::getId)
-                        .orElse(""))
-                .counselorName(Optional.ofNullable(counselSession.getCounselor())
-                        .map(Counselor::getName)
-                        .orElse(""))
-                .build();
-
+        return SelectCounselSessionRes.from(counselSession);
     }
 
     @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
@@ -131,7 +110,6 @@ public class CounselSessionService {
     public SelectCounselSessionListByBaseDateAndCursorAndSizeRes selectCounselSessionListByBaseDateAndCursorAndSize(
             SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
         Pageable pageable = PageRequest.of(0, req.getSize());
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         List<CounselSession> sessions;
 
@@ -173,29 +151,7 @@ public class CounselSessionService {
         boolean hasNext = sessions.size() == req.getSize();
 
         List<SelectCounselSessionListItem> sessionListItems = sessions.stream()
-                .map(s -> SelectCounselSessionListItem.builder()
-                        .counseleeId(Optional.ofNullable(s.getCounselee())
-                                .map(BaseEntity::getId)
-                                .orElse(""))
-                        .counselorName(Optional.ofNullable(s.getCounselor())
-                                .map(Counselor::getName)
-                                .orElse(""))
-                        .counselorId(Optional.ofNullable(s.getCounselor())
-                                .map(Counselor::getId)
-                                .orElse(""))
-                        .counseleeName(Optional.ofNullable(s.getCounselee())
-                                .map(Counselee::getName)
-                                .orElse(""))
-                        .scheduledDate(s.getScheduledStartDateTime().toLocalDate().toString())
-                        .scheduledTime(s.getScheduledStartDateTime().toLocalTime()
-                                .format(timeFormatter))
-                        .counselSessionId(s.getId())
-                        .isCounselorAssign(Optional.ofNullable(s.getCounselor()).isPresent())
-                        .status(s.getStatus())
-                        .cardRecordStatus(Optional.ofNullable(s.getCounselCard())
-                                .map(CounselCard::getCardRecordStatus)
-                                .orElse(CardRecordStatus.UNRECORDED))
-                        .build())
+                .map(SelectCounselSessionListItem::from)
                 .toList();
 
         if (sessionListItems.isEmpty()) {
