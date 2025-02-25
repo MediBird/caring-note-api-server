@@ -283,7 +283,7 @@ public class TestDataInitializer implements CommandLineRunner {
                              }
                 """);
 
-        JsonNode independentLifeInformation = counselee.isDisability() ? objectMapper.readTree("""
+        JsonNode independentLifeInformation = counselee.getIsDisability() ? objectMapper.readTree("""
                 {
                                  "version": "1.0",
                                  "walking": {

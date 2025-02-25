@@ -20,7 +20,7 @@ public class DateTimeUtil {
         }
     }
 
-    public int calculateKoreanAge(LocalDate birthDate, LocalDate currentDate) throws RuntimeException {
+    public static int calculateKoreanAge(LocalDate birthDate, LocalDate currentDate) throws RuntimeException {
 
         if (birthDate == null || currentDate == null) {
             throw new IllegalArgumentException("Dates cannot be null");
