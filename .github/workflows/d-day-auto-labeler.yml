@@ -22,11 +22,3 @@ jobs:
           labels: D-3
           number: ${{ github.event.pull_request.number }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-
-  update-labels:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Update D-n Labels
-        uses: naver/d-day-labeler@v1.0.1
-        with:   
-          token: ${{ secrets.GITHUB_TOKEN }} 
