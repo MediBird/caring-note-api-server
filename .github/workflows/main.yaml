@@ -21,14 +21,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
       - name: Docker 이미지 빌드 및 푸시
         uses: docker/build-push-action@v4
         with:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: VM에 배포
         uses: appleboy/ssh-action@v0.1.7
