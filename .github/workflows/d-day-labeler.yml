@@ -1,0 +1,19 @@
+name: Update D-n Labels
+
+on:
+  schedule:
+    - cron: '0 15 * * *' # 매일 밤 12시에 실행 (KST 기준)
+  workflow_dispatch: # 수동 실행 가능하도록 추가
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  d-day-labeler:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update D-n Labels
+        uses: naver/d-day-labeler@v1.0.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
