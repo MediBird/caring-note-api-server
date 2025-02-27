@@ -114,4 +114,17 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                         counselSession.scheduledStartDateTime.before(twentyFourHoursAgo))
                 .execute();
     }
+
+    @Override
+    public List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId, LocalDateTime beforeDateTime) {
+        return queryFactory
+                .selectFrom(counselSession)
+                .leftJoin(counselSession.counselCard).fetchJoin()
+                .where(
+                        counselSession.counselee.id.eq(counseleeId),
+                        counselSession.status.eq(ScheduleStatus.COMPLETED),
+                        counselSession.scheduledStartDateTime.lt(beforeDateTime))
+                .orderBy(counselSession.endDateTime.desc())
+                .fetch();
+    }
 }

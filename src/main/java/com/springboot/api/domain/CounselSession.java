@@ -1,41 +1,26 @@
 package com.springboot.api.domain;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.springboot.enums.ScheduleStatus;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "counselor_id", "scheduled_start_datetime" }),
-        @UniqueConstraint(columnNames = { "counselee_id", "scheduled_start_datetime" })
+        @UniqueConstraint(columnNames = {"counselor_id", "scheduled_start_datetime"}),
+        @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime"})
 })
-@Data
+@Getter
+// TODO Update API deprecated 될 경우 Setter 삭제 필요
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselor", "counselee" })
-@ToString(callSuper = true, exclude = { "counselor", "counselee" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee"})
+@ToString(callSuper = true, exclude = {"counselor", "counselee"})
 public class CounselSession extends BaseEntity {
 
     @ManyToOne
@@ -65,26 +50,9 @@ public class CounselSession extends BaseEntity {
     @Column(nullable = false)
     private ScheduleStatus status;
 
+    // TODO 연관관계 검토
     @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
     private CounselCard counselCard;
-
-    @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private List<MedicationRecordHist> medicationRecordHists;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private MedicationCounsel medicationCounsel;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private WasteMedicationDisposal wasteMedicationDisposal;
-
-    @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private List<WasteMedicationRecord> wasteMedicationRecords;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private CounseleeConsent counseleeConsent;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private AICounselSummary aiCounselSummary;
 
     @PrePersist
     @Override
@@ -92,6 +60,21 @@ public class CounselSession extends BaseEntity {
         super.onCreate();
         if (this.status == null) {
             this.status = ScheduleStatus.SCHEDULED;
+        }
+    }
+
+    public void updateCounselor(Counselor counselor) {
+        this.counselor = Objects.requireNonNullElse(counselor, this.counselor);
+    }
+
+    public void updateStatus(ScheduleStatus status) {
+        if (this.status.equals(ScheduleStatus.COMPLETED)) {
+            throw new IllegalArgumentException("이미 완료된 상담 세션의 상태는 변경할 수 없습니다.");
+        }
+        this.status = Objects.requireNonNullElse(status, this.status);
+
+        if (this.status.equals(ScheduleStatus.COMPLETED)) {
+            this.counselee.counselSessionComplete(this.scheduledStartDateTime.toLocalDate());
         }
     }
 

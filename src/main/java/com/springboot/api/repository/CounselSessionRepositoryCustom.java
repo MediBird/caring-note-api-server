@@ -5,6 +5,7 @@ import com.springboot.enums.ScheduleStatus;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CounselSessionRepositoryCustom {
@@ -19,4 +20,6 @@ public interface CounselSessionRepositoryCustom {
     long countDistinctCounseleeForCurrentMonth();
 
     long cancelOverDueSessions();
+
+    List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId, LocalDateTime beforeDateTime);
 }
