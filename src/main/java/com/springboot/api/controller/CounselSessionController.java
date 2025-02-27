@@ -33,8 +33,7 @@ public class CounselSessionController {
         AddCounselSessionRes addCounselSessionRes = counselSessionService
                 .addCounselSession(addCounselSessionReq);
 
-        CommonRes<AddCounselSessionRes> commonRes = new CommonRes<>(addCounselSessionRes);
-        return ResponseEntity.ok(commonRes);
+        return ResponseEntity.ok(new CommonRes<>(addCounselSessionRes));
 
     }
 

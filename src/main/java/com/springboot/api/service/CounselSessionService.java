@@ -110,9 +110,9 @@ public class CounselSessionService {
     @Transactional
     public CommonCursorRes<List<SelectCounselSessionListItem>> selectCounselSessionListByBaseDateAndCursorAndSize(
             SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
-        Pageable pageable = PageRequest.of(0, req.getSize());
+        Pageable pageable = PageRequest.of(0, req.size());
 
-        List<CounselSession> sessions = counselSessionRepository.findSessionByCursorAndDate(req.getBaseDate(), req.getCursor(), null, pageable);
+        List<CounselSession> sessions = counselSessionRepository.findSessionByCursorAndDate(req.baseDate(), req.cursor(), null, pageable);
 
         boolean hasNext = sessions.size() > pageable.getPageSize();
         List<CounselSession> content = hasNext ? sessions.subList(0, pageable.getPageSize()) : sessions;
@@ -149,6 +149,7 @@ public class CounselSessionService {
                 .orElseThrow(NoContentException::new);
 
         counselSession.setStatus(updateStatusInCounselSessionReq.status());
+        
         if (ScheduleStatus.COMPLETED.equals(updateStatusInCounselSessionReq.status())) {
             Counselee counselee = counselSession.getCounselee();
             if (counselee != null) {
