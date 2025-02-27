@@ -1,0 +1,24 @@
+name: Auto D-N Labeler
+
+on:
+  pull_request:
+    types: [opened, reopened, edited, synchronize]
+  workflow_dispatch:
+
+permissions:
+  pull-requests: write
+
+jobs:
+  add-label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Add D-3 Label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'D-0') }}
+        with:
+          labels: D-3
+          number: ${{ github.event.pull_request.number }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
