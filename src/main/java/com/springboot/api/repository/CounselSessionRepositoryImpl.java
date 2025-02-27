@@ -3,7 +3,6 @@ package com.springboot.api.repository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.QCounselSession;
 import com.springboot.enums.ScheduleStatus;
 import org.springframework.data.domain.Pageable;
@@ -120,6 +119,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     public List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId, LocalDateTime beforeDateTime) {
         return queryFactory
                 .selectFrom(counselSession)
+                .leftJoin(counselSession.counselCard).fetchJoin()
                 .where(
                         counselSession.counselee.id.eq(counseleeId),
                         counselSession.status.eq(ScheduleStatus.COMPLETED),

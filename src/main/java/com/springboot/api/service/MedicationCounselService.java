@@ -29,7 +29,7 @@ public class MedicationCounselService {
 
 
     @Transactional
-    public AddMedicationCounselRes addMedicationCounsel(AddMedicationCounselReq addMedicationCounselReq){
+    public AddMedicationCounselRes addMedicationCounsel(AddMedicationCounselReq addMedicationCounselReq) {
 
         CounselSession counselSession = counselSessionRepository.findById(addMedicationCounselReq.getCounselSessionId())
                 .orElseThrow(IllegalArgumentException::new);
@@ -44,11 +44,11 @@ public class MedicationCounselService {
                 .orElse(Collections.emptyList())
                 .stream()
                 .map(highlight -> MedicationCounselHighlight.builder()
-                            .medicationCounsel(medicationCounsel)
-                            .highlight(highlight.highlight())
-                            .startIndex(highlight.startIndex())
-                            .endIndex(highlight.endIndex())
-                            .build())
+                        .medicationCounsel(medicationCounsel)
+                        .highlight(highlight.highlight())
+                        .startIndex(highlight.startIndex())
+                        .endIndex(highlight.endIndex())
+                        .build())
                 .collect(Collectors.toList());
 
         medicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);
@@ -59,7 +59,7 @@ public class MedicationCounselService {
         return new AddMedicationCounselRes(savedMedicationCounsel.getId());
     }
 
-    public SelectMedicationCounselRes selectMedicationCounsel(String counselSessionId){
+    public SelectMedicationCounselRes selectMedicationCounsel(String counselSessionId) {
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
@@ -74,22 +74,22 @@ public class MedicationCounselService {
                 , Optional.ofNullable(medicationCounsel.getMedicationCounselHighlights())
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(h->MedicationCounselHighlightDTO
-                            .builder()
-                            .highlight(h.getHighlight())
-                            .startIndex(h.getStartIndex())
-                            .endIndex(h.getEndIndex())
-                            .build()
+                .map(h -> MedicationCounselHighlightDTO
+                        .builder()
+                        .highlight(h.getHighlight())
+                        .startIndex(h.getStartIndex())
+                        .endIndex(h.getEndIndex())
+                        .build()
                 ).toList()
         );
     }
 
-    public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String counselSessionId){
+    public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String counselSessionId) {
 
         CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Counselee counselee= Optional.ofNullable(counselSession.getCounselee())
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
                 .orElseThrow(NoContentException::new);
 
 
@@ -100,16 +100,15 @@ public class MedicationCounselService {
         CounselSession previousCounselSession = counselSessions.stream().filter(cs -> ScheduleStatus.COMPLETED.equals(cs.getStatus())).findFirst()
                 .orElseThrow(NoContentException::new);
 
-
-        MedicationCounsel medicationCounsel = Optional.ofNullable(previousCounselSession.getMedicationCounsel())
+        MedicationCounsel medicationCounsel = medicationCounselRepository.findByCounselSessionId(previousCounselSession.getId())
                 .orElseThrow(NoContentException::new);
 
         return new SelectPreviousMedicationCounselRes(
                 previousCounselSession.getId()
-                ,Optional.ofNullable(medicationCounsel.getMedicationCounselHighlights())
+                , Optional.ofNullable(medicationCounsel.getMedicationCounselHighlights())
                 .orElse(Collections.emptyList())
                 .stream()
-                .map(h->MedicationCounselHighlightDTO
+                .map(h -> MedicationCounselHighlightDTO
                         .builder()
                         .highlight(h.getHighlight())
                         .startIndex(h.getStartIndex())
@@ -120,11 +119,10 @@ public class MedicationCounselService {
         );
 
 
-
     }
 
     @Transactional
-    public UpdateMedicationCounselRes updateMedicationCounsel(UpdateMedicationCounselReq updateMedicationCounselReq){
+    public UpdateMedicationCounselRes updateMedicationCounsel(UpdateMedicationCounselReq updateMedicationCounselReq) {
 
         MedicationCounsel medicationCounsel = medicationCounselRepository.findById(updateMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);
@@ -152,7 +150,7 @@ public class MedicationCounselService {
     }
 
     @Transactional
-    public DeleteMedicationCounselRes deleteMedicationCounsel(DeleteMedicationCounselReq deleteMedicationCounselReq){
+    public DeleteMedicationCounselRes deleteMedicationCounsel(DeleteMedicationCounselReq deleteMedicationCounselReq) {
 
         MedicationCounsel medicationCounsel = medicationCounselRepository.findById(deleteMedicationCounselReq.getMedicationCounselId())
                 .orElseThrow(NoContentException::new);
@@ -161,7 +159,6 @@ public class MedicationCounselService {
 
         return new DeleteMedicationCounselRes(medicationCounsel.getId());
     }
-
 
 
 }

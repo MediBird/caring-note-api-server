@@ -1,25 +1,12 @@
 package com.springboot.api.domain;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
-
 import com.springboot.enums.ScheduleStatus;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
@@ -63,26 +50,9 @@ public class CounselSession extends BaseEntity {
     @Column(nullable = false)
     private ScheduleStatus status;
 
+    // TODO 연관관계 검토
     @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
     private CounselCard counselCard;
-
-    @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private List<MedicationRecordHist> medicationRecordHists;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private MedicationCounsel medicationCounsel;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private WasteMedicationDisposal wasteMedicationDisposal;
-
-    @OneToMany(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private List<WasteMedicationRecord> wasteMedicationRecords;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private CounseleeConsent counseleeConsent;
-
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
-    private AICounselSummary aiCounselSummary;
 
     @PrePersist
     @Override
