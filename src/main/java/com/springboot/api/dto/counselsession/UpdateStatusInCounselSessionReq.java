@@ -4,7 +4,6 @@ import com.springboot.enums.ScheduleStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
 public record UpdateStatusInCounselSessionReq(
         @NotBlank(message = "상담 세션 ID는 필수 입력값입니다")

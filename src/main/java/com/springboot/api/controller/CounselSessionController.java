@@ -89,6 +89,7 @@ public class CounselSessionController {
     }
 
     @PutMapping
+    @Deprecated
     @Operation(summary = "상담일정 수정", tags = {"관리자 화면"})
     @RoleSecured(RoleType.ROLE_ADMIN)
     public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateCounselSession(

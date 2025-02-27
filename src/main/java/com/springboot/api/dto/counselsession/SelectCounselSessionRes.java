@@ -4,9 +4,6 @@ package com.springboot.api.dto.counselsession;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.Counselor;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
 
 import java.util.Optional;
 

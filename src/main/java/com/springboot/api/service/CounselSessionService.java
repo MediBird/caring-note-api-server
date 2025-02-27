@@ -23,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -130,11 +129,10 @@ public class CounselSessionService {
                 .findById(updateCounselorInCounselSessionReq.counselSessionId())
                 .orElseThrow(NoContentException::new);
 
-        String counselorId = updateCounselorInCounselSessionReq.counselorId();
-        Counselor counselor = counselorRepository.findById(counselorId)
-                .orElseThrow(NoContentException::new);
+        Counselor counselor = findAndValidateCounselorSchedule(updateCounselorInCounselSessionReq.counselorId(),
+                counselSession.getScheduledStartDateTime());
 
-        counselSession.setCounselor(counselor);
+        counselSession.updateCounselor(counselor);
 
         return new UpdateCounselorInCounselSessionRes(counselSession.getId());
     }
@@ -148,15 +146,7 @@ public class CounselSessionService {
                 .findById(updateStatusInCounselSessionReq.counselSessionId())
                 .orElseThrow(NoContentException::new);
 
-        counselSession.setStatus(updateStatusInCounselSessionReq.status());
-        
-        if (ScheduleStatus.COMPLETED.equals(updateStatusInCounselSessionReq.status())) {
-            Counselee counselee = counselSession.getCounselee();
-            if (counselee != null) {
-                // 완료된 상담 세션 수 계산
-                counselee.counselSessionComplete(counselSession.getScheduledStartDateTime().toLocalDate());
-            }
-        }
+        counselSession.updateStatus(updateStatusInCounselSessionReq.status());
 
         return new UpdateStatusInCounselSessionRes(counselSession.getId());
     }
@@ -168,7 +158,6 @@ public class CounselSessionService {
         counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
         return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
-
     }
 
     public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
@@ -179,15 +168,12 @@ public class CounselSessionService {
                 .orElseThrow(NoContentException::new);
 
         List<CounselSession> previousCounselSessions = counselSessionRepository
-                .findByCounseleeIdAndScheduledStartDateTimeLessThan(counselee.getId(),
+                .findPreviousCompletedSessionsOrderByEndDateTimeDesc(counselee.getId(),
                         counselSession.getScheduledStartDateTime());
 
         List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                 .stream()
-                .filter(session -> ScheduleStatus.COMPLETED.equals(session.getStatus()))
-                .sorted(Comparator.comparing(CounselSession::getEndDateTime).reversed())
                 .map(session -> {
-
                     JsonNode baseInfo = session.getCounselCard().getBaseInformation()
                             .get("baseInfo");
                     return new SelectPreviousCounselSessionListRes(
