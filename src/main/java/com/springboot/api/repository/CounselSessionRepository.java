@@ -58,9 +58,6 @@ public interface CounselSessionRepository
     List<CounselSession> findByCounseleeIdAndScheduledStartDateTimeLessThan(String counseleeId,
                                                                             LocalDateTime scheduledStartDateTime);
 
-    List<CounselSession> findByStatusAndScheduledStartDateTimeBefore(ScheduleStatus status,
-                                                                     LocalDateTime dateTime);
-
     boolean existsByCounselorAndScheduledStartDateTime(Counselor counselor, LocalDateTime scheduledStartDateTime);
 
     boolean existsByCounseleeAndScheduledStartDateTime(Counselee counselee, LocalDateTime scheduledStartDateTime);
