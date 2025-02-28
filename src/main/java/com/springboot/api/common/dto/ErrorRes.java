@@ -1,4 +1,4 @@
 package com.springboot.api.common.dto;
 
-
-public record ErrorRes(String message){}
+public record ErrorRes(String message) {
+}

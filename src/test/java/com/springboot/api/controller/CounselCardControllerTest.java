@@ -1,39 +1,40 @@
 package com.springboot.api.controller;
 
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.Collection;
+import java.util.Collections;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Collection;
-import java.util.Collections;
-
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.springboot.api.common.config.security.SecurityConfig;
 import com.springboot.api.common.converter.CustomJwtRoleConverter;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.message.HttpMessages;
 import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.dto.counselcard.SelectCounselCardRes;
-import com.springboot.api.dto.counselcard.SelectPreviousCounselCardRes;
-import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
-import com.springboot.api.dto.counselcard.information.health.HealthInformationDTO;
-import com.springboot.api.dto.counselcard.information.independentlife.IndependentLifeInformationDTO;
-import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
-import com.springboot.api.service.CounselCardService;
+import com.springboot.api.counselcard.controller.CounselCardController;
+import com.springboot.api.counselcard.dto.SelectCounselCardRes;
+import com.springboot.api.counselcard.dto.SelectPreviousCounselCardRes;
+import com.springboot.api.counselcard.dto.information.base.BaseInformationDTO;
+import com.springboot.api.counselcard.dto.information.health.HealthInformationDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.IndependentLifeInformationDTO;
+import com.springboot.api.counselcard.dto.information.living.LivingInformationDTO;
+import com.springboot.api.counselsession.service.CounselCardService;
 import com.springboot.enums.CardRecordStatus;
 
 @WebMvcTest(CounselCardController.class)

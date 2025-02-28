@@ -17,7 +17,7 @@ jobs:
 
       - name: Add D-3 Label
         uses: actions-ecosystem/action-add-labels@v1
-        if: ${{ !contains(github.event.pull_request.labels.*.name, 'D-0') }}
+        if: ${{ !contains(toJSON(github.event.pull_request.labels.*.name), 'D-') }}
         with:
           labels: D-3
           number: ${{ github.event.pull_request.number }}

@@ -1,21 +1,24 @@
 package com.springboot.api.service;
 
-import com.springboot.api.domain.Medication;
-import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
-import com.springboot.api.repository.MedicationRepository;
-import de.huxhorn.sulky.ulid.ULID;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.when;
+
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.List;
+import com.springboot.api.counselsession.entity.Medication;
+import com.springboot.api.medication.dto.SearchMedicationByKeywordRes;
+import com.springboot.api.medication.repository.MedicationRepository;
+import com.springboot.api.medication.service.MedicationService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.mockito.Mockito.when;
+import de.huxhorn.sulky.ulid.ULID;
 
 @ExtendWith(MockitoExtension.class)
 public class MedicationServiceTest {
@@ -28,7 +31,6 @@ public class MedicationServiceTest {
 
     private static final ULID ulid = new ULID();
 
-
     @Test
     public void testSearchMedicationsByName() {
         // given
@@ -37,23 +39,22 @@ public class MedicationServiceTest {
         String ulid1 = ulid.nextULID();
         String ulid2 = ulid.nextULID();
         List<SearchMedicationByKeywordRes> expectedResults = Arrays.asList(
-            SearchMedicationByKeywordRes.builder().id(ulid1).itemName("타이레놀").itemImage("image1.jpg").build(),
-            SearchMedicationByKeywordRes.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg").build()
-        );
+                SearchMedicationByKeywordRes.builder().id(ulid1).itemName("타이레놀").itemImage("image1.jpg").build(),
+                SearchMedicationByKeywordRes.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg")
+                        .build());
 
         Medication medication1 = new Medication();
         medication1.setId(ulid1);
         medication1.setItemName("타이레놀");
         medication1.setItemImage("image1.jpg");
-        
+
         Medication medication2 = new Medication();
         medication2.setId(ulid2);
         medication2.setItemName("타이레놀 500mg");
         medication2.setItemImage("image2.jpg");
         List<Medication> medications = List.of(
-            medication1,
-            medication2
-        );
+                medication1,
+                medication2);
         when(medicationRepository.searchByItemNameWithPattern(keyword, "ㅌㅇㄹㄴ")).thenReturn(medications);
 
         // when
@@ -66,7 +67,7 @@ public class MedicationServiceTest {
     public void testConvertToChosung() {
         // given
         String keyword = "타이레놀";
-        
+
         // when
         String pattern = medicationService.convertToChosung(keyword);
         // then

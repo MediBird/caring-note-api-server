@@ -1,10 +1,11 @@
 package com.springboot.api.common.validator;
 
+import java.util.stream.Stream;
+
 import com.springboot.api.common.annotation.ValidEnum;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
-import java.util.stream.Stream;
 
 public class EnumValidator implements ConstraintValidator<ValidEnum, Enum<?>> {
 

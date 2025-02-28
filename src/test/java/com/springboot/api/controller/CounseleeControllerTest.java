@@ -1,55 +1,54 @@
 package com.springboot.api.controller;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.mockito.Mockito.when;
-import static org.mockito.ArgumentMatchers.any;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-
-import com.springboot.api.dto.counselee.DeleteCounseleeBatchRes;
-import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.dto.counselee.SelectCounseleePageRes;
-import com.springboot.api.dto.counselee.SelectCounseleeRes;
-import com.springboot.api.dto.counselee.UpdateCounseleeReq;
-
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.springboot.api.common.config.security.SecurityConfig;
-import com.springboot.api.config.TestSecurityConfig;
 import com.springboot.api.common.converter.CustomJwtRoleConverter;
-import com.springboot.api.dto.counselee.AddCounseleeReq;
-import com.springboot.api.service.CounseleeService;
+import com.springboot.api.config.TestSecurityConfig;
+import com.springboot.api.counselee.controller.CounseleeController;
+import com.springboot.api.counselee.dto.AddCounseleeReq;
+import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
+import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.counselee.dto.SelectCounseleePageRes;
+import com.springboot.api.counselee.dto.SelectCounseleeRes;
+import com.springboot.api.counselee.dto.UpdateCounseleeReq;
+import com.springboot.api.counselee.entity.Counselee;
+import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.enums.GenderType;
-
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
+import com.springboot.enums.HealthInsuranceType;
 
 @WebMvcTest(CounseleeController.class)
 @Import({ SecurityConfig.class, TestSecurityConfig.class })
@@ -148,23 +147,29 @@ public class CounseleeControllerTest {
                 Collection<GrantedAuthority> authorities = Collections.singletonList(
                                 new SimpleGrantedAuthority("ROLE_ADMIN"));
                 mockJwtToken(authorities);
-                List<SelectCounseleeRes> mockList = Arrays.asList(
-                                SelectCounseleeRes.builder()
-                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
-                                                .name("John Doe")
-                                                .build(),
-                                SelectCounseleeRes.builder()
-                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
-                                                .name("Jane Doe")
-                                                .build());
-                SelectCounseleePageRes mockPageRes = SelectCounseleePageRes.builder()
-                                .content(mockList)
-                                .totalPages(1)
-                                .totalElements(2)
-                                .currentPage(0)
-                                .hasNext(false)
-                                .hasPrevious(false)
+                Counselee mockCounselee1 = Counselee.builder().name("John Doe").address("서울특별시 강남구 역삼동")
+                                .phoneNumber("010-1234-5678")
+                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                .genderType(GenderType.MALE)
+                                .affiliatedWelfareInstitution("행복동 복지센터")
+                                .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
+                                .isDisability(false)
+                                .careManagerName("홍길동")
+                                .note("홍길동")
                                 .build();
+                Counselee mockCounselee2 = Counselee.builder().name("Jane Doe").address("서울특별시 강남구 역삼동")
+                                .phoneNumber("010-1234-5678")
+                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                .genderType(GenderType.MALE)
+                                .affiliatedWelfareInstitution("행복동 복지센터")
+                                .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
+                                .isDisability(false)
+                                .careManagerName("홍길동")
+                                .note("홍길동")
+                                .build();
+                Page<Counselee> mockPage = new PageImpl<>(Arrays.asList(mockCounselee1, mockCounselee2),
+                                PageRequest.of(0, 10), 2);
+                SelectCounseleePageRes mockPageRes = SelectCounseleePageRes.of(mockPage);
                 when(counseleeService.selectCounselees(
                                 eq(0),
                                 eq(10),
@@ -178,11 +183,11 @@ public class CounseleeControllerTest {
                                 .header("Authorization", "Bearer token"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.data.content").isArray())
-                                .andExpect(jsonPath("$.data.totalPages").value(1))
-                                .andExpect(jsonPath("$.data.totalElements").value(2))
-                                .andExpect(jsonPath("$.data.currentPage").value(0))
-                                .andExpect(jsonPath("$.data.hasNext").value(false))
-                                .andExpect(jsonPath("$.data.hasPrevious").value(false));
+                                .andExpect(jsonPath("$.data.pageInfo.totalPages").value(1))
+                                .andExpect(jsonPath("$.data.pageInfo.totalElements").value(2))
+                                .andExpect(jsonPath("$.data.pageInfo.currentPage").value(0))
+                                .andExpect(jsonPath("$.data.pageInfo.hasNext").value(false))
+                                .andExpect(jsonPath("$.data.pageInfo.hasPrevious").value(false));
         }
 
         @Test

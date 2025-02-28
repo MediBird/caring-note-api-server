@@ -1,8 +1,10 @@
 package com.springboot.api.common.converter;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.exception.JsonConvertException;
+
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
@@ -19,8 +21,8 @@ public class JsonStringConverter implements AttributeConverter<JsonNode, String>
         }
 
         try {
-            return objectMapper.writeValueAsString(attribute);  // Map을 JSON 문자열로 변환
-        } catch (Exception e) {
+            return objectMapper.writeValueAsString(attribute); // Map을 JSON 문자열로 변환
+        } catch (JsonProcessingException e) {
             throw new JsonConvertException();
         }
     }
@@ -33,7 +35,7 @@ public class JsonStringConverter implements AttributeConverter<JsonNode, String>
         }
         try {
             return objectMapper.readTree(dbData);
-        } catch (Exception e) {
+        } catch (JsonProcessingException e) {
 
             throw new JsonConvertException();
         }

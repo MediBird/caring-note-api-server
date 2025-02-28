@@ -1,23 +1,20 @@
 package com.springboot.api.infra.external;
 
+import java.util.Map;
 
-//secret-key : 796d7a638753441eb241a266f1f10d49
-//invoke URL : https://clovaspeech-gw.ncloud.com/external/v1/10309/338f74c076c81a57b47313f867ab35519c289e3f8dede43066bea9f266708cb1
-
-import com.springboot.api.dto.naverClova.SpeechToTextReq;
-import com.springboot.api.dto.naverClova.SpeechToTextRes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.annotation.PostExchange;
 
-import java.util.Map;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 
 public interface NaverClovaExternalService {
 
     @PostExchange("/recognizer/upload")
-    ResponseEntity<SpeechToTextRes> convertSpeechToText(@RequestHeader Map<String,String> headers,
-                                                          @RequestPart("media") MultipartFile multipartFile,
-                                                          @RequestPart("params") SpeechToTextReq speechToTextReq);
+    ResponseEntity<SpeechToTextRes> convertSpeechToText(@RequestHeader Map<String, String> headers,
+            @RequestPart("media") MultipartFile multipartFile,
+            @RequestPart("params") SpeechToTextReq speechToTextReq);
 }

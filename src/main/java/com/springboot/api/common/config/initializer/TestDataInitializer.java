@@ -15,17 +15,19 @@ import org.springframework.transaction.annotation.Transactional;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.domain.CounselCard;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.domain.CounseleeConsent;
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.domain.Medication;
-import com.springboot.api.domain.MedicationCounsel;
-import com.springboot.api.domain.MedicationCounselHighlight;
-import com.springboot.api.domain.MedicationRecordHist;
-import com.springboot.api.domain.WasteMedicationDisposal;
-import com.springboot.api.domain.WasteMedicationRecord;
+import com.springboot.api.counselcard.entity.CounselCard;
+import com.springboot.api.counselee.entity.Counselee;
+import com.springboot.api.counselor.entity.Counselor;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.entity.CounseleeConsent;
+import com.springboot.api.counselsession.entity.Medication;
+import com.springboot.api.counselsession.entity.MedicationCounsel;
+import com.springboot.api.counselsession.entity.MedicationCounselHighlight;
+import com.springboot.api.counselsession.entity.MedicationRecordHist;
+import com.springboot.api.counselsession.entity.WasteMedicationDisposal;
+import com.springboot.api.counselsession.entity.WasteMedicationRecord;
+import com.springboot.api.counselsession.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.api.counselsession.enums.wasteMedication.RecoveryAgreementType;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.GenderType;
@@ -34,8 +36,6 @@ import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
 import com.springboot.enums.RoleType;
 import com.springboot.enums.ScheduleStatus;
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -191,7 +191,6 @@ public class TestDataInitializer implements CommandLineRunner {
                 : getRandomDate("2024-12-01", LocalDate.now().toString());
 
         LocalDateTime scheduleDateTime = scheduleDate.atTime(random.nextInt(9, 19), 0);
-        ;
 
         if (entityManager.find(CounselSession.class, counselSessionId) == null) {
             CounselSession counselSession = CounselSession

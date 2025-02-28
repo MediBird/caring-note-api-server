@@ -1,10 +1,11 @@
 package com.springboot.api.common.aspect;
 
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Aspect
 @Component
@@ -13,7 +14,8 @@ public class ExceptionLoggingAspect {
 
     // @ExceptionHandler 메서드를 포인트컷으로 지정
     @Pointcut("@annotation(org.springframework.web.bind.annotation.ExceptionHandler)")
-    public void exceptionHandlerMethods() {}
+    public void exceptionHandlerMethods() {
+    }
 
     // 모든 예외 처리 핸들러 실행 전 logExceptionMessage 로직 실행
     @Before("exceptionHandlerMethods() && args(ex)")

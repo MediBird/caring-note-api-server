@@ -1,11 +1,8 @@
 package com.springboot.api.common.converter;
 
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.repository.CounselorRepository;
-import com.springboot.enums.CounselorStatus;
-import com.springboot.enums.RoleType;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,8 +13,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import com.springboot.api.counselor.entity.Counselor;
+import com.springboot.api.counselor.repository.CounselorRepository;
+import com.springboot.enums.CounselorStatus;
+import com.springboot.enums.RoleType;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Component
 @RequiredArgsConstructor
