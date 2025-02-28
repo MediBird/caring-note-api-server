@@ -170,8 +170,6 @@ public class STTTest {
 
                 Prompt prompt = new Prompt(messages);
 
-                ;
-
                 ChatResponse chatResponse = chatClient.prompt(prompt)
                                 .call()
                                 .chatResponse();

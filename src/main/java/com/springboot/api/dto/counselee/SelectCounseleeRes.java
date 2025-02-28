@@ -15,21 +15,21 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class SelectCounseleeRes {
-    private String id;
-    private String name;
-    private int age;
-    private LocalDate dateOfBirth;
-    private String phoneNumber;
-    private GenderType gender;
-    private String address;
-    private String affiliatedWelfareInstitution;
-    private HealthInsuranceType healthInsuranceType;
-    private int counselCount;
-    private LocalDate lastCounselDate;
-    private LocalDate registrationDate;
-    private String careManagerName;
-    private String note;
-    private boolean isDisability;
+    private final String id;
+    private final String name;
+    private final int age;
+    private final LocalDate dateOfBirth;
+    private final String phoneNumber;
+    private final GenderType gender;
+    private final String address;
+    private final String affiliatedWelfareInstitution;
+    private final HealthInsuranceType healthInsuranceType;
+    private final int counselCount;
+    private final LocalDate lastCounselDate;
+    private final LocalDate registrationDate;
+    private final String careManagerName;
+    private final String note;
+    private final boolean isDisability;
 
     public static SelectCounseleeRes from(Counselee counselee) {
         return SelectCounseleeRes.builder()

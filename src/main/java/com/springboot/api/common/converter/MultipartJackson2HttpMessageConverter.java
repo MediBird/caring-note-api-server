@@ -18,16 +18,19 @@ public class MultipartJackson2HttpMessageConverter extends AbstractJackson2HttpM
         super(objectMapper, MediaType.APPLICATION_OCTET_STREAM);
     }
 
+    @SuppressWarnings("null")
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
         return false;
     }
 
+    @SuppressWarnings("null")
     @Override
     public boolean canWrite(Type type, Class<?> clazz, MediaType mediaType) {
         return false;
     }
 
+    @SuppressWarnings("null")
     @Override
     protected boolean canWrite(MediaType mediaType) {
         return false;

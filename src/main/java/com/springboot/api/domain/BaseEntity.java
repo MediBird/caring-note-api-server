@@ -7,6 +7,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
+import com.querydsl.core.annotations.QueryEntity;
+
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -18,6 +20,7 @@ import lombok.EqualsAndHashCode;
 @MappedSuperclass
 @Data
 @EqualsAndHashCode
+@QueryEntity
 public abstract class BaseEntity {
 
     @Id
@@ -30,8 +33,10 @@ public abstract class BaseEntity {
     @Column
     private LocalDateTime updatedDatetime;
 
+    @Column(updatable = false)
     private String createdBy;
 
+    @Column
     private String updatedBy;
 
     protected void onCreate() {

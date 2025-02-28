@@ -191,7 +191,6 @@ public class TestDataInitializer implements CommandLineRunner {
                 : getRandomDate("2024-12-01", LocalDate.now().toString());
 
         LocalDateTime scheduleDateTime = scheduleDate.atTime(random.nextInt(9, 19), 0);
-        ;
 
         if (entityManager.find(CounselSession.class, counselSessionId) == null) {
             CounselSession counselSession = CounselSession

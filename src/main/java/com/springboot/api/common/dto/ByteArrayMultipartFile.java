@@ -19,6 +19,7 @@ public class ByteArrayMultipartFile implements MultipartFile {
         this.content = content;
     }
 
+    @SuppressWarnings("null")
     @Override
     public String getName() {
         return name;
@@ -44,18 +45,20 @@ public class ByteArrayMultipartFile implements MultipartFile {
         return content.length;
     }
 
+    @SuppressWarnings("null")
     @Override
     public byte[] getBytes() throws IOException {
         return content;
     }
 
+    @SuppressWarnings("null")
     @Override
     public InputStream getInputStream() throws IOException {
         return new ByteArrayInputStream(content);
     }
 
     @Override
-    public void transferTo(java.io.File dest) throws IOException {
+    public void transferTo(@SuppressWarnings("null") java.io.File dest) throws IOException {
         throw new UnsupportedOperationException("This MultipartFile implementation does not support transferTo");
     }
 }
