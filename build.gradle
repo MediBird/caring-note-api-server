@@ -10,6 +10,8 @@ group = 'com.springboot'
 version = '0.0.1-SNAPSHOT'
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
@@ -25,7 +27,15 @@ repositories {
     mavenCentral()
     maven { url 'https://repo.spring.io/snapshot' }
 }
-
+sourceSets {
+    main {
+        java {
+            srcDirs += [
+                'build/generated/sources/annotationProcessor/java/main'
+            ]
+        }
+    }
+}
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
