@@ -1,7 +1,8 @@
 package com.springboot.api.repository;
 
-import com.springboot.api.domain.CounselCard;
 import java.util.Optional;
+
+import com.springboot.api.domain.CounselCard;
 
 public interface CounselCardRepositoryCustom {
 

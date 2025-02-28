@@ -5,13 +5,12 @@ import java.time.LocalDate;
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.enums.GenderType;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import jakarta.annotation.Nullable;
-
 import lombok.Builder;
 import lombok.Data;
 

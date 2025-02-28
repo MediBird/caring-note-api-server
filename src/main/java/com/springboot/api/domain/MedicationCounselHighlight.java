@@ -1,8 +1,16 @@
 package com.springboot.api.domain;
 
-
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "medication_counsel_highlights")
@@ -10,8 +18,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"medicationCounsel"})
-@ToString(callSuper = true, exclude = {"medicationCounsel"})
+@EqualsAndHashCode(callSuper = true, exclude = { "medicationCounsel" })
+@ToString(callSuper = true, exclude = { "medicationCounsel" })
 public class MedicationCounselHighlight extends BaseEntity {
 
     @ManyToOne
@@ -27,8 +35,5 @@ public class MedicationCounselHighlight extends BaseEntity {
     protected void onCreate() {
         super.onCreate();
     }
-
-
-
 
 }

@@ -1,17 +1,34 @@
 package com.springboot.api.domain;
 
-import com.springboot.enums.ScheduleStatus;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import com.springboot.enums.ScheduleStatus;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"counselor_id", "scheduled_start_datetime"}),
-        @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime"})
+        @UniqueConstraint(columnNames = { "counselor_id", "scheduled_start_datetime" }),
+        @UniqueConstraint(columnNames = { "counselee_id", "scheduled_start_datetime" })
 })
 @Getter
 // TODO Update API deprecated 될 경우 Setter 삭제 필요
@@ -19,8 +36,8 @@ import java.util.Objects;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee"})
-@ToString(callSuper = true, exclude = {"counselor", "counselee"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselor", "counselee" })
+@ToString(callSuper = true, exclude = { "counselor", "counselee" })
 public class CounselSession extends BaseEntity {
 
     @ManyToOne

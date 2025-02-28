@@ -1,13 +1,14 @@
 package com.springboot.api.dto.user;
 
+import java.util.List;
+
 import com.springboot.enums.RoleType;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor

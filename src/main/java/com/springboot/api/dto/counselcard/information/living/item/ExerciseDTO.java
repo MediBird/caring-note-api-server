@@ -4,7 +4,5 @@ import lombok.Builder;
 
 @Builder
 public record ExerciseDTO(
-        String exercisePattern
-        ,String exerciseNote
-){
+                String exercisePattern, String exerciseNote) {
 }

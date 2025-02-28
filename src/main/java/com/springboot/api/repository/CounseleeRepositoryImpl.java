@@ -1,10 +1,8 @@
 package com.springboot.api.repository;
 
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQuery;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.springboot.api.domain.Counselee;
-import com.springboot.api.domain.QCounselee;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -12,9 +10,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.springboot.api.domain.Counselee;
+import com.springboot.api.domain.QCounselee;
 
 @Repository
 public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implements CounseleeRepositoryCustom {

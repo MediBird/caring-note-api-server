@@ -1,12 +1,12 @@
 package com.springboot.api.common.config.security;
 
+import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 @Component
 @ConfigurationProperties(prefix = "security")

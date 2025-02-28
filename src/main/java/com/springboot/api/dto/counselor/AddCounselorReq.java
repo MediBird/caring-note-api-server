@@ -1,6 +1,7 @@
 package com.springboot.api.dto.counselor;
 
 import com.springboot.enums.RoleType;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

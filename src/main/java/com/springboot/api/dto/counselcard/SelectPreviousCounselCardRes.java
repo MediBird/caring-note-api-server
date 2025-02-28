@@ -9,6 +9,6 @@ import lombok.Builder;
 
 @Builder
 public record SelectPreviousCounselCardRes(
-                BaseInformationDTO baseInformation, HealthInformationDTO healthInformation,
-                LivingInformationDTO livingInformation, IndependentLifeInformationDTO independentLifeInformation) {
+        BaseInformationDTO baseInformation, HealthInformationDTO healthInformation,
+        LivingInformationDTO livingInformation, IndependentLifeInformationDTO independentLifeInformation) {
 }

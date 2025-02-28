@@ -21,8 +21,8 @@ import lombok.ToString;
 @Table(name = "medication_records")
 @Data
 @Builder
-@EqualsAndHashCode(callSuper = true, exclude = {"counselee", "medication", "prescribingCounselor"})
-@ToString(callSuper = true, exclude = {"counselee", "medication", "prescribingCounselor"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselee", "medication", "prescribingCounselor" })
+@ToString(callSuper = true, exclude = { "counselee", "medication", "prescribingCounselor" })
 public class MedicationRecord extends BaseEntity {
 
     @ManyToOne

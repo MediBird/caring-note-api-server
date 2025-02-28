@@ -1,13 +1,25 @@
 package com.springboot.api.domain;
 
+import java.time.LocalDate;
+
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.*;
-
-import java.time.LocalDate;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "medication_records_hist")
@@ -15,8 +27,8 @@ import java.time.LocalDate;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "medication"})
-@ToString(callSuper = true, exclude = {"counselSession", "medication"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medication" })
+@ToString(callSuper = true, exclude = { "counselSession", "medication" })
 public class MedicationRecordHist extends BaseEntity {
 
     @ManyToOne

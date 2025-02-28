@@ -1,10 +1,10 @@
 package com.springboot.api.dto.aiCounselSummary;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
-
-import java.util.List;
 
 @Builder
 @Data

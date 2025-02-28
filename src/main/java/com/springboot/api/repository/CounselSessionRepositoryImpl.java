@@ -1,17 +1,20 @@
 package com.springboot.api.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Repository;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.QCounselSession;
 import com.springboot.enums.ScheduleStatus;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCustom {
@@ -53,7 +56,8 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public List<CounselSession> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId, Pageable pageable) {
+    public List<CounselSession> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
+            Pageable pageable) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -116,7 +120,8 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId, LocalDateTime beforeDateTime) {
+    public List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId,
+            LocalDateTime beforeDateTime) {
         return queryFactory
                 .selectFrom(counselSession)
                 .leftJoin(counselSession.counselCard).fetchJoin()
@@ -126,5 +131,45 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                         counselSession.scheduledStartDateTime.lt(beforeDateTime))
                 .orderBy(counselSession.endDateTime.desc())
                 .fetch();
+    }
+
+    @Override
+    @SuppressWarnings("Convert2Diamond")
+    public Page<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+            String counseleeNameKeyword,
+            String counselorName,
+            LocalDate scheduledDate,
+            Pageable pageable) {
+
+        BooleanBuilder builder = new BooleanBuilder();
+
+        if (counseleeNameKeyword != null && !counseleeNameKeyword.isEmpty()) {
+            builder.and(counselSession.counselee.name.containsIgnoreCase(counseleeNameKeyword));
+        }
+
+        if (counselorName != null && !counselorName.isEmpty()) {
+            builder.and(counselSession.counselor.name.equalsIgnoreCase(counselorName));
+        }
+
+        if (scheduledDate != null) {
+            builder.and(counselSession.scheduledStartDateTime.goe(scheduledDate.atStartOfDay()));
+            builder.and(counselSession.scheduledStartDateTime.lt(scheduledDate.plusDays(1).atStartOfDay()));
+        }
+
+        List<CounselSession> content = queryFactory
+                .selectFrom(counselSession)
+                .where(builder)
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(counselSession.scheduledStartDateTime.desc())
+                .fetch();
+
+        Long total = queryFactory
+                .select(counselSession.count())
+                .from(counselSession)
+                .where(builder)
+                .fetchOne();
+
+        return new PageImpl<CounselSession>(content, pageable, total != null ? total : 0L);
     }
 }

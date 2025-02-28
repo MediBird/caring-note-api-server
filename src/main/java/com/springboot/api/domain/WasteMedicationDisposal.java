@@ -1,13 +1,27 @@
 package com.springboot.api.domain;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.enums.wasteMedication.DrugRemainActionType;
 import com.springboot.enums.wasteMedication.RecoveryAgreementType;
-import jakarta.persistence.*;
-import lombok.*;
 
-import java.util.List;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "waste_medication_disposals")
@@ -15,8 +29,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
-@ToString(callSuper = true, exclude = {"counselSession"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSession" })
+@ToString(callSuper = true, exclude = { "counselSession" })
 public class WasteMedicationDisposal extends BaseEntity {
 
     @OneToOne

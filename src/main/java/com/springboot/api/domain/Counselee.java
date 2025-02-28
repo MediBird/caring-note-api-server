@@ -24,18 +24,24 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name", "date_of_birth", "phone_number"})
+        @UniqueConstraint(columnNames = { "name", "date_of_birth", "phone_number" })
 })
 @Getter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSessions", "medicationRecords",})
-@ToString(callSuper = true, exclude = {"counselSessions", "medicationRecords"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSessions", "medicationRecords", })
+@ToString(callSuper = true, exclude = { "counselSessions", "medicationRecords" })
 public class Counselee extends BaseEntity {
 
     @Column(nullable = false)
@@ -122,8 +128,10 @@ public class Counselee extends BaseEntity {
         this.address = Objects.requireNonNullElse(updateCounseleeReq.getAddress(), this.address);
         this.isDisability = Objects.requireNonNullElse(updateCounseleeReq.getIsDisability(), this.isDisability);
         this.note = Objects.requireNonNullElse(updateCounseleeReq.getNote(), this.note);
-        this.careManagerName = Objects.requireNonNullElse(updateCounseleeReq.getCareManagerName(), this.careManagerName);
-        this.affiliatedWelfareInstitution = Objects.requireNonNullElse(updateCounseleeReq.getAffiliatedWelfareInstitution(), this.affiliatedWelfareInstitution);
+        this.careManagerName = Objects.requireNonNullElse(updateCounseleeReq.getCareManagerName(),
+                this.careManagerName);
+        this.affiliatedWelfareInstitution = Objects.requireNonNullElse(
+                updateCounseleeReq.getAffiliatedWelfareInstitution(), this.affiliatedWelfareInstitution);
     }
 
     public void counselSessionComplete(LocalDate lastCounselDate) {

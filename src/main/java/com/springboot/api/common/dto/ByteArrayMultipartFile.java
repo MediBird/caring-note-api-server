@@ -1,10 +1,10 @@
 package com.springboot.api.common.dto;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import org.springframework.web.multipart.MultipartFile;
 
 public class ByteArrayMultipartFile implements MultipartFile {
     private final String name;

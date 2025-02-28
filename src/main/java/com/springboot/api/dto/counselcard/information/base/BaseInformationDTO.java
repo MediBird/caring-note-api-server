@@ -7,8 +7,8 @@ import lombok.Builder;
 
 @Builder
 public record BaseInformationDTO(
-        String version,
-         BaseInfoDTO baseInfo,
-         CounselPurposeAndNoteDTO counselPurposeAndNote) {
+                String version,
+                BaseInfoDTO baseInfo,
+                CounselPurposeAndNoteDTO counselPurposeAndNote) {
 
 }

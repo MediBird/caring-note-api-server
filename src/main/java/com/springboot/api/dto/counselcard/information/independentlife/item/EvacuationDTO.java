@@ -6,7 +6,5 @@ import lombok.Builder;
 
 @Builder
 public record EvacuationDTO(
-        List<String> evacuationMethods
-        ,String etcNote
-){
+                List<String> evacuationMethods, String etcNote) {
 }

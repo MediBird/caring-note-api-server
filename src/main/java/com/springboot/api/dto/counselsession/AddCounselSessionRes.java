@@ -1,3 +1,4 @@
 package com.springboot.api.dto.counselsession;
 
-public record AddCounselSessionRes(String counselSessionId){}
+public record AddCounselSessionRes(String counselSessionId) {
+}

@@ -2,7 +2,6 @@ package com.springboot.api.dto.counselee;
 
 import java.time.LocalDate;
 
-import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.enums.GenderType;
 
 import jakarta.validation.constraints.NotBlank;
@@ -28,7 +27,7 @@ public class UpdateCounseleeReq {
     @Past(message = "생년월일은 과거 날짜여야 합니다")
     private LocalDate dateOfBirth;
 
-    //TODO : 현재 validation이 null 일 경우 실패가 되는데, nullable로 처리하게 변경해야 함
+    // TODO : 현재 validation이 null 일 경우 실패가 되는데, nullable로 처리하게 변경해야 함
     // @ValidEnum(enumClass = GenderType.class)
     private GenderType genderType;
 

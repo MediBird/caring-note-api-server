@@ -7,13 +7,9 @@ import com.springboot.enums.HealthInsuranceType;
 
 import lombok.Builder;
 
-
 @Builder
 public record BaseInfoDTO(
-        String counseleeId
-        ,String name
-        ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate
-        ,String counselSessionOrder
-        ,@JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate
-        ,HealthInsuranceType healthInsuranceType
-){}
+                String counseleeId, String name, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate birthDate,
+                String counselSessionOrder, @JsonFormat(pattern = "yyyy-MM-dd") LocalDate lastCounselDate,
+                HealthInsuranceType healthInsuranceType) {
+}

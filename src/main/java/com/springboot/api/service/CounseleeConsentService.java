@@ -1,19 +1,26 @@
 package com.springboot.api.service;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselSession;
 import com.springboot.api.domain.Counselee;
 import com.springboot.api.domain.CounseleeConsent;
-import com.springboot.api.dto.counseleeconsent.*;
+import com.springboot.api.dto.counseleeconsent.AddCounseleeConsentReq;
+import com.springboot.api.dto.counseleeconsent.AddCounseleeConsentRes;
+import com.springboot.api.dto.counseleeconsent.DeleteCounseleeConsentRes;
+import com.springboot.api.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
+import com.springboot.api.dto.counseleeconsent.UpdateCounseleeConsentReq;
+import com.springboot.api.dto.counseleeconsent.UpdateCounseleeConsentRes;
 import com.springboot.api.repository.CounselSessionRepository;
 import com.springboot.api.repository.CounseleeConsentRepository;
 import com.springboot.api.repository.CounseleeRepository;
+
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

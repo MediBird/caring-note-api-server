@@ -6,6 +6,6 @@ import lombok.Builder;
 
 @Builder
 public record SelectCounseleeConsentByCounseleeIdRes(
-                String counseleeConsentId, String counseleeId, String counseleeName, String counselSessionId,
-                LocalDateTime consentDateTime, boolean isConsent) {
+        String counseleeConsentId, String counseleeId, String counseleeName, String counselSessionId,
+        LocalDateTime consentDateTime, boolean isConsent) {
 }

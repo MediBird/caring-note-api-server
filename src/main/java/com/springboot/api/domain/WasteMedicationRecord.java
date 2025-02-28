@@ -16,8 +16,8 @@ import lombok.ToString;
 @Table(name = "waste_medication_records")
 @Data
 @Builder
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "medication"})
-@ToString(callSuper = true, exclude = {"counselSession", "medication"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medication" })
+@ToString(callSuper = true, exclude = { "counselSession", "medication" })
 @NoArgsConstructor
 @AllArgsConstructor
 public class WasteMedicationRecord extends BaseEntity {

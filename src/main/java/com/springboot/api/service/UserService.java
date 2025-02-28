@@ -23,39 +23,39 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+        private final UserRepository userRepository;
+        private final RoleRepository roleRepository;
 
-    @Transactional
-    public AddUserRes addUser(AddUserReq addUserReq) throws RuntimeException {
+        @Transactional
+        public AddUserRes addUser(AddUserReq addUserReq) throws RuntimeException {
 
-        User user = User.builder()
-                .email(addUserReq.getEmail())
-                .username(addUserReq.getUsername())
-                .password("encodedPassword")
-                .build();
-        List<String> roleNames = addUserReq.getRole()
-                .stream()
-                .map(RoleType::name)
-                .toList();
+                User user = User.builder()
+                                .email(addUserReq.getEmail())
+                                .username(addUserReq.getUsername())
+                                .password("encodedPassword")
+                                .build();
+                List<String> roleNames = addUserReq.getRole()
+                                .stream()
+                                .map(RoleType::name)
+                                .toList();
 
-        if (userRepository.existsByEmail(addUserReq.getEmail())) {
-            throw new DuplicatedEmailException();
+                if (userRepository.existsByEmail(addUserReq.getEmail())) {
+                        throw new DuplicatedEmailException();
+                }
+
+                List<Role> roles = roleRepository.findByNameIn(roleNames);
+
+                HashSet<Role> roleHashSet = new HashSet<>(roles);
+                user.setRoles(roleHashSet);
+
+                User savedUser = userRepository.save(user);
+
+                return AddUserRes.builder()
+                                .id(savedUser.getId())
+                                .roles(savedUser.getRoles()
+                                                .stream()
+                                                .map(Role::getName)
+                                                .toList())
+                                .build();
         }
-
-        List<Role> roles = roleRepository.findByNameIn(roleNames);
-
-        HashSet<Role> roleHashSet = new HashSet<>(roles);
-        user.setRoles(roleHashSet);
-
-        User savedUser = userRepository.save(user);
-
-        return AddUserRes.builder()
-                .id(savedUser.getId())
-                .roles(savedUser.getRoles()
-                        .stream()
-                        .map(Role::getName)
-                        .toList())
-                .build();
-    }
 }

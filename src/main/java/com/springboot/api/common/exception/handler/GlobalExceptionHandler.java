@@ -14,6 +14,7 @@ import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -27,8 +28,6 @@ import com.springboot.api.dto.error.ValidationErrorRes;
 
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 @RestControllerAdvice
 @Slf4j
@@ -59,8 +58,8 @@ public class GlobalExceptionHandler extends CommonHandler {
     }
 
     // 잘못된 요청 파라미터 처리
-    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
-            IllegalArgumentException.class})
+    @ExceptionHandler({ MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
+            IllegalArgumentException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleBadRequest(Exception ex) {
         return buildErrorResponse(ex.getMessage());

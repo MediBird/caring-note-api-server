@@ -1,9 +1,7 @@
 package com.springboot.api.service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,25 +17,19 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.domain.CounselCard;
 import com.springboot.api.domain.Counselee;
-import com.springboot.api.dto.counselee.*;
+import com.springboot.api.dto.counselee.AddCounseleeReq;
+import com.springboot.api.dto.counselee.DeleteCounseleeBatchReq;
+import com.springboot.api.dto.counselee.DeleteCounseleeBatchRes;
+import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.dto.counselee.SelectCounseleePageRes;
+import com.springboot.api.dto.counselee.SelectCounseleeRes;
+import com.springboot.api.dto.counselee.UpdateCounseleeReq;
 import com.springboot.api.repository.CounselCardRepository;
 import com.springboot.api.repository.CounseleeRepository;
 import com.springboot.enums.CardRecordStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.cache.annotation.CacheEvict;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,7 +66,7 @@ public class CounseleeService {
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
-        if(counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber())){
+        if (counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber())) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
@@ -88,7 +80,7 @@ public class CounseleeService {
         Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
                 .orElseThrow(IllegalArgumentException::new);
 
-        if(counseleeRepository.existsByPhoneNumber(updateCounseleeReq.getPhoneNumber())){
+        if (counseleeRepository.existsByPhoneNumber(updateCounseleeReq.getPhoneNumber())) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 

@@ -4,6 +4,5 @@ import lombok.Builder;
 
 @Builder
 public record AllergyDTO(
-        boolean isAllergy
-        ,String allergyNote
-){ }
+                boolean isAllergy, String allergyNote) {
+}

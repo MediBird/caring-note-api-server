@@ -4,7 +4,5 @@ import lombok.Builder;
 
 @Builder
 public record NutritionDTO(
-        String mealPattern
-        , String nutritionNote
-){
+                String mealPattern, String nutritionNote) {
 }

@@ -1,13 +1,13 @@
 package com.springboot.api.common.properties;
 
-
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @Component
-@ConfigurationProperties(prefix="stt.file.path")
+@ConfigurationProperties(prefix = "stt.file.path")
 @Getter
 @Setter
 public class SttFileProperties {

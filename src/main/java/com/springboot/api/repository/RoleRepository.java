@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.springboot.api.domain.Role;
 
-public interface RoleRepository  extends JpaRepository<Role, Long> {
+public interface RoleRepository extends JpaRepository<Role, Long> {
 
     List<Role> findByNameIn(List<String> names);
 

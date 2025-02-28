@@ -1,12 +1,10 @@
 package com.springboot.api.dto.counselcard.information.living.item;
 
-import lombok.Builder;
-
 import java.util.List;
+
+import lombok.Builder;
 
 @Builder
 public record MedicationManagementDTO(
-        boolean isAlone
-        , String houseMateNote
-        , List<String> medicationAssistants
-){ }
+                boolean isAlone, String houseMateNote, List<String> medicationAssistants) {
+}

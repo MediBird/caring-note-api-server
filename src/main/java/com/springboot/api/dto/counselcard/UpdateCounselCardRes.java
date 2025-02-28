@@ -1,3 +1,4 @@
 package com.springboot.api.dto.counselcard;
 
-public record UpdateCounselCardRes(String updateCounselCardId){}
+public record UpdateCounselCardRes(String updateCounselCardId) {
+}

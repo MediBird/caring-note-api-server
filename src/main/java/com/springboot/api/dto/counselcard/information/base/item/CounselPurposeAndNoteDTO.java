@@ -6,8 +6,5 @@ import lombok.Builder;
 
 @Builder
 public record CounselPurposeAndNoteDTO(
-        List<String> counselPurpose
-        ,String SignificantNote
-        , String MedicationNote
-){}
-
+                List<String> counselPurpose, String SignificantNote, String MedicationNote) {
+}

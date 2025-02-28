@@ -1,12 +1,13 @@
 package com.springboot.api.repository;
 
-import com.springboot.api.domain.Counselee;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
+import com.springboot.api.domain.Counselee;
 
 public interface CounseleeRepositoryCustom {
     Page<Counselee> findWithFilters(

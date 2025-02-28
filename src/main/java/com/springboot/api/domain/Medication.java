@@ -23,11 +23,11 @@ import lombok.ToString;
 @Entity
 @Data
 @Table(name = "medications", indexes = {
-    @Index(name = "idx_item_name", columnList = "item_name"),
-    @Index(name = "idx_item_name_chosung", columnList = "item_name_chosung")
+        @Index(name = "idx_item_name", columnList = "item_name"),
+        @Index(name = "idx_item_name_chosung", columnList = "item_name_chosung")
 })
-@EqualsAndHashCode(callSuper = true, exclude = {"contraindications"})
-@ToString(callSuper = true, exclude = {"contraindications"})
+@EqualsAndHashCode(callSuper = true, exclude = { "contraindications" })
+@ToString(callSuper = true, exclude = { "contraindications" })
 public class Medication extends BaseEntity {
 
     // 약 이름
@@ -87,11 +87,7 @@ public class Medication extends BaseEntity {
 
     // 위험한 약물 상호 작용 (자기 자신과의 다대다 관계)
     @ManyToMany
-    @JoinTable(
-            name = "medication_contraindications",
-            joinColumns = @JoinColumn(name = "medication_id"),
-            inverseJoinColumns = @JoinColumn(name = "contraindicated_medication_id")
-    )
+    @JoinTable(name = "medication_contraindications", joinColumns = @JoinColumn(name = "medication_id"), inverseJoinColumns = @JoinColumn(name = "contraindicated_medication_id"))
     private Set<Medication> contraindications = new HashSet<>();
 
     @PrePersist

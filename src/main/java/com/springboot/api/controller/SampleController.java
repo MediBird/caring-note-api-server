@@ -1,13 +1,13 @@
 package com.springboot.api.controller;
 
-
-import com.springboot.api.common.annotation.RoleSecured;
-import com.springboot.enums.RoleType;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.springboot.api.common.annotation.RoleSecured;
+import com.springboot.enums.RoleType;
 
 @RestController
 @RequestMapping("/sample")
@@ -22,6 +22,5 @@ public class SampleController {
         return "권한 있습니다.";
 
     }
-
 
 }

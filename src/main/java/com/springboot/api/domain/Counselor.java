@@ -34,16 +34,16 @@ import lombok.ToString;
 
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"email"}),
-    @UniqueConstraint(columnNames = {"phone_number"}),
-    @UniqueConstraint(columnNames = {"username"})
+        @UniqueConstraint(columnNames = { "email" }),
+        @UniqueConstraint(columnNames = { "phone_number" }),
+        @UniqueConstraint(columnNames = { "username" })
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSessions"})
-@ToString(callSuper = true, exclude = {"counselSessions"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSessions" })
+@ToString(callSuper = true, exclude = { "counselSessions" })
 public class Counselor extends BaseEntity implements UserDetails {
 
     // 이름
@@ -122,22 +122,22 @@ public class Counselor extends BaseEntity implements UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return getStatus().equals(CounselorStatus.ACTIVE);  // 계정이 만료되지 않았음
+        return getStatus().equals(CounselorStatus.ACTIVE); // 계정이 만료되지 않았음
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return getStatus().equals(CounselorStatus.ACTIVE);  // 계정이 잠기지 않음
+        return getStatus().equals(CounselorStatus.ACTIVE); // 계정이 잠기지 않음
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;  // 비밀번호가 만료되지 않음
+        return true; // 비밀번호가 만료되지 않음
     }
 
     @Override
     public boolean isEnabled() {
-        return getStatus().equals(CounselorStatus.ACTIVE);  // 계정이 활성화됨
+        return getStatus().equals(CounselorStatus.ACTIVE); // 계정이 활성화됨
     }
 
 }

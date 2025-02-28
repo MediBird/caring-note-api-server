@@ -1,22 +1,32 @@
 package com.springboot.api.domain;
 
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
-
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "counselee_consents", uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"counsel_session_id", "counselee_id"})
+        @UniqueConstraint(columnNames = { "counsel_session_id", "counselee_id" })
 })
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "counselee",})
-@ToString(callSuper = true, exclude = {"counselSession", "counselee"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "counselee", })
+@ToString(callSuper = true, exclude = { "counselSession", "counselee" })
 public class CounseleeConsent extends BaseEntity {
 
     @OneToOne
@@ -24,7 +34,7 @@ public class CounseleeConsent extends BaseEntity {
     private CounselSession counselSession;
 
     @ManyToOne
-    @JoinColumn(name ="counselee_id", nullable = false)
+    @JoinColumn(name = "counselee_id", nullable = false)
     private Counselee counselee;
 
     @NotNull

@@ -1,5 +1,4 @@
 package com.springboot.api.dto.aiCounselSummary;
 
-
-public record SelectAICounselSummaryPopUpRes(boolean isPopup){
+public record SelectAICounselSummaryPopUpRes(boolean isPopup) {
 }

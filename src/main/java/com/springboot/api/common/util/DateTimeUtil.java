@@ -1,12 +1,12 @@
 package com.springboot.api.common.util;
 
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class DateTimeUtil {
@@ -16,7 +16,8 @@ public class DateTimeUtil {
         try {
             return LocalDateTime.parse(dateTime, FORMATTER);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid date format: " + dateTime + ". Expected format: yyyy-MM-dd HH:mm");
+            throw new IllegalArgumentException(
+                    "Invalid date format: " + dateTime + ". Expected format: yyyy-MM-dd HH:mm");
         }
     }
 
@@ -46,12 +47,9 @@ public class DateTimeUtil {
 
         if (hours > 0) {
             return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-        }
-        else
-        {
+        } else {
             return String.format("%02d:%02d", minutes, seconds);
         }
     }
-
 
 }

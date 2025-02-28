@@ -4,7 +4,5 @@ import lombok.Builder;
 
 @Builder
 public record DrinkingDTO(
-        boolean isDrinking
-        ,String drinkingAmount
-){
+                boolean isDrinking, String drinkingAmount) {
 }

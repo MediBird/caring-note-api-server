@@ -1,5 +1,12 @@
 package com.springboot.api.domain;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
+
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -7,12 +14,6 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @MappedSuperclass
 @Data
@@ -46,7 +47,6 @@ public abstract class BaseEntity {
         updatedDatetime = LocalDateTime.now();
         updatedBy = Optional.ofNullable(updatedBy).orElseGet(this::getCurrentUserId);
     }
-
 
     private String getCurrentUserId() {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())

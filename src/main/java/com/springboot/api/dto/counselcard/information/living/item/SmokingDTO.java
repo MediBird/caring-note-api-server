@@ -4,7 +4,5 @@ import lombok.Builder;
 
 @Builder
 public record SmokingDTO(
-        boolean isSmoking
-        , String smokingPeriodNote
-        , String smokingAmount
-){}
+                boolean isSmoking, String smokingPeriodNote, String smokingAmount) {
+}

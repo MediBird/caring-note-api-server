@@ -1,11 +1,23 @@
 package com.springboot.api.controller;
 
-import org.springframework.data.convert.ReadingConverter;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.dto.counseleeconsent.*;
+import com.springboot.api.dto.counseleeconsent.AddCounseleeConsentReq;
+import com.springboot.api.dto.counseleeconsent.AddCounseleeConsentRes;
+import com.springboot.api.dto.counseleeconsent.DeleteCounseleeConsentRes;
+import com.springboot.api.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
+import com.springboot.api.dto.counseleeconsent.UpdateCounseleeConsentReq;
+import com.springboot.api.dto.counseleeconsent.UpdateCounseleeConsentRes;
 import com.springboot.api.service.CounseleeConsentService;
 import com.springboot.enums.RoleType;
 
@@ -14,9 +26,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.RequiredArgsConstructor;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
 @ApiController(path = "/v1/counselee/consent", name = "CounseleeConsentController", description = "내담자 동의 관련 API를 제공하는 Controller")
 @RequiredArgsConstructor

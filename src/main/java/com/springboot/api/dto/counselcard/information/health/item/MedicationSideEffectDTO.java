@@ -4,7 +4,5 @@ import lombok.Builder;
 
 @Builder
 public record MedicationSideEffectDTO(
-        boolean isSideEffect
-        , String suspectedMedicationNote
-        , String symptomsNote
-){}
+                boolean isSideEffect, String suspectedMedicationNote, String symptomsNote) {
+}

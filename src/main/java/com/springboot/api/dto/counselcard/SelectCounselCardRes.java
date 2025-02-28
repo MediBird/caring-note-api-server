@@ -10,7 +10,7 @@ import lombok.Builder;
 
 @Builder
 public record SelectCounselCardRes(
-                String counselCardId, BaseInformationDTO baseInformation, HealthInformationDTO healthInformation,
-                LivingInformationDTO livingInformation, IndependentLifeInformationDTO independentLifeInformation,
-                CardRecordStatus cardRecordStatus) {
+        String counselCardId, BaseInformationDTO baseInformation, HealthInformationDTO healthInformation,
+        LivingInformationDTO livingInformation, IndependentLifeInformationDTO independentLifeInformation,
+        CardRecordStatus cardRecordStatus) {
 }

@@ -6,6 +6,7 @@ import com.springboot.api.dto.counselcard.information.health.HealthInformationDT
 import com.springboot.api.dto.counselcard.information.independentlife.IndependentLifeInformationDTO;
 import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
 import com.springboot.enums.CardRecordStatus;
+
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
