@@ -1,4 +1,4 @@
-package com.springboot.api.dto.medicationcounsel;
+package com.springboot.api.counselsession.dto.medicationcounsel;
 
 public record UpdateMedicationCounselRes(String updatedMedicationCounselId) {
 }

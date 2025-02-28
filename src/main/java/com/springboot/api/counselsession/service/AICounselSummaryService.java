@@ -1,9 +1,11 @@
 package com.springboot.api.counselsession.service;
 
-import static com.springboot.enums.AICounselSummaryStatus.GPT_COMPLETE;
-import static com.springboot.enums.AICounselSummaryStatus.GPT_FAILED;
-import static com.springboot.enums.AICounselSummaryStatus.GPT_PROGRESS;
-import static com.springboot.enums.AICounselSummaryStatus.STT_PROGRESS;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_COMPLETE;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_FAILED;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_PROGRESS;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_FAILED;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -24,7 +26,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.scheduling.annotatxion.Async;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,11 +55,11 @@ import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.counselsession.entity.AICounselSummary;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.PromptTemplate;
+import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
 import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.PromptTemplateRepository;
 import com.springboot.api.infra.external.NaverClovaExternalService;
-import com.springboot.enums.AICounselSummaryStatus;
 
 import lombok.RequiredArgsConstructor;
 

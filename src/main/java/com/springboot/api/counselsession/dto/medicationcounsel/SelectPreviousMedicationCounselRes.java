@@ -1,8 +1,8 @@
-package com.springboot.api.dto.medicationcounsel;
+package com.springboot.api.counselsession.dto.medicationcounsel;
 
 import java.util.List;
 
 public record SelectPreviousMedicationCounselRes(
-                String previousCounselSessionId, List<MedicationCounselHighlightDTO> counselRecordHighlights,
-                String counselNoteSummary) {
+        String previousCounselSessionId, List<MedicationCounselHighlightDTO> counselRecordHighlights,
+        String counselNoteSummary) {
 }

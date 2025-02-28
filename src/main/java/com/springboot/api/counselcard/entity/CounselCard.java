@@ -46,7 +46,6 @@ public class CounselCard extends BaseEntity {
 
     @Column(name = "living_information", columnDefinition = "text")
     @Convert(converter = JsonStringConverter.class)
-    @SuppressWarnings("unused")
     private JsonNode livingInformation;
 
     @Column(name = "independent_life_information", columnDefinition = "text")

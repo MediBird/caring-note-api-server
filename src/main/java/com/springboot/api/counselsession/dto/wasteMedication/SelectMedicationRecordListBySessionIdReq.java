@@ -1,4 +1,4 @@
-package com.springboot.api.dto.wasteMedication;
+package com.springboot.api.counselsession.dto.wasteMedication;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

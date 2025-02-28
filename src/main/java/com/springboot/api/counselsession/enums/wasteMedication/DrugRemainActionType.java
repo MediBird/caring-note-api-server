@@ -1,4 +1,4 @@
-package com.springboot.enums.wasteMedication;
+package com.springboot.api.counselsession.enums.wasteMedication;
 
 public enum DrugRemainActionType {
     /**

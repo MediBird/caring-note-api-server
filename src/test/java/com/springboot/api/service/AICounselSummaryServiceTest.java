@@ -1,6 +1,6 @@
 package com.springboot.api.service;
 
-import static com.springboot.enums.AICounselSummaryStatus.STT_PROGRESS;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeast;

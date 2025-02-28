@@ -8,9 +8,9 @@ import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselsession.dto.wasteMedicationDisposal.WasteMedicationDisposalReq;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.WasteMedicationDisposal;
+import com.springboot.api.counselsession.enums.wasteMedication.UnusedReasonType;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.WasteMedicationDisposalRepository;
-import com.springboot.enums.wasteMedication.UnusedReasonType;
 
 import lombok.RequiredArgsConstructor;
 

@@ -1,4 +1,4 @@
-package com.springboot.api.dto.counseleeconsent;
+package com.springboot.api.counselsession.dto.counseleeconsent;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

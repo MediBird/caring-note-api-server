@@ -1,5 +1,5 @@
-package com.springboot.api.dto.aiCounselSummary;
+package com.springboot.api.counselsession.dto.aiCounselSummary;
 
 public record SelectSpeakerListRes(
-                String speaker, String text) {
+        String speaker, String text) {
 }

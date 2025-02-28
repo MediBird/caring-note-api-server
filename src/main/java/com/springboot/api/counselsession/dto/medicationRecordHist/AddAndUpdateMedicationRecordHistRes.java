@@ -1,4 +1,4 @@
-package com.springboot.api.dto.medicationRecordHist;
+package com.springboot.api.counselsession.dto.medicationRecordHist;
 
 public record AddAndUpdateMedicationRecordHistRes(String rowId) {
 

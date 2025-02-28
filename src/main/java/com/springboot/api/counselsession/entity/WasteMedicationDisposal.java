@@ -5,8 +5,8 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
+import com.springboot.api.counselsession.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.api.counselsession.enums.wasteMedication.RecoveryAgreementType;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

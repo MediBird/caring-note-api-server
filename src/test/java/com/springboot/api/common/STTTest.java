@@ -35,11 +35,9 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.springboot.api.dto.naverClova.SpeechToTextReq;
-import com.springboot.api.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
-
-import lombok.Builder;
 
 @SpringBootTest
 @Disabled
@@ -49,6 +47,24 @@ public class STTTest {
         ChatModel chatModel;
 
         private static final Logger log = LoggerFactory.getLogger(STTTest.class);
+
+        public static class SttMessage {
+                private String speaker;
+                private String text;
+
+                public SttMessage(String speaker, String text) {
+                        this.speaker = speaker;
+                        this.text = text;
+                }
+
+                public String getSpeaker() {
+                        return speaker;
+                }
+
+                public String getText() {
+                        return text;
+                }
+        }
 
         @ParameterizedTest
         @ValueSource(strings = { "test5.webm" })
@@ -155,11 +171,7 @@ public class STTTest {
                 List<SttMessage> sttMessages = speechToTextRes.segments()
                                 .stream()
                                 .filter(segmentDTO -> List.of("A", "E").contains(segmentDTO.speaker().name()))
-                                .map(segmentDTO -> SttMessage
-                                                .builder()
-                                                .speaker(segmentDTO.speaker().name())
-                                                .text(segmentDTO.text())
-                                                .build())
+                                .map(segmentDTO -> new SttMessage(segmentDTO.speaker().name(), segmentDTO.text()))
                                 .toList();
 
                 String sttMessagesJson = objectMapper.writeValueAsString(sttMessages);
@@ -169,7 +181,6 @@ public class STTTest {
                 List<Message> messages = List.of(systemMessage, systemMessage2, userMessage);
 
                 Prompt prompt = new Prompt(messages);
-
                 ChatResponse chatResponse = chatClient.prompt(prompt)
                                 .call()
                                 .chatResponse();
@@ -185,9 +196,4 @@ public class STTTest {
                 log.info(Objects.requireNonNull(chatResponse).getResult().getOutput().getText());
 
         }
-
-        @Builder
-        record SttMessage(String speaker, String text) {
-        };
-
 }

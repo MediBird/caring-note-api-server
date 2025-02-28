@@ -1,4 +1,4 @@
-package com.springboot.api.dto.naverClova;
+package com.springboot.api.counselsession.dto.naverClova;
 
 import java.util.List;
 import java.util.Map;

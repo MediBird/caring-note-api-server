@@ -1,4 +1,4 @@
-package com.springboot.api.dto.naverClova;
+package com.springboot.api.counselsession.dto.naverClova;
 
 import lombok.Data;
 

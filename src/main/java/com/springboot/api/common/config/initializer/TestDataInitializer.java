@@ -26,6 +26,8 @@ import com.springboot.api.counselsession.entity.MedicationCounselHighlight;
 import com.springboot.api.counselsession.entity.MedicationRecordHist;
 import com.springboot.api.counselsession.entity.WasteMedicationDisposal;
 import com.springboot.api.counselsession.entity.WasteMedicationRecord;
+import com.springboot.api.counselsession.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.api.counselsession.enums.wasteMedication.RecoveryAgreementType;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.GenderType;
@@ -34,8 +36,6 @@ import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
 import com.springboot.enums.RoleType;
 import com.springboot.enums.ScheduleStatus;
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

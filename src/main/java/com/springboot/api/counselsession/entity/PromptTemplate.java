@@ -12,7 +12,7 @@ import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.enums.PromptTemplateType;
+import com.springboot.api.counselsession.enums.PromptTemplateType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

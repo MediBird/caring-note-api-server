@@ -1,4 +1,4 @@
-package com.springboot.api.dto.medicationRecordHist;
+package com.springboot.api.counselsession.dto.medicationRecordHist;
 
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.enums.MedicationDivision;

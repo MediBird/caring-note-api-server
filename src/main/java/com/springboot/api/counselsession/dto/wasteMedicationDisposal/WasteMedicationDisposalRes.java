@@ -1,4 +1,4 @@
-package com.springboot.api.dto.wasteMedicationDisposal;
+package com.springboot.api.counselsession.dto.wasteMedicationDisposal;
 
 import com.springboot.api.counselsession.entity.WasteMedicationDisposal;
 

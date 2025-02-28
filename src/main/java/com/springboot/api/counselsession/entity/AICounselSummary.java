@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.converter.JsonStringConverter;
 import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.enums.AICounselSummaryStatus;
+import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

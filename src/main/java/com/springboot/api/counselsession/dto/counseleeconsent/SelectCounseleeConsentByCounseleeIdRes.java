@@ -1,4 +1,4 @@
-package com.springboot.api.dto.counseleeconsent;
+package com.springboot.api.counselsession.dto.counseleeconsent;
 
 import java.time.LocalDateTime;
 

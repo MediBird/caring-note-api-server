@@ -1,4 +1,4 @@
-package com.springboot.api.dto.aiCounselSummary;
+package com.springboot.api.counselsession.dto.aiCounselSummary;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

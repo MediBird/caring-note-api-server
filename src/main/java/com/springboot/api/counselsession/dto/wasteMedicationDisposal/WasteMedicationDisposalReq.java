@@ -1,10 +1,10 @@
-package com.springboot.api.dto.wasteMedicationDisposal;
+package com.springboot.api.counselsession.dto.wasteMedicationDisposal;
 
 import java.util.List;
 
-import com.springboot.enums.wasteMedication.DrugRemainActionType;
-import com.springboot.enums.wasteMedication.RecoveryAgreementType;
-import com.springboot.enums.wasteMedication.UnusedReasonType;
+import com.springboot.api.counselsession.enums.wasteMedication.DrugRemainActionType;
+import com.springboot.api.counselsession.enums.wasteMedication.RecoveryAgreementType;
+import com.springboot.api.counselsession.enums.wasteMedication.UnusedReasonType;
 
 import lombok.Data;
 
