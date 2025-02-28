@@ -296,8 +296,8 @@ public class CounselSessionService {
                 Page<CounselSession> page = counselSessionRepository
                                 .findByCounseleeNameAndCounselorNameAndScheduledDateTime(
                                                 req.getCounseleeNameKeyword(),
-                                                req.getCounselorName(),
-                                                req.getScheduledDate(),
+                                                req.getCounselorNames(),
+                                                req.getScheduledDates(),
                                                 pageable);
 
                 List<SelectCounselSessionListItem> content = page.getContent().stream()

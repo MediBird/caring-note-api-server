@@ -1,11 +1,18 @@
 package com.springboot.api.counselor.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
+import com.springboot.api.counselor.dto.CounselorNameListRes;
 import com.springboot.api.counselor.dto.GetCounselorRes;
+import com.springboot.api.counselor.dto.UpdateCounselorReq;
+import com.springboot.api.counselor.dto.UpdateCounselorRes;
 import com.springboot.api.counselor.service.CounselorService;
 import com.springboot.enums.RoleType;
 
@@ -19,31 +26,6 @@ public class CounselorController {
 
     private final CounselorService counselorService;
 
-    // @Operation(summary = "사용자 추가",
-    // description = "권한,기본정보를 입력받아 회원가입 처리, 헤더에 토큰 응답",
-    // responses = {
-    // @ApiResponse(responseCode = "201", description = "회원가입 성공")
-    // }
-    // )
-    // @PostMapping("/signup")
-    // public ResponseEntity<Void> addCounselor(
-    // @Parameter(description = "Details of the new Counselor to be added", required
-    // = true)
-    // @RequestBody @Valid AddCounselorReq addCounselorReq) throws RuntimeException
-    // {
-    // AddCounselorRes addCounselorRes =
-    // counselorService.addCounselor(addCounselorReq);
-    // return jwtUtil.createTokenResponse(addCounselorRes.id(),
-    // addCounselorRes.roleType());
-    // }
-    // @Operation(summary = "로그인", description = "Keycloak 로그인 페이지로 리다이렉트",
-    // responses = {
-    // @ApiResponse(responseCode = "302", description = "Keycloak 로그인 페이지로 리다이렉트")
-    // }, tags = {"로그인/홈"})
-    // @GetMapping("/login")
-    // public void login(HttpServletResponse response) throws IOException {
-    // response.sendRedirect("/oauth2/authorization/keycloak");
-    // }
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회한다.", responses = {
             @ApiResponse(responseCode = "200", description = "내 정보 조회 성공")
     })
@@ -53,4 +35,36 @@ public class CounselorController {
         return ResponseEntity.ok(counselorService.getMyInfo());
     }
 
+    @Operation(summary = "상담사 이름 목록 조회", description = "모든 상담사의 이름 목록을 조회한다. 결과는 캐싱됩니다.", responses = {
+            @ApiResponse(responseCode = "200", description = "상담사 이름 목록 조회 성공")
+    })
+    @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @GetMapping("/names")
+    public ResponseEntity<CounselorNameListRes> getCounselorNames() {
+        return ResponseEntity.ok(counselorService.getCounselorNames());
+    }
+
+    @Operation(summary = "상담사 정보 업데이트", description = "상담사 정보를 업데이트한다.", responses = {
+            @ApiResponse(responseCode = "200", description = "상담사 정보 업데이트 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "상담사를 찾을 수 없음")
+    })
+    @RoleSecured({ RoleType.ROLE_ADMIN })
+    @PutMapping("/{counselorId}")
+    public ResponseEntity<UpdateCounselorRes> updateCounselor(
+            @PathVariable String counselorId,
+            @RequestBody UpdateCounselorReq updateCounselorReq) {
+        return ResponseEntity.ok(counselorService.updateCounselor(counselorId, updateCounselorReq));
+    }
+
+    @Operation(summary = "상담사 삭제", description = "상담사를 삭제한다.", responses = {
+            @ApiResponse(responseCode = "204", description = "상담사 삭제 성공"),
+            @ApiResponse(responseCode = "404", description = "상담사를 찾을 수 없음")
+    })
+    @RoleSecured({ RoleType.ROLE_ADMIN })
+    @DeleteMapping("/{counselorId}")
+    public ResponseEntity<Void> deleteCounselor(@PathVariable String counselorId) {
+        counselorService.deleteCounselor(counselorId);
+        return ResponseEntity.noContent().build();
+    }
 }

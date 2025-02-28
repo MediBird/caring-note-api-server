@@ -142,7 +142,7 @@ public class CounseleeService {
     @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
         return counseleeRepository.findDistinctAffiliatedWelfareInstitutions().stream()
-                .filter(institution -> institution != null)
+                .filter(institution -> institution != null && !institution.isEmpty())
                 .collect(Collectors.toList());
     }
 }

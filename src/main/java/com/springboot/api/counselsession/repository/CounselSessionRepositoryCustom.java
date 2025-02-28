@@ -29,7 +29,9 @@ public interface CounselSessionRepositoryCustom {
 
         Page<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
                         String counseleeNameKeyword,
-                        String counselorName,
-                        LocalDate scheduledDate,
+                        List<String> counselorNames,
+                        List<LocalDate> scheduledDates,
                         Pageable pageable);
+
+        List<String> findAllPharmacistNames();
 }

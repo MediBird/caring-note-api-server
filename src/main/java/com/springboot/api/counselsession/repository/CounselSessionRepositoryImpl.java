@@ -137,8 +137,8 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     @SuppressWarnings("Convert2Diamond")
     public Page<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
             String counseleeNameKeyword,
-            String counselorName,
-            LocalDate scheduledDate,
+            List<String> counselorNames,
+            List<LocalDate> scheduledDates,
             Pageable pageable) {
 
         BooleanBuilder builder = new BooleanBuilder();
@@ -147,13 +147,20 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             builder.and(counselSession.counselee.name.containsIgnoreCase(counseleeNameKeyword));
         }
 
-        if (counselorName != null && !counselorName.isEmpty()) {
-            builder.and(counselSession.counselor.name.equalsIgnoreCase(counselorName));
+        if (counselorNames != null && !counselorNames.isEmpty()) {
+            builder.and(counselSession.counselor.name.in(counselorNames));
         }
 
-        if (scheduledDate != null) {
-            builder.and(counselSession.scheduledStartDateTime.goe(scheduledDate.atStartOfDay()));
-            builder.and(counselSession.scheduledStartDateTime.lt(scheduledDate.plusDays(1).atStartOfDay()));
+        if (scheduledDates != null && !scheduledDates.isEmpty()) {
+            BooleanBuilder dateBuilder = new BooleanBuilder();
+            for (LocalDate date : scheduledDates) {
+                LocalDateTime startOfDay = date.atStartOfDay();
+                LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
+                dateBuilder.or(
+                        counselSession.scheduledStartDateTime.goe(startOfDay)
+                                .and(counselSession.scheduledStartDateTime.lt(endOfDay)));
+            }
+            builder.and(dateBuilder);
         }
 
         List<CounselSession> content = queryFactory
@@ -171,5 +178,17 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 .fetchOne();
 
         return new PageImpl<CounselSession>(content, pageable, total != null ? total : 0L);
+    }
+
+    @Override
+    public List<String> findAllPharmacistNames() {
+        return queryFactory
+                .select(counselSession.counselor.name)
+                .from(counselSession)
+                .join(counselSession.counselor)
+                .where(counselSession.counselor.roleType.eq(com.springboot.enums.RoleType.ROLE_USER))
+                .distinct()
+                .orderBy(counselSession.counselor.name.asc())
+                .fetch();
     }
 }

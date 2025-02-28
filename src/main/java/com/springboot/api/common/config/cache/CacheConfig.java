@@ -22,7 +22,7 @@ public class CacheConfig {
                 .expireAfterWrite(1, TimeUnit.HOURS)
                 .maximumSize(100));
         cacheManager.setCacheNames(Arrays.asList("sessionDates", "sessionStats", "sessionList", "medicationSearch",
-                "birthDates", "welfareInstitutions"));
+                "birthDates", "welfareInstitutions", "counselorNames"));
         return cacheManager;
     }
 }

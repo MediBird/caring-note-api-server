@@ -3,7 +3,6 @@ package com.springboot.api.counselsession.controller;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -110,20 +109,16 @@ public class CounselSessionController {
         public ResponseEntity<CommonRes<SelectCounselSessionPageRes>> searchCounselSessions(
                         @RequestParam("page") @Min(0) int page,
                         @RequestParam("size") @Min(1) @Max(100) int size,
-                        @RequestParam(required = false, name = "counseleeName") @Pattern(regexp = "^[가-힣a-zA-Z\\s]*$", message = "이름은 한글과 영문만 허용됩니다") String counseleeName,
-                        @RequestParam(required = false, name = "counselorName") @Pattern(regexp = "^[가-힣a-zA-Z\\s]*$", message = "이름은 한글과 영문만 허용됩니다") String counselorName,
-                        @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate scheduledDate) {
+                        @RequestParam(required = false, name = "counseleeNameKeyword") @Pattern(regexp = "^[가-힣a-zA-Z\\s]*$", message = "이름은 한글과 영문만 허용됩니다") String counseleeNameKeyword,
+                        @RequestParam(required = false, name = "counselorNames") List<String> counselorNames,
+                        @RequestParam(required = false) List<LocalDate> scheduledDates) {
 
                 SearchCounselSessionReq searchCounselSessionReq = SearchCounselSessionReq.builder()
                                 .page(page)
                                 .size(size)
-                                .counseleeNameKeyword(counseleeName != null && !counseleeName.trim().isEmpty()
-                                                ? counseleeName.trim()
-                                                : null)
-                                .counselorName(counselorName != null && !counselorName.trim().isEmpty()
-                                                ? counselorName.trim()
-                                                : null)
-                                .scheduledDate(scheduledDate)
+                                .counseleeNameKeyword(counseleeNameKeyword)
+                                .counselorNames(counselorNames)
+                                .scheduledDates(scheduledDates)
                                 .build();
 
                 return ResponseEntity.ok(
