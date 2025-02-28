@@ -105,13 +105,7 @@ public class CounseleeService {
                 .map(SelectCounseleeRes::from)
                 .collect(Collectors.toList());
 
-        return new SelectCounseleePageRes(
-                content,
-                counseleePage.getTotalPages(),
-                counseleePage.getTotalElements(),
-                counseleePage.getNumber(),
-                counseleePage.hasNext(),
-                counseleePage.hasPrevious());
+        return SelectCounseleePageRes.of(counseleePage);
     }
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)

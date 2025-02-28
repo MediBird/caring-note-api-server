@@ -1,19 +1,22 @@
 package com.springboot.api.counselee.dto;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import org.springframework.data.domain.Page;
 
-@Data
-@AllArgsConstructor
-@Builder
-public class SelectCounseleePageRes {
-    private List<SelectCounseleeRes> content;
-    private int totalPages;
-    private long totalElements;
-    private int currentPage;
-    private boolean hasNext;
-    private boolean hasPrevious;
+import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.counselee.entity.Counselee;
+
+public record SelectCounseleePageRes(
+        PageRes pageInfo,
+        List<SelectCounseleeRes> content) {
+    public static SelectCounseleePageRes of(Page<Counselee> page) {
+        return new SelectCounseleePageRes(
+                PageRes.from(page),
+                page.getContent().stream()
+                        .map(SelectCounseleeRes::from)
+                        .collect(Collectors.toList()));
+    }
+
 }

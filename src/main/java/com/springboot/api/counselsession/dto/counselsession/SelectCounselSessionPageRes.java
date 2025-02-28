@@ -1,17 +1,22 @@
 package com.springboot.api.counselsession.dto.counselsession;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import lombok.Builder;
+import org.springframework.data.domain.Page;
 
-@Builder
+import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.counselsession.entity.CounselSession;
+
 public record SelectCounselSessionPageRes(
-        List<SelectCounselSessionListItem> content,
-        int totalPages,
-        long totalElements,
-        int numberOfElements,
-        int number,
-        int size,
-        boolean first,
-        boolean last) {
+                List<SelectCounselSessionListItem> content,
+                PageRes pageInfo) {
+
+        public static SelectCounselSessionPageRes of(Page<CounselSession> page) {
+                return new SelectCounselSessionPageRes(
+                                page.getContent().stream()
+                                                .map(SelectCounselSessionListItem::from)
+                                                .collect(Collectors.toList()),
+                                PageRes.from(page));
+        }
 }

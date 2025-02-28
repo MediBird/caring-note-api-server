@@ -24,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -42,8 +45,10 @@ import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounsele
 import com.springboot.api.counselee.dto.SelectCounseleePageRes;
 import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
+import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.enums.GenderType;
+import com.springboot.enums.HealthInsuranceType;
 
 @WebMvcTest(CounseleeController.class)
 @Import({ SecurityConfig.class, TestSecurityConfig.class })
@@ -142,23 +147,29 @@ public class CounseleeControllerTest {
                 Collection<GrantedAuthority> authorities = Collections.singletonList(
                                 new SimpleGrantedAuthority("ROLE_ADMIN"));
                 mockJwtToken(authorities);
-                List<SelectCounseleeRes> mockList = Arrays.asList(
-                                SelectCounseleeRes.builder()
-                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPJ")
-                                                .name("John Doe")
-                                                .build(),
-                                SelectCounseleeRes.builder()
-                                                .id("01HQ7YXHG8ZYXM5T2Q3X4KDJPK")
-                                                .name("Jane Doe")
-                                                .build());
-                SelectCounseleePageRes mockPageRes = SelectCounseleePageRes.builder()
-                                .content(mockList)
-                                .totalPages(1)
-                                .totalElements(2)
-                                .currentPage(0)
-                                .hasNext(false)
-                                .hasPrevious(false)
+                Counselee mockCounselee1 = Counselee.builder().name("John Doe").address("서울특별시 강남구 역삼동")
+                                .phoneNumber("010-1234-5678")
+                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                .genderType(GenderType.MALE)
+                                .affiliatedWelfareInstitution("행복동 복지센터")
+                                .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
+                                .isDisability(false)
+                                .careManagerName("홍길동")
+                                .note("홍길동")
                                 .build();
+                Counselee mockCounselee2 = Counselee.builder().name("Jane Doe").address("서울특별시 강남구 역삼동")
+                                .phoneNumber("010-1234-5678")
+                                .dateOfBirth(LocalDate.of(1990, 1, 1))
+                                .genderType(GenderType.MALE)
+                                .affiliatedWelfareInstitution("행복동 복지센터")
+                                .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
+                                .isDisability(false)
+                                .careManagerName("홍길동")
+                                .note("홍길동")
+                                .build();
+                Page<Counselee> mockPage = new PageImpl<>(Arrays.asList(mockCounselee1, mockCounselee2),
+                                PageRequest.of(0, 10), 2);
+                SelectCounseleePageRes mockPageRes = SelectCounseleePageRes.of(mockPage);
                 when(counseleeService.selectCounselees(
                                 eq(0),
                                 eq(10),
@@ -172,11 +183,11 @@ public class CounseleeControllerTest {
                                 .header("Authorization", "Bearer token"))
                                 .andExpect(status().isOk())
                                 .andExpect(jsonPath("$.data.content").isArray())
-                                .andExpect(jsonPath("$.data.totalPages").value(1))
-                                .andExpect(jsonPath("$.data.totalElements").value(2))
-                                .andExpect(jsonPath("$.data.currentPage").value(0))
-                                .andExpect(jsonPath("$.data.hasNext").value(false))
-                                .andExpect(jsonPath("$.data.hasPrevious").value(false));
+                                .andExpect(jsonPath("$.data.pageInfo.totalPages").value(1))
+                                .andExpect(jsonPath("$.data.pageInfo.totalElements").value(2))
+                                .andExpect(jsonPath("$.data.pageInfo.currentPage").value(0))
+                                .andExpect(jsonPath("$.data.pageInfo.hasNext").value(false))
+                                .andExpect(jsonPath("$.data.pageInfo.hasPrevious").value(false));
         }
 
         @Test

@@ -304,15 +304,6 @@ public class CounselSessionService {
                                 .map(SelectCounselSessionListItem::from)
                                 .toList();
 
-                return SelectCounselSessionPageRes.builder()
-                                .content(content)
-                                .totalPages(page.getTotalPages())
-                                .totalElements(page.getTotalElements())
-                                .numberOfElements(page.getNumberOfElements())
-                                .number(page.getNumber())
-                                .size(page.getSize())
-                                .first(page.isFirst())
-                                .last(page.isLast())
-                                .build();
+                return SelectCounselSessionPageRes.of(page);
         }
 }
