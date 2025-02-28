@@ -37,16 +37,17 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.domain.AICounselSummary;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.dto.aiCounselSummary.AnalyseTextReq;
-import com.springboot.api.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.dto.aiCounselSummary.DeleteAICounselSummaryReq;
-import com.springboot.api.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.dto.naverClova.SegmentDTO;
-import com.springboot.api.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.repository.AICounselSummaryRepository;
-import com.springboot.api.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.counselsession.entity.AICounselSummary;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.service.AICounselSummaryService;
 
 @SpringBootTest
 @EnableAsync

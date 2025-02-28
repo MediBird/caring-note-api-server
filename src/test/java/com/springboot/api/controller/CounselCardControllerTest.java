@@ -27,13 +27,14 @@ import com.springboot.api.common.converter.CustomJwtRoleConverter;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.message.HttpMessages;
 import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.dto.counselcard.SelectCounselCardRes;
-import com.springboot.api.dto.counselcard.SelectPreviousCounselCardRes;
-import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
-import com.springboot.api.dto.counselcard.information.health.HealthInformationDTO;
-import com.springboot.api.dto.counselcard.information.independentlife.IndependentLifeInformationDTO;
-import com.springboot.api.dto.counselcard.information.living.LivingInformationDTO;
-import com.springboot.api.service.CounselCardService;
+import com.springboot.api.counselcard.controller.CounselCardController;
+import com.springboot.api.counselcard.dto.SelectCounselCardRes;
+import com.springboot.api.counselcard.dto.SelectPreviousCounselCardRes;
+import com.springboot.api.counselcard.dto.information.base.BaseInformationDTO;
+import com.springboot.api.counselcard.dto.information.health.HealthInformationDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.IndependentLifeInformationDTO;
+import com.springboot.api.counselcard.dto.information.living.LivingInformationDTO;
+import com.springboot.api.counselsession.service.CounselCardService;
 import com.springboot.enums.CardRecordStatus;
 
 @WebMvcTest(CounselCardController.class)

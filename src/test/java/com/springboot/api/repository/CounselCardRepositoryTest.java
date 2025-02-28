@@ -15,9 +15,11 @@ import org.springframework.context.annotation.Import;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.config.JpaTestAdditionalConfig;
-import com.springboot.api.domain.CounselCard;
-import com.springboot.api.domain.CounselSession;
-import com.springboot.api.dto.counselcard.information.base.BaseInformationDTO;
+import com.springboot.api.counselcard.dto.information.base.BaseInformationDTO;
+import com.springboot.api.counselcard.entity.CounselCard;
+import com.springboot.api.counselcard.repository.CounselCardRepository;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
 
 @DataJpaTest
 @Import(JpaTestAdditionalConfig.class)

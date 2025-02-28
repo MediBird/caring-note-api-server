@@ -30,13 +30,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.config.security.SecurityConfig;
 import com.springboot.api.common.converter.CustomJwtRoleConverter;
 import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.dto.counseleeconsent.AddCounseleeConsentReq;
-import com.springboot.api.dto.counseleeconsent.AddCounseleeConsentRes;
-import com.springboot.api.dto.counseleeconsent.DeleteCounseleeConsentRes;
-import com.springboot.api.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
-import com.springboot.api.dto.counseleeconsent.UpdateCounseleeConsentReq;
-import com.springboot.api.dto.counseleeconsent.UpdateCounseleeConsentRes;
-import com.springboot.api.service.CounseleeConsentService;
+import com.springboot.api.counselsession.controller.CounseleeConsentController;
+import com.springboot.api.counselsession.dto.counseleeconsent.AddCounseleeConsentReq;
+import com.springboot.api.counselsession.dto.counseleeconsent.AddCounseleeConsentRes;
+import com.springboot.api.counselsession.dto.counseleeconsent.DeleteCounseleeConsentRes;
+import com.springboot.api.counselsession.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
+import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentReq;
+import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentRes;
+import com.springboot.api.counselsession.service.CounseleeConsentService;
 
 @WebMvcTest(CounseleeConsentController.class)
 @Import({ SecurityConfig.class, TestSecurityConfig.class })

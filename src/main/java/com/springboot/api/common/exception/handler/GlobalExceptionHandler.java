@@ -21,10 +21,10 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.ErrorRes;
+import com.springboot.api.common.dto.ValidationError;
+import com.springboot.api.common.dto.ValidationErrorRes;
 import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.common.message.HttpMessages;
-import com.springboot.api.dto.error.ValidationError;
-import com.springboot.api.dto.error.ValidationErrorRes;
 
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;

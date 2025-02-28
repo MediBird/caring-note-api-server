@@ -35,13 +35,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.config.security.SecurityConfig;
 import com.springboot.api.common.converter.CustomJwtRoleConverter;
 import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.dto.counselee.AddCounseleeReq;
-import com.springboot.api.dto.counselee.DeleteCounseleeBatchRes;
-import com.springboot.api.dto.counselee.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.dto.counselee.SelectCounseleePageRes;
-import com.springboot.api.dto.counselee.SelectCounseleeRes;
-import com.springboot.api.dto.counselee.UpdateCounseleeReq;
-import com.springboot.api.service.CounseleeService;
+import com.springboot.api.counselee.controller.CounseleeController;
+import com.springboot.api.counselee.dto.AddCounseleeReq;
+import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
+import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.counselee.dto.SelectCounseleePageRes;
+import com.springboot.api.counselee.dto.SelectCounseleeRes;
+import com.springboot.api.counselee.dto.UpdateCounseleeReq;
+import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.enums.GenderType;
 
 @WebMvcTest(CounseleeController.class)

@@ -13,8 +13,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Component;
 
-import com.springboot.api.domain.Counselor;
-import com.springboot.api.repository.CounselorRepository;
+import com.springboot.api.counselor.entity.Counselor;
+import com.springboot.api.counselor.repository.CounselorRepository;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.RoleType;
 

@@ -13,9 +13,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.springboot.api.domain.Medication;
-import com.springboot.api.dto.medication.SearchMedicationByKeywordRes;
-import com.springboot.api.repository.MedicationRepository;
+import com.springboot.api.counselsession.entity.Medication;
+import com.springboot.api.medication.dto.SearchMedicationByKeywordRes;
+import com.springboot.api.medication.repository.MedicationRepository;
+import com.springboot.api.medication.service.MedicationService;
 
 import de.huxhorn.sulky.ulid.ULID;
 
