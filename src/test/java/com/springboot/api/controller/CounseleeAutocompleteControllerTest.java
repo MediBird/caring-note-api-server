@@ -1,5 +1,6 @@
 package com.springboot.api.controller;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -12,6 +13,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -24,7 +26,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.config.security.SecurityConfig;
 import com.springboot.api.common.converter.CustomJwtRoleConverter;
 import com.springboot.api.config.TestSecurityConfig;
@@ -48,8 +49,17 @@ public class CounseleeAutocompleteControllerTest {
         @MockBean
         private CustomJwtRoleConverter customJwtRoleConverter;
 
-        @Autowired
-        private ObjectMapper objectMapper;
+        private static final String TEST_TOKEN = "test-token";
+
+        @BeforeEach
+        void setUp() {
+                Jwt jwt = Jwt.withTokenValue(TEST_TOKEN)
+                                .header("alg", "none")
+                                .claim("sub", "user")
+                                .build();
+
+                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
+        }
 
         @Test
         public void testAutocompleteWithHongKeyword() throws Exception {
@@ -74,6 +84,7 @@ public class CounseleeAutocompleteControllerTest {
 
                 // API 호출 및 검증
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", "홍")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
@@ -92,6 +103,7 @@ public class CounseleeAutocompleteControllerTest {
                 mockJwtToken(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", "")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isBadRequest()); // 유효성 검사 실패 예상 (최소 1자 이상)
@@ -105,6 +117,7 @@ public class CounseleeAutocompleteControllerTest {
                 mockJwtToken(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", "존재하지않는이름")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
@@ -124,6 +137,7 @@ public class CounseleeAutocompleteControllerTest {
                 mockJwtToken(Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
 
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", "김")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
@@ -139,6 +153,7 @@ public class CounseleeAutocompleteControllerTest {
                 mockJwtToken(Collections.singletonList(new SimpleGrantedAuthority("ROLE_INVALID")));
 
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", "김")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isForbidden());
@@ -152,12 +167,12 @@ public class CounseleeAutocompleteControllerTest {
                 mockJwtToken(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", longKeyword)
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isBadRequest());
         }
 
-        // 한글, 영어, 특수문자 혼합 테스트
         @Test
         public void testAutocompleteWithMixedCharacters() throws Exception {
                 // 한글, 영어 혼합된 이름 검색
@@ -170,6 +185,7 @@ public class CounseleeAutocompleteControllerTest {
                 mockJwtToken(Collections.singletonList(new SimpleGrantedAuthority("ROLE_ADMIN")));
 
                 mockMvc.perform(get("/v1/counsel/counselee/autocomplete")
+                                .header("Authorization", "Bearer " + TEST_TOKEN)
                                 .param("keyword", "김")
                                 .contentType(MediaType.APPLICATION_JSON))
                                 .andExpect(status().isOk())
@@ -177,7 +193,6 @@ public class CounseleeAutocompleteControllerTest {
                                 .andExpect(jsonPath("$.data.length()").value(2));
         }
 
-        // 모의 자동완성 응답 객체 생성 헬퍼 메서드
         private SelectCounseleeAutocompleteRes createMockAutocompleteRes(String id, String name, LocalDate birthDate) {
                 return SelectCounseleeAutocompleteRes.builder()
                                 .counseleeId(id)
@@ -187,12 +202,6 @@ public class CounseleeAutocompleteControllerTest {
         }
 
         private void mockJwtToken(Collection<GrantedAuthority> authorities) {
-                Jwt jwt = Jwt.withTokenValue("token")
-                                .header("alg", "none")
-                                .claim("sub", "user")
-                                .build();
-
-                when(jwtDecoder.decode(anyString())).thenReturn(jwt);
-                when(customJwtRoleConverter.convert(jwt)).thenReturn(authorities);
+                when(customJwtRoleConverter.convert(any(Jwt.class))).thenReturn(authorities);
         }
 }
