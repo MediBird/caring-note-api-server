@@ -21,4 +21,6 @@ public interface CounseleeRepositoryCustom {
     List<String> findDistinctAffiliatedWelfareInstitutions();
 
     Optional<Counselee> findByCounselSessionId(String counselSessionId);
+
+    List<Counselee> findByNameContaining(String keyword);
 }
