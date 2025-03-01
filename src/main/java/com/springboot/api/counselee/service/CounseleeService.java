@@ -20,6 +20,7 @@ import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
+import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.counselee.dto.SelectCounseleePageRes;
 import com.springboot.api.counselee.dto.SelectCounseleeRes;
@@ -144,5 +145,14 @@ public class CounseleeService {
         return counseleeRepository.findDistinctAffiliatedWelfareInstitutions().stream()
                 .filter(institution -> institution != null && !institution.isEmpty())
                 .collect(Collectors.toList());
+    }
+
+    public List<SelectCounseleeAutocompleteRes> searchCounseleesByName(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<Counselee> counselees = counseleeRepository.findByNameContaining(keyword.trim());
+        return SelectCounseleeAutocompleteRes.fromList(counselees);
     }
 }

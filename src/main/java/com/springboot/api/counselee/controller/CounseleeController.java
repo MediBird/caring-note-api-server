@@ -22,6 +22,7 @@ import com.springboot.api.common.message.HttpMessages;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
+import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
 import com.springboot.api.counselee.dto.SelectCounseleePageRes;
 import com.springboot.api.counselee.dto.SelectCounseleeRes;
@@ -163,4 +164,11 @@ public class CounseleeController {
                 return ResponseEntity.ok(new CommonRes<>(counseleeService.getDistinctAffiliatedWelfareInstitutions()));
         }
 
+        @GetMapping("/autocomplete")
+        @Operation(summary = "내담자 이름 자동완성", tags = { "내담자 관리" })
+        @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+        public ResponseEntity<CommonRes<List<SelectCounseleeAutocompleteRes>>> autocompleteCounselees(
+                        @RequestParam("keyword") @Size(min = 1, max = 50, message = "검색어는 1~50자 사이여야 합니다") String keyword) {
+                return ResponseEntity.ok(new CommonRes<>(counseleeService.searchCounseleesByName(keyword)));
+        }
 }
