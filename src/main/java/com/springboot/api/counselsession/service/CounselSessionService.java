@@ -306,4 +306,27 @@ public class CounselSessionService {
 
                 return SelectCounselSessionPageRes.of(page);
         }
+
+
+        public String patchCounselSession(String counseleeId, String scheduledStartTime) {
+                LocalDateTime scheduledStartDateTime = dateTimeUtil.parseToDateTime(scheduledStartTime);
+                Counselee counselee = counseleeRepository.findById(counseleeId)
+                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 내담자 ID입니다"));
+
+                if (counselSessionRepository.existsByCounseleeAndScheduledStartDateTime(counselee,
+                    scheduledStartDateTime)) {
+                    return updateCounselSessionByCounselee(counselee, scheduledStartDateTime);
+                }
+                return createCounselSessionByCounselee(counselee, scheduledStartDateTime);
+        }
+
+        private String createCounselSessionByCounselee(Counselee counselee, LocalDateTime scheduledStartDateTime) {
+                CounselSession counselSession = new CounselSession(counselee, scheduledStartDateTime);
+                return counselSessionRepository.save(counselSession).getId();
+        }
+
+        // TODO update의 경우 어떻게 로직이 진행해야하는지 검토 필요
+        private String updateCounselSessionByCounselee(Counselee counselee, LocalDateTime scheduledStartDateTime) {
+                return null;
+        }
 }
