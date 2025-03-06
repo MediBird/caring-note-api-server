@@ -1,5 +1,7 @@
 package com.springboot.api.counselsession.service;
 
+import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
+import com.springboot.api.counselsession.dto.counselsession.UpdateStartTimeInCounselSessionReq;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -82,6 +84,26 @@ public class CounselSessionService {
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
+        public AddCounselSessionRes addCounselSessionByCounselee(
+            AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
+                LocalDateTime scheduledStartDateTime = dateTimeUtil.parseToDateTime(
+                    addCounselSessionByCounseleeReq.scheduledStartDateTime());
+                Counselee counselee = findAndValidateCounseleeSchedule(addCounselSessionByCounseleeReq.counseleeId(), scheduledStartDateTime);
+
+                CounselSession counselSession = CounselSession.builder()
+                    .counselee(counselee)
+                    .scheduledStartDateTime(scheduledStartDateTime)
+                    .status(ScheduleStatus.SCHEDULED)
+                    .build();
+
+                CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
+
+                return new AddCounselSessionRes(savedCounselSession.getId());
+        }
+
+
+        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
+        @Transactional
         public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
                 CounselSession counselSession = counselSessionRepository
                                 .findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
@@ -100,6 +122,32 @@ public class CounselSessionService {
                 counselSession.setCounselee(counselee);
 
                 return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
+        }
+
+        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
+        @Transactional
+        public UpdateCounselSessionRes updateStartDateTimeInCounselSession(
+            UpdateStartTimeInCounselSessionReq updateStartTimeInCounselSessionReq){
+                CounselSession counselSession = counselSessionRepository.findByIdWithCounseleeAndCounselor(
+                    updateStartTimeInCounselSessionReq.counselSessionId())
+                        .orElseThrow(NoContentException::new);
+
+                LocalDateTime scheduledStartDateTime = dateTimeUtil.parseToDateTime(
+                    updateStartTimeInCounselSessionReq.scheduledStartDateTime());
+
+                if (counselSessionRepository.existsByCounseleeAndScheduledStartDateTime(counselSession.getCounselee(),
+                    scheduledStartDateTime)) {
+                        throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
+                }
+
+                if (counselSessionRepository.existsByCounselorAndScheduledStartDateTime(counselSession.getCounselor(),
+                    scheduledStartDateTime)) {
+                        throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
+                }
+
+                counselSession.updateScheduledStartDateTime(scheduledStartDateTime);
+
+                return new UpdateCounselSessionRes(counselSession.getId());
         }
 
         private Counselor findAndValidateCounselorSchedule(String counselorId, LocalDateTime scheduledStartDateTime) {
@@ -305,28 +353,5 @@ public class CounselSessionService {
                                 .toList();
 
                 return SelectCounselSessionPageRes.of(page);
-        }
-
-
-        public String patchCounselSession(String counseleeId, String scheduledStartTime) {
-                LocalDateTime scheduledStartDateTime = dateTimeUtil.parseToDateTime(scheduledStartTime);
-                Counselee counselee = counseleeRepository.findById(counseleeId)
-                    .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 내담자 ID입니다"));
-
-                if (counselSessionRepository.existsByCounseleeAndScheduledStartDateTime(counselee,
-                    scheduledStartDateTime)) {
-                    return updateCounselSessionByCounselee(counselee, scheduledStartDateTime);
-                }
-                return createCounselSessionByCounselee(counselee, scheduledStartDateTime);
-        }
-
-        private String createCounselSessionByCounselee(Counselee counselee, LocalDateTime scheduledStartDateTime) {
-                CounselSession counselSession = new CounselSession(counselee, scheduledStartDateTime);
-                return counselSessionRepository.save(counselSession).getId();
-        }
-
-        // TODO update의 경우 어떻게 로직이 진행해야하는지 검토 필요
-        private String updateCounselSessionByCounselee(Counselee counselee, LocalDateTime scheduledStartDateTime) {
-                return null;
         }
 }
