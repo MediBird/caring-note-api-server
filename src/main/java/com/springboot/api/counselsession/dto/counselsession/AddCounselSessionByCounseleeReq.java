@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
 
 public record AddCounselSessionByCounseleeReq(
         @NotBlank(message = "내담자 ID는 필수 입력값입니다")

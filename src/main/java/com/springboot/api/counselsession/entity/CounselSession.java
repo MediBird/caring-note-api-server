@@ -94,6 +94,10 @@ public class CounselSession extends BaseEntity {
         this.counselor = Objects.requireNonNullElse(counselor, this.counselor);
     }
 
+    public void updateScheduledStartDateTime(LocalDateTime startDateTime) {
+        this.scheduledStartDateTime = Objects.requireNonNullElse(startDateTime, this.scheduledStartDateTime);
+    }
+
     public void updateStatus(ScheduleStatus status) {
         if (this.status.equals(ScheduleStatus.COMPLETED)) {
             throw new IllegalArgumentException("이미 완료된 상담 세션의 상태는 변경할 수 없습니다.");
