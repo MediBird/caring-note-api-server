@@ -9,13 +9,13 @@ import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 
 public record SelectCounselSessionPageRes(
-                List<SelectCounselSessionListItem> content,
+                List<SelectCounselSessionRes> content,
                 PageRes pageInfo) {
 
         public static SelectCounselSessionPageRes of(Page<CounselSession> page) {
                 return new SelectCounselSessionPageRes(
                                 page.getContent().stream()
-                                                .map(SelectCounselSessionListItem::from)
+                                                .map(SelectCounselSessionRes::from)
                                                 .collect(Collectors.toList()),
                                 PageRes.from(page));
         }
