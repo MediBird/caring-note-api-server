@@ -102,10 +102,6 @@ public class CounseleeService {
         Page<Counselee> counseleePage = counseleeRepository.findWithFilters(name, birthDates,
                 affiliatedWelfareInstitutions, PageRequest.of(page, size));
 
-        List<SelectCounseleeRes> content = counseleePage.getContent().stream()
-                .map(SelectCounseleeRes::from)
-                .collect(Collectors.toList());
-
         return SelectCounseleePageRes.of(counseleePage);
     }
 
