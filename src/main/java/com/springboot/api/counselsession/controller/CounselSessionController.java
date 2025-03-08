@@ -1,7 +1,5 @@
 package com.springboot.api.counselsession.controller;
 
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
-import com.springboot.api.counselsession.dto.counselsession.UpdateStartTimeInCounselSessionReq;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,19 +16,20 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
 import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionRes;
+import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationReq;
+import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationRes;
 import com.springboot.api.counselsession.dto.counselsession.SearchCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionPageRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
-import com.springboot.api.counselsession.dto.counselsession.UpdateCounselSessionReq;
-import com.springboot.api.counselsession.dto.counselsession.UpdateCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
@@ -65,9 +64,9 @@ public class CounselSessionController {
         @PostMapping("/counselee")
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<AddCounselSessionRes>> addCounselSessionByCounselee(
-            @RequestBody @Valid AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
+                        @RequestBody @Valid AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
                 AddCounselSessionRes addCounselSessionRes = counselSessionService
-                    .addCounselSessionByCounselee(addCounselSessionByCounseleeReq);
+                                .addCounselSessionByCounselee(addCounselSessionByCounseleeReq);
                 return ResponseEntity.ok(new CommonRes<>(addCounselSessionRes));
         }
 
@@ -141,21 +140,10 @@ public class CounselSessionController {
         @PutMapping
         @Deprecated
         @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateCounselSession(
-                        @RequestBody @Valid UpdateCounselSessionReq updateCounselSessionReq) {
-                UpdateCounselSessionRes updateCounselSessionRes = counselSessionService
-                                .updateCounselSession(updateCounselSessionReq);
-                return ResponseEntity.ok(new CommonRes<>(updateCounselSessionRes));
-        }
-
-        @Operation(summary = "상담일정 시작 일자 수정", tags = { "관리자 화면" })
-        @PutMapping("/start-time")
-        @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateStartDateTimeInCounselSession(
-            @RequestBody @Valid UpdateStartTimeInCounselSessionReq updateStartTimeInCounselSessionReq) {
-                UpdateCounselSessionRes updateCounselSessionRes = counselSessionService
-                    .updateStartDateTimeInCounselSession(updateStartTimeInCounselSessionReq);
-                return ResponseEntity.ok(new CommonRes<>(updateCounselSessionRes));
+        public ResponseEntity<CommonRes<ModifyCounselReservationRes>> modifyCounselReservation(
+                        @RequestBody @Valid ModifyCounselReservationReq modifyCounselReservationReq) {
+                return ResponseEntity.ok(new CommonRes<>(counselSessionService
+                                .modifyCounselReservation(modifyCounselReservationReq)));
         }
 
         @Operation(summary = "상담일정 담당 약사 수정", tags = {
