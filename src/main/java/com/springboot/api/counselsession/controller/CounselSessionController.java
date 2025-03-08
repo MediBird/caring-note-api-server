@@ -1,7 +1,5 @@
 package com.springboot.api.counselsession.controller;
 
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
-import com.springboot.api.counselsession.dto.counselsession.UpdateStartTimeInCounselSessionReq;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -18,6 +16,7 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
 import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
@@ -65,9 +64,9 @@ public class CounselSessionController {
         @PostMapping("/counselee")
         @RoleSecured(RoleType.ROLE_ADMIN)
         public ResponseEntity<CommonRes<AddCounselSessionRes>> addCounselSessionByCounselee(
-            @RequestBody @Valid AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
+                        @RequestBody @Valid AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
                 AddCounselSessionRes addCounselSessionRes = counselSessionService
-                    .addCounselSessionByCounselee(addCounselSessionByCounseleeReq);
+                                .addCounselSessionByCounselee(addCounselSessionByCounseleeReq);
                 return ResponseEntity.ok(new CommonRes<>(addCounselSessionRes));
         }
 
@@ -145,16 +144,6 @@ public class CounselSessionController {
                         @RequestBody @Valid ModifyCounselReservationReq modifyCounselReservationReq) {
                 return ResponseEntity.ok(new CommonRes<>(counselSessionService
                                 .modifyCounselReservation(modifyCounselReservationReq)));
-        }
-
-        @Operation(summary = "상담일정 시작 일자 수정", tags = { "관리자 화면" })
-        @PutMapping("/start-time")
-        @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<UpdateCounselSessionRes>> updateStartDateTimeInCounselSession(
-            @RequestBody @Valid UpdateStartTimeInCounselSessionReq updateStartTimeInCounselSessionReq) {
-                UpdateCounselSessionRes updateCounselSessionRes = counselSessionService
-                    .updateStartDateTimeInCounselSession(updateStartTimeInCounselSessionReq);
-                return ResponseEntity.ok(new CommonRes<>(updateCounselSessionRes));
         }
 
         @Operation(summary = "상담일정 담당 약사 수정", tags = {
