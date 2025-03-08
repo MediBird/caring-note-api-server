@@ -1,0 +1,36 @@
+name: Delete unused caches
+
+on:
+  schedule:
+    - cron: "0 0 */3 * *"
+
+jobs:
+  delete-caches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete unused caches
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: ${{ github.repository_owner }}
+          REPO_NAME: ${{ github.event.repository.name }}
+        run: |
+          # 최근 1주일 이내에 사용된 캐시만 남기고 나머지 삭제
+          # 1주일은 604800초로 계산
+          ONE_WEEK_AGO=$(date -d "-7 days" +%s)
+          curl -s \
+            -H "Accept: application/vnd.github.v3+json" \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/caches \
+            --paginate \
+          | jq -r '.actions_caches[] | .id, .created_at' \
+          | while read -r cache_id created_at; do
+            created_at=$(date -d "$created_at" +%s)
+            if [ $created_at -lt $ONE_WEEK_AGO ]; then
+              echo "Deleting cache $cache_id"
+              curl -s \
+                -X DELETE \
+                -H "Accept: application/vnd.github.v3+json" \
+                -H "Authorization: token $GITHUB_TOKEN" \
+                https://api.github.com/repos/$REPO_OWNER/$REPO_NAME/actions/caches?key=$cache_id
+            fi
+          done
