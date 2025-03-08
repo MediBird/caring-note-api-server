@@ -3,6 +3,7 @@ package com.springboot.api.counselsession.repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -190,5 +191,17 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 .distinct()
                 .orderBy(counselSession.counselor.name.asc())
                 .fetch();
+    }
+
+    @Override
+    public Optional<CounselSession> findByIdWithCounseleeAndCounselor(String counselSessionId) {
+        return Optional.ofNullable(
+            queryFactory
+                .selectFrom(counselSession)
+                .leftJoin(counselSession.counselee).fetchJoin()
+                .leftJoin(counselSession.counselor).fetchJoin()
+                .where(counselSession.id.eq(counselSessionId))
+                .fetchOne()
+        );
     }
 }

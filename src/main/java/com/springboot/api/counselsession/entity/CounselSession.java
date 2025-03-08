@@ -75,6 +75,12 @@ public class CounselSession extends BaseEntity {
     @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
     private CounselCard counselCard;
 
+    public CounselSession(Counselee counselee, LocalDateTime scheduledStartDateTime) {
+        this.counselee = Objects.requireNonNull(counselee, "상담 세션의 내담자는 필수 입력 항목입니다.");
+        this.scheduledStartDateTime = Objects.requireNonNull(scheduledStartDateTime, "상담 세션의 시작 시간은 필수 입력 항목입니다.");
+        this.status = ScheduleStatus.SCHEDULED;
+    }
+
     @PrePersist
     @Override
     protected void onCreate() {
@@ -86,6 +92,10 @@ public class CounselSession extends BaseEntity {
 
     public void updateCounselor(Counselor counselor) {
         this.counselor = Objects.requireNonNullElse(counselor, this.counselor);
+    }
+
+    public void updateScheduledStartDateTime(LocalDateTime startDateTime) {
+        this.scheduledStartDateTime = Objects.requireNonNullElse(startDateTime, this.scheduledStartDateTime);
     }
 
     public void updateStatus(ScheduleStatus status) {
