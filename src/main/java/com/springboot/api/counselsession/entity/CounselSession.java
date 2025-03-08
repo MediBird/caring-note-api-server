@@ -77,6 +77,14 @@ public class CounselSession extends BaseEntity {
         this.status = ScheduleStatus.SCHEDULED;
     }
 
+    public static CounselSession createReservation(Counselee counselee, LocalDateTime scheduledStartDateTime) {
+        return CounselSession.builder()
+                .counselee(counselee)
+                .scheduledStartDateTime(scheduledStartDateTime)
+                .status(ScheduleStatus.SCHEDULED)
+                .build();
+    }
+
     @PrePersist
     @Override
     protected void onCreate() {

@@ -16,10 +16,9 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionReq;
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
+import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
+import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationReq;
@@ -53,21 +52,10 @@ public class CounselSessionController {
         @Operation(summary = "상담세션(일정) 추가", tags = { "관리자 화면" })
         @PostMapping
         @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<AddCounselSessionRes>> addCounselSession(
-                        @RequestBody @Valid AddCounselSessionReq addCounselSessionReq) {
-                AddCounselSessionRes addCounselSessionRes = counselSessionService
-                                .addCounselSession(addCounselSessionReq);
-                return ResponseEntity.ok(new CommonRes<>(addCounselSessionRes));
-        }
-
-        @Operation(summary = "상담세션(일정) 내담자 정보로 추가", tags = { "관리자 화면" })
-        @PostMapping("/counselee")
-        @RoleSecured(RoleType.ROLE_ADMIN)
-        public ResponseEntity<CommonRes<AddCounselSessionRes>> addCounselSessionByCounselee(
-                        @RequestBody @Valid AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
-                AddCounselSessionRes addCounselSessionRes = counselSessionService
-                                .addCounselSessionByCounselee(addCounselSessionByCounseleeReq);
-                return ResponseEntity.ok(new CommonRes<>(addCounselSessionRes));
+        public ResponseEntity<CommonRes<CreateCounselReservationRes>> createCounselReservation(
+                        @RequestBody @Valid CreateCounselReservationReq createReservationReq) {
+                return ResponseEntity.ok(new CommonRes<>(counselSessionService
+                                .createReservation(createReservationReq)));
         }
 
         @Operation(summary = "특정 연월의 상담 세션이 있는 날짜 목록 조회")
