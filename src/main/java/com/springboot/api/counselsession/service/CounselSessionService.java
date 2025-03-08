@@ -23,10 +23,9 @@ import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionReq;
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
+import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
+import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationReq;
@@ -60,45 +59,20 @@ public class CounselSessionService {
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
-        public AddCounselSessionRes addCounselSession(AddCounselSessionReq addCounselSessionReq) {
+        public CreateCounselReservationRes createReservation(CreateCounselReservationReq createReservationReq) {
                 LocalDateTime scheduledStartDateTime = dateTimeUtil
-                                .parseToDateTime(addCounselSessionReq.getScheduledStartDateTime());
+                                .parseToDateTime(createReservationReq.getScheduledStartDateTime());
 
-                Counselor counselor = findAndValidateCounselorSchedule(addCounselSessionReq.getCounselorId(),
-                                scheduledStartDateTime);
-                Counselee counselee = findAndValidateCounseleeSchedule(addCounselSessionReq.getCounseleeId(),
+                Counselee counselee = findAndValidateCounseleeSchedule(createReservationReq.getCounseleeId(),
                                 scheduledStartDateTime);
 
-                CounselSession counselSession = CounselSession.builder()
-                                .counselor(counselor)
-                                .counselee(counselee)
-                                .scheduledStartDateTime(scheduledStartDateTime)
-                                .status(addCounselSessionReq.getStatus())
-                                .build();
+                CounselSession counselSession = CounselSession.createReservation(
+                                counselee,
+                                scheduledStartDateTime);
 
                 CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
-                return new AddCounselSessionRes(savedCounselSession.getId());
-        }
-
-        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
-        @Transactional
-        public AddCounselSessionRes addCounselSessionByCounselee(
-                        AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
-                LocalDateTime scheduledStartDateTime = dateTimeUtil.parseToDateTime(
-                                addCounselSessionByCounseleeReq.scheduledStartDateTime());
-                Counselee counselee = findAndValidateCounseleeSchedule(addCounselSessionByCounseleeReq.counseleeId(),
-                                scheduledStartDateTime);
-
-                CounselSession counselSession = CounselSession.builder()
-                                .counselee(counselee)
-                                .scheduledStartDateTime(scheduledStartDateTime)
-                                .status(ScheduleStatus.SCHEDULED)
-                                .build();
-
-                CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
-
-                return new AddCounselSessionRes(savedCounselSession.getId());
+                return new CreateCounselReservationRes(savedCounselSession.getId());
         }
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
