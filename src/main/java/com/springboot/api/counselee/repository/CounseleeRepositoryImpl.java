@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport
 import org.springframework.stereotype.Repository;
 
 import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.counselee.entity.Counselee;
@@ -108,7 +109,11 @@ public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implement
                                 .selectFrom(counselee)
                                 .where(counselee.name.containsIgnoreCase(keyword))
                                 .orderBy(
-                                                counselee.name.startsWithIgnoreCase(keyword).desc(),
+                                                new CaseBuilder()
+                                                                .when(counselee.name.startsWithIgnoreCase(keyword))
+                                                                .then(1)
+                                                                .otherwise(2)
+                                                                .asc(),
                                                 counselee.name.asc())
                                 .limit(5)
                                 .fetch();
