@@ -69,7 +69,7 @@ public class CounselSessionService {
                 CounselSession counselSession = CounselSession.createReservation(
                                 counselee,
                                 scheduledStartDateTime);
-
+                updateSessionNumber(counselSession);
                 CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
                 return new CreateCounselReservationRes(savedCounselSession.getId());
@@ -293,5 +293,19 @@ public class CounselSessionService {
                                                 pageable);
 
                 return SelectCounselSessionPageRes.of(page);
+        }
+
+        /**
+         * 상담 세션의 회차 정보를 업데이트합니다.
+         * 내담자별로 완료된 상담 세션의 수를 계산하여 회차를 설정합니다.
+         * 
+         * @param counselSession 회차 정보를 업데이트할 상담 세션
+         */
+        public void updateSessionNumber(CounselSession counselSession) {
+                String counseleeId = counselSession.getCounselee().getId();
+                LocalDateTime scheduledDateTime = counselSession.getScheduledStartDateTime();
+                int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
+                                counseleeId, scheduledDateTime) + 1;
+                counselSession.updateSessionNumber(sessionNumber);
         }
 }

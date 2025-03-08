@@ -13,7 +13,8 @@ public record SelectCounselSessionRes(
                 String counseleeId,
                 String counseleeName,
                 String counselorId,
-                String counselorName) {
+                String counselorName,
+                Integer sessionNumber) {
         // TODO null 검사를 진행해야하는지 확인
         public static SelectCounselSessionRes from(CounselSession counselSession) {
                 return new SelectCounselSessionRes(
@@ -31,6 +32,7 @@ public record SelectCounselSessionRes(
                                                 .orElse(""),
                                 Optional.ofNullable(counselSession.getCounselor())
                                                 .map(Counselor::getName)
-                                                .orElse(""));
+                                                .orElse(""),
+                                counselSession.getSessionNumber());
         }
 }

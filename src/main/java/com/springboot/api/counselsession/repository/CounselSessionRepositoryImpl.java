@@ -196,12 +196,33 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     @Override
     public Optional<CounselSession> findByIdWithCounseleeAndCounselor(String counselSessionId) {
         return Optional.ofNullable(
-            queryFactory
-                .selectFrom(counselSession)
-                .leftJoin(counselSession.counselee).fetchJoin()
-                .leftJoin(counselSession.counselor).fetchJoin()
-                .where(counselSession.id.eq(counselSessionId))
-                .fetchOne()
-        );
+                queryFactory
+                        .selectFrom(counselSession)
+                        .leftJoin(counselSession.counselee).fetchJoin()
+                        .leftJoin(counselSession.counselor).fetchJoin()
+                        .where(counselSession.id.eq(counselSessionId))
+                        .fetchOne());
+    }
+
+    @Override
+    public int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime) {
+        BooleanBuilder builder = new BooleanBuilder();
+
+        builder.and(counselSession.counselee.id.eq(counseleeId));
+
+        if (beforeDateTime != null) {
+            builder.and(counselSession.scheduledStartDateTime.lt(beforeDateTime));
+        }
+
+        // 완료된 상담 세션만 회차로 계산
+        builder.and(counselSession.status.eq(ScheduleStatus.COMPLETED));
+
+        Long count = queryFactory
+                .select(counselSession.count())
+                .from(counselSession)
+                .where(builder)
+                .fetchOne();
+
+        return count != null ? count.intValue() : 0;
     }
 }
