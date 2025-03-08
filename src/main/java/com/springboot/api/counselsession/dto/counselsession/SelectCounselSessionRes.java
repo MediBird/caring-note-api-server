@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.enums.ScheduleStatus;
+
 
 public record SelectCounselSessionRes(
                 String counselSessionId,
@@ -13,7 +15,9 @@ public record SelectCounselSessionRes(
                 String counseleeName,
                 String counselorId,
                 String counselorName,
-                Integer sessionNumber) {
+                Integer sessionNumber,
+                ScheduleStatus status) {
+        // TODO null 검사를 진행해야하는지 확인
         public static SelectCounselSessionRes from(CounselSession counselSession) {
                 return new SelectCounselSessionRes(
                                 counselSession.getId(),
@@ -28,6 +32,7 @@ public record SelectCounselSessionRes(
                                                 .map(Counselor::getName)
                                                 .orElse(""),
                                 Optional.ofNullable(counselSession.getSessionNumber())
-                                                .orElse(0));
-        }
+                                                .orElse(0),
+                                counselSession.getStatus());
+                                }
 }
