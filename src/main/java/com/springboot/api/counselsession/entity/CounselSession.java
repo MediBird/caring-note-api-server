@@ -26,17 +26,13 @@ import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "counselor_id", "scheduled_start_datetime" }),
         @UniqueConstraint(columnNames = { "counselee_id", "scheduled_start_datetime" })
 })
 @Getter
-// TODO Update API deprecated 될 경우 Setter 삭제 필요
-@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -107,6 +103,11 @@ public class CounselSession extends BaseEntity {
         if (this.status.equals(ScheduleStatus.COMPLETED)) {
             this.counselee.counselSessionComplete(this.scheduledStartDateTime.toLocalDate());
         }
+    }
+
+    public void modifyReservation(LocalDateTime scheduledStartDateTime, Counselee counselee) {
+        this.scheduledStartDateTime = Objects.requireNonNullElse(scheduledStartDateTime, this.scheduledStartDateTime);
+        this.counselee = Objects.requireNonNullElse(counselee, this.counselee);
     }
 
 }

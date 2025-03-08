@@ -1,7 +1,5 @@
 package com.springboot.api.counselsession.service;
 
-import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
-import com.springboot.api.counselsession.dto.counselsession.UpdateStartTimeInCounselSessionReq;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,21 +23,23 @@ import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
+import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionByCounseleeReq;
 import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.AddCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSessionRes;
+import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationReq;
+import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationRes;
 import com.springboot.api.counselsession.dto.counselsession.SearchCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionPageRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
-import com.springboot.api.counselsession.dto.counselsession.UpdateCounselSessionReq;
-import com.springboot.api.counselsession.dto.counselsession.UpdateCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
+import com.springboot.api.counselsession.dto.counselsession.UpdateStartTimeInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
 import com.springboot.api.counselsession.entity.CounselSession;
@@ -104,24 +104,41 @@ public class CounselSessionService {
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
-        public UpdateCounselSessionRes updateCounselSession(UpdateCounselSessionReq updateCounselSessionReq) {
+        public AddCounselSessionRes addCounselSessionByCounselee(
+            AddCounselSessionByCounseleeReq addCounselSessionByCounseleeReq) {
+                LocalDateTime scheduledStartDateTime = dateTimeUtil.parseToDateTime(
+                    addCounselSessionByCounseleeReq.scheduledStartDateTime());
+                Counselee counselee = findAndValidateCounseleeSchedule(addCounselSessionByCounseleeReq.counseleeId(), scheduledStartDateTime);
+
+                CounselSession counselSession = CounselSession.builder()
+                    .counselee(counselee)
+                    .scheduledStartDateTime(scheduledStartDateTime)
+                    .status(ScheduleStatus.SCHEDULED)
+                    .build();
+
+                CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
+
+                return new AddCounselSessionRes(savedCounselSession.getId());
+        }
+
+
+        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
+        @Transactional
+        public ModifyCounselReservationRes modifyCounselReservation(
+                        ModifyCounselReservationReq modifyCounselReservationReq) {
                 CounselSession counselSession = counselSessionRepository
-                                .findById(updateCounselSessionReq.getCounselSessionId()).orElseThrow(
+                                .findById(modifyCounselReservationReq.getCounselSessionId()).orElseThrow(
                                                 NoContentException::new);
 
                 LocalDateTime scheduledStartDateTime = dateTimeUtil
-                                .parseToDateTime(updateCounselSessionReq.getScheduledStartDateTime());
+                                .parseToDateTime(modifyCounselReservationReq.getScheduledStartDateTime());
 
-                Counselor counselor = findAndValidateCounselorSchedule(updateCounselSessionReq.getCounselorId(),
-                                scheduledStartDateTime);
-                Counselee counselee = findAndValidateCounseleeSchedule(updateCounselSessionReq.getCounseleeId(),
+                Counselee counselee = findAndValidateCounseleeSchedule(modifyCounselReservationReq.getCounseleeId(),
                                 scheduledStartDateTime);
 
-                counselSession.setScheduledStartDateTime(scheduledStartDateTime);
-                counselSession.setCounselor(counselor);
-                counselSession.setCounselee(counselee);
+                counselSession.modifyReservation(scheduledStartDateTime, counselee);
 
-                return new UpdateCounselSessionRes(updateCounselSessionReq.getCounselSessionId());
+                return new ModifyCounselReservationRes(modifyCounselReservationReq.getCounselSessionId());
         }
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
@@ -136,11 +153,6 @@ public class CounselSessionService {
                     updateStartTimeInCounselSessionReq.scheduledStartDateTime());
 
                 if (counselSessionRepository.existsByCounseleeAndScheduledStartDateTime(counselSession.getCounselee(),
-                    scheduledStartDateTime)) {
-                        throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
-                }
-
-                if (counselSessionRepository.existsByCounselorAndScheduledStartDateTime(counselSession.getCounselor(),
                     scheduledStartDateTime)) {
                         throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
                 }
@@ -347,10 +359,6 @@ public class CounselSessionService {
                                                 req.getCounselorNames(),
                                                 req.getScheduledDates(),
                                                 pageable);
-
-                List<SelectCounselSessionListItem> content = page.getContent().stream()
-                                .map(SelectCounselSessionListItem::from)
-                                .toList();
 
                 return SelectCounselSessionPageRes.of(page);
         }
