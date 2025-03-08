@@ -67,6 +67,10 @@ public class CounselSession extends BaseEntity {
     @Column(nullable = false)
     private ScheduleStatus status;
 
+    // 상담 회차 정보
+    @Column(name = "session_number")
+    private Integer sessionNumber;
+
     // TODO 연관관계 검토
     @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
     private CounselCard counselCard;
@@ -116,6 +120,10 @@ public class CounselSession extends BaseEntity {
     public void modifyReservation(LocalDateTime scheduledStartDateTime, Counselee counselee) {
         this.scheduledStartDateTime = Objects.requireNonNullElse(scheduledStartDateTime, this.scheduledStartDateTime);
         this.counselee = Objects.requireNonNullElse(counselee, this.counselee);
+    }
+
+    public void updateSessionNumber(Integer sessionNumber) {
+        this.sessionNumber = sessionNumber;
     }
 
 }
