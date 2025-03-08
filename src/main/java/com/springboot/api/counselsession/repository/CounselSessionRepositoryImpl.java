@@ -214,8 +214,8 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             builder.and(counselSession.scheduledStartDateTime.lt(beforeDateTime));
         }
 
-        // 완료된 상담 세션만 회차로 계산
-        builder.and(counselSession.status.eq(ScheduleStatus.COMPLETED));
+        // 취소가 아닌 상담 세션들로 회차 계산
+        builder.and(counselSession.status.ne(ScheduleStatus.CANCELED));
 
         Long count = queryFactory
                 .select(counselSession.count())
