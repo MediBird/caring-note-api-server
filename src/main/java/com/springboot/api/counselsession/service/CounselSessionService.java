@@ -301,7 +301,6 @@ public class CounselSessionService {
          * 
          * @param counselSession 회차 정보를 업데이트할 상담 세션
          */
-        @Transactional
         public void updateSessionNumber(CounselSession counselSession) {
                 String counseleeId = counselSession.getCounselee().getId();
                 LocalDateTime scheduledDateTime = counselSession.getScheduledStartDateTime();
