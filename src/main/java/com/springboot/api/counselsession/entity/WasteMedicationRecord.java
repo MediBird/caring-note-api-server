@@ -13,6 +13,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "waste_medication_records")
@@ -25,10 +27,12 @@ import lombok.ToString;
 public class WasteMedicationRecord extends BaseEntity {
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "cousel_session_id", nullable = false)
     private CounselSession counselSession;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "medication_id", nullable = true)
     private Medication medication;
 

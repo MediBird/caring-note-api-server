@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import jakarta.persistence.FetchType;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,6 +24,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "waste_medication_disposals")
@@ -34,27 +37,28 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = { "counselSession" })
 public class WasteMedicationDisposal extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counsel_session_id", nullable = false)
     @JsonIgnore
     private CounselSession counselSession;
 
     @Convert(converter = ListStringConverter.class)
-    @Column(name = "unused_reasons", columnDefinition = "TEXT", nullable = true)
+    @Column(name = "unused_reasons", columnDefinition = "TEXT")
     private List<String> unusedReasons;
 
     @Column(name = "unused_reason_detail")
     private String unusedReasonDetail;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "drug_remain_action_type", nullable = true)
+    @Column(name = "drug_remain_action_type")
     private DrugRemainActionType drugRemainActionType;
 
     @Column(name = "drug_remain_action_detail")
     private String drugRemainActionDetail;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "recovery_agreement_type", nullable = true)
+    @Column(name = "recovery_agreement_type")
     private RecoveryAgreementType recoveryAgreementType;
 
     @Column(name = "waste_medication_gram")

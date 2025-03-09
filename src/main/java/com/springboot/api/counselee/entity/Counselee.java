@@ -1,24 +1,18 @@
 package com.springboot.api.counselee.entity;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Objects;
 
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.entity.CounseleeConsent;
-import com.springboot.api.counselsession.entity.MedicationRecord;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
@@ -44,8 +38,8 @@ import lombok.ToString;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSessions", "medicationRecords", })
-@ToString(callSuper = true, exclude = { "counselSessions", "medicationRecords" })
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class Counselee extends BaseEntity {
 
     @Column(nullable = false)
@@ -94,21 +88,6 @@ public class Counselee extends BaseEntity {
     @Column(name = "care_manager_name")
     private String careManagerName;
 
-    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CounselSession> counselSessions;
-
-    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
-    private List<MedicationRecord> medicationRecords;
-
-    @OneToMany(mappedBy = "counselee", cascade = CascadeType.ALL)
-    private List<CounseleeConsent> counseleeConsents;
-
-    @PrePersist
-    @Override
-    protected void onCreate() {
-        super.onCreate();
-    }
-
     public Counselee(AddCounseleeReq addCounseleeReq) {
         this.name = addCounseleeReq.getName();
         this.dateOfBirth = addCounseleeReq.getDateOfBirth();
@@ -122,6 +101,12 @@ public class Counselee extends BaseEntity {
         this.address = addCounseleeReq.getAddress();
         this.isDisability = addCounseleeReq.getIsDisability();
         this.careManagerName = addCounseleeReq.getCareManagerName();
+    }
+
+    @PrePersist
+    @Override
+    protected void onCreate() {
+        super.onCreate();
     }
 
     public void update(UpdateCounseleeReq updateCounseleeReq) {

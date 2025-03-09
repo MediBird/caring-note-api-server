@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import jakarta.persistence.FetchType;
 import java.time.LocalDateTime;
 
 import com.springboot.api.common.entity.BaseEntity;
@@ -19,6 +20,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "counselee_consents", uniqueConstraints = {
@@ -32,11 +35,13 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = { "counselSession", "counselee" })
 public class CounseleeConsent extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counsel_session_id", nullable = false)
     private CounselSession counselSession;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counselee_id", nullable = false)
     private Counselee counselee;
 
