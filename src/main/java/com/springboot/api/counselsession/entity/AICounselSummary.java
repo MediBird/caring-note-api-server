@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import jakarta.persistence.FetchType;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,6 +24,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "ai_counsel_summarys")
@@ -34,7 +37,8 @@ import lombok.ToString;
 @ToString(callSuper = true, exclude = { "counselSession" })
 public class AICounselSummary extends BaseEntity {
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counsel_session_id", nullable = false)
     private CounselSession counselSession;
 

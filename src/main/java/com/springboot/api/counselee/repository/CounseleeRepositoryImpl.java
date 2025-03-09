@@ -1,5 +1,6 @@
 package com.springboot.api.counselee.repository;
 
+import com.springboot.api.counselsession.entity.QCounselSession;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -95,10 +96,12 @@ public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implement
         @Override
         public Optional<Counselee> findByCounselSessionId(String counselSessionId) {
                 QCounselee counselee = QCounselee.counselee;
+                QCounselSession counselSession = QCounselSession.counselSession;
+
                 return Optional.ofNullable(queryFactory
-                                .selectFrom(counselee)
-                                .innerJoin(counselee.counselSessions)
-                                .where(counselee.counselSessions.any().id.eq(counselSessionId))
+                                .select(counselee)
+                                .from(counselSession)
+                                .where(counselSession.id.eq(counselSessionId))
                                 .fetchOne());
         }
 

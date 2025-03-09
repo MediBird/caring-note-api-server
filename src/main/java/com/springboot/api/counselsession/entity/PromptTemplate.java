@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import jakarta.persistence.FetchType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class PromptTemplate extends BaseEntity {
     @Column(columnDefinition = "TEXT", nullable = false)
     private String promptText;
 
-    @OneToMany(mappedBy = "promptTemplate", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "promptTemplate", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<PromptLearning> promptLearnings;
 
     @PrePersist

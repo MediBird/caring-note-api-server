@@ -2,7 +2,6 @@ package com.springboot.api.counselor.entity;
 
 import java.time.LocalDate;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -10,16 +9,13 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.RoleType;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -101,10 +97,6 @@ public class Counselor extends BaseEntity implements UserDetails {
     // 참여 일수
     @Min(value = 0, message = "참여 일수는 0 이상이어야 합니다.")
     private int participationDays;
-
-    // 상담자가 참여한 상담 세션들
-    @OneToMany(mappedBy = "counselor", cascade = CascadeType.ALL)
-    private List<CounselSession> counselSessions;
 
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist

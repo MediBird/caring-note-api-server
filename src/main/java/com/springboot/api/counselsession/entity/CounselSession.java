@@ -27,6 +27,8 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
@@ -41,11 +43,13 @@ import lombok.ToString;
 public class CounselSession extends BaseEntity {
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 
     // 내담자와의 관계 매핑 (다대일)
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counselee_id")
     private Counselee counselee;
 
@@ -72,7 +76,7 @@ public class CounselSession extends BaseEntity {
     private Integer sessionNumber;
 
     // TODO 연관관계 검토
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL, orphanRemoval = true)
     private CounselCard counselCard;
 
     public CounselSession(Counselee counselee, LocalDateTime scheduledStartDateTime) {
