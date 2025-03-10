@@ -1,4 +1,4 @@
-package com.springboot.api.counselsession.service;
+package com.springboot.api.counselcard.service;
 
 import java.util.AbstractMap;
 import java.util.List;
