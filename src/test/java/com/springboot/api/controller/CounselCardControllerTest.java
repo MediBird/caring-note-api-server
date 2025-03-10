@@ -34,28 +34,24 @@ import com.springboot.api.counselcard.dto.information.base.BaseInformationDTO;
 import com.springboot.api.counselcard.dto.information.health.HealthInformationDTO;
 import com.springboot.api.counselcard.dto.information.independentlife.IndependentLifeInformationDTO;
 import com.springboot.api.counselcard.dto.information.living.LivingInformationDTO;
-import com.springboot.api.counselsession.service.CounselCardService;
+import com.springboot.api.counselcard.service.CounselCardService;
 import com.springboot.enums.CardRecordStatus;
 
 @WebMvcTest(CounselCardController.class)
 @Import({ SecurityConfig.class, TestSecurityConfig.class })
 class CounselCardControllerTest {
 
-        @Autowired
-        private MockMvc mockMvc;
-
-        @MockBean
-        private CounselCardService counselCardService;
-
-        @MockBean
-        private JwtDecoder jwtDecoder;
-
-        @MockBean
-        private CustomJwtRoleConverter customJwtRoleConverter;
-
         private static final String VALID_COUNSEL_SESSION_ID = "01HQ8VQXG7RZDQ1234567890AB";
         private static final String VALID_COUNSEL_CARD_ID = "01HQ8VQXG7RZDQ1234567890AB";
         private static final String INVALID_COUNSEL_SESSION_ID = "invalid";
+        @Autowired
+        private MockMvc mockMvc;
+        @MockBean
+        private CounselCardService counselCardService;
+        @MockBean
+        private JwtDecoder jwtDecoder;
+        @MockBean
+        private CustomJwtRoleConverter customJwtRoleConverter;
 
         @Test
         @DisplayName("성공: 유효한 상담 세션 ID로 상담 카드 조회")

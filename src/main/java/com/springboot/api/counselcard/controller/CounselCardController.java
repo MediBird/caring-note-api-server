@@ -24,7 +24,7 @@ import com.springboot.api.counselcard.dto.SelectPreviousCounselCardRes;
 import com.springboot.api.counselcard.dto.SelectPreviousItemListByInformationNameAndItemNameRes;
 import com.springboot.api.counselcard.dto.UpdateCounselCardReq;
 import com.springboot.api.counselcard.dto.UpdateCounselCardRes;
-import com.springboot.api.counselsession.service.CounselCardService;
+import com.springboot.api.counselcard.service.CounselCardService;
 import com.springboot.enums.RoleType;
 
 import io.swagger.v3.oas.annotations.Operation;
