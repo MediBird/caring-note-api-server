@@ -17,7 +17,8 @@ import lombok.Data;
 @Data
 @Builder
 public class AddCounseleeReq {
-    @NotBlank(message = "이름은 필수 입력값입니다")
+    @Pattern(regexp = "^[가-힣a-zA-Z][가-힣a-zA-Z\\s]*[가-힣a-zA-Z]$",
+            message = "이름은 한글, 영문 대소문자로 시작하고 끝나고, 한글, 영문 대소문자, 공백만 입력 가능합니다")
     @Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하여야 합니다")
     private String name;
 
