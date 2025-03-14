@@ -38,6 +38,8 @@ public interface CounselSessionRepositoryCustom {
 
         Optional<CounselSession> findByIdWithCounseleeAndCounselor(String counselSessionId);
 
+        Optional<CounselSession> findByIdWithCounselee(String counselSessionId);
+
         /**
          * 특정 내담자의 상담 회차 수를 계산합니다.
          * 

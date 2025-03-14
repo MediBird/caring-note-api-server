@@ -196,11 +196,9 @@ public class CounselSessionService {
                 List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                                 .stream()
                                 .map(session -> {
-                                        JsonNode baseInfo = session.getCounselCard().getBaseInformation()
-                                                        .get("baseInfo");
                                         return new SelectPreviousCounselSessionListRes(
                                                         session.getId(),
-                                                        baseInfo.get("counselSessionOrder").asText(),
+                                                        session.getSessionNumber(),
                                                         session.getScheduledStartDateTime().toLocalDate(),
                                                         session.getCounselor().getName(),
                                                         false);
