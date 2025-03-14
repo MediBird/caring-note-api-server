@@ -5,7 +5,6 @@ import com.springboot.api.counselcard.entity.information.living.MedicationManage
 import com.springboot.enums.MedicationAssistant;
 
 import java.util.Set;
-import lombok.Builder;
 
 public record MedicationManagementDTO(
         String houseMateNote,

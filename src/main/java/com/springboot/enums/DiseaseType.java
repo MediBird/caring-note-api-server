@@ -20,5 +20,5 @@ public enum DiseaseType {
     SPINE_JOINT_NEUROPATHY, // 척추·관절염/신경통·근육통
     RESPIRATORY_DISEASE, // 호흡기질환(천식, COPD 등)
     EYE_DISEASE, // 안질환(백내장, 녹내장, 안구건조증 등)
-    ENT_DISEASE; // 이비인후과
+    ENT_DISEASE // 이비인후과
 }

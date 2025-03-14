@@ -5,8 +5,6 @@ import com.springboot.api.counselcard.entity.information.base.CounselPurposeAndN
 import com.springboot.enums.CounselPurposeType;
 
 import java.util.Set;
-import javax.validation.Valid;
-import lombok.Builder;
 
 public record CounselPurposeAndNoteDTO(
     @ValidEnum(enumClass = CounselPurposeType.class)
