@@ -74,6 +74,7 @@ public class CounselCardRepositoryImpl extends QuerydslRepositorySupport impleme
                 counselSession.status.ne(ScheduleStatus.CANCELED),
                 counselCard.cardRecordStatus.eq(CardRecordStatus.RECORDED)
             )
+            .orderBy(counselSession.scheduledStartDateTime.desc())
             .fetch();
     }
 }
