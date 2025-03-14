@@ -51,9 +51,9 @@ public record SelectCounselSessionListItem(
                                 .counselSessionId(counselSession.getId())
                                 .isCounselorAssign(Optional.ofNullable(counselSession.getCounselor()).isPresent())
                                 .status(counselSession.getStatus())
-                                .cardRecordStatus(Optional.ofNullable(counselSession.getCounselCard())
-                                                .map(CounselCard::getCardRecordStatus)
-                                                .orElse(CardRecordStatus.UNRECORDED))
+//                                .cardRecordStatus(Optional.ofNullable(counselSession.getCounselCard())
+//                                                .map(CounselCard::getCardRecordStatus)
+//                                                .orElse(CardRecordStatus.UNRECORDED))
                                 .build();
         }
 }

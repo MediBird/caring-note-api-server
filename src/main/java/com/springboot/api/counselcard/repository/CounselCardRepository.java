@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.springboot.api.counselcard.entity.CounselCard;
 
 public interface CounselCardRepository extends JpaRepository<CounselCard, String>, CounselCardRepositoryCustom {
-    Optional<CounselCard> findByCounselSessionId(String counselSessionId);
+    boolean existsByCounselSessionId(String counselSessionId);
 }
