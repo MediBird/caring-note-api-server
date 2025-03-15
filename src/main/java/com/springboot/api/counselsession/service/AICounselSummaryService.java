@@ -1,5 +1,7 @@
 package com.springboot.api.counselsession.service;
 
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,7 +13,6 @@ import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.counselsession.dto.aiCounselSummary.*;
 import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
-import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.counselsession.entity.AICounselSummary;
@@ -22,6 +23,12 @@ import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.PromptTemplateRepository;
 import com.springboot.api.infra.external.NaverClovaExternalService;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +42,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
-
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -158,32 +156,32 @@ public class AICounselSummaryService {
                 SpeechToTextRes speechToTextRes = objectMapper.treeToValue(aiCounselSummary.getSttResult(),
                                 SpeechToTextRes.class);
 
-                Map<String, String> speakerLongestTexts
-                        = speechToTextRes.segments().stream()
-                        .collect(Collectors.groupingBy(
-                                segmentDTO -> segmentDTO.speaker().name(),
-                                Collectors.mapping(SegmentDTO::text, Collectors.toList())
-                        ))
+                HashMap<String, SpeakerStatsDTO> speakerMap = new HashMap<>();
+
+                speechToTextRes.speakers()
+                        .forEach(speaker ->  speakerMap
+                                .putIfAbsent(speaker.name()
+                                        , new SpeakerStatsDTO()
+                                )
+                        );
+
+                AtomicInteger totalSpeakCount = new AtomicInteger();
+
+                speechToTextRes.segments().forEach(segment -> {
+                        SpeakerStatsDTO speakerStats = speakerMap.get(segment.speaker().name());
+                        speakerStats.updateSpeakerStats(segment.text());
+                        totalSpeakCount.getAndIncrement();
+                });
+                
+
+                return speakerMap
                         .entrySet()
                         .stream()
-                        .filter(entry -> entry.getValue().size() >= 10)
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                entry -> entry.getValue().stream()
-                                        .max(Comparator.comparingInt(String::length))
-                                        .orElse("")
-                        ))
-                        .entrySet()
-                        .stream()
-                        .filter(entry -> entry.getValue().length() >= 5)
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-
-                return speakerLongestTexts.entrySet().stream()
-                        .sorted(Map.Entry.comparingByKey())
-                        .map(map -> SelectSpeakerListRes.of(map.getKey(), map.getValue()))
+                        .filter(entry ->  entry.getValue().isValidSpeaker())
+                        .sorted(Comparator.comparing((Map.Entry<String, SpeakerStatsDTO> entry)
+                                -> entry.getValue().getSpeakCount()).reversed())
+                        .map(map -> SelectSpeakerListRes.of(map.getKey(), map.getValue(), totalSpeakCount.get()))
                         .toList();
-
 
         }
 
