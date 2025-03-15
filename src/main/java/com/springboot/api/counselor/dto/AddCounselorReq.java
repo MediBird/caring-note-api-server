@@ -18,7 +18,7 @@ public class AddCounselorReq {
     @Email(message = "유효한 이메일 주소를 입력해주세요.")
     private String email;
 
-    @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
+    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
     private String phoneNumber;
 
     @NotBlank
