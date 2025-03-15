@@ -90,10 +90,10 @@ public class AICounselSummaryService {
                                 .language("ko-KR")
                                 .completion("sync")
                                 .diarization(DiarizationDTO.builder()
-                                        .speakerCountMin(2)
-                                        .speakerCountMax(5)
+                                        .speakerCountMin(3)
+                                        .speakerCountMax(6)
                                         .build())
-                                .wordAlignment(true)
+                                .wordAlignment(false)
                                 .fullText(true)
                                 .build();
 
@@ -175,7 +175,7 @@ public class AICounselSummaryService {
                         ))
                         .entrySet()
                         .stream()
-                        .filter(entry -> entry.getValue().length() >= 10)
+                        .filter(entry -> entry.getValue().length() >= 5)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 

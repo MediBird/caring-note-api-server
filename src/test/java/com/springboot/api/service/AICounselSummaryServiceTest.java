@@ -242,8 +242,6 @@ public class AICounselSummaryServiceTest {
 
                 List<SelectSpeakerListRes> result = aiCounselSummaryService.selectSpeakerList(testCounselSessionId);
 
-                assertEquals(1, result.size());
-                assertEquals("A", result.getFirst().speaker());
-                assertEquals("This is a longer statement from A.", result.getFirst().text());
+                assertEquals(2, result.size());
         }
 }

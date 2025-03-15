@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
@@ -40,7 +39,6 @@ import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @SpringBootTest
-@Disabled
 public class STTTest {
 
         @Autowired
@@ -81,11 +79,11 @@ public class STTTest {
         SpeechToTextReq.builder()
             .language("ko-KR")
             .completion("sync")
-            .wordAlignment(true)
+            .wordAlignment(false)
             .fullText(true)
             .diarization(DiarizationDTO.builder()
-                    .speakerCountMin(2)
-                    .speakerCountMax(5)
+                    .speakerCountMin(3)
+                    .speakerCountMax(7)
                     .build())
             .build();
 
