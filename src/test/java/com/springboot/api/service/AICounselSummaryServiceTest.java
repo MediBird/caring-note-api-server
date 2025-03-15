@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
 import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -8,6 +9,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.counselsession.entity.AICounselSummary;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.service.AICounselSummaryService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -34,20 +47,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.counselsession.entity.AICounselSummary;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.counselsession.service.AICounselSummaryService;
 
 @SpringBootTest
 @EnableAsync
@@ -184,4 +183,67 @@ public class AICounselSummaryServiceTest {
                 aiCounselSummaryService.deleteAICounselSummary(deleteAICounselSummaryReq);
         }
 
+        @Test
+        public void testSelectSpeakerList() throws Exception {
+                String testCounselSessionId = "TEST-COUNSEL-SESSION-01";
+
+                CounselSession mockCounselSession = new CounselSession();
+                mockCounselSession.setId(testCounselSessionId);
+
+                //A는 발화 수 >= 10, Max Length >= 10
+                //B는 발화 수 >= 10, Max Length < 10
+                //C는 발화 수 < 10, Max Length >= 10
+                AICounselSummary mockAiCounselSummary = AICounselSummary.builder()
+                                .counselSession(mockCounselSession)
+                                .aiCounselSummaryStatus(STT_COMPLETE)
+                                .sttResult(new ObjectMapper().readTree("""
+                                        {
+                                            "segments": [
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "A" }, "text": "Hello there!", "start": 0, "end": 1 },
+                                                { "speaker": { "name": "B" }, "text": "Hi!", "start": 2, "end": 3 },
+                                                { "speaker": { "name": "B" }, "text": "Hi!", "start": 2, "end": 3 },
+                                                { "speaker": { "name": "A" }, "text": "How are you?", "start": 4, "end": 5 },
+                                                { "speaker": { "name": "A" }, "text": "This is a longer statement from A.", "start": 6, "end": 7 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "B" }, "text": "Great!", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
+                                                { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 }
+                                            ]
+                                        }
+                                """))
+                                .build();
+
+                when(counselSessionRepository.findById(testCounselSessionId)).thenReturn(Optional.of(mockCounselSession));
+                when(aiCounselSummaryRepository.findByCounselSessionId(testCounselSessionId))
+                                .thenReturn(Optional.of(mockAiCounselSummary));
+
+                List<SelectSpeakerListRes> result = aiCounselSummaryService.selectSpeakerList(testCounselSessionId);
+
+                assertEquals(1, result.size());
+                assertEquals("A", result.getFirst().speaker());
+                assertEquals("This is a longer statement from A.", result.getFirst().text());
+        }
 }

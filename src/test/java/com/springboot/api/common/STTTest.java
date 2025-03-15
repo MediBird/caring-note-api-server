@@ -1,13 +1,20 @@
 package com.springboot.api.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.infra.external.NaverClovaExternalService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -32,13 +39,6 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.infra.external.NaverClovaExternalService;
-
 @SpringBootTest
 @Disabled
 public class STTTest {
@@ -47,32 +47,18 @@ public class STTTest {
         ChatModel chatModel;
 
         private static final Logger log = LoggerFactory.getLogger(STTTest.class);
+        
+        record SttMessage(String speaker, String text) {
 
-        public static class SttMessage {
-                private String speaker;
-                private String text;
-
-                public SttMessage(String speaker, String text) {
-                        this.speaker = speaker;
-                        this.text = text;
-                }
-
-                public String getSpeaker() {
-                        return speaker;
-                }
-
-                public String getText() {
-                        return text;
-                }
         }
 
         @ParameterizedTest
-        @ValueSource(strings = { "test5.webm" })
+        @ValueSource(strings = { "test1.m4a","test2.m4a","test3.m4a","test4.m4a" })
         public void testTransformSTT(String filename) throws IOException, SecurityException {
 
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
-                                "https://clovaspeech-gw.ncloud.com/external/v1/10309/338f74c076c81a57b47313f867ab35519c289e3f8dede43066bea9f266708cb1"));
+                                "https://clovaspeech-gw.ncloud.com/external/v1/10310/3ae57a3d3c79f41de8bb6429f954bcc3cb78905e2fb7e41b2116f2213e449197"));
                 RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
                 HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 
@@ -80,7 +66,7 @@ public class STTTest {
 
                 Map<String, String> headers = new HashMap<>();
                 headers.put("Accept", "application/json");
-                headers.put("X-CLOVASPEECH-API-KEY", "796d7a638753441eb241a266f1f10d49");
+                headers.put("X-CLOVASPEECH-API-KEY", "6c294a231c7d42989a5ef003fd09c3d4");
 
                 File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/" + filename);
                 FileInputStream inputStream = new FileInputStream(mp4File);
@@ -91,13 +77,17 @@ public class STTTest {
                                 "audio/m4a",
                                 inputStream);
 
-                SpeechToTextReq speechToTextReq = SpeechToTextReq
-                                .builder()
-                                .language("ko-KR")
-                                .completion("sync")
-                                .wordAlignment(true)
-                                .fullText(true)
-                                .build();
+    SpeechToTextReq speechToTextReq =
+        SpeechToTextReq.builder()
+            .language("ko-KR")
+            .completion("sync")
+            .wordAlignment(true)
+            .fullText(true)
+            .diarization(DiarizationDTO.builder()
+                    .speakerCountMin(2)
+                    .speakerCountMax(5)
+                    .build())
+            .build();
 
                 SpeechToTextRes speechToTextRes = service.convertSpeechToText(headers, multipartFile, speechToTextReq)
                                 .getBody();
@@ -105,7 +95,7 @@ public class STTTest {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-                File file = new File("src/test/resources/stt/output/" + mp4File.getName() + ".json");
+                File file = new File("src/test/resources/stt/output/" + mp4File.getName()+ LocalTime.now() + ".json");
                 objectMapper.writeValue(file, speechToTextRes);
 
         }
