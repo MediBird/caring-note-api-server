@@ -34,4 +34,7 @@ public interface CounselSessionRepository
         boolean existsByCounselorAndScheduledStartDateTime(Counselor counselor, LocalDateTime scheduledStartDateTime);
 
         boolean existsByCounseleeAndScheduledStartDateTime(Counselee counselee, LocalDateTime scheduledStartDateTime);
+
+        // 상담사 ID로 상담 세션 찾기
+        List<CounselSession> findByCounselorId(String counselorId);
 }
