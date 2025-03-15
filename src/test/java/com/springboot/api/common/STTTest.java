@@ -1,12 +1,5 @@
 package com.springboot.api.common;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.infra.external.NaverClovaExternalService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.slf4j.Logger;
@@ -38,20 +33,29 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.infra.external.NaverClovaExternalService;
+
 @SpringBootTest
+@Disabled
 public class STTTest {
 
         @Autowired
         ChatModel chatModel;
 
         private static final Logger log = LoggerFactory.getLogger(STTTest.class);
-        
+
         record SttMessage(String speaker, String text) {
 
         }
 
         @ParameterizedTest
-        @ValueSource(strings = { "test1.m4a","test2.m4a","test3.m4a","test4.m4a" })
+        @ValueSource(strings = { "test1.m4a", "test2.m4a", "test3.m4a", "test4.m4a" })
         public void testTransformSTT(String filename) throws IOException, SecurityException {
 
                 RestTemplate restTemplate = new RestTemplate();
@@ -75,17 +79,16 @@ public class STTTest {
                                 "audio/m4a",
                                 inputStream);
 
-    SpeechToTextReq speechToTextReq =
-        SpeechToTextReq.builder()
-            .language("ko-KR")
-            .completion("sync")
-            .wordAlignment(false)
-            .fullText(true)
-            .diarization(DiarizationDTO.builder()
-                    .speakerCountMin(3)
-                    .speakerCountMax(7)
-                    .build())
-            .build();
+                SpeechToTextReq speechToTextReq = SpeechToTextReq.builder()
+                                .language("ko-KR")
+                                .completion("sync")
+                                .wordAlignment(false)
+                                .fullText(true)
+                                .diarization(DiarizationDTO.builder()
+                                                .speakerCountMin(3)
+                                                .speakerCountMax(7)
+                                                .build())
+                                .build();
 
                 SpeechToTextRes speechToTextRes = service.convertSpeechToText(headers, multipartFile, speechToTextReq)
                                 .getBody();
@@ -93,7 +96,7 @@ public class STTTest {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-                File file = new File("src/test/resources/stt/output/" + mp4File.getName()+ LocalTime.now() + ".json");
+                File file = new File("src/test/resources/stt/output/" + mp4File.getName() + LocalTime.now() + ".json");
                 objectMapper.writeValue(file, speechToTextRes);
 
         }
