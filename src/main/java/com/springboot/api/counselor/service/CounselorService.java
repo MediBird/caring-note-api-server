@@ -29,6 +29,8 @@ import com.springboot.api.counselor.dto.UpdateCounselorRes;
 import com.springboot.api.counselor.dto.UpdateRoleReq;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +43,7 @@ public class CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final KeycloakUserService keycloakUserService;
+    private final CounselSessionRepository counselSessionRepository;
 
     @CacheEvict(value = "counselorNames", allEntries = true)
     @Transactional
@@ -184,6 +187,13 @@ public class CounselorService {
             // Keycloak 삭제 실패해도 DB에서는 삭제 진행
         }
 
+        // 상담사와 연결된 모든 상담 세션에서 상담사 참조를 null로 변경
+        List<CounselSession> counselSessions = counselSessionRepository.findByCounselorId(counselor.getId());
+        for (CounselSession session : counselSessions) {
+            session.updateCounselor(null);
+        }
+        log.info("상담사({})와 연결된 상담 세션 {}개의 상담사 참조를 null로 변경했습니다.", counselor.getId(), counselSessions.size());
+
         // DB에서 상담사 삭제
         counselorRepository.deleteById(counselorId);
         log.info("DB에서 상담사 삭제 완료: {}", counselorId);
@@ -255,7 +265,8 @@ public class CounselorService {
 
     @Transactional
     public CounselorPageRes getCounselorsByPage(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size, org.springframework.data.domain.Sort.by(
+                org.springframework.data.domain.Sort.Direction.DESC, "updatedDatetime"));
         Page<Counselor> counselorPage = counselorRepository.findAll(pageRequest);
 
         return CounselorPageRes.fromPage(counselorPage);

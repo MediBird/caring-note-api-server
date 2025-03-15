@@ -3,6 +3,9 @@ package com.springboot.api.counselsession.entity;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.api.counselee.entity.Counselee;
@@ -27,8 +30,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
@@ -103,7 +104,7 @@ public class CounselSession extends BaseEntity {
     }
 
     public void updateCounselor(Counselor counselor) {
-        this.counselor = Objects.requireNonNullElse(counselor, this.counselor);
+        this.counselor = counselor;
     }
 
     public void updateScheduledStartDateTime(LocalDateTime startDateTime) {
