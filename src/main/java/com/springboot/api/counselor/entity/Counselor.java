@@ -1,17 +1,8 @@
 package com.springboot.api.counselor.entity;
 
-import java.time.LocalDate;
-import java.util.Collection;
-import java.util.Set;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.RoleType;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,12 +14,13 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import java.time.LocalDate;
+import java.util.Collection;
+import java.util.Set;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
@@ -40,8 +32,7 @@ import lombok.ToString;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSessions" })
-@ToString(callSuper = true, exclude = { "counselSessions" })
+@EqualsAndHashCode(callSuper = true)
 public class Counselor extends BaseEntity implements UserDetails {
 
     // 이름
