@@ -35,7 +35,7 @@ public class CounselorController {
     @Operation(summary = "내 정보 조회", description = "내 정보를 조회한다.", responses = {
             @ApiResponse(responseCode = "200", description = "내 정보 조회 성공")
     })
-    @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_NONE })
     @GetMapping("/my-info")
     public ResponseEntity<GetCounselorRes> getMyInfo() {
         return ResponseEntity.ok(counselorService.getMyInfo());
