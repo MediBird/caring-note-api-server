@@ -54,9 +54,8 @@ public class Counselor extends BaseEntity implements UserDetails {
 
     private String password;
 
-    // 전화번호
     @Column(unique = true)
-    @Pattern(regexp = "^\\d{10,11}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
+    @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
     private String phoneNumber;
 
     @Column(unique = true)

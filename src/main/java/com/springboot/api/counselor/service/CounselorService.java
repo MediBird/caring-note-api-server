@@ -137,11 +137,16 @@ public class CounselorService {
         }
 
         if (updateCounselorReq.getPhoneNumber() != null) {
-            counselor.setPhoneNumber(updateCounselorReq.getPhoneNumber());
+            String phoneNumber = updateCounselorReq.getPhoneNumber();
+            counselor.setPhoneNumber(phoneNumber);
         }
 
         if (updateCounselorReq.getRoleType() != null) {
             counselor.setRoleType(updateCounselorReq.getRoleType());
+        }
+
+        if (updateCounselorReq.getDescription() != null) {
+            counselor.setDescription(updateCounselorReq.getDescription());
         }
 
         Counselor updatedCounselor = counselorRepository.save(counselor);
