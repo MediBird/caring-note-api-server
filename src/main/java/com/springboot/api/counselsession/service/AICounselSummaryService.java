@@ -10,6 +10,7 @@ import com.springboot.api.common.properties.SttFileProperties;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.counselsession.dto.aiCounselSummary.*;
+import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
 import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
@@ -88,6 +89,10 @@ public class AICounselSummaryService {
                                 .builder()
                                 .language("ko-KR")
                                 .completion("sync")
+                                .diarization(DiarizationDTO.builder()
+                                        .speakerCountMin(2)
+                                        .speakerCountMax(5)
+                                        .build())
                                 .wordAlignment(true)
                                 .fullText(true)
                                 .build();
