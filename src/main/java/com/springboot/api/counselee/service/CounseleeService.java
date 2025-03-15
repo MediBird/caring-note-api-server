@@ -1,13 +1,9 @@
 package com.springboot.api.counselee.service;
 
-import com.springboot.api.counselcard.repository.CounselCardRepository;
-import com.springboot.api.counselcard.service.CounselCardService;
-import com.springboot.enums.CardRecordStatus;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,8 +13,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselcard.entity.CounselCard;
+import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
@@ -29,6 +27,7 @@ import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
+import com.springboot.enums.CardRecordStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,14 +45,24 @@ public class CounseleeService {
         Counselee counselee = counseleeRepository.findByCounselSessionId(counselSessionId)
                 .orElseThrow(NoContentException::new);
 
-        CounselCard counselCard = counselCardRepository.findLastRecordedCounselCard(
-            counselee.getId()).orElse(null);
+        CounselCard counselCard = counselCardRepository.findLastRecordedCounselCard(counselee.getId())
+                .orElse(null);
 
-        if(counselCard == null){
-            return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, Set.of(), CardRecordStatus.UNRECORDED);
+        List<String> diseases = new ArrayList<>();
+
+        if (counselCard != null && counselCard.getHealthInformation() != null) {
+            JsonNode healthInfo = counselCard.getHealthInformation();
+            JsonNode diseasesInfoJson = healthInfo.get("diseaseInfo");
+            JsonNode diseasesJson = diseasesInfoJson != null ? diseasesInfoJson.get("diseases") : null;
+
+            if (diseasesJson != null && diseasesJson.isArray()) {
+                diseasesJson.forEach(diseaseJson -> diseases.add(diseaseJson.asText()));
+            }
         }
 
-        return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, counselCard.getDiseaseInfo().getDiseases(), counselCard.getCardRecordStatus());
+        return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, diseases,
+                Optional.ofNullable(counselCard).map(CounselCard::getCardRecordStatus)
+                        .orElse(CardRecordStatus.UNRECORDED));
     }
 
     @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)

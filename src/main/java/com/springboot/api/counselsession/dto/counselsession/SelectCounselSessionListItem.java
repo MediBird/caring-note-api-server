@@ -4,6 +4,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import com.springboot.api.common.entity.BaseEntity;
+import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
@@ -50,9 +51,9 @@ public record SelectCounselSessionListItem(
                                 .counselSessionId(counselSession.getId())
                                 .isCounselorAssign(Optional.ofNullable(counselSession.getCounselor()).isPresent())
                                 .status(counselSession.getStatus())
-//                                .cardRecordStatus(Optional.ofNullable(counselSession.getCounselCard())
-//                                                .map(CounselCard::getCardRecordStatus)
-//                                                .orElse(CardRecordStatus.UNRECORDED))
+                                .cardRecordStatus(Optional.ofNullable(counselSession.getCounselCard())
+                                                .map(CounselCard::getCardRecordStatus)
+                                                .orElse(CardRecordStatus.UNRECORDED))
                                 .build();
         }
 }
