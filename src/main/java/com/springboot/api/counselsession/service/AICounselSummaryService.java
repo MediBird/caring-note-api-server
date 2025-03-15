@@ -90,10 +90,10 @@ public class AICounselSummaryService {
                                 .language("ko-KR")
                                 .completion("sync")
                                 .diarization(DiarizationDTO.builder()
-                                        .speakerCountMin(2)
-                                        .speakerCountMax(5)
+                                        .speakerCountMin(3)
+                                        .speakerCountMax(6)
                                         .build())
-                                .wordAlignment(true)
+                                .wordAlignment(false)
                                 .fullText(true)
                                 .build();
 
