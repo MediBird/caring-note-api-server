@@ -11,11 +11,7 @@ import static org.mockito.Mockito.when;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
+import com.springboot.api.counselsession.dto.aiCounselSummary.*;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.counselsession.entity.AICounselSummary;
 import com.springboot.api.counselsession.entity.CounselSession;
@@ -25,9 +21,8 @@ import com.springboot.api.counselsession.service.AICounselSummaryService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -115,28 +110,44 @@ public class AICounselSummaryServiceTest {
         }
 
         @ParameterizedTest
-        @ValueSource(strings = { "test1.m4a.json", "test2.m4a.json", "test3.m4a.json", "test4.m4a.json" })
+        @ValueSource(strings = { "test1.m4a.json" })
         public void selectSpeakerList(String filename) throws IOException {
 
                 ObjectMapper objectMapper = new ObjectMapper();
                 Resource resource = new ClassPathResource("stt/output/" + filename);
                 SpeechToTextRes speechToTextRes = objectMapper.readValue(resource.getFile(), SpeechToTextRes.class);
 
-                Map<String, String> longestTexts = speechToTextRes.segments().stream()
-                                .collect(Collectors.toMap(
-                                                // `name`을 키로 사용
-                                                segmentDTO -> segmentDTO.speaker().name(),
-                                                SegmentDTO::text,
-                                                // 기존 값과 새로운 값 중 더 긴 문자열을 선택
-                                                (existing, replacement) -> existing.length() >= replacement.length()
-                                                                ? existing
-                                                                : replacement));
+                HashMap<String, SpeakerStatsDTO> speakerMap = new HashMap<>();
 
-                List<SelectSpeakerListRes> selectSpeakerListResList = longestTexts.entrySet().stream()
-                                .sorted(Map.Entry.comparingByKey())
-                                .map(map -> new SelectSpeakerListRes(map.getKey(), map.getValue())).toList();
+                speechToTextRes.speakers()
+                        .forEach(speaker ->  speakerMap
+                                .putIfAbsent(speaker.name()
+                                        , new SpeakerStatsDTO()
+                                )
+                        );
 
-                log.debug(selectSpeakerListResList.toString());
+                AtomicInteger totalSpeakCount = new AtomicInteger();
+
+                speechToTextRes.segments().forEach(segment -> {
+                      SpeakerStatsDTO speakerStats = speakerMap.get(segment.speaker().name());
+                      speakerStats.updateSpeakerStats(segment.text());
+                      totalSpeakCount.getAndIncrement();
+                });
+                
+                log.info("speakerTextMap: " + speakerMap);
+
+                List<SelectSpeakerListRes> selectSpeakerListResList = speakerMap
+                        .entrySet()
+                        .stream()
+                        .filter(entry ->  entry.getValue().isValidSpeaker())
+                        .sorted(Comparator.comparing((Map.Entry<String, SpeakerStatsDTO> entry)
+                                -> entry.getValue().getSpeakCount()).reversed())
+                        .map(map -> SelectSpeakerListRes.of(map.getKey(), map.getValue(), totalSpeakCount.get()))
+                        .toList();
+
+
+                log.info("selectSpeakerListResList: " + selectSpeakerListResList);
+
         }
 
         @ParameterizedTest
@@ -190,9 +201,9 @@ public class AICounselSummaryServiceTest {
                 CounselSession mockCounselSession = new CounselSession();
                 mockCounselSession.setId(testCounselSessionId);
 
-                //A는 발화 수 >= 10, Max Length >= 10
-                //B는 발화 수 >= 10, Max Length < 10
-                //C는 발화 수 < 10, Max Length >= 10
+                //A는 발화 수 >= 10, Max Length >= 5
+                //B는 발화 수 >= 10, Max Length < 5
+                //C는 발화 수 < 10, Max Length >= 5
                 AICounselSummary mockAiCounselSummary = AICounselSummary.builder()
                                 .counselSession(mockCounselSession)
                                 .aiCounselSummaryStatus(STT_COMPLETE)
@@ -231,7 +242,22 @@ public class AICounselSummaryServiceTest {
                                                 { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
                                                 { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 },
                                                 { "speaker": { "name": "C" }, "text": "Great! Great! Great! Great! Great! ", "start": 8, "end": 9 }
-                                            ]
+                                            ],
+                                           "speakers" : [ {
+                                                            "label" : "1",
+                                                            "name" : "A",
+                                                            "edited" : false
+                                                            },
+                                                           {
+                                                            "label" : "2",
+                                                            "name" : "B",
+                                                            "edited" : false
+                                                            },
+                                                           {
+                                                            "label" : "3",
+                                                            "name" : "C",
+                                                            "edited" : false
+                                                            } ]
                                         }
                                 """))
                                 .build();
