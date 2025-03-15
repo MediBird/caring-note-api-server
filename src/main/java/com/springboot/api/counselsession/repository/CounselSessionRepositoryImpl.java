@@ -1,5 +1,7 @@
 package com.springboot.api.counselsession.repository;
 
+import com.querydsl.core.Tuple;
+import com.springboot.api.counselcard.entity.QCounselCard;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,8 +59,10 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public List<CounselSession> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
+    public List<Tuple> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
             Pageable pageable) {
+
+        QCounselCard counselCard = QCounselCard.counselCard;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -78,9 +82,12 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
         }
 
         return queryFactory
-                .selectFrom(counselSession)
+                .select(counselSession, counselCard.cardRecordStatus)
+                .from(counselSession)
+                .leftJoin(counselSession.counselee).fetchJoin()
+                .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
                 .where(builder)
-                .orderBy(counselSession.id.asc())
+                .orderBy(counselSession.scheduledStartDateTime.asc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize() + 1)
                 .fetch();

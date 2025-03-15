@@ -37,7 +37,7 @@ class CounselCardControllerTest {
 //                                .healthInformation(HealthInformationDTO.builder().build())
 //                                .livingInformation(LivingInformationDTO.builder().build())
 //                                .independentLifeInformation(IndependentLifeInformationDTO.builder().build())
-//                                .cardRecordStatus(CardRecordStatus.RECORDED)
+//                                .cardRecordStatus(CardRecordStatus.COMPLETED)
 //                                .build();
 //
 //                when(counselCardService.selectCounselCard(VALID_COUNSEL_SESSION_ID))
@@ -49,7 +49,7 @@ class CounselCardControllerTest {
 //                                .contentType(MediaType.APPLICATION_JSON))
 //                                .andExpect(status().isOk())
 //                                .andExpect(jsonPath("$.data.counselCardId").value(VALID_COUNSEL_CARD_ID))
-//                                .andExpect(jsonPath("$.data.cardRecordStatus").value(CardRecordStatus.RECORDED.name()));
+//                                .andExpect(jsonPath("$.data.cardRecordStatus").value(CardRecordStatus.COMPLETED.name()));
 //        }
 //
 //        @Test

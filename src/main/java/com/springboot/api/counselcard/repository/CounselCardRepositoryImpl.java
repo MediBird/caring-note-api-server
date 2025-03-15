@@ -44,7 +44,7 @@ public class CounselCardRepositoryImpl extends QuerydslRepositorySupport impleme
             .selectFrom(counselCard)
             .where(counselCard.counselSession.counselee.id.eq(counseleeId)
                 .and(counselCard.counselSession.status.ne(ScheduleStatus.CANCELED))
-                .and(counselCard.cardRecordStatus.ne(CardRecordStatus.UNRECORDED)))
+                .and(counselCard.cardRecordStatus.ne(CardRecordStatus.NOT_STARTED)))
             .orderBy(counselCard.counselSession.scheduledStartDateTime.desc())
             .limit(1)
             .fetchOne());
@@ -72,7 +72,7 @@ public class CounselCardRepositoryImpl extends QuerydslRepositorySupport impleme
             .where(
                 counselSession.scheduledStartDateTime.before(currentSessionStartTime),
                 counselSession.status.ne(ScheduleStatus.CANCELED),
-                counselCard.cardRecordStatus.eq(CardRecordStatus.RECORDED)
+                counselCard.cardRecordStatus.eq(CardRecordStatus.COMPLETED)
             )
             .orderBy(counselSession.scheduledStartDateTime.desc())
             .fetch();

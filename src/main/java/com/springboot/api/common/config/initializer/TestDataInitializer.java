@@ -13,9 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
@@ -28,7 +26,6 @@ import com.springboot.api.counselsession.entity.WasteMedicationDisposal;
 import com.springboot.api.counselsession.entity.WasteMedicationRecord;
 import com.springboot.api.counselsession.enums.wasteMedication.DrugRemainActionType;
 import com.springboot.api.counselsession.enums.wasteMedication.RecoveryAgreementType;
-import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
@@ -312,8 +309,8 @@ public class TestDataInitializer implements CommandLineRunner {
 //                    .livingInformation(livingInformation)
 //                    .independentLifeInformation(independentLifeInformation)
 //                    .cardRecordStatus(counselSession.getStatus() == ScheduleStatus.CANCELED
-//                            ? CardRecordStatus.RECORDED
-//                            : CardRecordStatus.RECORDING)
+//                            ? CardRecordStatus.COMPLETED
+//                            : CardRecordStatus.IN_PROGRESS)
 //                    .build();
 //
 //            counselCard.setId(counselCardId);

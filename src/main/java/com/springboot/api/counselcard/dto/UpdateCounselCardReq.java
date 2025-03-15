@@ -23,7 +23,7 @@ public record UpdateCounselCardReq(
     String counselSessionId,
 
     @ValidEnum(enumClass = CardRecordStatus.class)
-    @Schema(description = "상담카드기록상태(RECORDING, RECORDED", example = "RECORDING")
+    @Schema(description = "상담카드기록상태(IN_PROGRESS, COMPLETED", example = "IN_PROGRESS")
     CardRecordStatus cardRecordStatus,
 
     CounselPurposeAndNoteDTO counselPurposeAndNote,

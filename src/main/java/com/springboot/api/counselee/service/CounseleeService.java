@@ -1,12 +1,10 @@
 package com.springboot.api.counselee.service;
 
 import com.springboot.api.counselcard.repository.CounselCardRepository;
-import com.springboot.api.counselcard.service.CounselCardService;
 import com.springboot.enums.CardRecordStatus;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -50,7 +48,7 @@ public class CounseleeService {
             counselee.getId()).orElse(null);
 
         if(counselCard == null){
-            return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, Set.of(), CardRecordStatus.UNRECORDED);
+            return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, Set.of(), CardRecordStatus.NOT_STARTED);
         }
 
         return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, counselCard.getDiseaseInfo().getDiseases(), counselCard.getCardRecordStatus());
