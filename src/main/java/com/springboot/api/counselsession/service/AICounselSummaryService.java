@@ -153,19 +153,32 @@ public class AICounselSummaryService {
                 SpeechToTextRes speechToTextRes = objectMapper.treeToValue(aiCounselSummary.getSttResult(),
                                 SpeechToTextRes.class);
 
-                Map<String, String> longestTexts = speechToTextRes.segments().stream()
-                                .collect(Collectors.toMap(
-                                                // `name`을 키로 사용
-                                                segmentDTO -> segmentDTO.speaker().name(),
-                                                SegmentDTO::text,
-                                                // 기존 값과 새로운 값 중 더 긴 문자열을 선택
-                                                (existing, replacement) -> existing.length() >= replacement.length()
-                                                                ? existing
-                                                                : replacement));
+                Map<String, String> speakerLongestTexts
+                        = speechToTextRes.segments().stream()
+                        .collect(Collectors.groupingBy(
+                                segmentDTO -> segmentDTO.speaker().name(),
+                                Collectors.mapping(SegmentDTO::text, Collectors.toList())
+                        ))
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getValue().size() >= 10)
+                        .collect(Collectors.toMap(
+                                Map.Entry::getKey,
+                                entry -> entry.getValue().stream()
+                                        .max(Comparator.comparingInt(String::length))
+                                        .orElse("")
+                        ))
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getValue().length() >= 10)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-                return longestTexts.entrySet().stream()
-                                .sorted(Map.Entry.comparingByKey())
-                                .map(map -> new SelectSpeakerListRes(map.getKey(), map.getValue())).toList();
+
+                return speakerLongestTexts.entrySet().stream()
+                        .sorted(Map.Entry.comparingByKey())
+                        .map(map -> SelectSpeakerListRes.of(map.getKey(), map.getValue()))
+                        .toList();
+
 
         }
 
