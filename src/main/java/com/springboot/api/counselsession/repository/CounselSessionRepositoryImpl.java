@@ -125,6 +125,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             LocalDateTime beforeDateTime) {
         return queryFactory
                 .selectFrom(counselSession)
+                .leftJoin(counselSession.counselCard).fetchJoin()
                 .where(
                         counselSession.counselee.id.eq(counseleeId),
                         counselSession.status.eq(ScheduleStatus.COMPLETED),
@@ -199,16 +200,6 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                         .selectFrom(counselSession)
                         .leftJoin(counselSession.counselee).fetchJoin()
                         .leftJoin(counselSession.counselor).fetchJoin()
-                        .where(counselSession.id.eq(counselSessionId))
-                        .fetchOne());
-    }
-
-    @Override
-    public Optional<CounselSession> findByIdWithCounselee(String counselSessionId) {
-        return Optional.ofNullable(
-                queryFactory
-                        .selectFrom(counselSession)
-                        .leftJoin(counselSession.counselee).fetchJoin()
                         .where(counselSession.id.eq(counselSessionId))
                         .fetchOne());
     }

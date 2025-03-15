@@ -4,6 +4,6 @@ import java.time.LocalDate;
 
 public record SelectPreviousCounselSessionListRes(
 
-        String counselSessionId, Integer CounselSessionOrder, LocalDate counselSessionDate, String counselorName,
+        String counselSessionId, String CounselSessionOrder, LocalDate counselSessionDate, String counselorName,
         boolean isShardCaringMessage) {
 }
