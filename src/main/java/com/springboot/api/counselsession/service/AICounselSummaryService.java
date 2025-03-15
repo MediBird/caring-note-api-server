@@ -1,23 +1,27 @@
 package com.springboot.api.counselsession.service;
 
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_COMPLETE;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_FAILED;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_PROGRESS;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_FAILED;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
-
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.stream.Collectors;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.common.dto.ByteArrayMultipartFile;
+import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.properties.NaverClovaProperties;
+import com.springboot.api.common.properties.SttFileProperties;
+import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.common.util.FileUtil;
+import com.springboot.api.counselsession.dto.aiCounselSummary.*;
+import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.counselsession.entity.AICounselSummary;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.entity.PromptTemplate;
+import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
+import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.repository.PromptTemplateRepository;
+import com.springboot.api.infra.external.NaverClovaExternalService;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.chat.client.ChatClient;
@@ -31,37 +35,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.common.dto.ByteArrayMultipartFile;
-import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.common.properties.NaverClovaProperties;
-import com.springboot.api.common.properties.SttFileProperties;
-import com.springboot.api.common.util.DateTimeUtil;
-import com.springboot.api.common.util.FileUtil;
-import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.STTMessageForPromptDTO;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectAICounselSummaryPopUpRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectAICounselSummaryStatusRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectAnalysedTextRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeechToTextRes;
-import com.springboot.api.counselsession.dto.naverClova.SegmentDTO;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.counselsession.entity.AICounselSummary;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.entity.PromptTemplate;
-import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
-import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.counselsession.repository.PromptTemplateRepository;
-import com.springboot.api.infra.external.NaverClovaExternalService;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.*;
 
 @Service
 @RequiredArgsConstructor
@@ -274,7 +255,7 @@ public class AICounselSummaryService {
                                 .chatResponse());
         }
 
-        public SelectAnalysedTextRes selectAnalysedText(String counselSessionId) throws JsonProcessingException {
+        public SelectAnalysedTextRes selectAnalysedText(String counselSessionId) {
 
                 counselSessionRepository.findById(counselSessionId)
                                 .orElseThrow(IllegalArgumentException::new);
