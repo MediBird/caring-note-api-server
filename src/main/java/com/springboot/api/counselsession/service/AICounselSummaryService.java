@@ -175,7 +175,7 @@ public class AICounselSummaryService {
                         ))
                         .entrySet()
                         .stream()
-                        .filter(entry -> entry.getValue().length() >= 10)
+                        .filter(entry -> entry.getValue().length() >= 5)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
 
