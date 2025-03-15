@@ -25,6 +25,7 @@ import com.springboot.api.counselor.dto.ResetPasswordReq;
 import com.springboot.api.counselor.dto.SelectCounselorRes;
 import com.springboot.api.counselor.dto.UpdateCounselorReq;
 import com.springboot.api.counselor.dto.UpdateCounselorRes;
+import com.springboot.api.counselor.dto.UpdateRoleReq;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
 
@@ -216,5 +217,33 @@ public class CounselorService {
             log.error("비밀번호 초기화 중 오류 발생: {}", e.getMessage(), e);
             throw new RuntimeException("비밀번호 초기화 중 오류가 발생했습니다", e);
         }
+    }
+
+    /**
+     * 상담사의 권한을 변경합니다.
+     * DB와 Keycloak 모두에서 권한을 업데이트합니다.
+     * 
+     * @param counselorId   권한을 변경할 상담사 ID
+     * @param updateRoleReq 권한 변경 요청 정보
+     * @return 업데이트된 상담사 정보
+     */
+    @Transactional
+    public UpdateCounselorRes updateRole(String counselorId, UpdateRoleReq updateRoleReq) {
+        Counselor counselor = counselorRepository.findById(counselorId)
+                .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
+
+        if (counselor.getUsername() == null) {
+            throw new IllegalStateException("사용자명이 없는 상담사입니다: " + counselorId);
+        }
+
+        // DB에서 권한 업데이트
+        counselor.setRoleType(updateRoleReq.getRoleType());
+        Counselor updatedCounselor = counselorRepository.save(counselor);
+        log.info("DB에서 상담사 권한 업데이트 완료: {} -> {}", counselorId, updateRoleReq.getRoleType());
+
+        return new UpdateCounselorRes(
+                updatedCounselor.getId(),
+                updatedCounselor.getName(),
+                updatedCounselor.getRoleType());
     }
 }

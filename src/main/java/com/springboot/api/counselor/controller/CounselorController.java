@@ -15,6 +15,7 @@ import com.springboot.api.counselor.dto.GetCounselorRes;
 import com.springboot.api.counselor.dto.ResetPasswordReq;
 import com.springboot.api.counselor.dto.UpdateCounselorReq;
 import com.springboot.api.counselor.dto.UpdateCounselorRes;
+import com.springboot.api.counselor.dto.UpdateRoleReq;
 import com.springboot.api.counselor.service.CounselorService;
 import com.springboot.enums.RoleType;
 
@@ -83,5 +84,18 @@ public class CounselorController {
             @Valid @RequestBody ResetPasswordReq resetPasswordReq) {
         counselorService.resetPassword(counselorId, resetPasswordReq);
         return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "상담사 권한 변경", description = "상담사의 권한을 변경한다. DB와 Keycloak 모두에서 권한을 업데이트한다.", responses = {
+            @ApiResponse(responseCode = "200", description = "권한 변경 성공"),
+            @ApiResponse(responseCode = "400", description = "잘못된 요청"),
+            @ApiResponse(responseCode = "404", description = "상담사를 찾을 수 없음")
+    })
+    @RoleSecured({ RoleType.ROLE_ADMIN })
+    @PutMapping("/{counselorId}/role")
+    public ResponseEntity<UpdateCounselorRes> updateRole(
+            @PathVariable String counselorId,
+            @Valid @RequestBody UpdateRoleReq updateRoleReq) {
+        return ResponseEntity.ok(counselorService.updateRole(counselorId, updateRoleReq));
     }
 }
