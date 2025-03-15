@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.repository;
 
+import com.querydsl.core.Tuple;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ public interface CounselSessionRepositoryCustom {
 
         List<CounselSession> findCompletedSessionsByYearAndMonth(int year, int month);
 
-        List<CounselSession> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
+        List<Tuple> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
                         Pageable pageable);
 
         long countByStatus(ScheduleStatus status);
@@ -37,6 +38,8 @@ public interface CounselSessionRepositoryCustom {
         List<String> findAllPharmacistNames();
 
         Optional<CounselSession> findByIdWithCounseleeAndCounselor(String counselSessionId);
+
+        Optional<CounselSession> findByIdWithCounselee(String counselSessionId);
 
         /**
          * 특정 내담자의 상담 회차 수를 계산합니다.

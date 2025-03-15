@@ -76,10 +76,6 @@ public class CounselSession extends BaseEntity {
     @Column(name = "session_number")
     private Integer sessionNumber;
 
-    // TODO 연관관계 검토
-    @OneToOne(mappedBy = "counselSession", cascade = CascadeType.ALL, orphanRemoval = true)
-    private CounselCard counselCard;
-
     public CounselSession(Counselee counselee, LocalDateTime scheduledStartDateTime) {
         this.counselee = Objects.requireNonNull(counselee, "상담 세션의 내담자는 필수 입력 항목입니다.");
         this.scheduledStartDateTime = Objects.requireNonNull(scheduledStartDateTime, "상담 세션의 시작 시간은 필수 입력 항목입니다.");
@@ -115,10 +111,17 @@ public class CounselSession extends BaseEntity {
         if (this.status.equals(ScheduleStatus.COMPLETED)) {
             throw new IllegalArgumentException("이미 완료된 상담 세션의 상태는 변경할 수 없습니다.");
         }
+        if(status.equals(ScheduleStatus.PROGRESS)){
+            this.startDateTime = LocalDateTime.now();
+        }
+
+
         this.status = Objects.requireNonNullElse(status, this.status);
+
 
         if (this.status.equals(ScheduleStatus.COMPLETED)) {
             this.counselee.counselSessionComplete(this.scheduledStartDateTime.toLocalDate());
+            this.endDateTime = LocalDateTime.now();
         }
     }
 

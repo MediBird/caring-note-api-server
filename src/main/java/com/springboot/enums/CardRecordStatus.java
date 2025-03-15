@@ -1,5 +1,5 @@
 package com.springboot.enums;
 
 public enum CardRecordStatus {
-    UNRECORDED, RECORDING, RECORDED
+    NOT_STARTED, IN_PROGRESS, COMPLETED
 }

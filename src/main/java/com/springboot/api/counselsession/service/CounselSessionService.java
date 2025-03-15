@@ -1,5 +1,7 @@
 package com.springboot.api.counselsession.service;
 
+import com.querydsl.core.Tuple;
+import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,7 +17,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
@@ -126,19 +127,27 @@ public class CounselSessionService {
         }
 
         @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
-        @Transactional
+        @Transactional(readOnly = true)
         public CommonCursorRes<List<SelectCounselSessionListItem>> selectCounselSessionListByBaseDateAndCursorAndSize(
                         SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
                 Pageable pageable = PageRequest.of(0, req.size());
 
-                List<CounselSession> sessions = counselSessionRepository.findSessionByCursorAndDate(req.baseDate(),
+                List<Tuple> sessions = counselSessionRepository.findSessionByCursorAndDate(req.baseDate(),
                                 req.cursor(), null, pageable);
 
-                boolean hasNext = sessions.size() > pageable.getPageSize();
-                List<CounselSession> content = hasNext ? sessions.subList(0, pageable.getPageSize()) : sessions;
-                String nextCursor = content.isEmpty() ? null : content.getLast().getId();
+                List<SelectCounselSessionListItem> selectCounselSessionListItems = sessions.stream()
+                                .map(tuple -> {
+                                        CounselSession counselSession = tuple.get(0, CounselSession.class);
+                                        CardRecordStatus cardRecordStatus = tuple.get(1, CardRecordStatus.class);
+                                        return SelectCounselSessionListItem.from(counselSession, cardRecordStatus);
+                                })
+                                .toList();
 
-                return new CommonCursorRes<>(content.stream().map(SelectCounselSessionListItem::from).toList(),
+                boolean hasNext = selectCounselSessionListItems.size() > pageable.getPageSize();
+                List<SelectCounselSessionListItem> content = hasNext ? selectCounselSessionListItems.subList(0, pageable.getPageSize()) : selectCounselSessionListItems;
+                String nextCursor = content.isEmpty() ? null : content.getLast().counselSessionId();
+
+                return new CommonCursorRes<>(content,
                                 nextCursor,
                                 hasNext);
         }
@@ -196,11 +205,9 @@ public class CounselSessionService {
                 List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                                 .stream()
                                 .map(session -> {
-                                        JsonNode baseInfo = session.getCounselCard().getBaseInformation()
-                                                        .get("baseInfo");
                                         return new SelectPreviousCounselSessionListRes(
                                                         session.getId(),
-                                                        baseInfo.get("counselSessionOrder").asText(),
+                                                        session.getSessionNumber(),
                                                         session.getScheduledStartDateTime().toLocalDate(),
                                                         session.getCounselor().getName(),
                                                         false);
