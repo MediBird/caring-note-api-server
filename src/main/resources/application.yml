@@ -87,5 +87,5 @@ security:
 keycloak:
   url: https://caringnote.co.kr/keycloak/
   admin-username: cnAdmin
-  admin-password: caringNote2024!!
+  admin-password: caringNote@2024
   realm: caringnote
