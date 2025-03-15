@@ -20,6 +20,7 @@ import com.springboot.api.common.exception.ResourceNotFoundException;
 import com.springboot.api.counselor.dto.AddCounselorReq;
 import com.springboot.api.counselor.dto.AddCounselorRes;
 import com.springboot.api.counselor.dto.CounselorNameListRes;
+import com.springboot.api.counselor.dto.CounselorPageRes;
 import com.springboot.api.counselor.dto.GetCounselorRes;
 import com.springboot.api.counselor.dto.ResetPasswordReq;
 import com.springboot.api.counselor.dto.SelectCounselorRes;
@@ -245,5 +246,13 @@ public class CounselorService {
                 updatedCounselor.getId(),
                 updatedCounselor.getName(),
                 updatedCounselor.getRoleType());
+    }
+
+    @Transactional
+    public CounselorPageRes getCounselorsByPage(int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Counselor> counselorPage = counselorRepository.findAll(pageRequest);
+
+        return CounselorPageRes.fromPage(counselorPage);
     }
 }

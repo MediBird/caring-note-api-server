@@ -7,10 +7,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.counselor.dto.CounselorNameListRes;
+import com.springboot.api.counselor.dto.CounselorPageRes;
 import com.springboot.api.counselor.dto.GetCounselorRes;
 import com.springboot.api.counselor.dto.ResetPasswordReq;
 import com.springboot.api.counselor.dto.UpdateCounselorReq;
@@ -97,5 +99,16 @@ public class CounselorController {
             @PathVariable String counselorId,
             @Valid @RequestBody UpdateRoleReq updateRoleReq) {
         return ResponseEntity.ok(counselorService.updateRole(counselorId, updateRoleReq));
+    }
+
+    @Operation(summary = "상담사 목록 페이지네이션 조회", description = "상담사 목록을 페이지네이션 형태로 조회한다.", responses = {
+            @ApiResponse(responseCode = "200", description = "상담사 목록 조회 성공")
+    })
+    @RoleSecured({ RoleType.ROLE_ADMIN })
+    @GetMapping("/page")
+    public ResponseEntity<CounselorPageRes> getCounselorsByPage(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(counselorService.getCounselorsByPage(page, size));
     }
 }
