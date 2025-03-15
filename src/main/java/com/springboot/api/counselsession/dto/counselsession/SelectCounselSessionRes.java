@@ -6,7 +6,9 @@ import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.ScheduleStatus;
 
+import lombok.Builder;
 
+@Builder
 public record SelectCounselSessionRes(
                 String counselSessionId,
                 String scheduledTime,
@@ -19,20 +21,21 @@ public record SelectCounselSessionRes(
                 ScheduleStatus status) {
         // TODO null 검사를 진행해야하는지 확인
         public static SelectCounselSessionRes from(CounselSession counselSession) {
-                return new SelectCounselSessionRes(
-                                counselSession.getId(),
-                                counselSession.getScheduledStartDateTime().toLocalDate().toString(),
-                                counselSession.getScheduledStartDateTime().toLocalTime().toString(),
-                                counselSession.getCounselee().getId(),
-                                counselSession.getCounselee().getName(),
-                                Optional.ofNullable(counselSession.getCounselor())
+                return SelectCounselSessionRes.builder()
+                                .counselSessionId(counselSession.getId())
+                                .scheduledTime(counselSession.getScheduledStartDateTime().toLocalTime().toString())
+                                .scheduledDate(counselSession.getScheduledStartDateTime().toLocalDate().toString())
+                                .counseleeId(counselSession.getCounselee().getId())
+                                .counseleeName(counselSession.getCounselee().getName())
+                                .counselorId(Optional.ofNullable(counselSession.getCounselor())
                                                 .map(Counselor::getId)
-                                                .orElse(""),
-                                Optional.ofNullable(counselSession.getCounselor())
+                                                .orElse(""))
+                                .counselorName(Optional.ofNullable(counselSession.getCounselor())
                                                 .map(Counselor::getName)
-                                                .orElse(""),
-                                Optional.ofNullable(counselSession.getSessionNumber())
-                                                .orElse(0),
-                                counselSession.getStatus());
-                                }
+                                                .orElse(""))
+                                .sessionNumber(Optional.ofNullable(counselSession.getSessionNumber())
+                                                .orElse(0))
+                                .status(counselSession.getStatus())
+                                .build();
+        }
 }
