@@ -1,11 +1,18 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
-import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
-import com.springboot.enums.EvacuationType;
-import jakarta.persistence.Embeddable;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
+import com.springboot.enums.EvacuationType;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +20,10 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Evacuation {
-    Set<EvacuationType> evacuations;
+    @ElementCollection
+    @CollectionTable(name = "evacuation", joinColumns = @JoinColumn(name = "evacuation_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<EvacuationType> evacuations;
 
     String evacuationNote;
 

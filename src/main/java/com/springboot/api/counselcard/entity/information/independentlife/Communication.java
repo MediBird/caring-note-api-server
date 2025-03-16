@@ -1,13 +1,21 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import java.util.Objects;
+import java.util.Set;
+
 import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
 import com.springboot.enums.CommunicationType;
 import com.springboot.enums.HearingType;
 import com.springboot.enums.SightType;
 import com.springboot.enums.UsingKoreanType;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
-import java.util.Set;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,12 +24,23 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Communication {
 
+    @ElementCollection
+    @CollectionTable(name = "communication_sights", joinColumns = @JoinColumn(name = "communication_id"))
+    @Enumerated(EnumType.STRING)
     private Set<SightType> sights;
 
+    @ElementCollection
+    @CollectionTable(name = "communication_hearings", joinColumns = @JoinColumn(name = "communication_id"))
+    @Enumerated(EnumType.STRING)
     private Set<HearingType> hearings;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CommunicationType communications;
 
+    @ElementCollection
+    @CollectionTable(name = "communication_using_koreans", joinColumns = @JoinColumn(name = "communication_id"))
+    @Enumerated(EnumType.STRING)
     private Set<UsingKoreanType> usingKoreans;
 
     public static Communication initializeDefault() {

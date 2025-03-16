@@ -1,14 +1,19 @@
 package com.springboot.api.counselcard.entity.information.base;
 
-import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
-import com.springboot.enums.CounselPurposeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+
+import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
+import com.springboot.enums.CounselPurposeType;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,6 +28,8 @@ public class CounselPurposeAndNote {
     @Column(nullable = false)
     private String MedicationNote;
 
+    @ElementCollection
+    @CollectionTable(name = "counsel_purpose", joinColumns = @JoinColumn(name = "counsel_purpose_and_note_id"))
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<CounselPurposeType> counselPurpose;
