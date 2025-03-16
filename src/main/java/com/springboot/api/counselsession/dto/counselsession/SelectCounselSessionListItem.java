@@ -20,7 +20,7 @@ public record SelectCounselSessionListItem(
                 String counseleeName,
                 String counselorId,
                 String counselorName,
-                @Schema(description = "상담 상태(SCHEDULED, PROGRESS, COMPLETED, CANCELED", example = "SCHEDULED") ScheduleStatus status,
+                @Schema(description = "상담 상태(SCHEDULED, IN_PROGRESS, COMPLETED, CANCELED", example = "SCHEDULED") ScheduleStatus status,
                 @Schema(description = "상담 카드 기록 상태(NOT_STARTED, IN_PROGRESS, COMPLETED", example = "NOT_STARTED") CardRecordStatus cardRecordStatus,
                 boolean isCounselorAssign) {
 

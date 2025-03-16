@@ -1,11 +1,7 @@
 package com.springboot.api.counselcard.entity.information.living;
 
 import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
-import com.springboot.enums.SmokingAmount;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,28 +10,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 public class Smoking {
-    @Column(nullable = false)
-    private String smokingPeriodNote;
-
-    @Enumerated(EnumType.STRING)
-    private SmokingAmount smokingAmount;
+    private Boolean isSmoking;
 
     public static Smoking initializeDefault() {
         Smoking smoking = new Smoking();
-        smoking.smokingPeriodNote = "";
-        smoking.smokingAmount = null;
+        smoking.isSmoking = false;
         return smoking;
     }
 
     public static Smoking copy(Smoking smoking) {
         Smoking copiedSmoking = new Smoking();
-        copiedSmoking.smokingPeriodNote = smoking.smokingPeriodNote;
-        copiedSmoking.smokingAmount = smoking.smokingAmount;
+        copiedSmoking.isSmoking = smoking.isSmoking;
         return copiedSmoking;
     }
 
     public void update(SmokingDTO smokingDTO) {
-        this.smokingPeriodNote = Objects.requireNonNullElse(smokingDTO.smokingPeriodNote(), this.smokingPeriodNote);
-        this.smokingAmount = Objects.requireNonNullElse(smokingDTO.smokingAmount(), this.smokingAmount);
+        this.isSmoking = Objects.requireNonNullElse(smokingDTO.isSmoking(), this.isSmoking);
     }
 }

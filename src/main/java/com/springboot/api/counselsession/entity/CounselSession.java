@@ -73,12 +73,6 @@ public class CounselSession extends BaseEntity {
     @Column(name = "session_number")
     private Integer sessionNumber;
 
-    public CounselSession(Counselee counselee, LocalDateTime scheduledStartDateTime) {
-        this.counselee = Objects.requireNonNull(counselee, "상담 세션의 내담자는 필수 입력 항목입니다.");
-        this.scheduledStartDateTime = Objects.requireNonNull(scheduledStartDateTime, "상담 세션의 시작 시간은 필수 입력 항목입니다.");
-        this.status = ScheduleStatus.SCHEDULED;
-    }
-
     public static CounselSession createReservation(Counselee counselee, LocalDateTime scheduledStartDateTime) {
         return CounselSession.builder()
                 .counselee(counselee)
@@ -110,7 +104,7 @@ public class CounselSession extends BaseEntity {
     }
 
     public void completeCounselSession() {
-        if (this.status.equals(ScheduleStatus.PROGRESS)) {
+        if (!this.status.equals(ScheduleStatus.IN_PROGRESS)) {
             throw new IllegalArgumentException("진행 중인 상담 세션만 완료할 수 있습니다.");
         }
 
@@ -143,7 +137,7 @@ public class CounselSession extends BaseEntity {
             throw new IllegalArgumentException("예정된 상담 세션만 진행할 수 있습니다.");
         }
 
-        this.status = ScheduleStatus.PROGRESS;
+        this.status = ScheduleStatus.IN_PROGRESS;
         this.startDateTime = LocalDateTime.now();
     }
 }

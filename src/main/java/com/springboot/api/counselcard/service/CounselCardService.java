@@ -77,23 +77,37 @@ public class CounselCardService {
             .findCounselCardWithCounselee(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
 
-        counselCard.updateStatus(status);
+        switch (status) {
+            case NOT_STARTED:
+                throw new IllegalArgumentException("상담 카드의 상태를 NOT_STARTED로 변경할 수 없습니다");
+            case IN_PROGRESS:
+                retrievePreviousCounselCardAndFill(counselCard);
+                counselCard.updateStatusToInProgress();
+                break;
+            case COMPLETED:
+                counselCard.updateStatusToCompleted();
+                break;
+        }
 
         return new CounselCardIdRes(counselCard.getId());
     }
 
     @Transactional
-    public void createCounselCard(CounselSession counselSession) {
+    public void initializeCounselCard(CounselSession counselSession) {
         if (counselCardRepository.existsByCounselSessionId(counselSession.getId())) {
             throw new IllegalArgumentException("해당 상담 세션에 대한 상담 카드가 이미 존재합니다");
         }
 
-        CounselCard lastRecordedCounselCard =
-            counselCardRepository.findLastRecordedCounselCard(counselSession.getCounselee().getId()).orElse(null);
-
-        CounselCard counselCard = CounselCard.createFromSession(counselSession, lastRecordedCounselCard);
+        CounselCard counselCard = CounselCard.createFromSession(counselSession);
 
         counselCardRepository.save(counselCard);
+    }
+
+    public void retrievePreviousCounselCardAndFill(CounselCard counselCard) {
+        CounselCard lastRecordedCounselCard =
+            counselCardRepository.findLastRecordedCounselCard(counselCard.getCounselSession().getCounselee().getId()).orElse(null);
+
+        counselCard.importPreviousCardData(lastRecordedCounselCard);
     }
 
 
