@@ -1,12 +1,9 @@
 package com.springboot.api.counselcard.entity.information.health;
 
 import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
-import com.springboot.api.counselcard.entity.information.base.CounselPurposeAndNote;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

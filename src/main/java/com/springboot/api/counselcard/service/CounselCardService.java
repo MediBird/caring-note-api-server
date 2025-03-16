@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 public class CounselCardService {
 
     private final CounselCardRepository counselCardRepository;
-    private final CounselSessionRepository counselSessionRepository;
 
     public CounselCardRes selectCounselCard(String counselSessionId) {
         CounselCard counselCard = counselCardRepository

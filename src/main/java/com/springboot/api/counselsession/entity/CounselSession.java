@@ -7,7 +7,6 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.enums.ScheduleStatus;

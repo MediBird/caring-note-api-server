@@ -5,7 +5,6 @@ import com.springboot.enums.CommunicationType;
 import com.springboot.enums.HearingType;
 import com.springboot.enums.SightType;
 import com.springboot.enums.UsingKoreanType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.Set;

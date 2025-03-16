@@ -1,7 +1,6 @@
 package com.springboot.api.counselcard.entity;
 
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.api.counselcard.dto.request.AddCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
