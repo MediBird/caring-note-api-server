@@ -1,7 +1,7 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.springboot.api.counselcard.dto.information.independentlife.WalkingDTO;
 import com.springboot.enums.WalkingEquipmentType;
@@ -23,27 +23,27 @@ public class Walking {
     @ElementCollection
     @CollectionTable(name = "walking_methods", joinColumns = @JoinColumn(name = "walking_id"))
     @Enumerated(EnumType.STRING)
-    private Set<WalkingType> walkingMethods;
+    private List<WalkingType> walkingMethods;
 
     @ElementCollection
     @CollectionTable(name = "walking_equipments", joinColumns = @JoinColumn(name = "walking_id"))
     @Enumerated(EnumType.STRING)
-    private Set<WalkingEquipmentType> walkingEquipments;
+    private List<WalkingEquipmentType> walkingEquipments;
 
     String walkingNote;
 
     public static Walking initializeDefault() {
         Walking walking = new Walking();
-        walking.walkingMethods = Set.of();
-        walking.walkingEquipments = Set.of();
+        walking.walkingMethods = List.of();
+        walking.walkingEquipments = List.of();
         walking.walkingNote = "";
         return walking;
     }
 
     public static Walking copy(Walking walking) {
         Walking copiedWalking = new Walking();
-        copiedWalking.walkingMethods = Set.copyOf(walking.walkingMethods);
-        copiedWalking.walkingEquipments = Set.copyOf(walking.walkingEquipments);
+        copiedWalking.walkingMethods = List.copyOf(walking.walkingMethods);
+        copiedWalking.walkingEquipments = List.copyOf(walking.walkingEquipments);
         copiedWalking.walkingNote = walking.walkingNote;
         return copiedWalking;
     }
