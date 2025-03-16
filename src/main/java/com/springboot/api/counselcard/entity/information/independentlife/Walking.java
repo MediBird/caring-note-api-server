@@ -1,11 +1,18 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import java.util.Objects;
+import java.util.Set;
+
 import com.springboot.api.counselcard.dto.information.independentlife.WalkingDTO;
 import com.springboot.enums.WalkingEquipmentType;
 import com.springboot.enums.WalkingType;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
-import java.util.Set;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -13,9 +20,15 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Walking {
-    Set<WalkingType> walkingMethods;
+    @ElementCollection
+    @CollectionTable(name = "walking_methods", joinColumns = @JoinColumn(name = "walking_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<WalkingType> walkingMethods;
 
-    Set<WalkingEquipmentType> walkingEquipments;
+    @ElementCollection
+    @CollectionTable(name = "walking_equipments", joinColumns = @JoinColumn(name = "walking_id"))
+    @Enumerated(EnumType.STRING)
+    private Set<WalkingEquipmentType> walkingEquipments;
 
     String walkingNote;
 
