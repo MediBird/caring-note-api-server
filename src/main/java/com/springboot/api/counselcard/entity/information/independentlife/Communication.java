@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -26,12 +27,12 @@ public class Communication {
     @ElementCollection
     @CollectionTable(name = "communication_sights", joinColumns = @JoinColumn(name = "communication_id"))
     @Enumerated(EnumType.STRING)
-    private Set<SightType> sights;
+    private List<SightType> sights;
 
     @ElementCollection
     @CollectionTable(name = "communication_hearings", joinColumns = @JoinColumn(name = "communication_id"))
     @Enumerated(EnumType.STRING)
-    private Set<HearingType> hearings;
+    private List<HearingType> hearings;
 
     @Enumerated(EnumType.STRING)
     private CommunicationType communications;
@@ -39,23 +40,23 @@ public class Communication {
     @ElementCollection
     @CollectionTable(name = "communication_using_koreans", joinColumns = @JoinColumn(name = "communication_id"))
     @Enumerated(EnumType.STRING)
-    private Set<UsingKoreanType> usingKoreans;
+    private List<UsingKoreanType> usingKoreans;
 
     public static Communication initializeDefault() {
         Communication communication = new Communication();
-        communication.sights = Set.of();
-        communication.hearings = Set.of();
+        communication.sights = List.of();
+        communication.hearings = List.of();
         communication.communications = CommunicationType.NOT_COMMUNICATE;
-        communication.usingKoreans = Set.of();
+        communication.usingKoreans = List.of();
         return communication;
     }
 
     public static Communication copy(Communication communication) {
         Communication copiedCommunication = new Communication();
-        copiedCommunication.sights = Set.copyOf(communication.sights);
-        copiedCommunication.hearings = Set.copyOf(communication.hearings);
+        copiedCommunication.sights = List.copyOf(communication.sights);
+        copiedCommunication.hearings = List.copyOf(communication.hearings);
         copiedCommunication.communications = communication.communications;
-        copiedCommunication.usingKoreans = Set.copyOf(communication.usingKoreans);
+        copiedCommunication.usingKoreans = List.copyOf(communication.usingKoreans);
         return copiedCommunication;
     }
 
