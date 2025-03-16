@@ -7,7 +7,6 @@ import com.springboot.api.counselcard.dto.information.living.MedicationManagemen
 import com.springboot.enums.MedicationAssistant;
 
 import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -22,12 +21,10 @@ import lombok.NoArgsConstructor;
 public class MedicationManagement {
     private Boolean isAlone;
 
-    @Column(nullable = false)
     private String houseMateNote;
 
     @ElementCollection
     @CollectionTable(name = "medication_assistants", joinColumns = @JoinColumn(name = "medication_management_id"))
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<MedicationAssistant> medicationAssistants;
 

@@ -8,7 +8,6 @@ import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNote
 import com.springboot.enums.CounselPurposeType;
 
 import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -22,15 +21,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CounselPurposeAndNote {
 
-    @Column(nullable = false)
     private String SignificantNote;
 
-    @Column(nullable = false)
     private String MedicationNote;
 
     @ElementCollection
     @CollectionTable(name = "counsel_purpose", joinColumns = @JoinColumn(name = "counsel_purpose_and_note_id"))
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<CounselPurposeType> counselPurpose;
 

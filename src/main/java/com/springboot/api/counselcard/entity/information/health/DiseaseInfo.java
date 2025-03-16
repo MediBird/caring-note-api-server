@@ -21,10 +21,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DiseaseInfo {
 
-    @Column(nullable = false)
     private String historyNote;
 
-    @Column(nullable = false)
     private String mainInconvenienceNote;
 
     @ElementCollection
