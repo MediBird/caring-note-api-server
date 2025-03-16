@@ -1,8 +1,8 @@
 package com.springboot.api.counselcard.entity.information.base;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.enums.CounselPurposeType;
@@ -28,13 +28,13 @@ public class CounselPurposeAndNote {
     @ElementCollection
     @CollectionTable(name = "counsel_purpose", joinColumns = @JoinColumn(name = "counsel_purpose_and_note_id"))
     @Enumerated(EnumType.STRING)
-    private Set<CounselPurposeType> counselPurpose;
+    private List<CounselPurposeType> counselPurpose;
 
     public static CounselPurposeAndNote initializeDefault() {
         CounselPurposeAndNote counselPurposeAndNote = new CounselPurposeAndNote();
         counselPurposeAndNote.SignificantNote = "";
         counselPurposeAndNote.MedicationNote = "";
-        counselPurposeAndNote.counselPurpose = Set.of();
+        counselPurposeAndNote.counselPurpose = List.of();
         return counselPurposeAndNote;
     }
 
@@ -42,7 +42,7 @@ public class CounselPurposeAndNote {
         CounselPurposeAndNote copiedCounselPurposeAndNote = new CounselPurposeAndNote();
         copiedCounselPurposeAndNote.SignificantNote = evacuation.SignificantNote;
         copiedCounselPurposeAndNote.MedicationNote = evacuation.MedicationNote;
-        copiedCounselPurposeAndNote.counselPurpose = new HashSet<>(evacuation.counselPurpose);
+        copiedCounselPurposeAndNote.counselPurpose = new ArrayList<>(evacuation.counselPurpose);
         return copiedCounselPurposeAndNote;
     }
 

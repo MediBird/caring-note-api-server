@@ -1,6 +1,7 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -23,20 +24,20 @@ public class Evacuation {
     @ElementCollection
     @CollectionTable(name = "evacuation", joinColumns = @JoinColumn(name = "evacuation_id"))
     @Enumerated(EnumType.STRING)
-    private Set<EvacuationType> evacuations;
+    private List<EvacuationType> evacuations;
 
     String evacuationNote;
 
     public static Evacuation initializeDefault() {
         Evacuation evacuation = new Evacuation();
-        evacuation.evacuations = Set.of();
+        evacuation.evacuations = List.of();
         evacuation.evacuationNote = "";
         return evacuation;
     }
 
     public static Evacuation copy(Evacuation evacuation) {
         Evacuation copiedEvacuation = new Evacuation();
-        copiedEvacuation.evacuations = new HashSet<>(evacuation.evacuations);
+        copiedEvacuation.evacuations = List.copyOf(evacuation.evacuations);
         copiedEvacuation.evacuationNote = evacuation.evacuationNote;
         return copiedEvacuation;
     }
