@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Nutrition {
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private MealPattern mealPattern;
 

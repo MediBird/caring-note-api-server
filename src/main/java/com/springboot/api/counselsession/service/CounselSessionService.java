@@ -173,53 +173,32 @@ public class CounselSessionService {
         @CacheEvict(value = { "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
-            UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
-                return switch (updateStatusInCounselSessionReq.status()) {
+                UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+
+                CounselSession counselSession = counselSessionRepository.findById(updateStatusInCounselSessionReq.counselSessionId())
+                    .orElseThrow(NoContentException::new);
+
+                if(counselSession.getStatus() == ScheduleStatus.COMPLETED) {
+                    throw new IllegalArgumentException("완료된 상담 세션은 상태를 변경할 수 없습니다.");
+                }
+
+                if(counselSession.getStatus() == ScheduleStatus.CANCELED) {
+                    throw new IllegalArgumentException("취소된 상담 세션은 상태를 변경할 수 없습니다.");
+                }
+
+                switch (updateStatusInCounselSessionReq.status()) {
                         case COMPLETED ->
-                            this.updateCounselSessionStatusComplete(updateStatusInCounselSessionReq.counselSessionId());
+                                counselSession.completeCounselSession();
                         case PROGRESS ->
-                            this.updateCounselSessionStatusProgress(updateStatusInCounselSessionReq.counselSessionId());
+                        {
+                                counselSession.progressCounselSession();
+                                counselCardService.createCounselCard(counselSession);
+                        }
                         case CANCELED ->
-                            this.updateCounselSessionStatusCancel(updateStatusInCounselSessionReq.counselSessionId());
+                                counselSession.cancelCounselSession();
                         case SCHEDULED ->
-                            this.updateCounselSessionStatusScheduled(updateStatusInCounselSessionReq.counselSessionId());
-                };
-        }
-
-        public UpdateStatusInCounselSessionRes updateCounselSessionStatusComplete(String counselSessionId) {
-                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                    .orElseThrow(NoContentException::new);
-
-                counselSession.completeCounselSession();
-
-                return new UpdateStatusInCounselSessionRes(counselSession.getId());
-        }
-
-        public UpdateStatusInCounselSessionRes updateCounselSessionStatusProgress(String counselSessionId) {
-                CounselSession counselSession = counselSessionRepository.findByIdWithCounselee(counselSessionId)
-                    .orElseThrow(NoContentException::new);
-
-                counselSession.progressCounselSession();
-
-                counselCardService.createCounselCard(counselSession);
-
-                return new UpdateStatusInCounselSessionRes(counselSession.getId());
-        }
-
-        public UpdateStatusInCounselSessionRes updateCounselSessionStatusCancel(String counselSessionId) {
-                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                    .orElseThrow(NoContentException::new);
-
-                counselSession.cancelCounselSession();
-
-                return new UpdateStatusInCounselSessionRes(counselSession.getId());
-        }
-
-        public UpdateStatusInCounselSessionRes updateCounselSessionStatusScheduled(String counselSessionId) {
-                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                    .orElseThrow(NoContentException::new);
-
-                counselSession.scheduleCounselSession();
+                                counselSession.scheduleCounselSession();
+                }
 
                 return new UpdateStatusInCounselSessionRes(counselSession.getId());
         }
@@ -347,7 +326,7 @@ public class CounselSessionService {
         /**
          * 상담 세션의 회차 정보를 업데이트합니다.
          * 내담자별로 완료된 상담 세션의 수를 계산하여 회차를 설정합니다.
-         * 
+         *
          * @param counselSession 회차 정보를 업데이트할 상담 세션
          */
         public void updateSessionNumber(CounselSession counselSession) {

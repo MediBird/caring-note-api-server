@@ -5,6 +5,7 @@ import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardStatusReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
@@ -83,6 +84,17 @@ public class CounselCardController {
         @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
         return ResponseEntity.ok(
             new CommonRes<>(counselCardService.selectCounselCardIndependentLifeInformation(counselSessionId)));
+    }
+
+    @PutMapping("/{counselSessionId}/status")
+    @Operation(summary = "상담 카드 상태 수정", tags = {"상담 카드 작성"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    ResponseEntity<CommonRes<CounselCardIdRes>> updateCounselCardStatus(
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId,
+        @RequestBody @Valid UpdateCounselCardStatusReq updateCounselCardStatusReq) {
+
+        return ResponseEntity.ok(
+            new CommonRes<>(counselCardService.updateCounselCardStatus(counselSessionId, updateCounselCardStatusReq.status())));
     }
 
 

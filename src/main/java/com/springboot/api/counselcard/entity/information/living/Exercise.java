@@ -17,7 +17,6 @@ public class Exercise {
     @Column(nullable = false)
     private String exerciseNote;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ExercisePattern exercisePattern;
 

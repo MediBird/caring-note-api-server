@@ -45,8 +45,10 @@ class DisabledCounselCardInitializer implements CounselCardInitializer {
     @Override
     public void initializeCard(CounselCard card, CounselCard previousCard) {
         if (previousCard != null) {
+            card.copyValuesFrom(previousCard);
             card.copyDisabledSpecificValueFrom(previousCard);
         } else {
+            card.initializeDefaultValues();
             card.initializeDisabledSpecificDefaults();
         }
     }

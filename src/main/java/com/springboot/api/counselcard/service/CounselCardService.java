@@ -13,6 +13,7 @@ import com.springboot.api.counselcard.dto.response.CounselCardRes;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.entity.CounselCard;
+import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselCardRecordType;
 import java.util.List;
 import java.util.function.Function;
@@ -68,6 +69,17 @@ public class CounselCardService {
             .orElseThrow(IllegalArgumentException::new);
 
         return new CounselCardLivingInformationRes(counselCard);
+    }
+
+    @Transactional
+    public CounselCardIdRes updateCounselCardStatus(String counselSessionId, CardRecordStatus status) {
+        CounselCard counselCard = counselCardRepository
+            .findCounselCardWithCounselee(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        counselCard.updateStatus(status);
+
+        return new CounselCardIdRes(counselCard.getId());
     }
 
     @Transactional

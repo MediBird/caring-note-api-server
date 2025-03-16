@@ -119,6 +119,10 @@ public class CounselCard extends BaseEntity {
         this.smoking.update(updateLivingInformationReq.smoking());
     }
 
+    public void updateStatus(CardRecordStatus cardRecordStatus) {
+        this.cardRecordStatus = cardRecordStatus;
+    }
+
     void initialize(CounselSession counselSession) {
         this.counselSession = counselSession;
         this.cardRecordStatus = CardRecordStatus.IN_PROGRESS;
