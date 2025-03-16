@@ -90,8 +90,26 @@ public class CounselCard extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CardRecordStatus cardRecordStatus;
 
-    public static CounselCard createFromSession(CounselSession counselSession, CounselCard lastRecordedCounselCard) {
-        return CounselCardFactory.createFromSession(counselSession, lastRecordedCounselCard);
+    public static CounselCard createFromSession(CounselSession counselSession) {
+        CounselCard counselCard = new CounselCard();
+        counselCard.counselSession = counselSession;
+        counselCard.cardRecordStatus = CardRecordStatus.NOT_STARTED;
+        counselCard.initializeDefaultValues();
+        if(counselSession.getCounselee().getIsDisability().equals(true)){
+            counselCard.initializeDisabledSpecificDefaults();
+        }
+        return counselCard;
+    }
+
+    public void importPreviousCardData(CounselCard previousCard) {
+        if(previousCard == null){
+            return;
+        }
+
+        copyValuesFrom(previousCard);
+        if(counselSession.getCounselee().getIsDisability().equals(true)){
+            copyDisabledSpecificValueFrom(previousCard);
+        }
     }
 
     public void updateBaseInformation(UpdateBaseInformationReq updateBaseInformationReq) {
@@ -119,13 +137,18 @@ public class CounselCard extends BaseEntity {
         this.smoking.update(updateLivingInformationReq.smoking());
     }
 
-    public void updateStatus(CardRecordStatus cardRecordStatus) {
-        this.cardRecordStatus = cardRecordStatus;
+    public void updateStatusToInProgress() {
+        if(this.cardRecordStatus.equals(CardRecordStatus.COMPLETED)){
+            throw new IllegalArgumentException("이미 완료된 상담 카드입니다");
+        }
+        this.cardRecordStatus = CardRecordStatus.IN_PROGRESS;
     }
 
-    void initialize(CounselSession counselSession) {
-        this.counselSession = counselSession;
-        this.cardRecordStatus = CardRecordStatus.IN_PROGRESS;
+    public void updateStatusToCompleted() {
+        if(!this.cardRecordStatus.equals(CardRecordStatus.IN_PROGRESS)){
+            throw new IllegalArgumentException("상담 카드가 진행 중이 아닙니다");
+        }
+        this.cardRecordStatus = CardRecordStatus.COMPLETED;
     }
 
     void copyValuesFrom(CounselCard previousCard) {
@@ -169,6 +192,4 @@ public class CounselCard extends BaseEntity {
     protected void onCreate() {
         super.onCreate();
     }
-
-
 }

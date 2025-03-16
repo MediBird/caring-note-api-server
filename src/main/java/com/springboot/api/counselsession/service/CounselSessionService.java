@@ -75,6 +75,8 @@ public class CounselSessionService {
                 updateSessionNumber(counselSession);
                 CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
+                counselCardService.initializeCounselCard(savedCounselSession);
+
                 return new CreateCounselReservationRes(savedCounselSession.getId());
         }
 
@@ -190,10 +192,7 @@ public class CounselSessionService {
                         case COMPLETED ->
                                 counselSession.completeCounselSession();
                         case PROGRESS ->
-                        {
                                 counselSession.progressCounselSession();
-                                counselCardService.createCounselCard(counselSession);
-                        }
                         case CANCELED ->
                                 counselSession.cancelCounselSession();
                         case SCHEDULED ->

@@ -19,7 +19,6 @@ public record SelectCounselSessionRes(
                 String counselorName,
                 Integer sessionNumber,
                 ScheduleStatus status) {
-        // TODO null 검사를 진행해야하는지 확인
         public static SelectCounselSessionRes from(CounselSession counselSession) {
                 return SelectCounselSessionRes.builder()
                                 .counselSessionId(counselSession.getId())
