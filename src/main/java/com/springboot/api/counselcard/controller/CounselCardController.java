@@ -8,7 +8,11 @@ import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
+import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
+import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
+import com.springboot.api.counselcard.dto.response.CounselCardIndependentLifeInformationRes;
+import com.springboot.api.counselcard.dto.response.CounselCardLivingInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardRes;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
 import com.springboot.api.counselcard.service.CounselCardService;
@@ -35,6 +39,7 @@ public class CounselCardController {
 
     private final CounselCardService counselCardService;
 
+    @Deprecated
     @GetMapping("/{counselSessionId}")
     @Operation(summary = "상담 카드 조회", tags = {"상담 카드 작성", "본상담 - 상담 카드"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
@@ -44,6 +49,43 @@ public class CounselCardController {
             new CommonRes<>(counselCardService.selectCounselCard(counselSessionId)));
     }
 
+    @GetMapping("/{counselSessionId}/base-information")
+    @Operation(summary = "상담 카드 기본 정보 조회", tags = {"상담 카드 작성", "본상담 - 상담 카드"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    ResponseEntity<CommonRes<CounselCardBaseInformationRes>> selectCounselCardBaseInformation(
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
+        return ResponseEntity.ok(
+            new CommonRes<>(counselCardService.selectCounselCardBaseInformation(counselSessionId)));
+    }
+
+    @GetMapping("/{counselSessionId}/health-information")
+    @Operation(summary = "상담 카드 건강 정보 조회", tags = {"상담 카드 작성", "본상담 - 상담 카드"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    ResponseEntity<CommonRes<CounselCardHealthInformationRes>> selectCounselCardHealthInformation(
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
+        return ResponseEntity.ok(
+            new CommonRes<>(counselCardService.selectCounselCardHealthInformation(counselSessionId)));
+    }
+
+    @GetMapping("/{counselSessionId}/living-information")
+    @Operation(summary = "상담 카드 생활 정보 조회", tags = {"상담 카드 작성", "본상담 - 상담 카드"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    ResponseEntity<CommonRes<CounselCardLivingInformationRes>> selectCounselCardLivingInformation(
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
+        return ResponseEntity.ok(
+            new CommonRes<>(counselCardService.selectCounselCardLivingInformation(counselSessionId)));
+    }
+
+    @GetMapping("/{counselSessionId}/independent-information")
+    @Operation(summary = "상담 카드 자립생활 역량 조회", tags = {"상담 카드 작성", "본상담 - 상담 카드"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    ResponseEntity<CommonRes<CounselCardIndependentLifeInformationRes>> selectCounselCardIndependentLifeInformation(
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
+        return ResponseEntity.ok(
+            new CommonRes<>(counselCardService.selectCounselCardIndependentLifeInformation(counselSessionId)));
+    }
+
+
     @PutMapping("/{counselSessionId}/base-information")
     @Operation(summary = "상담 카드 기본 정보 수정", tags = {"상담 카드 작성"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
@@ -52,7 +94,8 @@ public class CounselCardController {
         @RequestBody @Valid UpdateBaseInformationReq updateBaseInformationReq) {
 
         return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.updateCounselCardBaseInformation(counselSessionId, updateBaseInformationReq)));
+            new CommonRes<>(counselCardService.updateCounselCardBaseInformation(counselSessionId,
+                updateBaseInformationReq)));
     }
 
     @PutMapping("/{counselSessionId}/health-information")
@@ -63,7 +106,8 @@ public class CounselCardController {
         @RequestBody @Valid UpdateHealthInformationReq updateHealthInformationReq) {
 
         return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.updateCounselCardHealthInformation(counselSessionId, updateHealthInformationReq)));
+            new CommonRes<>(counselCardService.updateCounselCardHealthInformation(counselSessionId,
+                updateHealthInformationReq)));
     }
 
     @PutMapping("/{counselSessionId}/living-information")
@@ -74,7 +118,8 @@ public class CounselCardController {
         @RequestBody @Valid UpdateLivingInformationReq updateLivingInformationReq) {
 
         return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.updateCounselCardLivingInformation(counselSessionId, updateLivingInformationReq)));
+            new CommonRes<>(counselCardService.updateCounselCardLivingInformation(counselSessionId,
+                updateLivingInformationReq)));
     }
 
     @PutMapping("/{counselSessionId}/independent-life-information")
@@ -85,7 +130,9 @@ public class CounselCardController {
         @RequestBody @Valid UpdateIndependentLifeInformationReq independentLifeInformationReq) {
 
         return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.updateCounselCardIndependentLifeInformation(counselSessionId, independentLifeInformationReq)));
+            new CommonRes<>(
+                counselCardService.updateCounselCardIndependentLifeInformation(counselSessionId,
+                    independentLifeInformationReq)));
     }
 
     @DeleteMapping("/{counselSessionId}")

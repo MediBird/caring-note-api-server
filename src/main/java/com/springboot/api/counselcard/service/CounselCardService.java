@@ -4,7 +4,11 @@ import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
+import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
+import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
+import com.springboot.api.counselcard.dto.response.CounselCardIndependentLifeInformationRes;
+import com.springboot.api.counselcard.dto.response.CounselCardLivingInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardRes;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
@@ -17,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,6 +36,38 @@ public class CounselCardService {
             .orElseThrow(IllegalArgumentException::new);
 
         return new CounselCardRes(counselCard);
+    }
+
+    public CounselCardBaseInformationRes selectCounselCardBaseInformation(String counselSessionId) {
+        CounselCard counselCard = counselCardRepository
+            .findCounselCardWithCounselee(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        return new CounselCardBaseInformationRes(counselCard);
+    }
+
+    public CounselCardHealthInformationRes selectCounselCardHealthInformation(String counselSessionId) {
+        CounselCard counselCard = counselCardRepository
+            .findCounselCardWithCounselee(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        return new CounselCardHealthInformationRes(counselCard);
+    }
+
+    public CounselCardIndependentLifeInformationRes selectCounselCardIndependentLifeInformation(String counselSessionId) {
+        CounselCard counselCard = counselCardRepository
+            .findCounselCardWithCounselee(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        return new CounselCardIndependentLifeInformationRes(counselCard);
+    }
+
+    public CounselCardLivingInformationRes selectCounselCardLivingInformation(String counselSessionId) {
+        CounselCard counselCard = counselCardRepository
+            .findCounselCardWithCounselee(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        return new CounselCardLivingInformationRes(counselCard);
     }
 
     @Transactional
