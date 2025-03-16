@@ -2,7 +2,6 @@ package com.springboot.api.counselcard.entity.information.living;
 
 import com.springboot.api.counselcard.dto.information.living.ExerciseDTO;
 import com.springboot.enums.ExercisePattern;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,10 +13,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Exercise {
-    @Column(nullable = false)
     private String exerciseNote;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private ExercisePattern exercisePattern;
 

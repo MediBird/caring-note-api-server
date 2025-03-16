@@ -1,13 +1,10 @@
-package com.springboot.api.counselcard.dto.request;
+package com.springboot.api.counselcard.dto;
 
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
 import com.springboot.api.counselcard.dto.information.health.DiseaseInfoDTO;
 import com.springboot.api.counselcard.dto.information.health.MedicationSideEffectDTO;
-import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
-import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
-import com.springboot.api.counselcard.dto.information.independentlife.WalkingDTO;
 import com.springboot.api.counselcard.dto.information.living.DrinkingDTO;
 import com.springboot.api.counselcard.dto.information.living.ExerciseDTO;
 import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;

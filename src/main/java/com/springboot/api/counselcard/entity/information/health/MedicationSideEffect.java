@@ -1,7 +1,6 @@
 package com.springboot.api.counselcard.entity.information.health;
 
 import com.springboot.api.counselcard.dto.information.health.MedicationSideEffectDTO;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import lombok.Getter;
@@ -11,10 +10,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class MedicationSideEffect {
-    @Column(nullable = false)
     private String suspectedMedicationNote;
-
-    @Column(nullable = false)
     private String symptomsNote;
 
     public static MedicationSideEffect from(MedicationSideEffectDTO medicationSideEffectDTO){
