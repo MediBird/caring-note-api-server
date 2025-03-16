@@ -3,6 +3,7 @@ package com.springboot.api.service;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
+import com.springboot.api.counselcard.service.CounselCardService;
 import java.time.LocalDateTime;
 
 import org.assertj.core.api.Assertions;
@@ -36,6 +37,9 @@ class CounselSessionServiceTest {
 
         @Mock
         private CounseleeRepository counseleeRepository;
+
+        @Mock
+        private CounselCardService counselCardService;
 
         @InjectMocks
         private CounselSessionService counselSessionService;
