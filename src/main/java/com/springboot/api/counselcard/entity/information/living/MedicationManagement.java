@@ -1,7 +1,7 @@
 package com.springboot.api.counselcard.entity.information.living;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;
 import com.springboot.enums.MedicationAssistant;
@@ -26,13 +26,13 @@ public class MedicationManagement {
     @ElementCollection
     @CollectionTable(name = "medication_assistants", joinColumns = @JoinColumn(name = "medication_management_id"))
     @Enumerated(EnumType.STRING)
-    private Set<MedicationAssistant> medicationAssistants;
+    private List<MedicationAssistant> medicationAssistants;
 
     public static MedicationManagement initializeDefault() {
         MedicationManagement medicationManagement = new MedicationManagement();
         medicationManagement.isAlone = false;
         medicationManagement.houseMateNote = "";
-        medicationManagement.medicationAssistants = Set.of();
+        medicationManagement.medicationAssistants = List.of();
         return medicationManagement;
     }
 
@@ -40,7 +40,7 @@ public class MedicationManagement {
         MedicationManagement copiedMedicationManagement = new MedicationManagement();
         copiedMedicationManagement.isAlone = medicationManagement.isAlone;
         copiedMedicationManagement.houseMateNote = medicationManagement.houseMateNote;
-        copiedMedicationManagement.medicationAssistants = Set.copyOf(medicationManagement.medicationAssistants);
+        copiedMedicationManagement.medicationAssistants = List.copyOf(medicationManagement.medicationAssistants);
         return copiedMedicationManagement;
     }
 

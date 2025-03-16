@@ -21,9 +21,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CounselPurposeAndNote {
 
-    private String SignificantNote;
+    private String significantNote;
 
-    private String MedicationNote;
+    private String medicationNote;
 
     @ElementCollection
     @CollectionTable(name = "counsel_purpose", joinColumns = @JoinColumn(name = "counsel_purpose_and_note_id"))
@@ -32,24 +32,24 @@ public class CounselPurposeAndNote {
 
     public static CounselPurposeAndNote initializeDefault() {
         CounselPurposeAndNote counselPurposeAndNote = new CounselPurposeAndNote();
-        counselPurposeAndNote.SignificantNote = "";
-        counselPurposeAndNote.MedicationNote = "";
+        counselPurposeAndNote.significantNote = "";
+        counselPurposeAndNote.medicationNote = "";
         counselPurposeAndNote.counselPurpose = List.of();
         return counselPurposeAndNote;
     }
 
     public static CounselPurposeAndNote copy(CounselPurposeAndNote evacuation) {
         CounselPurposeAndNote copiedCounselPurposeAndNote = new CounselPurposeAndNote();
-        copiedCounselPurposeAndNote.SignificantNote = evacuation.SignificantNote;
-        copiedCounselPurposeAndNote.MedicationNote = evacuation.MedicationNote;
+        copiedCounselPurposeAndNote.significantNote = evacuation.significantNote;
+        copiedCounselPurposeAndNote.medicationNote = evacuation.medicationNote;
         copiedCounselPurposeAndNote.counselPurpose = new ArrayList<>(evacuation.counselPurpose);
         return copiedCounselPurposeAndNote;
     }
 
     public void update(CounselPurposeAndNoteDTO counselPurposeAndNoteDTO) {
-        this.SignificantNote = Objects.requireNonNullElse(counselPurposeAndNoteDTO.significantNote(), this.SignificantNote);
-        this.MedicationNote = Objects.requireNonNullElse(counselPurposeAndNoteDTO.medicationNote(), this.MedicationNote);
-        this.counselPurpose = Objects.requireNonNullElse(counselPurposeAndNoteDTO.counselPurpose(), this.counselPurpose);
+        this.significantNote = counselPurposeAndNoteDTO.significantNote();
+        this.medicationNote = counselPurposeAndNoteDTO.medicationNote();
+        this.counselPurpose = counselPurposeAndNoteDTO.counselPurpose();
     }
 
 }
