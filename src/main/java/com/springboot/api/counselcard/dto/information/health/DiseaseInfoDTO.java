@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.dto.information.health;
 
+import java.util.List;
 import java.util.Set;
 
 import com.springboot.api.common.annotation.ValidEnum;
@@ -8,8 +9,8 @@ import com.springboot.enums.DiseaseType;
 
 public record DiseaseInfoDTO(
     @ValidEnum(enumClass = DiseaseType.class)
-    Set<DiseaseType> diseases,
-        String historyNote,
+    List<DiseaseType> diseases,
+    String historyNote,
         String mainInconvenienceNote) {
 
     public DiseaseInfoDTO (DiseaseInfo diseaseInfo){
