@@ -2,7 +2,6 @@ package com.springboot.api.counselcard.entity.information.base;
 
 import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.enums.CounselPurposeType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,13 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CounselPurposeAndNote {
 
-    @Column(nullable = false)
     private String SignificantNote;
-
-    @Column(nullable = false)
     private String MedicationNote;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<CounselPurposeType> counselPurpose;
 

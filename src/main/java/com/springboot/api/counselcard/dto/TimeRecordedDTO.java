@@ -1,14 +1,14 @@
-package com.springboot.api.counselcard.dto.response;
+package com.springboot.api.counselcard.dto;
 
 import lombok.Getter;
 
 @Getter
-public class TimeRecordedRes<T>{
+public class TimeRecordedDTO<T>{
 
     private final String counselDate;
     private final T data;
 
-    public TimeRecordedRes(String counselDate, T counselPurposeAndNote) {
+    public TimeRecordedDTO(String counselDate, T counselPurposeAndNote) {
         this.counselDate = counselDate;
         this.data = counselPurposeAndNote;
     }

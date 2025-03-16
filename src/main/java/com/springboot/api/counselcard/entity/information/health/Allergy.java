@@ -1,7 +1,6 @@
 package com.springboot.api.counselcard.entity.information.health;
 
 import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Allergy {
-    @Column(nullable = false)
     private String allergyNote;
 
     public static Allergy from(AllergyDTO allergyDTO) {

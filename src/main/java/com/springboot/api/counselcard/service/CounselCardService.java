@@ -1,14 +1,11 @@
 package com.springboot.api.counselcard.service;
 
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.counselcard.dto.request.AddCounselCardReq;
-import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
-import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
-import com.springboot.api.counselcard.dto.response.CounselCardRes;
-import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
-import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
+import com.springboot.api.counselcard.dto.AddCounselCardReq;
+import com.springboot.api.counselcard.dto.CounselCardIdRes;
+import com.springboot.api.counselcard.dto.CounselCardRes;
+import com.springboot.api.counselcard.dto.TimeRecordedDTO;
+import com.springboot.api.counselcard.dto.UpdateCounselCardReq;
 import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.enums.CounselCardRecordType;
 import java.util.List;
@@ -51,7 +48,7 @@ public class CounselCardService {
             .findByIdWithCounselee(addCounselCardReq.counselSessionId())
             .orElseThrow(IllegalArgumentException::new);
 
-        if (counselCardRepository.existsByCounselSessionId(addCounselCardReq.counselSessionId())) {
+        if(counselCardRepository.existsByCounselSessionId(addCounselCardReq.counselSessionId())) {
             throw new IllegalArgumentException();
         }
 
@@ -61,54 +58,12 @@ public class CounselCardService {
     }
 
     @Transactional
-    public CounselCardIdRes updateCounselCardBaseInformation(String counselSessionId,
-        UpdateBaseInformationReq updateBaseInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
+    public CounselCardIdRes updateCounselCard(UpdateCounselCardReq updateCounselCardReq) {
+        CounselCard counselCard = counselCardRepository
+            .findCounselCardWithCounselee(updateCounselCardReq.counselSessionId())
             .orElseThrow(IllegalArgumentException::new);
 
-        counselCard.updateBaseInformation(updateBaseInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardHealthInformation(String counselSessionId,
-        UpdateHealthInformationReq updateHealthInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateHealthInformation(updateHealthInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardIndependentLifeInformation(
-        String counselSessionId,
-        UpdateIndependentLifeInformationReq updateIndependentLifeInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardWithCounselee(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        if(counselCard.getCounselSession().getCounselee().getIsDisability().equals(false)){
-            throw new IllegalArgumentException();
-        }
-
-        counselCard.updateIndependentLife(updateIndependentLifeInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardLivingInformation(String counselSessionId,
-        UpdateLivingInformationReq updateLivingInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateLiving(updateLivingInformationReq);
+        counselCard.update(updateCounselCardReq);
 
         return new CounselCardIdRes(counselCard.getId());
     }
@@ -124,31 +79,28 @@ public class CounselCardService {
         return new CounselCardIdRes(counselCard.getId());
     }
 
-    public <R> List<TimeRecordedRes<R>> selectPreviousRecordsByType(String counselSessionId,
-        CounselCardRecordType type) {
-        return selectPreviousRecordByCounselSessionId(counselSessionId, type.getExtractor(),
-            type.getDtoConverter());
+    public <R> List<TimeRecordedDTO<R>> selectPreviousRecordsByType(String counselSessionId, CounselCardRecordType type) {
+        return selectPreviousRecordByCounselSessionId(counselSessionId, type.getExtractor(), type.getDtoConverter());
     }
 
-    private <T, R> List<TimeRecordedRes<R>> selectPreviousRecordByCounselSessionId(
+    private <T, R> List<TimeRecordedDTO<R>> selectPreviousRecordByCounselSessionId(
         String counselSessionId,
         Function<CounselCard, T> extractor,
         Function<T, R> dtoConverter) {
 
         return selectRecordedCardsByPreviousSessions(counselSessionId)
             .stream()
-            .map(counselCard -> new TimeRecordedRes<>(
-                counselCard.getCounselSession().getScheduledStartDateTime().toLocalDate()
-                    .toString(),
+            .map(counselCard -> new TimeRecordedDTO<>(
+                counselCard.getCounselSession().getScheduledStartDateTime().toLocalDate().toString(),
                 dtoConverter.apply(extractor.apply(counselCard))))
             .toList();
     }
 
-    private List<CounselCard> selectRecordedCardsByPreviousSessions(String counselSessionId) {
+    private List<CounselCard> selectRecordedCardsByPreviousSessions(String counselSessionId){
         List<CounselCard> recordedCardsByPreviousSessions = counselCardRepository.findRecordedCardsByPreviousSessions(
             counselSessionId);
 
-        if (recordedCardsByPreviousSessions.isEmpty()) {
+        if(recordedCardsByPreviousSessions.isEmpty()){
             throw new NoContentException();
         }
 

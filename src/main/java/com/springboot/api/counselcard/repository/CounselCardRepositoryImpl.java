@@ -39,15 +39,6 @@ public class CounselCardRepositoryImpl extends QuerydslRepositorySupport impleme
     }
 
     @Override
-    public Optional<CounselCard> findCounselCardByCounselSessionId(String counselSessionId) {
-        return Optional.ofNullable(queryFactory
-            .selectFrom(counselCard)
-            .innerJoin(counselCard.counselSession).fetchJoin()
-            .where(counselCard.counselSession.id.eq(counselSessionId))
-            .fetchOne());
-    }
-
-    @Override
     public Optional<CounselCard> findLastRecordedCounselCard(String counseleeId) {
         return Optional.ofNullable(queryFactory
             .selectFrom(counselCard)

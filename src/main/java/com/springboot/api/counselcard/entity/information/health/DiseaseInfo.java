@@ -2,7 +2,6 @@ package com.springboot.api.counselcard.entity.information.health;
 
 import com.springboot.api.counselcard.dto.information.health.DiseaseInfoDTO;
 import com.springboot.enums.DiseaseType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,13 +15,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DiseaseInfo {
 
-    @Column(nullable = false)
     private String historyNote;
-
-    @Column(nullable = false)
     private String mainInconvenienceNote;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Set<DiseaseType> diseases;
 

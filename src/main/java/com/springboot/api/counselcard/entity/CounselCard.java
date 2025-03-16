@@ -1,20 +1,12 @@
 package com.springboot.api.counselcard.entity;
 
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.api.counselcard.dto.request.AddCounselCardReq;
-import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
-import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
-import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
+import com.springboot.api.counselcard.dto.AddCounselCardReq;
+import com.springboot.api.counselcard.dto.UpdateCounselCardReq;
 import com.springboot.api.counselcard.entity.information.base.CounselPurposeAndNote;
 import com.springboot.api.counselcard.entity.information.health.Allergy;
 import com.springboot.api.counselcard.entity.information.health.DiseaseInfo;
 import com.springboot.api.counselcard.entity.information.health.MedicationSideEffect;
-import com.springboot.api.counselcard.entity.information.independentlife.Communication;
-import com.springboot.api.counselcard.entity.information.independentlife.Evacuation;
-import com.springboot.api.counselcard.entity.information.independentlife.Walking;
 import com.springboot.api.counselcard.entity.information.living.Drinking;
 import com.springboot.api.counselcard.entity.information.living.Exercise;
 import com.springboot.api.counselcard.entity.information.living.MedicationManagement;
@@ -45,8 +37,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "counsel_cards")
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
-@ToString(callSuper = true, exclude = {"counselSession"})
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSession" })
+@ToString(callSuper = true, exclude = { "counselSession" })
 public class CounselCard extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
@@ -81,70 +73,42 @@ public class CounselCard extends BaseEntity {
     @Embedded
     private Smoking smoking;
 
-    @Embedded
-    private Communication communication;
-
-    @Embedded
-    private Evacuation evacuation;
-
-    @Embedded
-    private Walking walking;
-
     @Column
     @Enumerated(EnumType.STRING)
     private CardRecordStatus cardRecordStatus;
 
-    public static CounselCard of(CounselSession counselSession,
-        AddCounselCardReq addCounselCardReq) {
+    public static CounselCard of(CounselSession counselSession, AddCounselCardReq addCounselCardReq){
         CounselCard counselCard = new CounselCard();
         counselCard.counselSession = counselSession;
-        counselCard.counselPurposeAndNote = CounselPurposeAndNote.from(
-            addCounselCardReq.counselPurposeAndNote());
+        counselCard.counselPurposeAndNote = CounselPurposeAndNote.from(addCounselCardReq.counselPurposeAndNote());
         counselCard.allergy = Allergy.from(addCounselCardReq.allergy());
         counselCard.diseaseInfo = DiseaseInfo.from(addCounselCardReq.diseaseInfo());
-        counselCard.medicationSideEffect = MedicationSideEffect.from(
-            addCounselCardReq.medicationSideEffect());
+        counselCard.medicationSideEffect = MedicationSideEffect.from(addCounselCardReq.medicationSideEffect());
         counselCard.drinking = Drinking.from(addCounselCardReq.drinking());
         counselCard.exercise = Exercise.from(addCounselCardReq.exercise());
-        counselCard.medicationManagement = MedicationManagement.from(
-            addCounselCardReq.medicationManagement());
+        counselCard.medicationManagement = MedicationManagement.from(addCounselCardReq.medicationManagement());
         counselCard.nutrition = Nutrition.from(addCounselCardReq.nutrition());
         counselCard.smoking = Smoking.from(addCounselCardReq.smoking());
         counselCard.cardRecordStatus = addCounselCardReq.cardRecordStatus();
         return counselCard;
     }
 
-    public void updateBaseInformation(UpdateBaseInformationReq updateBaseInformationReq) {
-        this.counselPurposeAndNote.update(updateBaseInformationReq.counselPurposeAndNote());
+    public void update(UpdateCounselCardReq updateCounselCardReq){
+        this.counselPurposeAndNote.update(updateCounselCardReq.counselPurposeAndNote());
+        this.allergy.update(updateCounselCardReq.allergy());
+        this.diseaseInfo.update(updateCounselCardReq.diseaseInfo());
+        this.medicationSideEffect.update(updateCounselCardReq.medicationSideEffect());
+        this.drinking.update(updateCounselCardReq.drinking());
+        this.exercise.update(updateCounselCardReq.exercise());
+        this.medicationManagement.update(updateCounselCardReq.medicationManagement());
+        this.nutrition.update(updateCounselCardReq.nutrition());
+        this.smoking.update(updateCounselCardReq.smoking());
+        this.cardRecordStatus = Objects.requireNonNullElse(updateCounselCardReq.cardRecordStatus(), this.cardRecordStatus);
     }
-
-    public void updateHealthInformation(UpdateHealthInformationReq updateHealthInformationReq) {
-        this.allergy.update(updateHealthInformationReq.allergy());
-        this.diseaseInfo.update(updateHealthInformationReq.diseaseInfo());
-        this.medicationSideEffect.update(updateHealthInformationReq.medicationSideEffect());
-    }
-
-    public void updateIndependentLife(
-        UpdateIndependentLifeInformationReq updateIndependentLifeInformationReq) {
-        this.communication.update(updateIndependentLifeInformationReq.communication());
-        this.evacuation.update(updateIndependentLifeInformationReq.evacuation());
-        this.walking.update(updateIndependentLifeInformationReq.walking());
-    }
-
-    public void updateLiving(UpdateLivingInformationReq updateLivingInformationReq) {
-        this.drinking.update(updateLivingInformationReq.drinking());
-        this.exercise.update(updateLivingInformationReq.exercise());
-        this.medicationManagement.update(updateLivingInformationReq.medicationManagement());
-        this.nutrition.update(updateLivingInformationReq.nutrition());
-        this.smoking.update(updateLivingInformationReq.smoking());
-    }
-
 
     @PrePersist
     @Override
     protected void onCreate() {
         super.onCreate();
     }
-
-
 }
