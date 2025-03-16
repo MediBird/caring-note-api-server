@@ -84,7 +84,7 @@ public class TestDataInitializer implements CommandLineRunner {
 //        // add CounselCard
 //        List<String> counselCardIds = List.of(
 //                "01HQ7YXHG8ZYXM5T2Q3X4KDJPP");
-//        addCounselCard(counselSessionIds.getFirst(), counselCardIds.getFirst(), counseleeIds.getFirst());
+//        createCounselCard(counselSessionIds.getFirst(), counselCardIds.getFirst(), counseleeIds.getFirst());
 
         // add CounseleeConsent
         List<String> counseleeConsentIds = List.of(
@@ -206,7 +206,7 @@ public class TestDataInitializer implements CommandLineRunner {
         }
     }
 
-//    private void addCounselCard(String counselSessionId, String counselCardId, String counseleeId)
+//    private void createCounselCard(String counselSessionId, String counselCardId, String counseleeId)
 //            throws JsonProcessingException {
 //
 //        CounselSession counselSession = entityManager.getReference(CounselSession.class, counselSessionId);

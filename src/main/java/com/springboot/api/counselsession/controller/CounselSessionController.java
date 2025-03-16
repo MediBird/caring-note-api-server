@@ -144,13 +144,13 @@ public class CounselSessionController {
                 return ResponseEntity.ok(new CommonRes<>(result));
         }
 
-        @Operation(summary = "상담 상태 수정", tags = { "로그인/홈" })
+        @Operation(summary = "상담 일정 상태 변경", tags = { "로그인/홈" })
         @PutMapping("/status")
         @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
-        public ResponseEntity<CommonRes<UpdateStatusInCounselSessionRes>> updateStatusInCounselSession(
-                        @RequestBody @Valid UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+        public ResponseEntity<CommonRes<UpdateStatusInCounselSessionRes>> updateCounselSessionStatus(
+            @RequestBody @Valid UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
                 UpdateStatusInCounselSessionRes result = counselSessionService
-                                .updateStatusInCounselSession(updateStatusInCounselSessionReq);
+                                .updateCounselSessionStatus(updateStatusInCounselSessionReq);
                 return ResponseEntity.ok(new CommonRes<>(result));
         }
 

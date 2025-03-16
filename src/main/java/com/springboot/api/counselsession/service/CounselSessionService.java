@@ -1,6 +1,8 @@
 package com.springboot.api.counselsession.service;
 
 import com.querydsl.core.Tuple;
+import com.springboot.api.counselcard.service.CounselCardService;
+import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,7 +41,6 @@ import com.springboot.api.counselsession.dto.counselsession.SelectCounselSession
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
-import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
@@ -57,6 +58,7 @@ public class CounselSessionService {
         private final CounselSessionRepository counselSessionRepository;
         private final CounselorRepository counselorRepository;
         private final CounseleeRepository counseleeRepository;
+        private final CounselCardService counselCardService;
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
@@ -170,14 +172,33 @@ public class CounselSessionService {
 
         @CacheEvict(value = { "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
-        public UpdateStatusInCounselSessionRes updateStatusInCounselSession(
-                        UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+        public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
+                UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
 
-                CounselSession counselSession = counselSessionRepository
-                                .findById(updateStatusInCounselSessionReq.counselSessionId())
-                                .orElseThrow(NoContentException::new);
+                CounselSession counselSession = counselSessionRepository.findById(updateStatusInCounselSessionReq.counselSessionId())
+                    .orElseThrow(NoContentException::new);
 
-                counselSession.updateStatus(updateStatusInCounselSessionReq.status());
+                if(counselSession.getStatus() == ScheduleStatus.COMPLETED) {
+                    throw new IllegalArgumentException("완료된 상담 세션은 상태를 변경할 수 없습니다.");
+                }
+
+                if(counselSession.getStatus() == ScheduleStatus.CANCELED) {
+                    throw new IllegalArgumentException("취소된 상담 세션은 상태를 변경할 수 없습니다.");
+                }
+
+                switch (updateStatusInCounselSessionReq.status()) {
+                        case COMPLETED ->
+                                counselSession.completeCounselSession();
+                        case PROGRESS ->
+                        {
+                                counselSession.progressCounselSession();
+                                counselCardService.createCounselCard(counselSession);
+                        }
+                        case CANCELED ->
+                                counselSession.cancelCounselSession();
+                        case SCHEDULED ->
+                                counselSession.scheduleCounselSession();
+                }
 
                 return new UpdateStatusInCounselSessionRes(counselSession.getId());
         }
@@ -305,7 +326,7 @@ public class CounselSessionService {
         /**
          * 상담 세션의 회차 정보를 업데이트합니다.
          * 내담자별로 완료된 상담 세션의 수를 계산하여 회차를 설정합니다.
-         * 
+         *
          * @param counselSession 회차 정보를 업데이트할 상담 세션
          */
         public void updateSessionNumber(CounselSession counselSession) {

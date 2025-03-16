@@ -1,6 +1,6 @@
-package com.springboot.api.counselcard.dto;
+package com.springboot.api.counselcard.dto.response;
 
-import com.springboot.api.common.annotation.ValidEnum;
+import com.springboot.api.counselcard.dto.information.base.BaseInfoDTO;
 import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
 import com.springboot.api.counselcard.dto.information.health.DiseaseInfoDTO;
@@ -10,29 +10,11 @@ import com.springboot.api.counselcard.dto.information.living.ExerciseDTO;
 import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;
 import com.springboot.api.counselcard.dto.information.living.NutritionDTO;
 import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
+import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.enums.CardRecordStatus;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 
-
-public record UpdateCounselCardReq(
-    @NotBlank(message = "상담 세션 ID는 필수 입력값입니다")
-    @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다")
-    String counselSessionId,
-
-    @ValidEnum(enumClass = CardRecordStatus.class)
-    @Schema(description = "상담카드기록상태(IN_PROGRESS, COMPLETED", example = "IN_PROGRESS")
-    CardRecordStatus cardRecordStatus,
-
-    CounselPurposeAndNoteDTO counselPurposeAndNote,
-
-    AllergyDTO allergy,
-
-    DiseaseInfoDTO diseaseInfo,
-
-    MedicationSideEffectDTO medicationSideEffect,
+public record CounselCardLivingInformationRes(
 
     DrinkingDTO drinking,
 
@@ -43,4 +25,15 @@ public record UpdateCounselCardReq(
     NutritionDTO nutrition,
 
     SmokingDTO smoking
-) {}
+) {
+
+    public CounselCardLivingInformationRes(CounselCard counselCard) {
+        this(
+            new DrinkingDTO(counselCard.getDrinking()),
+            new ExerciseDTO(counselCard.getExercise()),
+            new MedicationManagementDTO(counselCard.getMedicationManagement()),
+            new NutritionDTO(counselCard.getNutrition()),
+            new SmokingDTO(counselCard.getSmoking())
+        );
+    }
+}

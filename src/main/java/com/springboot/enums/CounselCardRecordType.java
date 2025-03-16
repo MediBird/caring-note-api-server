@@ -4,6 +4,9 @@ import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNote
 import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
 import com.springboot.api.counselcard.dto.information.health.DiseaseInfoDTO;
 import com.springboot.api.counselcard.dto.information.health.MedicationSideEffectDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.WalkingDTO;
 import com.springboot.api.counselcard.dto.information.living.DrinkingDTO;
 import com.springboot.api.counselcard.dto.information.living.ExerciseDTO;
 import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;
@@ -21,7 +24,10 @@ public enum CounselCardRecordType {
     DISEASE_INFO(CounselCard::getDiseaseInfo, DiseaseInfoDTO::new),
     ALLERGY(CounselCard::getAllergy, AllergyDTO::new),
     MEDICATION_SIDE_EFFECT(CounselCard::getMedicationSideEffect, MedicationSideEffectDTO::new),
-    COUNSEL_PURPOSE_AND_NOTE(CounselCard::getCounselPurposeAndNote, CounselPurposeAndNoteDTO::new);
+    COUNSEL_PURPOSE_AND_NOTE(CounselCard::getCounselPurposeAndNote, CounselPurposeAndNoteDTO::new),
+    COMMUNICATION(CounselCard::getCommunication, CommunicationDTO::new),
+    EVACUATION(CounselCard::getEvacuation, EvacuationDTO::new),
+    WALKING(CounselCard::getWalking, WalkingDTO::new);
 
     private final Function<CounselCard, ?> extractor;
     private final Function<?, ?> dtoConverter;
