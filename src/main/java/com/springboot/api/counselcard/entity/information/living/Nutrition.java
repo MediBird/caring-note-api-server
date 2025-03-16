@@ -21,11 +21,18 @@ public class Nutrition {
     @Column(nullable = false)
     private String nutritionNote;
 
-    public static Nutrition from(NutritionDTO nutritionDTO) {
+    public static Nutrition initializeDefault() {
         Nutrition nutrition = new Nutrition();
-        nutrition.mealPattern = Objects.requireNonNullElse(nutritionDTO.mealPattern(), MealPattern.IRREGULAR_MEALS);
-        nutrition.nutritionNote = Objects.requireNonNullElse(nutritionDTO.nutritionNote(), "");
+        nutrition.mealPattern = null;
+        nutrition.nutritionNote = "";
         return nutrition;
+    }
+
+    public static Nutrition copy(Nutrition nutrition) {
+        Nutrition copiedNutrition = new Nutrition();
+        copiedNutrition.mealPattern = nutrition.mealPattern;
+        copiedNutrition.nutritionNote = nutrition.nutritionNote;
+        return copiedNutrition;
     }
 
     public void update(NutritionDTO nutritionDTO) {

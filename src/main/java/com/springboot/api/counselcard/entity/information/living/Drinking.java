@@ -18,10 +18,16 @@ public class Drinking {
     @Enumerated(EnumType.STRING)
     private DrinkingAmount drinkingAmount;
 
-    public static Drinking from(DrinkingDTO drinkingDTO) {
+    public static Drinking initializeDefault() {
         Drinking drinking = new Drinking();
-        drinking.drinkingAmount = Objects.requireNonNullElse(drinkingDTO.drinkingAmount(), DrinkingAmount.NONE);
+        drinking.drinkingAmount = DrinkingAmount.NONE;
         return drinking;
+    }
+
+    public static Drinking copy(Drinking drinking) {
+        Drinking copiedDrinking = new Drinking();
+        copiedDrinking.drinkingAmount = drinking.drinkingAmount;
+        return copiedDrinking;
     }
 
     public void update(DrinkingDTO drinkingDTO) {

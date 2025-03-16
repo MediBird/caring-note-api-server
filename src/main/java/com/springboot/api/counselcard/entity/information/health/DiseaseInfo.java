@@ -26,12 +26,20 @@ public class DiseaseInfo {
     @Enumerated(EnumType.STRING)
     private Set<DiseaseType> diseases;
 
-    public static DiseaseInfo from (DiseaseInfoDTO diseaseInfoDTO) {
+    public static DiseaseInfo initializeDefault() {
         DiseaseInfo diseaseInfo = new DiseaseInfo();
-        diseaseInfo.historyNote = Objects.requireNonNullElse(diseaseInfoDTO.historyNote(), "");
-        diseaseInfo.mainInconvenienceNote = Objects.requireNonNullElse(diseaseInfoDTO.mainInconvenienceNote(), "");
-        diseaseInfo.diseases = Objects.requireNonNullElse(diseaseInfoDTO.diseases(), Set.of());
+        diseaseInfo.historyNote = "";
+        diseaseInfo.mainInconvenienceNote = "";
+        diseaseInfo.diseases = Set.of();
         return diseaseInfo;
+    }
+
+    public static DiseaseInfo copy(DiseaseInfo diseaseInfo) {
+        DiseaseInfo copiedDiseaseInfo = new DiseaseInfo();
+        copiedDiseaseInfo.historyNote = diseaseInfo.historyNote;
+        copiedDiseaseInfo.mainInconvenienceNote = diseaseInfo.mainInconvenienceNote;
+        copiedDiseaseInfo.diseases = Set.copyOf(diseaseInfo.diseases);
+        return copiedDiseaseInfo;
     }
 
     public void update(DiseaseInfoDTO diseaseInfoDTO) {

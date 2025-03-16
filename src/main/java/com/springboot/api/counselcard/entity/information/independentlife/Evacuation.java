@@ -2,8 +2,8 @@ package com.springboot.api.counselcard.entity.information.independentlife;
 
 import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
 import com.springboot.enums.EvacuationType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import lombok.Getter;
@@ -17,11 +17,18 @@ public class Evacuation {
 
     String evacuationNote;
 
-    public static Evacuation from(EvacuationDTO evacuationDTO) {
+    public static Evacuation initializeDefault() {
         Evacuation evacuation = new Evacuation();
-        evacuation.evacuations = Objects.requireNonNullElse(evacuationDTO.evacuations(), Set.of());
-        evacuation.evacuationNote = Objects.requireNonNullElse(evacuationDTO.evacuationNote(), "");
+        evacuation.evacuations = Set.of();
+        evacuation.evacuationNote = "";
         return evacuation;
+    }
+
+    public static Evacuation copy(Evacuation evacuation) {
+        Evacuation copiedEvacuation = new Evacuation();
+        copiedEvacuation.evacuations = new HashSet<>(evacuation.evacuations);
+        copiedEvacuation.evacuationNote = evacuation.evacuationNote;
+        return copiedEvacuation;
     }
 
     public void update(EvacuationDTO evacuation) {

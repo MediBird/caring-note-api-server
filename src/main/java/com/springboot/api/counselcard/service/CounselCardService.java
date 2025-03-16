@@ -1,7 +1,6 @@
 package com.springboot.api.counselcard.service;
 
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.counselcard.dto.request.AddCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
@@ -37,28 +36,20 @@ public class CounselCardService {
         return new CounselCardRes(counselCard);
     }
 
-    public CounselCardRes selectLastRecordedCounselCard(String counseleeId) {
-        CounselCard previousCounselCard = counselCardRepository
-            .findLastRecordedCounselCard(counseleeId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        return new CounselCardRes(previousCounselCard);
-    }
-
     @Transactional
-    public CounselCardIdRes addCounselCard(AddCounselCardReq addCounselCardReq) {
-        CounselSession counselSession = counselSessionRepository
-            .findByIdWithCounselee(addCounselCardReq.counselSessionId())
-            .orElseThrow(IllegalArgumentException::new);
-
-        if (counselCardRepository.existsByCounselSessionId(addCounselCardReq.counselSessionId())) {
-            throw new IllegalArgumentException();
+    public void createCounselCard(CounselSession counselSession) {
+        if (counselCardRepository.existsByCounselSessionId(counselSession.getId())) {
+            throw new IllegalArgumentException("해당 상담 세션에 대한 상담 카드가 이미 존재합니다");
         }
 
-        CounselCard counselCard = CounselCard.of(counselSession, addCounselCardReq);
+        CounselCard lastRecordedCounselCard =
+            counselCardRepository.findLastRecordedCounselCard(counselSession.getCounselee().getId()).orElse(null);
 
-        return new CounselCardIdRes(counselCardRepository.save(counselCard).getId());
+        CounselCard counselCard = CounselCard.createFromSession(counselSession, lastRecordedCounselCard);
+
+        counselCardRepository.save(counselCard);
     }
+
 
     @Transactional
     public CounselCardIdRes updateCounselCardBaseInformation(String counselSessionId,

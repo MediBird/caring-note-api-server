@@ -17,11 +17,18 @@ public class MedicationSideEffect {
     @Column(nullable = false)
     private String symptomsNote;
 
-    public static MedicationSideEffect from(MedicationSideEffectDTO medicationSideEffectDTO){
+    public static MedicationSideEffect initializeDefault(){
         MedicationSideEffect medicationSideEffect = new MedicationSideEffect();
-        medicationSideEffect.suspectedMedicationNote = Objects.requireNonNullElse(medicationSideEffectDTO.suspectedMedicationNote(), "");
-        medicationSideEffect.symptomsNote = Objects.requireNonNullElse(medicationSideEffectDTO.symptomsNote(), "");
+        medicationSideEffect.suspectedMedicationNote = "";
+        medicationSideEffect.symptomsNote = "";
         return medicationSideEffect;
+    }
+
+    public static MedicationSideEffect copy(MedicationSideEffect medicationSideEffect){
+        MedicationSideEffect copiedMedicationSideEffect = new MedicationSideEffect();
+        copiedMedicationSideEffect.suspectedMedicationNote = medicationSideEffect.suspectedMedicationNote;
+        copiedMedicationSideEffect.symptomsNote = medicationSideEffect.symptomsNote;
+        return copiedMedicationSideEffect;
     }
 
     public void update(MedicationSideEffectDTO medicationSideEffectDTO){

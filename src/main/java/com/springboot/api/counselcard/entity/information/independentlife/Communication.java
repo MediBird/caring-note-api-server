@@ -25,13 +25,22 @@ public class Communication {
 
     private Set<UsingKoreanType> usingKoreans;
 
-    public static Communication from(CommunicationDTO communicationDTO) {
+    public static Communication initializeDefault() {
         Communication communication = new Communication();
-        communication.sights = Objects.requireNonNullElse(communicationDTO.sights(), Set.of());
-        communication.hearings = Objects.requireNonNullElse(communicationDTO.hearings(), Set.of());
-        communication.communications = Objects.requireNonNull(communicationDTO.communications(),
-            "언어 소통 방법을 입력해주세요.");
+        communication.sights = Set.of();
+        communication.hearings = Set.of();
+        communication.communications = null;
+        communication.usingKoreans = Set.of();
         return communication;
+    }
+
+    public static Communication copy(Communication communication) {
+        Communication copiedCommunication = new Communication();
+        copiedCommunication.sights = Set.copyOf(communication.sights);
+        copiedCommunication.hearings = Set.copyOf(communication.hearings);
+        copiedCommunication.communications = communication.communications;
+        copiedCommunication.usingKoreans = Set.copyOf(communication.usingKoreans);
+        return copiedCommunication;
     }
 
     public void update(CommunicationDTO communication) {

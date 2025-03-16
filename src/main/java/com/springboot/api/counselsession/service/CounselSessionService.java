@@ -1,6 +1,8 @@
 package com.springboot.api.counselsession.service;
 
 import com.querydsl.core.Tuple;
+import com.springboot.api.counselcard.service.CounselCardService;
+import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -39,7 +41,6 @@ import com.springboot.api.counselsession.dto.counselsession.SelectCounselSession
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
-import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
@@ -57,6 +58,7 @@ public class CounselSessionService {
         private final CounselSessionRepository counselSessionRepository;
         private final CounselorRepository counselorRepository;
         private final CounseleeRepository counseleeRepository;
+        private final CounselCardService counselCardService;
 
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
@@ -170,14 +172,54 @@ public class CounselSessionService {
 
         @CacheEvict(value = { "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
-        public UpdateStatusInCounselSessionRes updateStatusInCounselSession(
-                        UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+        public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
+            UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+                return switch (updateStatusInCounselSessionReq.status()) {
+                        case COMPLETED ->
+                            this.updateCounselSessionStatusComplete(updateStatusInCounselSessionReq.counselSessionId());
+                        case PROGRESS ->
+                            this.updateCounselSessionStatusProgress(updateStatusInCounselSessionReq.counselSessionId());
+                        case CANCELED ->
+                            this.updateCounselSessionStatusCancel(updateStatusInCounselSessionReq.counselSessionId());
+                        case SCHEDULED ->
+                            this.updateCounselSessionStatusScheduled(updateStatusInCounselSessionReq.counselSessionId());
+                };
+        }
 
-                CounselSession counselSession = counselSessionRepository
-                                .findById(updateStatusInCounselSessionReq.counselSessionId())
-                                .orElseThrow(NoContentException::new);
+        public UpdateStatusInCounselSessionRes updateCounselSessionStatusComplete(String counselSessionId) {
+                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                    .orElseThrow(NoContentException::new);
 
-                counselSession.updateStatus(updateStatusInCounselSessionReq.status());
+                counselSession.completeCounselSession();
+
+                return new UpdateStatusInCounselSessionRes(counselSession.getId());
+        }
+
+        public UpdateStatusInCounselSessionRes updateCounselSessionStatusProgress(String counselSessionId) {
+                CounselSession counselSession = counselSessionRepository.findByIdWithCounselee(counselSessionId)
+                    .orElseThrow(NoContentException::new);
+
+                counselSession.progressCounselSession();
+
+                counselCardService.createCounselCard(counselSession);
+
+                return new UpdateStatusInCounselSessionRes(counselSession.getId());
+        }
+
+        public UpdateStatusInCounselSessionRes updateCounselSessionStatusCancel(String counselSessionId) {
+                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                    .orElseThrow(NoContentException::new);
+
+                counselSession.cancelCounselSession();
+
+                return new UpdateStatusInCounselSessionRes(counselSession.getId());
+        }
+
+        public UpdateStatusInCounselSessionRes updateCounselSessionStatusScheduled(String counselSessionId) {
+                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+                    .orElseThrow(NoContentException::new);
+
+                counselSession.scheduleCounselSession();
 
                 return new UpdateStatusInCounselSessionRes(counselSession.getId());
         }

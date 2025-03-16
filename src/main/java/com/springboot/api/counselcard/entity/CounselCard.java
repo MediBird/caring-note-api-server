@@ -3,8 +3,6 @@ package com.springboot.api.counselcard.entity;
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselcard.dto.request.AddCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
-import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
@@ -33,7 +31,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.util.Objects;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -94,24 +91,8 @@ public class CounselCard extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CardRecordStatus cardRecordStatus;
 
-    public static CounselCard of(CounselSession counselSession,
-        AddCounselCardReq addCounselCardReq) {
-        CounselCard counselCard = new CounselCard();
-        counselCard.counselSession = counselSession;
-        counselCard.counselPurposeAndNote = CounselPurposeAndNote.from(
-            addCounselCardReq.counselPurposeAndNote());
-        counselCard.allergy = Allergy.from(addCounselCardReq.allergy());
-        counselCard.diseaseInfo = DiseaseInfo.from(addCounselCardReq.diseaseInfo());
-        counselCard.medicationSideEffect = MedicationSideEffect.from(
-            addCounselCardReq.medicationSideEffect());
-        counselCard.drinking = Drinking.from(addCounselCardReq.drinking());
-        counselCard.exercise = Exercise.from(addCounselCardReq.exercise());
-        counselCard.medicationManagement = MedicationManagement.from(
-            addCounselCardReq.medicationManagement());
-        counselCard.nutrition = Nutrition.from(addCounselCardReq.nutrition());
-        counselCard.smoking = Smoking.from(addCounselCardReq.smoking());
-        counselCard.cardRecordStatus = addCounselCardReq.cardRecordStatus();
-        return counselCard;
+    public static CounselCard createFromSession(CounselSession counselSession, CounselCard lastRecordedCounselCard) {
+        return CounselCardFactory.createFromSession(counselSession, lastRecordedCounselCard);
     }
 
     public void updateBaseInformation(UpdateBaseInformationReq updateBaseInformationReq) {
@@ -139,6 +120,46 @@ public class CounselCard extends BaseEntity {
         this.smoking.update(updateLivingInformationReq.smoking());
     }
 
+    void initialize(CounselSession counselSession) {
+        this.counselSession = counselSession;
+        this.cardRecordStatus = CardRecordStatus.IN_PROGRESS;
+    }
+
+    void copyValuesFrom(CounselCard previousCard) {
+        this.counselPurposeAndNote = CounselPurposeAndNote.copy(previousCard.getCounselPurposeAndNote());
+        this.allergy = Allergy.copy(previousCard.getAllergy());
+        this.diseaseInfo = DiseaseInfo.copy(previousCard.getDiseaseInfo());
+        this.medicationSideEffect = MedicationSideEffect.copy(previousCard.getMedicationSideEffect());
+        this.drinking = Drinking.copy(previousCard.getDrinking());
+        this.exercise = Exercise.copy(previousCard.getExercise());
+        this.medicationManagement = MedicationManagement.copy(previousCard.getMedicationManagement());
+        this.nutrition = Nutrition.copy(previousCard.getNutrition());
+        this.smoking = Smoking.copy(previousCard.getSmoking());
+    }
+
+    void copyDisabledSpecificValueFrom(CounselCard previousCard) {
+        this.communication = Communication.copy(previousCard.getCommunication());
+        this.evacuation = Evacuation.copy(previousCard.getEvacuation());
+        this.walking = Walking.copy(previousCard.getWalking());
+    }
+
+    void initializeDefaultValues() {
+        this.counselPurposeAndNote = CounselPurposeAndNote.initializeDefault();
+        this.allergy = Allergy.initializeDefault();
+        this.diseaseInfo = DiseaseInfo.initializeDefault();
+        this.medicationSideEffect = MedicationSideEffect.initializeDefault();
+        this.drinking = Drinking.initializeDefault();
+        this.exercise = Exercise.initializeDefault();
+        this.medicationManagement = MedicationManagement.initializeDefault();
+        this.nutrition = Nutrition.initializeDefault();
+        this.smoking = Smoking.initializeDefault();
+    }
+
+    void initializeDisabledSpecificDefaults() {
+        this.communication = Communication.initializeDefault();
+        this.evacuation = Evacuation.initializeDefault();
+        this.walking = Walking.initializeDefault();
+    }
 
     @PrePersist
     @Override

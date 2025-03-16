@@ -12,14 +12,12 @@ import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.enums.ScheduleStatus;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -103,28 +101,6 @@ public class CounselSession extends BaseEntity {
         this.counselor = counselor;
     }
 
-    public void updateScheduledStartDateTime(LocalDateTime startDateTime) {
-        this.scheduledStartDateTime = Objects.requireNonNullElse(startDateTime, this.scheduledStartDateTime);
-    }
-
-    public void updateStatus(ScheduleStatus status) {
-        if (this.status.equals(ScheduleStatus.COMPLETED)) {
-            throw new IllegalArgumentException("이미 완료된 상담 세션의 상태는 변경할 수 없습니다.");
-        }
-        if(status.equals(ScheduleStatus.PROGRESS)){
-            this.startDateTime = LocalDateTime.now();
-        }
-
-
-        this.status = Objects.requireNonNullElse(status, this.status);
-
-
-        if (this.status.equals(ScheduleStatus.COMPLETED)) {
-            this.counselee.counselSessionComplete(this.scheduledStartDateTime.toLocalDate());
-            this.endDateTime = LocalDateTime.now();
-        }
-    }
-
     public void modifyReservation(LocalDateTime scheduledStartDateTime, Counselee counselee) {
         this.scheduledStartDateTime = Objects.requireNonNullElse(scheduledStartDateTime, this.scheduledStartDateTime);
         this.counselee = Objects.requireNonNullElse(counselee, this.counselee);
@@ -134,4 +110,41 @@ public class CounselSession extends BaseEntity {
         this.sessionNumber = sessionNumber;
     }
 
+    public void completeCounselSession() {
+        if (this.status.equals(ScheduleStatus.PROGRESS)) {
+            throw new IllegalArgumentException("진행 중인 상담 세션만 완료할 수 있습니다.");
+        }
+
+        this.status = ScheduleStatus.COMPLETED;
+        this.endDateTime = LocalDateTime.now();
+    }
+
+    public void cancelCounselSession() {
+        if (this.status.equals(ScheduleStatus.COMPLETED)) {
+            throw new IllegalArgumentException("완료된 상담 세션은 취소할 수 없습니다.");
+        }
+
+        this.status = ScheduleStatus.CANCELED;
+        this.startDateTime = null;
+        this.endDateTime = null;
+    }
+
+    public void scheduleCounselSession() {
+        if (this.status.equals(ScheduleStatus.COMPLETED)) {
+            throw new IllegalArgumentException("완료된 상담 세션은 재예약할 수 없습니다.");
+        }
+
+        this.status = ScheduleStatus.SCHEDULED;
+        this.startDateTime = null;
+        this.endDateTime = null;
+    }
+
+    public void progressCounselSession() {
+        if (!this.status.equals(ScheduleStatus.SCHEDULED)) {
+            throw new IllegalArgumentException("예정된 상담 세션만 진행할 수 있습니다.");
+        }
+
+        this.status = ScheduleStatus.PROGRESS;
+        this.startDateTime = LocalDateTime.now();
+    }
 }

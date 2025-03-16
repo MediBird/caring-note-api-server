@@ -4,7 +4,6 @@ import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.api.common.dto.CommonRes;
-import com.springboot.api.counselcard.dto.request.AddCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
@@ -12,7 +11,6 @@ import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
 import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
 import com.springboot.api.counselcard.dto.response.CounselCardRes;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import com.springboot.api.counselcard.service.CounselCardService;
 
 import com.springboot.enums.CounselCardRecordType;
@@ -27,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,26 +42,6 @@ public class CounselCardController {
         @PathVariable @NotBlank(message = "내담자 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 ID는 26자여야 합니다") String counselSessionId) {
         return ResponseEntity.ok(
             new CommonRes<>(counselCardService.selectCounselCard(counselSessionId)));
-    }
-
-    @GetMapping("/{counseleeId}/previous")
-    @Operation(summary = "이전 상담 카드 조회", tags = {"상담 카드 작성"})
-    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
-    ResponseEntity<CommonRes<CounselCardRes>> selectLastRecordedCounselCard(
-        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counseleeId) {
-
-        return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.selectLastRecordedCounselCard(counseleeId)));
-    }
-
-    @PostMapping
-    @Operation(summary = "상담 카드 등록", tags = {"상담 카드 작성"})
-    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
-    ResponseEntity<CommonRes<CounselCardIdRes>> addCounselCard(
-        @RequestBody @Valid AddCounselCardReq addCounselCardReq) {
-
-        return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.addCounselCard(addCounselCardReq)));
     }
 
     @PutMapping("/{counselSessionId}/base-information")

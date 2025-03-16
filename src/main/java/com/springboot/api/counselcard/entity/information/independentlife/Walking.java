@@ -3,7 +3,6 @@ package com.springboot.api.counselcard.entity.information.independentlife;
 import com.springboot.api.counselcard.dto.information.independentlife.WalkingDTO;
 import com.springboot.enums.WalkingEquipmentType;
 import com.springboot.enums.WalkingType;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import java.util.Objects;
 import java.util.Set;
@@ -20,12 +19,20 @@ public class Walking {
 
     String walkingNote;
 
-    public static Walking from(WalkingDTO walkingDTO) {
+    public static Walking initializeDefault() {
         Walking walking = new Walking();
-        walking.walkingMethods = Objects.requireNonNullElse(walkingDTO.walkingMethods(), Set.of());
-        walking.walkingEquipments = Objects.requireNonNullElse(walkingDTO.walkingEquipments(), Set.of());
-        walking.walkingNote = Objects.requireNonNullElse(walkingDTO.walkingNote(), "");
+        walking.walkingMethods = Set.of();
+        walking.walkingEquipments = Set.of();
+        walking.walkingNote = "";
         return walking;
+    }
+
+    public static Walking copy(Walking walking) {
+        Walking copiedWalking = new Walking();
+        copiedWalking.walkingMethods = Set.copyOf(walking.walkingMethods);
+        copiedWalking.walkingEquipments = Set.copyOf(walking.walkingEquipments);
+        copiedWalking.walkingNote = walking.walkingNote;
+        return copiedWalking;
     }
 
     public void update(WalkingDTO walking) {
