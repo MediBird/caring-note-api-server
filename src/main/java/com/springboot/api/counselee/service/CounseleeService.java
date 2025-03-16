@@ -48,7 +48,8 @@ public class CounseleeService {
             counselee.getId()).orElse(null);
 
         if(counselCard == null){
-            return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, Set.of(), CardRecordStatus.NOT_STARTED);
+            return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, List.of(),
+                    CardRecordStatus.NOT_STARTED);
         }
 
         return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, counselCard.getDiseaseInfo().getDiseases(), counselCard.getCardRecordStatus());

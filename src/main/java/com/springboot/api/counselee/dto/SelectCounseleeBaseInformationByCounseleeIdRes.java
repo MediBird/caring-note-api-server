@@ -19,7 +19,7 @@ public record SelectCounseleeBaseInformationByCounseleeIdRes(
     HealthInsuranceType healthInsuranceType, int counselCount, LocalDate lastCounselDate,
     Set<DiseaseType> diseases, CardRecordStatus cardRecordStatus, boolean isDisability) {
 
-    public static SelectCounseleeBaseInformationByCounseleeIdRes from(Counselee counselee, Set<DiseaseType> diseases,
+    public static SelectCounseleeBaseInformationByCounseleeIdRes from(Counselee counselee, List<DiseaseType> diseases,
             CardRecordStatus cardRecordStatus) {
         return SelectCounseleeBaseInformationByCounseleeIdRes.builder()
                 .counseleeId(counselee.getId())
@@ -31,7 +31,7 @@ public record SelectCounseleeBaseInformationByCounseleeIdRes(
                 .healthInsuranceType(counselee.getHealthInsuranceType())
                 .counselCount(counselee.getCounselCount())
                 .lastCounselDate(counselee.getLastCounselDate())
-                .diseases(diseases)
+                .diseases(Set.copyOf(diseases))
                 .cardRecordStatus(cardRecordStatus)
                 .isDisability(counselee.getIsDisability())
                 .build();

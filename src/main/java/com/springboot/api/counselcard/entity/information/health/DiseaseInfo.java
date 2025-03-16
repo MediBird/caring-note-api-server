@@ -1,7 +1,7 @@
 package com.springboot.api.counselcard.entity.information.health;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.springboot.api.counselcard.dto.information.health.DiseaseInfoDTO;
 import com.springboot.enums.DiseaseType;
@@ -29,13 +29,13 @@ public class DiseaseInfo {
     @CollectionTable(name = "disease_info", joinColumns = @JoinColumn(name = "disease_info_id"))
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Set<DiseaseType> diseases;
+    private List<DiseaseType> diseases;
 
     public static DiseaseInfo initializeDefault() {
         DiseaseInfo diseaseInfo = new DiseaseInfo();
         diseaseInfo.historyNote = "";
         diseaseInfo.mainInconvenienceNote = "";
-        diseaseInfo.diseases = Set.of();
+        diseaseInfo.diseases = List.of();
         return diseaseInfo;
     }
 
@@ -43,7 +43,7 @@ public class DiseaseInfo {
         DiseaseInfo copiedDiseaseInfo = new DiseaseInfo();
         copiedDiseaseInfo.historyNote = diseaseInfo.historyNote;
         copiedDiseaseInfo.mainInconvenienceNote = diseaseInfo.mainInconvenienceNote;
-        copiedDiseaseInfo.diseases = Set.copyOf(diseaseInfo.diseases);
+        copiedDiseaseInfo.diseases = List.copyOf(diseaseInfo.diseases);
         return copiedDiseaseInfo;
     }
 
