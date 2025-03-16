@@ -1,13 +1,8 @@
 package com.springboot.api.counselcard.entity.information.living;
 
 import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;
-import com.springboot.enums.MedicationAssistant;
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import java.util.Objects;
-import java.util.Set;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
