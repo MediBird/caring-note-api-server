@@ -10,7 +10,6 @@ import com.springboot.enums.SightType;
 import com.springboot.enums.UsingKoreanType;
 
 import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -34,7 +33,6 @@ public class Communication {
     @Enumerated(EnumType.STRING)
     private Set<HearingType> hearings;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private CommunicationType communications;
 
@@ -47,7 +45,7 @@ public class Communication {
         Communication communication = new Communication();
         communication.sights = Set.of();
         communication.hearings = Set.of();
-        communication.communications = null;
+        communication.communications = CommunicationType.NOT_COMMUNICATE;
         communication.usingKoreans = Set.of();
         return communication;
     }
