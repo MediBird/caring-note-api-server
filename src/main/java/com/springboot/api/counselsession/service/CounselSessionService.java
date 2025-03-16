@@ -191,7 +191,7 @@ public class CounselSessionService {
                 switch (updateStatusInCounselSessionReq.status()) {
                         case COMPLETED ->
                                 counselSession.completeCounselSession();
-                        case PROGRESS ->
+                        case IN_PROGRESS ->
                                 counselSession.progressCounselSession();
                         case CANCELED ->
                                 counselSession.cancelCounselSession();

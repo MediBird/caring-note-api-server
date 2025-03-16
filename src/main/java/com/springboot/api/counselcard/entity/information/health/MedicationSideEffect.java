@@ -11,28 +11,21 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class MedicationSideEffect {
-    @Column(nullable = false)
-    private String suspectedMedicationNote;
-
-    @Column(nullable = false)
-    private String symptomsNote;
+    private Boolean isMedicationSideEffect;
 
     public static MedicationSideEffect initializeDefault(){
         MedicationSideEffect medicationSideEffect = new MedicationSideEffect();
-        medicationSideEffect.suspectedMedicationNote = "";
-        medicationSideEffect.symptomsNote = "";
+        medicationSideEffect.isMedicationSideEffect = false;
         return medicationSideEffect;
     }
 
     public static MedicationSideEffect copy(MedicationSideEffect medicationSideEffect){
         MedicationSideEffect copiedMedicationSideEffect = new MedicationSideEffect();
-        copiedMedicationSideEffect.suspectedMedicationNote = medicationSideEffect.suspectedMedicationNote;
-        copiedMedicationSideEffect.symptomsNote = medicationSideEffect.symptomsNote;
+        copiedMedicationSideEffect.isMedicationSideEffect = medicationSideEffect.isMedicationSideEffect;
         return copiedMedicationSideEffect;
     }
 
     public void update(MedicationSideEffectDTO medicationSideEffectDTO){
-        this.suspectedMedicationNote = Objects.requireNonNullElse(medicationSideEffectDTO.suspectedMedicationNote(), this.suspectedMedicationNote);
-        this.symptomsNote = Objects.requireNonNullElse(medicationSideEffectDTO.symptomsNote(), this.symptomsNote);
+        this.isMedicationSideEffect = Objects.requireNonNullElse(medicationSideEffectDTO.isMedicationSideEffect(), this.isMedicationSideEffect);
     }
 }

@@ -1,10 +1,7 @@
 package com.springboot.api.counselcard.entity.information.living;
 
 import com.springboot.api.counselcard.dto.information.living.DrinkingDTO;
-import com.springboot.enums.DrinkingAmount;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,22 +10,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Drinking {
-    @Enumerated(EnumType.STRING)
-    private DrinkingAmount drinkingAmount;
+    private Boolean isDrinking;
 
     public static Drinking initializeDefault() {
         Drinking drinking = new Drinking();
-        drinking.drinkingAmount = DrinkingAmount.NONE;
+        drinking.isDrinking = false;
         return drinking;
     }
 
     public static Drinking copy(Drinking drinking) {
         Drinking copiedDrinking = new Drinking();
-        copiedDrinking.drinkingAmount = drinking.drinkingAmount;
+        copiedDrinking.isDrinking = drinking.isDrinking;
         return copiedDrinking;
     }
 
     public void update(DrinkingDTO drinkingDTO) {
-        this.drinkingAmount = Objects.requireNonNullElse(drinkingDTO.drinkingAmount(), this.drinkingAmount);
+        this.isDrinking = Objects.requireNonNullElse(drinkingDTO.isDrinking(), this.isDrinking);
     }
 }

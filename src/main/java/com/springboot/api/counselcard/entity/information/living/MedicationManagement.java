@@ -15,29 +15,21 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MedicationManagement {
-    @Column(nullable = false)
-    private String houseMateNote;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Set<MedicationAssistant> medicationAssistants;
+    private Boolean isMedicationManagement;
 
     public static MedicationManagement initializeDefault() {
         MedicationManagement medicationManagement = new MedicationManagement();
-        medicationManagement.houseMateNote = "";
-        medicationManagement.medicationAssistants = Set.of();
+        medicationManagement.isMedicationManagement = false;
         return medicationManagement;
     }
 
     public static MedicationManagement copy(MedicationManagement medicationManagement) {
         MedicationManagement copiedMedicationManagement = new MedicationManagement();
-        copiedMedicationManagement.houseMateNote = medicationManagement.houseMateNote;
-        copiedMedicationManagement.medicationAssistants = Set.copyOf(medicationManagement.medicationAssistants);
+        copiedMedicationManagement.isMedicationManagement = medicationManagement.isMedicationManagement;
         return copiedMedicationManagement;
     }
 
     public void update(MedicationManagementDTO medicationManagementDTO) {
-        this.houseMateNote = Objects.requireNonNullElse(medicationManagementDTO.houseMateNote(), this.houseMateNote);
-        this.medicationAssistants = Objects.requireNonNullElse(medicationManagementDTO.medicationAssistants(), this.medicationAssistants);
+        this.isMedicationManagement = Objects.requireNonNullElse(medicationManagementDTO.isMedicationManagement(), this.isMedicationManagement);
     }
 }

@@ -7,14 +7,11 @@ import com.springboot.enums.MedicationAssistant;
 import java.util.Set;
 
 public record MedicationManagementDTO(
-        String houseMateNote,
-        @ValidEnum(enumClass = MedicationAssistant.class)
-        Set<MedicationAssistant> medicationAssistants) {
+        Boolean isMedicationManagement) {
 
     public MedicationManagementDTO (MedicationManagement medicationManagement){
         this(
-            medicationManagement.getHouseMateNote(),
-            medicationManagement.getMedicationAssistants()
+            medicationManagement.getIsMedicationManagement()
         );
     }
 }

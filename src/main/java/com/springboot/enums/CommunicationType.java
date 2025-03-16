@@ -1,8 +1,7 @@
 package com.springboot.enums;
 
 public enum CommunicationType {
-    WELL_HEARD, // 잘 들림
-    POORLY_HEARD, // 잘 안 들림
-    NOT_HEARD, // 안 들림
-    USING_HEARING_AID; // 보청기 사용
+    WELL_COMMUNICATE, // 소통 가능함
+    SEMI_COMMUNICATE, // 대강 가능함
+    NOT_COMMUNICATE // 불가능
 }

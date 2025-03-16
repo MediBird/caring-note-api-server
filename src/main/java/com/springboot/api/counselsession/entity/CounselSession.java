@@ -104,7 +104,7 @@ public class CounselSession extends BaseEntity {
     }
 
     public void completeCounselSession() {
-        if (this.status.equals(ScheduleStatus.PROGRESS)) {
+        if (!this.status.equals(ScheduleStatus.IN_PROGRESS)) {
             throw new IllegalArgumentException("진행 중인 상담 세션만 완료할 수 있습니다.");
         }
 
@@ -137,7 +137,7 @@ public class CounselSession extends BaseEntity {
             throw new IllegalArgumentException("예정된 상담 세션만 진행할 수 있습니다.");
         }
 
-        this.status = ScheduleStatus.PROGRESS;
+        this.status = ScheduleStatus.IN_PROGRESS;
         this.startDateTime = LocalDateTime.now();
     }
 }
