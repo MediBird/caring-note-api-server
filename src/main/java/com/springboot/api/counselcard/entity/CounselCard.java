@@ -1,5 +1,8 @@
 package com.springboot.api.counselcard.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
@@ -32,15 +35,13 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Entity
 @Table(name = "counsel_cards")
-@NoArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
 @ToString(callSuper = true, exclude = {"counselSession"})
 public class CounselCard extends BaseEntity {
@@ -48,6 +49,7 @@ public class CounselCard extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counsel_session_id", nullable = false)
+    @SuppressWarnings("FieldMayBeFinal")
     private CounselSession counselSession;
 
     @Embedded
@@ -91,9 +93,10 @@ public class CounselCard extends BaseEntity {
     private CardRecordStatus cardRecordStatus;
 
     public static CounselCard createFromSession(CounselSession counselSession) {
-        CounselCard counselCard = new CounselCard();
-        counselCard.counselSession = counselSession;
-        counselCard.cardRecordStatus = CardRecordStatus.NOT_STARTED;
+        CounselCard counselCard = CounselCard.builder()
+                .counselSession(counselSession)
+                .cardRecordStatus(CardRecordStatus.NOT_STARTED)
+                .build();
         counselCard.initializeDefaultValues();
         if(counselSession.getCounselee().getIsDisability().equals(true)){
             counselCard.initializeDisabledSpecificDefaults();

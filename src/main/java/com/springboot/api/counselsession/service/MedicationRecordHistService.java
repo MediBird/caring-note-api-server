@@ -75,24 +75,25 @@ public class MedicationRecordHistService {
                 MedicationRecordHist medicationRecordHist;
                 for (AddAndUpdateMedicationRecordHistReq addAndUpdateMedicationRecordHistReq : addAndUpdateMedicationRecordHistReqs) {
                         if (addAndUpdateMedicationRecordHistReq.getRowId() == null) {
-                                medicationRecordHist = new MedicationRecordHist();
-                                medicationRecordHist.setCounselSession(counselSession);
-                                medicationRecordHist.setMedication(medicationRepository
-                                                .findById(addAndUpdateMedicationRecordHistReq.getMedicationId())
-                                                .orElse(null));
-                                medicationRecordHist.setMedicationDivision(
-                                                addAndUpdateMedicationRecordHistReq.getDivisionCode());
-                                medicationRecordHist.setPrescriptionDate(
-                                                LocalDate.parse(addAndUpdateMedicationRecordHistReq
-                                                                .getPrescriptionDate()));
-                                medicationRecordHist.setPrescriptionDays(
-                                                addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
-                                medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getMedicationName());
-                                medicationRecordHist
-                                                .setUsageObject(addAndUpdateMedicationRecordHistReq.getUsageObject());
-                                medicationRecordHist.setUnit(addAndUpdateMedicationRecordHistReq.getUnit());
-                                medicationRecordHist.setUsageStatus(
-                                                addAndUpdateMedicationRecordHistReq.getUsageStatusCode());
+                                medicationRecordHist = MedicationRecordHist.builder()
+                                                .counselSession(counselSession)
+                                                .medication(medicationRepository
+                                                                .findById(addAndUpdateMedicationRecordHistReq
+                                                                                .getMedicationId())
+                                                                .orElse(null))
+                                                .medicationDivision(addAndUpdateMedicationRecordHistReq
+                                                                .getDivisionCode())
+                                                .prescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq
+                                                                .getPrescriptionDate()))
+                                                .prescriptionDays(addAndUpdateMedicationRecordHistReq
+                                                                .getPrescriptionDays())
+                                                .name(addAndUpdateMedicationRecordHistReq.getMedicationName())
+                                                .usageObject(addAndUpdateMedicationRecordHistReq
+                                                                .getUsageObject())
+                                                .unit(addAndUpdateMedicationRecordHistReq.getUnit())
+                                                .usageStatus(addAndUpdateMedicationRecordHistReq
+                                                                .getUsageStatusCode())
+                                                .build();
                         } else {
                                 medicationRecordHist = medicationRecordHistRepository
                                                 .findById(addAndUpdateMedicationRecordHistReq.getRowId()).orElse(null);

@@ -7,8 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
-import com.querydsl.core.annotations.QueryEntity;
-
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Column;
 import jakarta.persistence.Id;
@@ -16,11 +14,14 @@ import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PreUpdate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @MappedSuperclass
 @Data
 @EqualsAndHashCode
-@QueryEntity
+@SuperBuilder
+@NoArgsConstructor
 public abstract class BaseEntity {
 
     @Id

@@ -1,6 +1,5 @@
 package com.springboot.api.counselsession.entity;
 
-import jakarta.persistence.FetchType;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,23 +19,19 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "prompt_templates")
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = { "promptLearnings" })
 @ToString(callSuper = true, exclude = { "promptLearnings" })
 public class PromptTemplate extends BaseEntity {

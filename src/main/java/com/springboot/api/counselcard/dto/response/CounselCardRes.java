@@ -13,7 +13,6 @@ import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
 import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.enums.CardRecordStatus;
 
-
 public record CounselCardRes(
 
     BaseInfoDTO baseInfo,

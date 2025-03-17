@@ -78,15 +78,12 @@ public class CounselCardService {
             .orElseThrow(IllegalArgumentException::new);
 
         switch (status) {
-            case NOT_STARTED:
-                throw new IllegalArgumentException("상담 카드의 상태를 NOT_STARTED로 변경할 수 없습니다");
-            case IN_PROGRESS:
+            case NOT_STARTED -> throw new IllegalArgumentException("상담 카드의 상태를 NOT_STARTED로 변경할 수 없습니다");
+            case IN_PROGRESS -> {
                 retrievePreviousCounselCardAndFill(counselCard);
                 counselCard.updateStatusToInProgress();
-                break;
-            case COMPLETED:
-                counselCard.updateStatusToCompleted();
-                break;
+            }
+            case COMPLETED -> counselCard.updateStatusToCompleted();
         }
 
         return new CounselCardIdRes(counselCard.getId());

@@ -1,11 +1,8 @@
 package com.springboot.api.counselee.service;
 
-import com.springboot.api.counselcard.repository.CounselCardRepository;
-import com.springboot.enums.CardRecordStatus;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -17,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselcard.entity.CounselCard;
+import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
@@ -27,6 +25,7 @@ import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
+import com.springboot.enums.CardRecordStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

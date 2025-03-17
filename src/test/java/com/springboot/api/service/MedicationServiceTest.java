@@ -43,15 +43,18 @@ public class MedicationServiceTest {
                 SearchMedicationByKeywordRes.builder().id(ulid2).itemName("타이레놀 500mg").itemImage("image2.jpg")
                         .build());
 
-        Medication medication1 = new Medication();
-        medication1.setId(ulid1);
-        medication1.setItemName("타이레놀");
-        medication1.setItemImage("image1.jpg");
+        Medication medication1 = Medication.builder()
+                .id(ulid1)
+                .itemName("타이레놀")
+                .itemImage("image1.jpg")
+                .build();
 
-        Medication medication2 = new Medication();
-        medication2.setId(ulid2);
-        medication2.setItemName("타이레놀 500mg");
-        medication2.setItemImage("image2.jpg");
+        Medication medication2 = Medication.builder()
+                .id(ulid2)
+                .itemName("타이레놀 500mg")
+                .itemImage("image2.jpg")
+                .build();
+
         List<Medication> medications = List.of(
                 medication1,
                 medication2);

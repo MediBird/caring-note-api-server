@@ -61,18 +61,18 @@ public class WasteMedicationRecordService {
                 for (AddAndUpdateWasteMedicationRecordReq addAndUpdateWasteMedicationRecordReq : addAndUpdateWasteMedicationRecordReqs) {
                         if (addAndUpdateWasteMedicationRecordReq.getRowId() == null) {
 
-                                wasteMedicationRecord = new WasteMedicationRecord();
-                                wasteMedicationRecord.setCounselSession(counselSession);
-                                wasteMedicationRecord.setMedication(
-                                                medicationRepository
+                                wasteMedicationRecord = WasteMedicationRecord.builder()
+                                                .counselSession(counselSession)
+                                                .medication(medicationRepository
                                                                 .findById(addAndUpdateWasteMedicationRecordReq
                                                                                 .getMedicationId())
-                                                                .orElse(null));
-                                wasteMedicationRecord.setUnit(addAndUpdateWasteMedicationRecordReq.getUnit());
-                                wasteMedicationRecord.setDisposalReason(
-                                                addAndUpdateWasteMedicationRecordReq.getDisposalReason());
-                                wasteMedicationRecord.setMedicationName(
-                                                addAndUpdateWasteMedicationRecordReq.getMedicationName());
+                                                                .orElse(null))
+                                                .unit(addAndUpdateWasteMedicationRecordReq.getUnit())
+                                                .disposalReason(addAndUpdateWasteMedicationRecordReq
+                                                                .getDisposalReason())
+                                                .medicationName(addAndUpdateWasteMedicationRecordReq
+                                                                .getMedicationName())
+                                                .build();
                         } else {
                                 wasteMedicationRecord = wasteMedicationRecordRepository
                                                 .findById(addAndUpdateWasteMedicationRecordReq.getRowId())

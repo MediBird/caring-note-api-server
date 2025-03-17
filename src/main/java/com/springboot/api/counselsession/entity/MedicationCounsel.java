@@ -1,33 +1,30 @@
 package com.springboot.api.counselsession.entity;
 
-import jakarta.persistence.FetchType;
 import java.util.List;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.springboot.api.common.entity.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "medication_counsels")
 @Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medicationCounselHighlights" })
 @ToString(callSuper = true, exclude = { "counselSession", "medicationCounselHighlights" })
 public class MedicationCounsel extends BaseEntity {

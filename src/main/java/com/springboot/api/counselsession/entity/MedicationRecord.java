@@ -3,6 +3,9 @@ package com.springboot.api.counselsession.entity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
@@ -16,17 +19,15 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "medication_records")
 @Data
-@Builder
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = { "counselee", "medication", "prescribingCounselor" })
 @ToString(callSuper = true, exclude = { "counselee", "medication", "prescribingCounselor" })
 public class MedicationRecord extends BaseEntity {

@@ -88,7 +88,7 @@ public class MedicationCounselService {
                                                                 .startIndex(h.getStartIndex())
                                                                 .endIndex(h.getEndIndex())
                                                                 .build())
-                                                .toList());
+                                                .collect(Collectors.toList()));
         }
 
         public SelectPreviousMedicationCounselRes selectPreviousMedicationCounsel(String counselSessionId) {
@@ -122,8 +122,8 @@ public class MedicationCounselService {
                                                                 .startIndex(h.getStartIndex())
                                                                 .endIndex(h.getEndIndex())
                                                                 .build())
-                                                .toList(),
-                                medicationCounsel.getCounselRecord() // STT 도입 이후 STT 결과로 변경 예정
+                                                .collect(Collectors.toList()),
+                                                medicationCounsel.getCounselRecord() // STT 도입 이후 STT 결과로 변경 예정
                 );
 
         }
@@ -151,7 +151,7 @@ public class MedicationCounselService {
                                                 .startIndex(highlight.startIndex())
                                                 .endIndex(highlight.endIndex())
                                                 .build())
-                                .toList();
+                                .collect(Collectors.toList());
 
                 medicationCounselHighlightRepository.saveAll(medicationCounselHighlights);
                 medicationCounsel.setMedicationCounselHighlights(medicationCounselHighlights);

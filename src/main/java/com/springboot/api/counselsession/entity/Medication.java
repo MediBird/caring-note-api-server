@@ -18,12 +18,15 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
+@SuperBuilder
 @Table(name = "medications", indexes = {
         @Index(name = "idx_item_name", columnList = "item_name"),
         @Index(name = "idx_item_name_chosung", columnList = "item_name_chosung")
@@ -90,6 +93,7 @@ public class Medication extends BaseEntity {
     // 위험한 약물 상호 작용 (자기 자신과의 다대다 관계)
     @ManyToMany
     @JoinTable(name = "medication_contraindications", joinColumns = @JoinColumn(name = "medication_id"), inverseJoinColumns = @JoinColumn(name = "contraindicated_medication_id"))
+    @Builder.Default
     private Set<Medication> contraindications = new HashSet<>();
 
     @PrePersist

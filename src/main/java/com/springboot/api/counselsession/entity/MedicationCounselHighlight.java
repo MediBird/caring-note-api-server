@@ -1,5 +1,8 @@
 package com.springboot.api.counselsession.entity;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.springboot.api.common.entity.BaseEntity;
 
 import jakarta.persistence.Entity;
@@ -7,21 +10,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "medication_counsel_highlights")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = { "medicationCounsel" })
 @ToString(callSuper = true, exclude = { "medicationCounsel" })
 public class MedicationCounselHighlight extends BaseEntity {

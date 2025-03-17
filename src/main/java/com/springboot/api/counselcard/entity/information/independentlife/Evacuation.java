@@ -1,9 +1,7 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
 import com.springboot.enums.EvacuationType;
