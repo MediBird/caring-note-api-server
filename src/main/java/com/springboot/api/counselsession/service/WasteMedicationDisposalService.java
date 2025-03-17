@@ -29,9 +29,10 @@ public class WasteMedicationDisposalService {
             wasteMedicationDisposal = wasteMedicationDisposalRepository
                     .findByCounselSessionId(counselSessionId).get();
         } else {
-            wasteMedicationDisposal = new WasteMedicationDisposal();
+            wasteMedicationDisposal = WasteMedicationDisposal.builder()
+                    .counselSession(counselSession)
+                    .build();
         }
-        wasteMedicationDisposal.setCounselSession(counselSession);
         wasteMedicationDisposal.setUnusedReasons(wasteMedicationDisposalReq.getUnusedReasonTypes().stream()
                 .map(UnusedReasonType::name)
                 .collect(Collectors.toList()));

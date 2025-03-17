@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
@@ -43,7 +42,7 @@ import lombok.RequiredArgsConstructor;
 public class TestDataInitializer implements CommandLineRunner {
 
     private final EntityManager entityManager;
-    private final ObjectMapper objectMapper;
+    // private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
     private final List<String> names = List.of(
             "김철수", "김바비", "김을동", "박찬수", "장덕구", "임꺽정", "송사리", "송새벽", "한여름", "오로라", "이루리");

@@ -22,22 +22,17 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "counselees", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "name", "date_of_birth", "phone_number" })
 })
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Counselee extends BaseEntity {
@@ -66,6 +61,7 @@ public class Counselee extends BaseEntity {
 
     @Column(updatable = false)
     @Temporal(TemporalType.DATE)
+    @SuppressWarnings("FieldMayBeFinal")
     private LocalDate registrationDate;
 
     @Column(name = "affiliated_welfare_institution")
@@ -88,7 +84,9 @@ public class Counselee extends BaseEntity {
     @Column(name = "care_manager_name")
     private String careManagerName;
 
+
     public Counselee(AddCounseleeReq addCounseleeReq) {
+        super();
         this.name = addCounseleeReq.getName();
         this.dateOfBirth = addCounseleeReq.getDateOfBirth();
         this.phoneNumber = addCounseleeReq.getPhoneNumber();
@@ -126,5 +124,9 @@ public class Counselee extends BaseEntity {
     public void counselSessionComplete(LocalDate lastCounselDate) {
         this.counselCount++;
         this.lastCounselDate = lastCounselDate;
+    }
+
+    public void updateHealthInsuranceType(HealthInsuranceType healthInsuranceType) {
+        this.healthInsuranceType = healthInsuranceType;
     }
 }

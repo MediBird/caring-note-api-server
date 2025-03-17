@@ -52,6 +52,7 @@ public class CounseleeAutocompleteControllerTest {
         private static final String TEST_TOKEN = "test-token";
 
         @BeforeEach
+        @SuppressWarnings("unused")
         void setUp() {
                 Jwt jwt = Jwt.withTokenValue(TEST_TOKEN)
                                 .header("alg", "none")

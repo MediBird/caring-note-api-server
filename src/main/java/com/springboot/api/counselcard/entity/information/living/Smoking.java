@@ -1,8 +1,14 @@
 package com.springboot.api.counselcard.entity.information.living;
 
-import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
-import jakarta.persistence.Embeddable;
 import java.util.Objects;
+
+import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
+import com.springboot.enums.SmokingAmount;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,21 +16,29 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 public class Smoking {
-    private Boolean isSmoking;
+    @Column(nullable = false)
+    private String smokingPeriodNote;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private SmokingAmount smokingAmount;
 
     public static Smoking initializeDefault() {
         Smoking smoking = new Smoking();
-        smoking.isSmoking = false;
+        smoking.smokingPeriodNote = "";
+        smoking.smokingAmount = SmokingAmount.NONE;
         return smoking;
     }
 
     public static Smoking copy(Smoking smoking) {
         Smoking copiedSmoking = new Smoking();
-        copiedSmoking.isSmoking = smoking.isSmoking;
+        copiedSmoking.smokingPeriodNote = smoking.smokingPeriodNote;
+        copiedSmoking.smokingAmount = smoking.smokingAmount;
         return copiedSmoking;
     }
 
     public void update(SmokingDTO smokingDTO) {
-        this.isSmoking = Objects.requireNonNullElse(smokingDTO.isSmoking(), this.isSmoking);
+        this.smokingPeriodNote = Objects.requireNonNullElse(smokingDTO.smokingPeriodNote(), this.smokingPeriodNote);
+        this.smokingAmount = Objects.requireNonNullElse(smokingDTO.smokingAmount(), this.smokingAmount);
     }
 }

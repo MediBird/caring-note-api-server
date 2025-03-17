@@ -1,7 +1,6 @@
 package com.springboot.api.counselcard.dto.information.living;
 
 import java.util.List;
-import java.util.Set;
 
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.api.counselcard.entity.information.living.MedicationManagement;

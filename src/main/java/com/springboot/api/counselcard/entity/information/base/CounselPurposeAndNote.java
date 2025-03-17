@@ -2,7 +2,6 @@ package com.springboot.api.counselcard.entity.information.base;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.enums.CounselPurposeType;

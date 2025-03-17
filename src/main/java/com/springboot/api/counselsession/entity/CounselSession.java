@@ -21,21 +21,17 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
         @UniqueConstraint(columnNames = { "counselee_id", "scheduled_start_datetime" })
 })
+@SuperBuilder
 @Getter
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = { "counselor", "counselee" })
 @ToString(callSuper = true, exclude = { "counselor", "counselee" })
 public class CounselSession extends BaseEntity {

@@ -2,6 +2,9 @@ package com.springboot.api.counselsession.entity;
 
 import java.time.LocalDate;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
@@ -15,21 +18,15 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "medication_records_hist")
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@SuperBuilder
 @EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medication" })
 @ToString(callSuper = true, exclude = { "counselSession", "medication" })
 public class MedicationRecordHist extends BaseEntity {
