@@ -265,9 +265,9 @@ public class CounselorService {
 
     @Transactional
     public CounselorPageRes getCounselorsByPage(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, org.springframework.data.domain.Sort.by(
-                org.springframework.data.domain.Sort.Direction.DESC, "updatedDatetime"));
-        Page<Counselor> counselorPage = counselorRepository.findAll(pageRequest);
+        // RoleType.ROLE_ASSISTANT가 맨 위로 오도록 정렬하는 커스텀 쿼리 메서드를 사용
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<Counselor> counselorPage = counselorRepository.findAllWithRoleTypeOrder(pageRequest);
 
         return CounselorPageRes.fromPage(counselorPage);
     }
