@@ -25,6 +25,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -32,6 +33,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "prompt_templates")
 @Getter
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = { "promptLearnings" })
 @ToString(callSuper = true, exclude = { "promptLearnings" })
 public class PromptTemplate extends BaseEntity {

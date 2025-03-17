@@ -19,6 +19,7 @@ import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -28,6 +29,7 @@ import lombok.experimental.SuperBuilder;
 })
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "counselee", })
 @ToString(callSuper = true, exclude = { "counselSession", "counselee" })
 public class CounseleeConsent extends BaseEntity {

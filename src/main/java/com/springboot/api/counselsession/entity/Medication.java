@@ -21,12 +21,14 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @Table(name = "medications", indexes = {
         @Index(name = "idx_item_name", columnList = "item_name"),
         @Index(name = "idx_item_name_chosung", columnList = "item_name_chosung")

@@ -18,6 +18,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -25,6 +26,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "medication_counsels")
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medicationCounselHighlights" })
 @ToString(callSuper = true, exclude = { "counselSession", "medicationCounselHighlights" })
 public class MedicationCounsel extends BaseEntity {

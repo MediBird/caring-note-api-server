@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -27,6 +28,7 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "medication_records_hist")
 @Data
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medication" })
 @ToString(callSuper = true, exclude = { "counselSession", "medication" })
 public class MedicationRecordHist extends BaseEntity {

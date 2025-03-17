@@ -35,6 +35,7 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
@@ -42,6 +43,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Table(name = "counsel_cards")
 @SuperBuilder
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
 @ToString(callSuper = true, exclude = {"counselSession"})
 public class CounselCard extends BaseEntity {
