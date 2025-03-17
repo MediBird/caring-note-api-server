@@ -1,6 +1,5 @@
 package com.springboot.api.counselee.repository;
 
-import com.springboot.api.counselsession.entity.QCounselSession;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +16,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.entity.QCounselee;
+import com.springboot.api.counselsession.entity.QCounselSession;
 
 @Repository
 public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implements CounseleeRepositoryCustom {
