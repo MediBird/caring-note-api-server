@@ -53,11 +53,39 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
             userDetails = userDetailsService.loadUserByUsername(username);
         } catch (UsernameNotFoundException e) {
             String email = jwt.getClaimAsString("email");
+
+            // 성과 이름을 별도로 가져오기
+            String familyName = jwt.getClaimAsString("family_name");
+            String givenName = jwt.getClaimAsString("given_name");
             String name = jwt.getClaimAsString("name");
+
+            // 한국식 이름 처리 로직
+            String fullName;
+            if (familyName != null && givenName != null) {
+                // 성과 이름이 모두 있는 경우
+                // 한글 문자 범위 체크 (유니코드: AC00-D7A3)
+                boolean isKoreanName = (familyName + givenName).chars()
+                        .anyMatch(c -> c >= 0xAC00 && c <= 0xD7A3);
+
+                if (isKoreanName) {
+                    // 한국식: 성+이름 (공백 없음)
+                    fullName = familyName + givenName;
+                    log.info("한국어 이름 감지 및 처리: {}", fullName);
+                } else {
+                    // 서양식: 이름 성
+                    fullName = givenName + " " + familyName;
+                    log.info("서양식 이름 처리: {}", fullName);
+                }
+            } else {
+                // 분리된 성/이름이 없는 경우 기존 name 클레임 사용
+                fullName = name;
+                log.info("전체 이름 사용: {}", fullName);
+            }
+
             String phoneNumber = jwt.getClaimAsString("phone_number");
             Counselor newCounselor = new Counselor();
             newCounselor.setUsername(username);
-            newCounselor.setName(name);
+            newCounselor.setName(fullName); // 처리된 전체 이름 사용
             newCounselor.setEmail(email);
             newCounselor.setPhoneNumber(phoneNumber);
             newCounselor.setStatus(CounselorStatus.ACTIVE);
