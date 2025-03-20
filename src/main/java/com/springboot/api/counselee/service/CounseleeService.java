@@ -140,13 +140,4 @@ public class CounseleeService {
         List<Counselee> counselees = counseleeRepository.findByNameContaining(keyword.trim());
         return SelectCounseleeAutocompleteRes.fromList(counselees);
     }
-
-    public void validateCounseleeDisability(String counselSessionId) {
-        Counselee counselee = counseleeRepository.findByCounselSessionId(counselSessionId)
-                .orElseThrow(NoContentException::new);
-
-        if (counselee == null) {
-            throw new IllegalArgumentException("Counselee disability is not set");
-        }
-    }
 }

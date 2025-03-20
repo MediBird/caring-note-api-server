@@ -13,7 +13,6 @@ import com.springboot.api.counselcard.dto.response.CounselCardRes;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.entity.CounselCard;
-import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselCardRecordType;
 import java.util.List;
@@ -31,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 public class CounselCardService {
 
     private final CounselCardRepository counselCardRepository;
-    private final CounseleeService counseleeService;
 
     public CounselCardRes selectCounselCard(String counselSessionId) {
         CounselCard counselCard = counselCardRepository
@@ -58,8 +56,6 @@ public class CounselCardService {
     }
 
     public CounselCardIndependentLifeInformationRes selectCounselCardIndependentLifeInformation(String counselSessionId) {
-        counseleeService.validateCounseleeDisability(counselSessionId);
-
         CounselCard counselCard = counselCardRepository
             .findCounselCardWithCounselee(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
