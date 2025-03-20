@@ -3,6 +3,7 @@ package com.springboot.api.counselee.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -38,23 +39,25 @@ public class CounseleeService {
     private final CounseleeRepository counseleeRepository;
     private final CounselCardRepository counselCardRepository;
 
-    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(String counselSessionId) {
+    public SelectCounseleeBaseInformationByCounseleeIdRes selectCounseleeBaseInformation(
+        String counselSessionId) {
 
         Counselee counselee = counseleeRepository.findByCounselSessionId(counselSessionId)
-                .orElseThrow(NoContentException::new);
+            .orElseThrow(NoContentException::new);
 
         CounselCard counselCard = counselCardRepository.findLastRecordedCounselCard(
             counselee.getId()).orElse(null);
 
-        if(counselCard == null){
+        if (counselCard == null) {
             return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, List.of(),
-                    CardRecordStatus.NOT_STARTED);
+                CardRecordStatus.NOT_STARTED);
         }
 
-        return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee, counselCard.getDiseaseInfo().getDiseases(), counselCard.getCardRecordStatus());
+        return SelectCounseleeBaseInformationByCounseleeIdRes.from(counselee,
+            counselCard.getDiseaseInfo().getDiseases(), counselCard.getCardRecordStatus());
     }
 
-    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions"}, allEntries = true)
     public String addCounselee(AddCounseleeReq addCounseleeReq) {
         if (counseleeRepository.existsByPhoneNumber(addCounseleeReq.getPhoneNumber())) {
             throw new IllegalArgumentException("Phone number already exists");
@@ -64,13 +67,15 @@ public class CounseleeService {
         return counseleeRepository.save(targetCounselee).getId();
     }
 
-    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions"}, allEntries = true)
     @Transactional
     public String updateCounselee(UpdateCounseleeReq updateCounseleeReq) {
-        Counselee targetCounselee = counseleeRepository.findById(updateCounseleeReq.getCounseleeId())
-                .orElseThrow(IllegalArgumentException::new);
+        Counselee targetCounselee = counseleeRepository.findById(
+                updateCounseleeReq.getCounseleeId())
+            .orElseThrow(IllegalArgumentException::new);
 
-        if (counseleeRepository.existsByPhoneNumber(updateCounseleeReq.getPhoneNumber())) {
+        if (!targetCounselee.getPhoneNumber().equals(updateCounseleeReq.getPhoneNumber())
+            && counseleeRepository.existsByPhoneNumber(updateCounseleeReq.getPhoneNumber())) {
             throw new IllegalArgumentException("Phone number already exists");
         }
 
@@ -81,37 +86,37 @@ public class CounseleeService {
 
     public SelectCounseleeRes selectCounselee(String counseleeId) {
         Counselee counselee = counseleeRepository.findById(counseleeId)
-                .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(IllegalArgumentException::new);
         return SelectCounseleeRes.from(counselee);
     }
 
     public SelectCounseleePageRes selectCounselees(int page, int size, String name,
-            List<LocalDate> birthDates, List<String> affiliatedWelfareInstitutions) {
+        List<LocalDate> birthDates, List<String> affiliatedWelfareInstitutions) {
 
         Page<Counselee> counseleePage = counseleeRepository.findWithFilters(name, birthDates,
-                affiliatedWelfareInstitutions, PageRequest.of(page, size));
+            affiliatedWelfareInstitutions, PageRequest.of(page, size));
 
         return SelectCounseleePageRes.of(counseleePage);
     }
 
-    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions"}, allEntries = true)
     public void deleteCounselee(String counseleeId) {
         counseleeRepository.deleteById(counseleeId);
     }
 
-    @CacheEvict(value = { "birthDates", "welfareInstitutions" }, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions"}, allEntries = true)
     @Transactional
     public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(
-            List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
+        List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
 
         List<DeleteCounseleeBatchRes> deleteCounseleeBatchResList = new ArrayList<>();
 
         deleteCounseleeBatchReqList.forEach(deleteCounseleeBatchReq -> {
             deleteCounselee(deleteCounseleeBatchReq.getCounseleeId());
             deleteCounseleeBatchResList.add(DeleteCounseleeBatchRes
-                    .builder()
-                    .deletedCounseleeId(deleteCounseleeBatchReq.getCounseleeId())
-                    .build());
+                .builder()
+                .deletedCounseleeId(deleteCounseleeBatchReq.getCounseleeId())
+                .build());
         });
 
         return deleteCounseleeBatchResList;
@@ -121,15 +126,15 @@ public class CounseleeService {
     @Cacheable(value = "birthDates")
     public List<LocalDate> getDistinctBirthDates() {
         return counseleeRepository.findDistinctBirthDates().stream()
-                .filter(date -> date != null)
-                .collect(Collectors.toList());
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
     }
 
     @Cacheable(value = "welfareInstitutions")
     public List<String> getDistinctAffiliatedWelfareInstitutions() {
         return counseleeRepository.findDistinctAffiliatedWelfareInstitutions().stream()
-                .filter(institution -> institution != null && !institution.isEmpty())
-                .collect(Collectors.toList());
+            .filter(institution -> institution != null && !institution.isEmpty())
+            .collect(Collectors.toList());
     }
 
     public List<SelectCounseleeAutocompleteRes> searchCounseleesByName(String keyword) {
