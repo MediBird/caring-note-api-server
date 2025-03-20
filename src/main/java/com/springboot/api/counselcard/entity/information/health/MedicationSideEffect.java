@@ -12,6 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MedicationSideEffect {
     @Column(nullable = false)
+    private Boolean isMedicationSideEffect;
+
+    @Column(nullable = false)
     private String suspectedMedicationNote;
 
     @Column(nullable = false)
@@ -19,6 +22,7 @@ public class MedicationSideEffect {
 
     public static MedicationSideEffect initializeDefault(){
         MedicationSideEffect medicationSideEffect = new MedicationSideEffect();
+        medicationSideEffect.isMedicationSideEffect = false;
         medicationSideEffect.suspectedMedicationNote = "";
         medicationSideEffect.symptomsNote = "";
         return medicationSideEffect;
@@ -26,13 +30,20 @@ public class MedicationSideEffect {
 
     public static MedicationSideEffect copy(MedicationSideEffect medicationSideEffect){
         MedicationSideEffect copiedMedicationSideEffect = new MedicationSideEffect();
+        copiedMedicationSideEffect.isMedicationSideEffect = medicationSideEffect.isMedicationSideEffect;
         copiedMedicationSideEffect.suspectedMedicationNote = medicationSideEffect.suspectedMedicationNote;
         copiedMedicationSideEffect.symptomsNote = medicationSideEffect.symptomsNote;
         return copiedMedicationSideEffect;
     }
 
     public void update(MedicationSideEffectDTO medicationSideEffectDTO){
+        this.isMedicationSideEffect = Objects.requireNonNullElse(medicationSideEffectDTO.isMedicationSideEffect(), this.isMedicationSideEffect);
         this.suspectedMedicationNote = Objects.requireNonNullElse(medicationSideEffectDTO.suspectedMedicationNote(), this.suspectedMedicationNote);
         this.symptomsNote = Objects.requireNonNullElse(medicationSideEffectDTO.symptomsNote(), this.symptomsNote);
+
+        if(this.isMedicationSideEffect.equals(false)){
+            this.suspectedMedicationNote = "";
+            this.symptomsNote = "";
+        }
     }
 }
