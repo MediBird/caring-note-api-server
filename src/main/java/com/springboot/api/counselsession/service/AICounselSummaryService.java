@@ -5,7 +5,6 @@ import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.common.dto.ByteArrayMultipartFile;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.properties.NaverClovaProperties;
 import com.springboot.api.common.properties.SttFileProperties;
@@ -23,7 +22,11 @@ import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.PromptTemplateRepository;
 import com.springboot.api.infra.external.NaverClovaExternalService;
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +41,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +64,7 @@ public class AICounselSummaryService {
 
         private final FileUtil fileUtil;
 
-        public void convertSpeechToText(MultipartFile file, ConvertSpeechToTextReq convertSpeechToTextReq) {
+        public void convertSpeechToText(MultipartFile multipartFile, ConvertSpeechToTextReq convertSpeechToTextReq) throws IOException {
 
                 CounselSession counselSession = counselSessionRepository
                                 .findById(convertSpeechToTextReq.getCounselSessionId())
@@ -95,7 +99,9 @@ public class AICounselSummaryService {
                                 .fullText(true)
                                 .build();
 
-                callNaverClovaAsync(headers, file, speechToTextReq)
+                String originFileName = fileUtil.saveMultipartFile(multipartFile, sttFileProperties.getOrigin());
+
+                callNaverClovaAsync(headers, originFileName, speechToTextReq)
                                 .thenAcceptAsync(speechToTextRes -> updateAiCounselSummaryStatus(aiCounselSummary,
                                                 "COMPLETED".equals(speechToTextRes.result()) ? STT_COMPLETE
                                                                 : STT_FAILED,
@@ -106,27 +112,34 @@ public class AICounselSummaryService {
                                         log.error("Speech-to-text processing error", ex);
                                         updateAiCounselSummaryStatus(aiCounselSummary, STT_FAILED, null);
                                         return null;
-                                });
+                                })
+                                .whenComplete((result, throwable) -> {
+                                        // ✅ 성공/실패 여부 상관없이 파일 삭제
+                                        try {
+                                                Files.deleteIfExists(Path.of(sttFileProperties.getOrigin()+originFileName));
+                                                Files.deleteIfExists(Path.of(sttFileProperties.getConvert()+originFileName.replace(".webm",".mp4")));
+                                        } catch (IOException e) {
+                                                log.warn("Failed to delete temp file: {}", originFileName, e);
+                                         }
+                        });
 
         }
 
         @Async
-        public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, MultipartFile file,
+        public CompletableFuture<SpeechToTextRes> callNaverClovaAsync(Map<String, String> headers, String  originFileName,
                         SpeechToTextReq request) {
                 return CompletableFuture.supplyAsync(() -> {
                         try {
-                                MultipartFile multipartFile;
+                                File sttReqFile = Paths.get(sttFileProperties.getOrigin(), originFileName).toFile();
 
-                                if (Objects.requireNonNull(file.getContentType()).contains("webm")) {
-                                        multipartFile = fileUtil.convertWebmToMp4(file, sttFileProperties.getOrigin(),
-                                                        sttFileProperties.getCovert());
-                                } else {
-                                        byte[] fileBytes = file.getBytes();
-                                        multipartFile = new ByteArrayMultipartFile(file.getName(),
-                                                        file.getOriginalFilename(), file.getContentType(), fileBytes);
+                                if (Objects.requireNonNull(sttReqFile.getName()).contains(".webm")) {
+                                        sttReqFile = fileUtil.convertWebmToMp4(sttReqFile.getName(), sttFileProperties.getOrigin(),
+                                                        sttFileProperties.getConvert());
                                 }
-                                return naverClovaExternalService.convertSpeechToText(headers, multipartFile, request)
+
+                                return naverClovaExternalService.convertSpeechToText(headers, new FileSystemResource(sttReqFile), request)
                                                 .getBody();
+
                         } catch (IOException e) {
                                 log.error("Error while reading file bytes", e);
                                 throw new CompletionException(e);

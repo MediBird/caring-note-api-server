@@ -1,30 +1,26 @@
 package com.springboot.api.common;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.util.ResourceUtils;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.support.RestTemplateAdapter;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.service.invoker.HttpServiceProxyFactory;
-import org.springframework.web.util.DefaultUriBuilderFactory;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.util.ResourceUtils;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.support.RestTemplateAdapter;
+import org.springframework.web.service.invoker.HttpServiceProxyFactory;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
 @SpringBootTest
 @Disabled
@@ -38,17 +34,11 @@ public class FileUtilTest {
         void testConvertWebmToM4a(String filename) throws IOException {
 
                 File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/" + filename);
-                FileInputStream inputStream = new FileInputStream(mp4File);
                 String originPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/origin/";
                 String convertPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/convert/";
+                
 
-                MultipartFile multipartFile = new MockMultipartFile(
-                                "media",
-                                mp4File.getName(),
-                                "audio/webm",
-                                inputStream);
-
-                MultipartFile convertedMultipartFile = fileUtil.convertWebmToMp4(multipartFile, originPath,
+                File convertedFile = fileUtil.convertWebmToMp4(mp4File.getName(), originPath,
                                 convertPath);
 
                 RestTemplate restTemplate = new RestTemplate();
@@ -72,7 +62,7 @@ public class FileUtilTest {
                                 .build();
 
                 SpeechToTextRes speechToTextRes = service
-                                .convertSpeechToText(headers, convertedMultipartFile, speechToTextReq)
+                                .convertSpeechToText(headers, new FileSystemResource(convertedFile), speechToTextReq)
                                 .getBody();
 
                 ObjectMapper objectMapper = new ObjectMapper();

@@ -1,23 +1,19 @@
 package com.springboot.api.common.util;
 
+import com.springboot.api.common.properties.FfmpegProperties;
+import de.huxhorn.sulky.ulid.ULID;
+import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-import org.springframework.web.multipart.MultipartFile;
-
-import com.springboot.api.common.dto.ByteArrayMultipartFile;
-import com.springboot.api.common.properties.FfmpegProperties;
-
-import de.huxhorn.sulky.ulid.ULID;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 @RequiredArgsConstructor
@@ -27,14 +23,7 @@ public class FileUtil {
 
     private final FfmpegProperties ffmpegProperties;
 
-    public File convertMultipartFileToFile(MultipartFile multipartFile) throws IOException {
-        File tempFile = File.createTempFile("upload_", multipartFile.getOriginalFilename());
-        multipartFile.transferTo(tempFile);
-        return tempFile;
-    }
-
-    private String saveMultipartFile(@NotNull MultipartFile multipartFile, @NotNull String saveFilePath)
-            throws IOException {
+    public String saveMultipartFile(@NotNull MultipartFile multipartFile, @NotNull String saveFilePath) throws IOException {
 
         if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException();
@@ -48,6 +37,7 @@ public class FileUtil {
 
         String hash = new ULID().nextULID();
         String hashedFilename = hash + multipartFile.getOriginalFilename();
+        hashedFilename = hashedFilename.replaceAll("\\s+", "");
 
         log.debug(hashedFilename);
 
@@ -55,20 +45,20 @@ public class FileUtil {
 
         Files.copy(multipartFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
+
         return hashedFilename;
 
     }
 
-    public MultipartFile convertWebmToMp4(MultipartFile multipartFile, String originFilePath, String convertFilePath)
+    public File convertWebmToMp4(String fileName, String originFilePath, String convertFilePath)
             throws IOException {
 
-        String savedMultipartFileName = saveMultipartFile(multipartFile, originFilePath);
-        String convertedMultipartFileName = savedMultipartFileName.replace(".webm", ".mp4");
+        String convertedMultipartFileName = fileName.replace(".webm", ".mp4");
 
         FFmpeg ffmpeg = new FFmpeg(ffmpegProperties.getPath());
 
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(originFilePath + savedMultipartFileName)
+                .setInput(originFilePath + fileName)
                 .overrideOutputFiles(true)
                 .addOutput(convertFilePath + convertedMultipartFileName) // 출력 파일 설정
                 .setFormat("mp4") // 출력 포맷 설정
@@ -78,15 +68,7 @@ public class FileUtil {
 
         ffmpeg.run(builder);
 
-        File mp4File = new File(convertFilePath + convertedMultipartFileName);
-        byte[] fileBytes = Files.readAllBytes(mp4File.toPath());
-        MultipartFile convertedMultipartFile = new ByteArrayMultipartFile("media", convertedMultipartFileName,
-                "audio/mp4", fileBytes);
-
-        Files.delete(Path.of(originFilePath + savedMultipartFileName));
-        Files.delete(Path.of(convertFilePath + convertedMultipartFileName));
-
-        return convertedMultipartFile;
+        return Path.of(convertFilePath+convertedMultipartFileName).toFile();
     }
 
 }

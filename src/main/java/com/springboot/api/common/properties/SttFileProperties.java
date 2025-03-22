@@ -12,5 +12,5 @@ import lombok.Setter;
 @Setter
 public class SttFileProperties {
     private String origin;
-    private String covert;
+    private String convert;
 }
