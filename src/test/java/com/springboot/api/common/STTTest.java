@@ -1,14 +1,19 @@
 package com.springboot.api.common;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.infra.external.NaverClovaExternalService;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -24,22 +29,13 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.support.RestTemplateAdapter;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.springboot.api.counselsession.dto.naverClova.DiarizationDTO;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.infra.external.NaverClovaExternalService;
 
 @SpringBootTest
 @Disabled
@@ -71,14 +67,7 @@ public class STTTest {
                 headers.put("X-CLOVASPEECH-API-KEY", "6c294a231c7d42989a5ef003fd09c3d4");
 
                 File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/" + filename);
-                FileInputStream inputStream = new FileInputStream(mp4File);
-
-                MultipartFile multipartFile = new MockMultipartFile(
-                                "media",
-                                mp4File.getName(),
-                                "audio/m4a",
-                                inputStream);
-
+                
                 SpeechToTextReq speechToTextReq = SpeechToTextReq.builder()
                                 .language("ko-KR")
                                 .completion("sync")
@@ -90,7 +79,7 @@ public class STTTest {
                                                 .build())
                                 .build();
 
-                SpeechToTextRes speechToTextRes = service.convertSpeechToText(headers, multipartFile, speechToTextReq)
+                SpeechToTextRes speechToTextRes = service.convertSpeechToText(headers, new FileSystemResource(mp4File), speechToTextReq)
                                 .getBody();
 
                 ObjectMapper objectMapper = new ObjectMapper();
