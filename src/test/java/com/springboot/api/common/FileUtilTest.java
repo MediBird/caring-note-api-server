@@ -7,7 +7,6 @@ import com.springboot.api.counselsession.dto.naverClova.SpeechToTextReq;
 import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
 import com.springboot.api.infra.external.NaverClovaExternalService;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +34,6 @@ public class FileUtilTest {
         void testConvertWebmToM4a(String filename) throws IOException {
 
                 File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/" + filename);
-                FileInputStream inputStream = new FileInputStream(mp4File);
                 String originPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/origin/";
                 String convertPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/convert/";
                 
