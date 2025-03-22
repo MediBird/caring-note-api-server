@@ -69,7 +69,7 @@ public class AICounselSummaryController {
     @GetMapping("{counselSessionId}/ta")
     @Operation(summary = "ta 결과 조회", tags = { "AI요약" })
     public ResponseEntity<CommonRes<SelectAnalysedTextRes>> selectAnalysedText(
-            @PathVariable String counselSessionId) throws JsonProcessingException {
+            @PathVariable String counselSessionId) {
 
         SelectAnalysedTextRes selectAnalysedTextRes = aiCounselSummaryService.selectAnalysedText(counselSessionId);
 

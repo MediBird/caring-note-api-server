@@ -122,7 +122,6 @@ public class AICounselSummaryService {
                                                 log.warn("Failed to delete temp file: {}", originFileName, e);
                                          }
                         });
-                ;
 
         }
 

@@ -17,11 +17,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.FileSystemResource;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.client.support.RestTemplateAdapter;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.service.invoker.HttpServiceProxyFactory;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
@@ -40,12 +38,7 @@ public class FileUtilTest {
                 FileInputStream inputStream = new FileInputStream(mp4File);
                 String originPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/origin/";
                 String convertPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/convert/";
-
-                MultipartFile multipartFile = new MockMultipartFile(
-                                "media",
-                                mp4File.getName(),
-                                "audio/webm",
-                                inputStream);
+                
 
                 File convertedFile = fileUtil.convertWebmToMp4(mp4File.getName(), originPath,
                                 convertPath);

@@ -71,9 +71,4 @@ public class FileUtil {
         return Path.of(convertFilePath+convertedMultipartFileName).toFile();
     }
 
-    public void deleteFile(@NotNull String filePath,@NotNull String fileName) throws IOException {
-
-        Files.delete(Path.of(filePath + fileName));
-    }
-
 }
