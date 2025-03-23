@@ -1,5 +1,6 @@
 package com.springboot.api.counselor.service;
 
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.enums.RoleType;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -112,7 +114,8 @@ public class CounselorService {
     @Cacheable("counselorNames")
     @Transactional
     public CounselorNameListRes getCounselorNames() {
-        List<String> counselorNames = counselorRepository.findAll().stream()
+        List<String> counselorNames = counselorRepository
+                .findByRoleTypeIn(Arrays.asList(RoleType.ROLE_USER, RoleType.ROLE_ADMIN)).stream()
                 .map(Counselor::getName)
                 .filter(name -> name != null && !name.trim().isEmpty())
                 .sorted()
