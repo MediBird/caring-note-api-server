@@ -85,6 +85,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 .select(counselSession, counselCard.cardRecordStatus)
                 .from(counselSession)
                 .leftJoin(counselSession.counselee).fetchJoin()
+                .leftJoin(counselSession.counselor).fetchJoin()
                 .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
                 .where(builder)
                 .orderBy(counselSession.scheduledStartDateTime.asc())
