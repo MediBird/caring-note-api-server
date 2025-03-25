@@ -1,5 +1,6 @@
 package com.springboot.api.counselor.service;
 
+import com.springboot.api.counselsession.service.CounselSessionService;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -30,8 +31,6 @@ import com.springboot.api.counselor.dto.UpdateCounselorRes;
 import com.springboot.api.counselor.dto.UpdateRoleReq;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.enums.RoleType;
 
 import jakarta.transaction.Transactional;
@@ -45,7 +44,7 @@ public class CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final KeycloakUserService keycloakUserService;
-    private final CounselSessionRepository counselSessionRepository;
+    private final CounselSessionService counselSessionService;
 
     @CacheEvict(value = "counselorNames", allEntries = true)
     @Transactional
@@ -169,7 +168,7 @@ public class CounselorService {
      * 
      * @param counselorId 삭제할 상담사 ID
      */
-    @CacheEvict(value = "counselorNames", allEntries = true)
+    @CacheEvict(value = {"counselorNames", "sessionList"} , allEntries = true)
     @Transactional
     public void deleteCounselor(String counselorId) {
         Counselor counselor = counselorRepository.findById(counselorId)
@@ -181,7 +180,7 @@ public class CounselorService {
                 List<UserRepresentation> users = keycloakUserService.getUsersByUsername(counselor.getUsername());
                 if (!users.isEmpty()) {
                     // Keycloak에서 사용자 삭제
-                    keycloakUserService.deleteUser(users.get(0).getId());
+                    keycloakUserService.deleteUser(users.getFirst().getId());
                     log.info("Keycloak에서 사용자 삭제 완료: {}", counselor.getUsername());
                 }
             }
@@ -191,11 +190,8 @@ public class CounselorService {
         }
 
         // 상담사와 연결된 모든 상담 세션에서 상담사 참조를 null로 변경
-        List<CounselSession> counselSessions = counselSessionRepository.findByCounselorId(counselor.getId());
-        for (CounselSession session : counselSessions) {
-            session.updateCounselor(null);
-        }
-        log.info("상담사({})와 연결된 상담 세션 {}개의 상담사 참조를 null로 변경했습니다.", counselor.getId(), counselSessions.size());
+        Long removedCounselorFromSessionCount = counselSessionService.removeCounselorFromSession(counselor.getId());
+        log.info("상담사({})와 연결된 상담 세션 {}개의 상담사 참조를 null로 변경했습니다.", counselor.getId(), removedCounselorFromSessionCount);
 
         // DB에서 상담사 삭제
         counselorRepository.deleteById(counselorId);
@@ -227,7 +223,7 @@ public class CounselorService {
 
             // 비밀번호 초기화
             keycloakUserService.resetPassword(
-                    users.get(0).getId(),
+                    users.getFirst().getId(),
                     resetPasswordReq.getNewPassword(),
                     resetPasswordReq.isTemporary());
 

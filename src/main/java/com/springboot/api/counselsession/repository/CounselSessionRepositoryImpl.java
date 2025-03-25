@@ -1,7 +1,9 @@
 package com.springboot.api.counselsession.repository;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.Expression;
 import com.springboot.api.counselcard.entity.QCounselCard;
+import com.springboot.api.counselor.entity.Counselor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -241,5 +243,14 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 .fetchOne();
 
         return count != null ? count.intValue() : 0;
+    }
+
+    @Override
+    public Long deleteCounselorByCounselorId(String counselorId) {
+        return queryFactory
+                .update(counselSession)
+                .set(counselSession.counselor, (Expression<? extends Counselor>) null)
+                .where(counselSession.counselor.id.eq(counselorId))
+                .execute();
     }
 }

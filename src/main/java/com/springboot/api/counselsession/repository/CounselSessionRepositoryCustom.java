@@ -49,4 +49,6 @@ public interface CounselSessionRepositoryCustom {
          * @return 상담 회차 수
          */
         int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime);
+
+        Long deleteCounselorByCounselorId(String counselorId);
 }

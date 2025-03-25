@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.dto.CommonCursorRes;
@@ -334,5 +335,10 @@ public class CounselSessionService {
                 int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
                                 counseleeId, scheduledDateTime) + 1;
                 counselSession.updateSessionNumber(sessionNumber);
+        }
+
+        @Transactional(propagation = Propagation.REQUIRED)
+        public Long removeCounselorFromSession(String counselorId) {
+                return counselSessionRepository.deleteCounselorByCounselorId(counselorId);
         }
 }
