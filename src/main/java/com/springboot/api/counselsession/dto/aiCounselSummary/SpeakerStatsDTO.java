@@ -23,7 +23,7 @@ public class SpeakerStatsDTO{
 
     public boolean isValidSpeaker(){
 
-        return speakCount > 10 && maxLengthTextLength >= 5;
+        return speakCount >= 3 && maxLengthTextLength >= 3;
     }
 
     public boolean isRecommendedSpeaker(int totalSpeakCount){
