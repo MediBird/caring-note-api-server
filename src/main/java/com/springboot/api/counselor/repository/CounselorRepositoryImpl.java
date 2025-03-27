@@ -1,7 +1,9 @@
 package com.springboot.api.counselor.repository;
 
+import com.springboot.enums.CounselorStatus;
 import java.util.List;
 
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,6 +22,7 @@ import com.springboot.enums.RoleType;
 public class CounselorRepositoryImpl extends QuerydslRepositorySupport implements CounselorRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final QCounselor counselor = QCounselor.counselor;
 
     public CounselorRepositoryImpl(JPAQueryFactory queryFactory) {
         super(Counselor.class);
@@ -27,7 +30,49 @@ public class CounselorRepositoryImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<Counselor> findAllWithRoleTypeOrder(Pageable pageable) {
+    public Boolean existsActiveByEmail(String email) {
+        Integer count = queryFactory
+            .selectOne()
+            .from(counselor)
+            .where(counselor.email.eq(email)
+                .and(counselor.status.eq(CounselorStatus.ACTIVE)))
+            .fetchFirst();
+        return count != null;
+    }
+
+    @Override
+    public Optional<Counselor> findActiveByUsername(String username) {
+        return Optional.ofNullable(
+            queryFactory
+                .selectFrom(counselor)
+                .where(counselor.username.eq(username)
+                    .and(counselor.status.eq(CounselorStatus.ACTIVE)))
+                .fetchOne()
+        );
+    }
+
+    @Override
+    public Optional<Counselor> findActiveById(String counselorId) {
+        return Optional.ofNullable(
+            queryFactory
+                .selectFrom(counselor)
+                .where(counselor.id.eq(counselorId)
+                    .and(counselor.status.eq(CounselorStatus.ACTIVE)))
+                .fetchOne()
+        );
+    }
+
+    @Override
+    public List<Counselor> findActiveByRoleTypes(List<RoleType> roleTypes) {
+        return queryFactory
+            .selectFrom(counselor)
+            .where(counselor.roleType.in(roleTypes)
+                .and(counselor.status.eq(CounselorStatus.ACTIVE)))
+            .fetch();
+    }
+
+    @Override
+    public Page<Counselor> findAllActiveWithRoleTypeOrder(Pageable pageable) {
         QCounselor counselor = QCounselor.counselor;
 
         // ROLE_ASSISTANT가 먼저 오는 순서 조건 생성
@@ -39,6 +84,7 @@ public class CounselorRepositoryImpl extends QuerydslRepositorySupport implement
         // 쿼리 생성
         JPAQuery<Counselor> query = queryFactory
                 .selectFrom(counselor)
+                .where(counselor.status.eq(CounselorStatus.ACTIVE))
                 .orderBy(
                         roleTypeOrder,
                         counselor.updatedDatetime.desc());

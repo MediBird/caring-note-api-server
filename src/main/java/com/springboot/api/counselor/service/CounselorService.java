@@ -1,6 +1,5 @@
 package com.springboot.api.counselor.service;
 
-import com.springboot.api.counselsession.service.CounselSessionService;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
@@ -44,7 +43,6 @@ public class CounselorService {
 
     private final CounselorRepository counselorRepository;
     private final KeycloakUserService keycloakUserService;
-    private final CounselSessionService counselSessionService;
 
     @CacheEvict(value = "counselorNames", allEntries = true)
     @Transactional
@@ -58,7 +56,7 @@ public class CounselorService {
                 .roleType(addCounselorReq.getRoleType())
                 .build();
 
-        if (counselorRepository.existsByEmail(addCounselorReq.getEmail())) {
+        if (counselorRepository.existsActiveByEmail(addCounselorReq.getEmail())) {
             throw new DuplicatedEmailException();
         }
 
@@ -75,7 +73,7 @@ public class CounselorService {
         String username = jwt.getClaimAsString("preferred_username");
 
         Counselor counselor = counselorRepository
-                .findByUsername(username)
+                .findActiveByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID"));
 
         return new GetCounselorRes(counselor.getId(), counselor.getName(), counselor.getEmail(),
@@ -114,7 +112,7 @@ public class CounselorService {
     @Transactional
     public CounselorNameListRes getCounselorNames() {
         List<String> counselorNames = counselorRepository
-                .findByRoleTypeIn(Arrays.asList(RoleType.ROLE_USER, RoleType.ROLE_ADMIN)).stream()
+                .findActiveByRoleTypes(Arrays.asList(RoleType.ROLE_USER, RoleType.ROLE_ADMIN)).stream()
                 .map(Counselor::getName)
                 .filter(name -> name != null && !name.trim().isEmpty())
                 .sorted()
@@ -189,10 +187,6 @@ public class CounselorService {
             // Keycloak 삭제 실패해도 DB에서는 삭제 진행
         }
 
-        // 상담사와 연결된 모든 상담 세션에서 상담사 참조를 null로 변경
-        Long removedCounselorFromSessionCount = counselSessionService.removeCounselorFromSession(counselor.getId());
-        log.info("상담사({})와 연결된 상담 세션 {}개의 상담사 참조를 null로 변경했습니다.", counselor.getId(), removedCounselorFromSessionCount);
-
         // DB에서 상담사 삭제
         counselorRepository.deleteById(counselorId);
         log.info("DB에서 상담사 삭제 완료: {}", counselorId);
@@ -266,8 +260,13 @@ public class CounselorService {
     public CounselorPageRes getCounselorsByPage(int page, int size) {
         // RoleType.ROLE_ASSISTANT가 맨 위로 오도록 정렬하는 커스텀 쿼리 메서드를 사용
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Counselor> counselorPage = counselorRepository.findAllWithRoleTypeOrder(pageRequest);
+        Page<Counselor> counselorPage = counselorRepository.findAllActiveWithRoleTypeOrder(pageRequest);
 
         return CounselorPageRes.fromPage(counselorPage);
+    }
+
+    public Counselor findCounselorById(String counselorId){
+        return counselorRepository.findActiveById(counselorId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담사 ID입니다"));
     }
 }

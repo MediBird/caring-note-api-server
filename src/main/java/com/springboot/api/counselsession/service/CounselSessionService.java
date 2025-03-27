@@ -2,6 +2,7 @@ package com.springboot.api.counselsession.service;
 
 import com.querydsl.core.Tuple;
 import com.springboot.api.counselcard.service.CounselCardService;
+import com.springboot.api.counselor.service.CounselorService;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
@@ -17,7 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.dto.CommonCursorRes;
@@ -26,7 +26,6 @@ import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselor.entity.Counselor;
-import com.springboot.api.counselor.repository.CounselorRepository;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
@@ -57,7 +56,7 @@ public class CounselSessionService {
 
         private final DateTimeUtil dateTimeUtil;
         private final CounselSessionRepository counselSessionRepository;
-        private final CounselorRepository counselorRepository;
+        private final CounselorService counselorService;
         private final CounseleeRepository counseleeRepository;
         private final CounselCardService counselCardService;
 
@@ -81,6 +80,7 @@ public class CounselSessionService {
                 return new CreateCounselReservationRes(savedCounselSession.getId());
         }
 
+        // TODO : 이 메서드가 counseleeId를 받아야 하는가 검토
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public ModifyCounselReservationRes modifyCounselReservation(
@@ -101,8 +101,7 @@ public class CounselSessionService {
         }
 
         private Counselor findAndValidateCounselorSchedule(String counselorId, LocalDateTime scheduledStartDateTime) {
-                Counselor counselor = counselorRepository.findById(counselorId)
-                                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담사 ID입니다"));
+                Counselor counselor = counselorService.findCounselorById(counselorId);
 
                 if (counselSessionRepository.existsByCounselorAndScheduledStartDateTime(counselor,
                                 scheduledStartDateTime)) {
@@ -225,14 +224,12 @@ public class CounselSessionService {
 
                 List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
                                 .stream()
-                                .map(session -> {
-                                        return new SelectPreviousCounselSessionListRes(
-                                                        session.getId(),
-                                                        session.getSessionNumber(),
-                                                        session.getScheduledStartDateTime().toLocalDate(),
-                                                        session.getCounselor().getName(),
-                                                        false);
-                                })
+                                .map(session -> new SelectPreviousCounselSessionListRes(
+                                                session.getId(),
+                                                session.getSessionNumber(),
+                                                session.getScheduledStartDateTime().toLocalDate(),
+                                                session.getCounselor().getName(),
+                                                false))
                                 .toList();
 
                 if (selectPreviousCounselSessionListResList.isEmpty()) {
@@ -335,10 +332,5 @@ public class CounselSessionService {
                 int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
                                 counseleeId, scheduledDateTime) + 1;
                 counselSession.updateSessionNumber(sessionNumber);
-        }
-
-        @Transactional(propagation = Propagation.REQUIRED)
-        public Long removeCounselorFromSession(String counselorId) {
-                return counselSessionRepository.deleteCounselorByCounselorId(counselorId);
         }
 }
