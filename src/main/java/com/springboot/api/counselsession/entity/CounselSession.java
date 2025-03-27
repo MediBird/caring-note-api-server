@@ -39,7 +39,6 @@ import lombok.experimental.SuperBuilder;
 public class CounselSession extends BaseEntity {
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 
@@ -85,6 +84,10 @@ public class CounselSession extends BaseEntity {
         super.onCreate();
         if (this.status == null) {
             this.status = ScheduleStatus.SCHEDULED;
+        }
+
+        if (this.sessionNumber == null) {
+            this.sessionNumber = 1;
         }
     }
 

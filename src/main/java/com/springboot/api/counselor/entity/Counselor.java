@@ -43,7 +43,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 @SQLDelete(sql = "UPDATE counselors SET status='INACTIVE' WHERE id=?")
-@SQLRestriction("status='ACTIVE'")
 public class Counselor extends BaseEntity implements UserDetails {
 
     // 이름
@@ -102,6 +101,20 @@ public class Counselor extends BaseEntity implements UserDetails {
     // 비고
     @Column(columnDefinition = "TEXT")
     private String description;
+
+    public String getId(){
+        if(this.status.equals(CounselorStatus.INACTIVE)){
+            return null;
+        }
+        return super.getId();
+    }
+
+    public String getName(){
+        if(this.status.equals(CounselorStatus.INACTIVE)){
+            return "탈퇴사용자";
+        }
+        return this.name;
+    }
 
     // 엔티티가 저장되기 전에 호출되어 ID와 등록 날짜 설정
     @PrePersist
