@@ -51,7 +51,6 @@ public class MedicationRecord extends BaseEntity {
     private String routeOfAdministration;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "prescribing_counselor_id")
     private Counselor prescribingCounselor;
 

@@ -2,10 +2,10 @@ package com.springboot.api.counselsession.repository;
 
 import com.querydsl.core.Tuple;
 import com.springboot.api.counselcard.entity.QCounselCard;
+import com.springboot.enums.CounselorStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -85,6 +85,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 .select(counselSession, counselCard.cardRecordStatus)
                 .from(counselSession)
                 .leftJoin(counselSession.counselee).fetchJoin()
+                .leftJoin(counselSession.counselor).fetchJoin()
                 .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
                 .where(builder)
                 .orderBy(counselSession.scheduledStartDateTime.asc())
@@ -156,6 +157,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
 
         if (counselorNames != null && !counselorNames.isEmpty()) {
             builder.and(counselSession.counselor.name.in(counselorNames));
+            builder.and(counselSession.counselor.status.eq(CounselorStatus.ACTIVE));
         }
 
         if (scheduledDates != null && !scheduledDates.isEmpty()) {
@@ -188,43 +190,11 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public List<String> findAllPharmacistNames() {
-        return queryFactory
-                .select(counselSession.counselor.name)
-                .from(counselSession)
-                .join(counselSession.counselor)
-                .where(counselSession.counselor.roleType.eq(com.springboot.enums.RoleType.ROLE_USER))
-                .distinct()
-                .orderBy(counselSession.counselor.name.asc())
-                .fetch();
-    }
-
-    @Override
-    public Optional<CounselSession> findByIdWithCounseleeAndCounselor(String counselSessionId) {
-        return Optional.ofNullable(
-                queryFactory
-                        .selectFrom(counselSession)
-                        .leftJoin(counselSession.counselee).fetchJoin()
-                        .leftJoin(counselSession.counselor).fetchJoin()
-                        .where(counselSession.id.eq(counselSessionId))
-                        .fetchOne());
-    }
-
-    @Override
-    public Optional<CounselSession> findByIdWithCounselee(String counselSessionId) {
-        return Optional.ofNullable(
-                queryFactory
-                        .selectFrom(counselSession)
-                        .leftJoin(counselSession.counselee).fetchJoin()
-                        .where(counselSession.id.eq(counselSessionId))
-                        .fetchOne());
-    }
-
-    @Override
     public int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime) {
         BooleanBuilder builder = new BooleanBuilder();
 
         builder.and(counselSession.counselee.id.eq(counseleeId));
+
 
         if (beforeDateTime != null) {
             builder.and(counselSession.scheduledStartDateTime.lt(beforeDateTime));

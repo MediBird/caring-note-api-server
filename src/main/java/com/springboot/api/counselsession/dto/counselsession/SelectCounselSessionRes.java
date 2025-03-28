@@ -32,8 +32,7 @@ public record SelectCounselSessionRes(
                                 .counselorName(Optional.ofNullable(counselSession.getCounselor())
                                                 .map(Counselor::getName)
                                                 .orElse(""))
-                                .sessionNumber(Optional.ofNullable(counselSession.getSessionNumber())
-                                                .orElse(0))
+                                .sessionNumber(counselSession.getSessionNumber())
                                 .status(counselSession.getStatus())
                                 .build();
         }
