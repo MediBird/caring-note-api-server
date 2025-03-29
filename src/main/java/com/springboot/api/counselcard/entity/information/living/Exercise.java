@@ -36,6 +36,9 @@ public class Exercise {
     }
 
     public void update(ExerciseDTO exerciseDTO) {
+        if(Objects.isNull(exerciseDTO)) {
+            return;
+        }
         this.exerciseNote = Objects.requireNonNullElse(exerciseDTO.exerciseNote(), this.exerciseNote);
         this.exercisePattern = Objects.requireNonNullElse(exerciseDTO.exercisePattern(), this.exercisePattern);
     }

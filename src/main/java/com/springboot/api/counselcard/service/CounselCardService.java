@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.service;
 
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import java.util.List;
 import java.util.function.Function;
 
@@ -110,6 +111,16 @@ public class CounselCardService {
         counselCard.importPreviousCardData(lastRecordedCounselCard);
     }
 
+    @Transactional
+    public CounselCardIdRes updateCounselCard(String counselSessionId, UpdateCounselCardReq updateCounselCardReq) {
+        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
+                counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        counselCard.update(updateCounselCardReq);
+
+        return new CounselCardIdRes(counselCard.getId());
+    }
 
     @Transactional
     public CounselCardIdRes updateCounselCardBaseInformation(String counselSessionId,

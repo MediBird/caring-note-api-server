@@ -37,6 +37,9 @@ public class MedicationSideEffect {
     }
 
     public void update(MedicationSideEffectDTO medicationSideEffectDTO){
+        if(Objects.isNull(medicationSideEffectDTO)){
+            return;
+        }
         this.isMedicationSideEffect = Objects.requireNonNullElse(medicationSideEffectDTO.isMedicationSideEffect(), this.isMedicationSideEffect);
         this.suspectedMedicationNote = Objects.requireNonNullElse(medicationSideEffectDTO.suspectedMedicationNote(), this.suspectedMedicationNote);
         this.symptomsNote = Objects.requireNonNullElse(medicationSideEffectDTO.symptomsNote(), this.symptomsNote);

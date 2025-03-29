@@ -20,17 +20,15 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Walking {
+    String walkingNote;
     @ElementCollection
     @CollectionTable(name = "walking_methods", joinColumns = @JoinColumn(name = "walking_id"))
     @Enumerated(EnumType.STRING)
     private List<WalkingType> walkingMethods;
-
     @ElementCollection
     @CollectionTable(name = "walking_equipments", joinColumns = @JoinColumn(name = "walking_id"))
     @Enumerated(EnumType.STRING)
     private List<WalkingEquipmentType> walkingEquipments;
-
-    String walkingNote;
 
     public static Walking initializeDefault() {
         Walking walking = new Walking();
@@ -49,6 +47,9 @@ public class Walking {
     }
 
     public void update(WalkingDTO walking) {
+        if(Objects.isNull(walking)) {
+            return;
+        }
         this.walkingMethods = Objects.requireNonNullElse(walking.walkingMethods(), this.walkingMethods);
         this.walkingEquipments = Objects.requireNonNullElse(walking.walkingEquipments(), this.walkingEquipments);
         this.walkingNote = Objects.requireNonNullElse(walking.walkingNote(), this.walkingNote);

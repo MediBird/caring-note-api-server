@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.controller;
 
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -100,7 +101,19 @@ public class CounselCardController {
             new CommonRes<>(counselCardService.updateCounselCardStatus(counselSessionId, updateCounselCardStatusReq.status())));
     }
 
+    @PutMapping("/{counselSessionId}")
+    @Operation(summary = "상담 카드 수정", tags = {"상담 카드 작성"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    ResponseEntity<CommonRes<CounselCardIdRes>> updateCounselCard(
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId,
+        @RequestBody @Valid UpdateCounselCardReq updateCounselCardReq) {
 
+        return ResponseEntity.ok(
+            new CommonRes<>(counselCardService.updateCounselCard(counselSessionId, updateCounselCardReq)));
+    }
+
+
+    @Deprecated
     @PutMapping("/{counselSessionId}/base-information")
     @Operation(summary = "상담 카드 기본 정보 수정", tags = {"상담 카드 작성"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
@@ -113,6 +126,7 @@ public class CounselCardController {
                 updateBaseInformationReq)));
     }
 
+    @Deprecated
     @PutMapping("/{counselSessionId}/health-information")
     @Operation(summary = "상담 카드 건강 정보 수정", tags = {"상담 카드 작성"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
@@ -125,6 +139,7 @@ public class CounselCardController {
                 updateHealthInformationReq)));
     }
 
+    @Deprecated
     @PutMapping("/{counselSessionId}/living-information")
     @Operation(summary = "상담 카드 생활 정보 수정", tags = {"상담 카드 작성"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
@@ -137,6 +152,7 @@ public class CounselCardController {
                 updateLivingInformationReq)));
     }
 
+    @Deprecated
     @PutMapping("/{counselSessionId}/independent-life-information")
     @Operation(summary = "상담 카드 자립생활 역량 수정", tags = {"상담 카드 작성"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})

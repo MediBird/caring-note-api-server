@@ -12,6 +12,7 @@ import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,6 +47,9 @@ public class CounselPurposeAndNote {
     }
 
     public void update(CounselPurposeAndNoteDTO counselPurposeAndNoteDTO) {
+        if(Objects.isNull(counselPurposeAndNoteDTO)) {
+            return;
+        }
         this.significantNote = counselPurposeAndNoteDTO.significantNote();
         this.medicationNote = counselPurposeAndNoteDTO.medicationNote();
         this.counselPurpose = counselPurposeAndNoteDTO.counselPurpose();
