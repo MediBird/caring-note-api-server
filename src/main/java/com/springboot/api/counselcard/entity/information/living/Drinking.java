@@ -34,6 +34,9 @@ public class Drinking {
     }
 
     public void update(DrinkingDTO drinkingDTO) {
+        if(Objects.isNull(drinkingDTO)) {
+            return;
+        }
         this.drinkingAmount = Objects.requireNonNullElse(drinkingDTO.drinkingAmount(), this.drinkingAmount);
     }
 }

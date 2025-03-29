@@ -35,6 +35,9 @@ public class Nutrition {
     }
 
     public void update(NutritionDTO nutritionDTO) {
+        if(Objects.isNull(nutritionDTO)) {
+            return;
+        }
         this.mealPattern = Objects.requireNonNullElse(nutritionDTO.mealPattern(), this.mealPattern);
         this.nutritionNote = Objects.requireNonNullElse(nutritionDTO.nutritionNote(), this.nutritionNote);
     }

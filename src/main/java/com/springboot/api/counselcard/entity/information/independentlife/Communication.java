@@ -60,6 +60,9 @@ public class Communication {
     }
 
     public void update(CommunicationDTO communication) {
+        if(communication == null) {
+            return;
+        }
         this.sights = Objects.requireNonNullElse(communication.sights(), this.sights);
         this.hearings = Objects.requireNonNullElse(communication.hearings(), this.hearings);
         this.communications = Objects.requireNonNullElse(communication.communications(), this.communications);

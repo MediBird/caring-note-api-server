@@ -38,6 +38,9 @@ public class Smoking {
     }
 
     public void update(SmokingDTO smokingDTO) {
+        if(Objects.isNull(smokingDTO)) {
+            return;
+        }
         this.smokingPeriodNote = Objects.requireNonNullElse(smokingDTO.smokingPeriodNote(), this.smokingPeriodNote);
         this.smokingAmount = Objects.requireNonNullElse(smokingDTO.smokingAmount(), this.smokingAmount);
     }

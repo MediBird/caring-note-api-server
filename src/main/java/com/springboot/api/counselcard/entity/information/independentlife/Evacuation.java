@@ -19,12 +19,11 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Evacuation {
+    String evacuationNote;
     @ElementCollection
     @CollectionTable(name = "evacuation", joinColumns = @JoinColumn(name = "evacuation_id"))
     @Enumerated(EnumType.STRING)
     private List<EvacuationType> evacuations;
-
-    String evacuationNote;
 
     public static Evacuation initializeDefault() {
         Evacuation evacuation = new Evacuation();
@@ -41,6 +40,9 @@ public class Evacuation {
     }
 
     public void update(EvacuationDTO evacuation) {
+        if(Objects.isNull(evacuation)) {
+            return;
+        }
         this.evacuations = Objects.requireNonNullElse(evacuation.evacuations(), this.evacuations);
         this.evacuationNote = Objects.requireNonNullElse(evacuation.evacuationNote(), this.evacuationNote);
     }

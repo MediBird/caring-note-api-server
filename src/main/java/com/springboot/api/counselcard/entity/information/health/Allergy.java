@@ -17,7 +17,7 @@ public class Allergy {
     private String allergyNote;
 
     @Column(nullable = false)
-    private boolean isAllergic;
+    private Boolean isAllergic;
 
     public static Allergy initializeDefault() {
         Allergy allergy = new Allergy();
@@ -34,8 +34,15 @@ public class Allergy {
     }
 
     public void update(AllergyDTO allergyDTO) {
+        if(Objects.isNull(allergyDTO)) {
+            return;
+        }
         this.allergyNote = Objects.requireNonNullElse(allergyDTO.allergyNote(), this.allergyNote);
         this.isAllergic = Objects.requireNonNullElse(allergyDTO.isAllergic(), this.isAllergic);
+
+        if(this.isAllergic.equals(false)) {
+            this.allergyNote = "";
+        }
     }
 }
 

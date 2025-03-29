@@ -45,6 +45,9 @@ public class MedicationManagement {
     }
 
     public void update(MedicationManagementDTO medicationManagementDTO) {
+        if (Objects.isNull(medicationManagementDTO)) {
+            return;
+        }
         this.isAlone = Objects.requireNonNullElse(medicationManagementDTO.isAlone(), this.isAlone);
         this.houseMateNote = Objects.requireNonNullElse(medicationManagementDTO.houseMateNote(), this.houseMateNote);
         this.medicationAssistants = Objects.requireNonNullElse(medicationManagementDTO.medicationAssistants(),

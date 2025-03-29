@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity;
 
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -196,5 +197,20 @@ public class CounselCard extends BaseEntity {
     @Override
     protected void onCreate() {
         super.onCreate();
+    }
+
+    public void update(UpdateCounselCardReq updateCounselCardReq) {
+        this.counselPurposeAndNote.update(updateCounselCardReq.counselPurposeAndNote());
+        this.allergy.update(updateCounselCardReq.allergy());
+        this.diseaseInfo.update(updateCounselCardReq.diseaseInfo());
+        this.medicationSideEffect.update(updateCounselCardReq.medicationSideEffect());
+        this.drinking.update(updateCounselCardReq.drinking());
+        this.exercise.update(updateCounselCardReq.exercise());
+        this.medicationManagement.update(updateCounselCardReq.medicationManagement());
+        this.nutrition.update(updateCounselCardReq.nutrition());
+        this.smoking.update(updateCounselCardReq.smoking());
+        this.communication.update(updateCounselCardReq.communication());
+        this.evacuation.update(updateCounselCardReq.evacuation());
+        this.walking.update(updateCounselCardReq.walking());
     }
 }

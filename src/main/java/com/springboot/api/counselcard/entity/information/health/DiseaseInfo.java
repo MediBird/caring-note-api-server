@@ -48,6 +48,9 @@ public class DiseaseInfo {
     }
 
     public void update(DiseaseInfoDTO diseaseInfoDTO) {
+        if(Objects.isNull(diseaseInfoDTO)) {
+            return;
+        }
         this.historyNote = Objects.requireNonNullElse(diseaseInfoDTO.historyNote(), this.historyNote);
         this.mainInconvenienceNote = Objects.requireNonNullElse(diseaseInfoDTO.mainInconvenienceNote(), this.mainInconvenienceNote);
         this.diseases = Objects.requireNonNullElse(diseaseInfoDTO.diseases(), this.diseases);
