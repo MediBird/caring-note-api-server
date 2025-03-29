@@ -41,20 +41,7 @@ public class MedicationRecordHistService {
 
                 return medicationRecordHists.stream()
                                 .sorted(Comparator.comparing(MedicationRecordHist::getId))
-                                .map(medicationRecordHist -> new SelectMedicationRecordHistRes(
-                                                medicationRecordHist.getId(),
-                                                medicationRecordHist.getMedication().getId(),
-                                                medicationRecordHist.getName(),
-                                                medicationRecordHist.getMedicationDivision(),
-                                                medicationRecordHist.getUsageObject(),
-                                                medicationRecordHist.getPrescriptionDate(),
-                                                medicationRecordHist.getPrescriptionDays(),
-                                                medicationRecordHist.getUnit(),
-                                                medicationRecordHist.getUsageStatus(),
-                                                medicationRecordHist.getUpdatedDatetime(),
-                                                medicationRecordHist.getCreatedDatetime(),
-                                                medicationRecordHist.getCreatedBy(),
-                                                medicationRecordHist.getUpdatedBy()))
+                                .map(SelectMedicationRecordHistRes::from)
                                 .collect(Collectors.toList());
         }
 

@@ -16,7 +16,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -50,7 +49,6 @@ public class MedicationRecordHist extends BaseEntity {
 
     private String usageObject;
 
-    @NotNull
     @PastOrPresent
     private LocalDate prescriptionDate;
 

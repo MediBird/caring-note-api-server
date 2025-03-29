@@ -3,6 +3,7 @@ package com.springboot.api.counselsession.dto.medicationRecordHist;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import com.springboot.api.counselsession.entity.MedicationRecordHist;
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
 
@@ -19,6 +20,22 @@ public record SelectMedicationRecordHistRes(
         LocalDateTime updatedDatetime,
         LocalDateTime createdDatetime,
         String createdBy,
-        String updatedBy) {
+                String updatedBy) {
+        public static SelectMedicationRecordHistRes from(MedicationRecordHist medicationRecordHist) {
+                return new SelectMedicationRecordHistRes(
+                                medicationRecordHist.getId(),
+                                medicationRecordHist.getMedication().getId(),
+                                medicationRecordHist.getName(),
+                                medicationRecordHist.getMedicationDivision(),
+                                medicationRecordHist.getUsageObject(),
+                                medicationRecordHist.getPrescriptionDate(),
+                                medicationRecordHist.getPrescriptionDays(),
+                                medicationRecordHist.getUnit(),
+                                medicationRecordHist.getUsageStatus(),
+                                medicationRecordHist.getUpdatedDatetime(),
+                                medicationRecordHist.getCreatedDatetime(),
+                                medicationRecordHist.getCreatedBy(),
+                                medicationRecordHist.getUpdatedBy());
+        }
 
 }
