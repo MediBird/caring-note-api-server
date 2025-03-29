@@ -24,7 +24,9 @@ public record SelectMedicationRecordHistRes(
         public static SelectMedicationRecordHistRes from(MedicationRecordHist medicationRecordHist) {
                 return new SelectMedicationRecordHistRes(
                                 medicationRecordHist.getId(),
-                                medicationRecordHist.getMedication().getId(),
+                                medicationRecordHist.getMedication() != null
+                                                                ? medicationRecordHist.getMedication().getId()
+                                                : null,
                                 medicationRecordHist.getName(),
                                 medicationRecordHist.getMedicationDivision(),
                                 medicationRecordHist.getUsageObject(),
