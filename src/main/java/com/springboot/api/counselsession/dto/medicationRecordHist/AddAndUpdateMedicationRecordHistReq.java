@@ -6,7 +6,6 @@ import com.springboot.enums.MedicationUsageStatus;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
@@ -15,7 +14,6 @@ public class AddAndUpdateMedicationRecordHistReq {
     private String rowId;
 
     @Nullable
-    @Size(min = 26, max = 26, message = "약물 ID는 26자여야 합니다")
     private String medicationId;
 
     @ValidEnum(enumClass = MedicationDivision.class)
