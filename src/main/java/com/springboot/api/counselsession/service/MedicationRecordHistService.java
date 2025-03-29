@@ -70,8 +70,12 @@ public class MedicationRecordHistService {
                                                                 .orElse(null))
                                                 .medicationDivision(addAndUpdateMedicationRecordHistReq
                                                                 .getDivisionCode())
-                                                .prescriptionDate(LocalDate.parse(addAndUpdateMedicationRecordHistReq
-                                                                .getPrescriptionDate()))
+                                                .prescriptionDate(addAndUpdateMedicationRecordHistReq
+                                                                .getPrescriptionDate() != null
+                                                                                ? LocalDate.parse(
+                                                                                                addAndUpdateMedicationRecordHistReq
+                                                                                                                .getPrescriptionDate())
+                                                                                : null)
                                                 .prescriptionDays(addAndUpdateMedicationRecordHistReq
                                                                 .getPrescriptionDays())
                                                 .name(addAndUpdateMedicationRecordHistReq.getMedicationName())
@@ -90,8 +94,10 @@ public class MedicationRecordHistService {
                                 medicationRecordHist.setMedicationDivision(
                                                 addAndUpdateMedicationRecordHistReq.getDivisionCode());
                                 medicationRecordHist.setPrescriptionDate(
-                                                LocalDate.parse(addAndUpdateMedicationRecordHistReq
-                                                                .getPrescriptionDate()));
+                                                addAndUpdateMedicationRecordHistReq.getPrescriptionDate() != null
+                                                                ? LocalDate.parse(addAndUpdateMedicationRecordHistReq
+                                                                                .getPrescriptionDate())
+                                                                : null);
                                 medicationRecordHist.setPrescriptionDays(
                                                 addAndUpdateMedicationRecordHistReq.getPrescriptionDays());
                                 medicationRecordHist.setName(addAndUpdateMedicationRecordHistReq.getMedicationName());
