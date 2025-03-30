@@ -166,7 +166,7 @@ public class CounselSessionController {
 
         @Operation(summary = "이전 상담 내역 조회", tags = { "본상담 - 이전 상담 내역" })
         @GetMapping("/{counselSessionId}/previous/list")
-        @RoleSecured(RoleType.ROLE_ADMIN)
+        @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
         public ResponseEntity<CommonRes<List<SelectPreviousCounselSessionListRes>>> selectPreviousCounselSessionList(
                         @PathVariable("counselSessionId") String counselSessionId) {
                 List<SelectPreviousCounselSessionListRes> result = counselSessionService
