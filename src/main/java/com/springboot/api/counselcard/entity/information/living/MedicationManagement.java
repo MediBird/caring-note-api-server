@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity.information.living;
 
+import jakarta.persistence.ForeignKey;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,7 +25,11 @@ public class MedicationManagement {
     private String houseMateNote;
 
     @ElementCollection
-    @CollectionTable(name = "medication_assistants", joinColumns = @JoinColumn(name = "medication_management_id"))
+    @CollectionTable(name = "medication_assistants",
+        joinColumns = @JoinColumn(name = "medication_management_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<MedicationAssistant> medicationAssistants;
 

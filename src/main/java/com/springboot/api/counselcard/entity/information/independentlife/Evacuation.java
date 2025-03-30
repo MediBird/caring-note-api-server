@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import jakarta.persistence.ForeignKey;
 import java.util.List;
 import java.util.Objects;
 
@@ -21,7 +22,11 @@ import lombok.NoArgsConstructor;
 public class Evacuation {
     String evacuationNote;
     @ElementCollection
-    @CollectionTable(name = "evacuation", joinColumns = @JoinColumn(name = "evacuation_id"))
+    @CollectionTable(name = "evacuation",
+        joinColumns = @JoinColumn(name = "evacuation_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<EvacuationType> evacuations;
 
