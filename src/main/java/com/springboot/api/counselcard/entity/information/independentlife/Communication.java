@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import jakarta.persistence.ForeignKey;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,12 +25,20 @@ import lombok.NoArgsConstructor;
 public class Communication {
 
     @ElementCollection
-    @CollectionTable(name = "communication_sights", joinColumns = @JoinColumn(name = "communication_id"))
+    @CollectionTable(name = "communication_sights",
+        joinColumns = @JoinColumn(name = "communication_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<SightType> sights;
 
     @ElementCollection
-    @CollectionTable(name = "communication_hearings", joinColumns = @JoinColumn(name = "communication_id"))
+    @CollectionTable(name = "communication_hearings",
+        joinColumns = @JoinColumn(name = "communication_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<HearingType> hearings;
 
@@ -37,7 +46,11 @@ public class Communication {
     private CommunicationType communications;
 
     @ElementCollection
-    @CollectionTable(name = "communication_using_koreans", joinColumns = @JoinColumn(name = "communication_id"))
+    @CollectionTable(name = "communication_using_koreans",
+        joinColumns = @JoinColumn(name = "communication_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<UsingKoreanType> usingKoreans;
 
@@ -60,11 +73,12 @@ public class Communication {
     }
 
     public void update(CommunicationDTO communication) {
-        if(communication == null) {
+        if (communication == null) {
             return;
         }
         this.sights = Objects.requireNonNullElse(communication.sights(), this.sights);
         this.hearings = Objects.requireNonNullElse(communication.hearings(), this.hearings);
-        this.communications = Objects.requireNonNullElse(communication.communications(), this.communications);
+        this.communications = Objects.requireNonNullElse(communication.communications(),
+            this.communications);
     }
 }

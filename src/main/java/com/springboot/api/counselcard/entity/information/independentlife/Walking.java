@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import jakarta.persistence.ForeignKey;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,11 +23,19 @@ import lombok.NoArgsConstructor;
 public class Walking {
     String walkingNote;
     @ElementCollection
-    @CollectionTable(name = "walking_methods", joinColumns = @JoinColumn(name = "walking_id"))
+    @CollectionTable(name = "walking_methods",
+        joinColumns = @JoinColumn(name = "walking_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<WalkingType> walkingMethods;
     @ElementCollection
-    @CollectionTable(name = "walking_equipments", joinColumns = @JoinColumn(name = "walking_id"))
+    @CollectionTable(name = "walking_equipments",
+        joinColumns = @JoinColumn(name = "walking_id"),
+        foreignKey = @ForeignKey(
+            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+    )
     @Enumerated(EnumType.STRING)
     private List<WalkingEquipmentType> walkingEquipments;
 
