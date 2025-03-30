@@ -31,6 +31,9 @@ spring:
     time-zone: UTC
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
+    deserialization:
+      accept-empty-string-as-null-object: true
+      read-unknown-enum-values-as-null: true
 
   datasource:
     url: jdbc:h2:mem:test;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
