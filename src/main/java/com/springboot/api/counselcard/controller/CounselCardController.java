@@ -1,6 +1,5 @@
 package com.springboot.api.counselcard.controller;
 
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -16,6 +15,7 @@ import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardStatusReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;

@@ -44,7 +44,7 @@ public class GlobalExceptionHandler extends CommonHandler {
                 .stream()
                 .map(error -> ValidationError.builder()
                         .field(error.getField())
-                        .message("Invalid request")
+                        .message(error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid request")
                         .build())
                 .collect(Collectors.toList());
 
