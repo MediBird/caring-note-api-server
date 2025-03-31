@@ -1,3 +1,6 @@
+server:
+  tomcat:
+    max-http-form-post-size: 110MB
 spring:
   security:
     oauth2:
@@ -49,8 +52,9 @@ spring:
       spec: maximumSize=500,expireAfterWrite=60s
   servlet:
     multipart:
-      max-file-size: 50MB
-      max-request-size: 100MB
+      max-file-size: 100MB
+      max-request-size: 105MB
+      file-size-threshold: 100MB
     encoding:
       charset: UTF-8
       force: true
