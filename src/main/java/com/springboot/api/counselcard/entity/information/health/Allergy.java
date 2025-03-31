@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Allergy {
-    @Column(nullable = false)
     private String allergyNote;
 
     @Column(nullable = false)
@@ -21,7 +20,7 @@ public class Allergy {
 
     public static Allergy initializeDefault() {
         Allergy allergy = new Allergy();
-        allergy.allergyNote = "";
+        allergy.allergyNote = null;
         allergy.isAllergic = false;
         return allergy;
     }
@@ -37,11 +36,12 @@ public class Allergy {
         if(Objects.isNull(allergyDTO)) {
             return;
         }
-        this.allergyNote = Objects.requireNonNullElse(allergyDTO.allergyNote(), this.allergyNote);
-        this.isAllergic = Objects.requireNonNullElse(allergyDTO.isAllergic(), this.isAllergic);
+
+        this.allergyNote = allergyDTO.allergyNote();
+        this.isAllergic = Objects.requireNonNullElse(allergyDTO.isAllergic(), false);
 
         if(this.isAllergic.equals(false)) {
-            this.allergyNote = "";
+            this.allergyNote = null;
         }
     }
 }

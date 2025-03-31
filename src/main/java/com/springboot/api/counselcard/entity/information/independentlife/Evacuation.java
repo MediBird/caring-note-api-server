@@ -20,12 +20,14 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Evacuation {
+
     String evacuationNote;
+
     @ElementCollection
     @CollectionTable(name = "evacuation",
         joinColumns = @JoinColumn(name = "evacuation_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+            foreignKeyDefinition = "FOREIGN KEY (evacuation_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
     @Enumerated(EnumType.STRING)
     private List<EvacuationType> evacuations;
@@ -48,7 +50,8 @@ public class Evacuation {
         if(Objects.isNull(evacuation)) {
             return;
         }
-        this.evacuations = Objects.requireNonNullElse(evacuation.evacuations(), this.evacuations);
-        this.evacuationNote = Objects.requireNonNullElse(evacuation.evacuationNote(), this.evacuationNote);
+
+        this.evacuationNote = evacuation.evacuationNote();
+        this.evacuations = evacuation.evacuations();
     }
 }

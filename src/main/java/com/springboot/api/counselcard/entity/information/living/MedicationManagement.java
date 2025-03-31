@@ -28,7 +28,7 @@ public class MedicationManagement {
     @CollectionTable(name = "medication_assistants",
         joinColumns = @JoinColumn(name = "medication_management_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+            foreignKeyDefinition = "FOREIGN KEY (medication_management_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
     @Enumerated(EnumType.STRING)
     private List<MedicationAssistant> medicationAssistants;
@@ -36,7 +36,7 @@ public class MedicationManagement {
     public static MedicationManagement initializeDefault() {
         MedicationManagement medicationManagement = new MedicationManagement();
         medicationManagement.isAlone = false;
-        medicationManagement.houseMateNote = "";
+        medicationManagement.houseMateNote = null;
         medicationManagement.medicationAssistants = List.of();
         return medicationManagement;
     }
@@ -53,9 +53,9 @@ public class MedicationManagement {
         if (Objects.isNull(medicationManagementDTO)) {
             return;
         }
-        this.isAlone = Objects.requireNonNullElse(medicationManagementDTO.isAlone(), this.isAlone);
-        this.houseMateNote = Objects.requireNonNullElse(medicationManagementDTO.houseMateNote(), this.houseMateNote);
-        this.medicationAssistants = Objects.requireNonNullElse(medicationManagementDTO.medicationAssistants(),
-                this.medicationAssistants);
+
+        this.isAlone = medicationManagementDTO.isAlone();
+        this.houseMateNote = medicationManagementDTO.houseMateNote();
+        this.medicationAssistants = medicationManagementDTO.medicationAssistants();
     }
 }

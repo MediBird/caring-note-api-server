@@ -30,16 +30,15 @@ public class DiseaseInfo {
     @CollectionTable(name = "disease_info",
         joinColumns = @JoinColumn(name = "disease_info_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+            foreignKeyDefinition = "FOREIGN KEY (disease_info_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private List<DiseaseType> diseases;
 
     public static DiseaseInfo initializeDefault() {
         DiseaseInfo diseaseInfo = new DiseaseInfo();
-        diseaseInfo.historyNote = "";
-        diseaseInfo.mainInconvenienceNote = "";
+        diseaseInfo.historyNote = null;
+        diseaseInfo.mainInconvenienceNote = null;
         diseaseInfo.diseases = List.of();
         return diseaseInfo;
     }
@@ -56,8 +55,9 @@ public class DiseaseInfo {
         if(Objects.isNull(diseaseInfoDTO)) {
             return;
         }
-        this.historyNote = Objects.requireNonNullElse(diseaseInfoDTO.historyNote(), this.historyNote);
-        this.mainInconvenienceNote = Objects.requireNonNullElse(diseaseInfoDTO.mainInconvenienceNote(), this.mainInconvenienceNote);
-        this.diseases = Objects.requireNonNullElse(diseaseInfoDTO.diseases(), this.diseases);
+
+        this.historyNote = diseaseInfoDTO.historyNote();
+        this.mainInconvenienceNote = diseaseInfoDTO.mainInconvenienceNote();
+        this.diseases = diseaseInfoDTO.diseases();
     }
 }
