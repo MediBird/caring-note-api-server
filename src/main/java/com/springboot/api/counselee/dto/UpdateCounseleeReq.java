@@ -1,5 +1,6 @@
 package com.springboot.api.counselee.dto;
 
+import com.springboot.api.common.annotation.ValidNullableEnum;
 import java.time.LocalDate;
 
 import com.springboot.enums.GenderType;
@@ -27,8 +28,7 @@ public class UpdateCounseleeReq {
     @Past(message = "생년월일은 과거 날짜여야 합니다")
     private LocalDate dateOfBirth;
 
-    // TODO : 현재 validation이 null 일 경우 실패가 되는데, nullable로 처리하게 변경해야 함
-    // @ValidEnum(enumClass = GenderType.class)
+    @ValidNullableEnum(enumClass = GenderType.class)
     private GenderType genderType;
 
     @Size(max = 200, message = "주소는 200자를 초과할 수 없습니다")

@@ -80,7 +80,6 @@ public class CounselSessionService {
                 return new CreateCounselReservationRes(savedCounselSession.getId());
         }
 
-        // TODO : 이 메서드가 counseleeId를 받아야 하는가 검토
         @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
         @Transactional
         public ModifyCounselReservationRes modifyCounselReservation(
