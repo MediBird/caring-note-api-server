@@ -41,4 +41,4 @@ COPY --from=build $APP_HOME/$JAR_FILE_PATH $ARTIFACT_NAME
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+EENTRYPOINT ["java", "-Xms512m", "-Xmx1024m", "-jar", "app.jar"]
