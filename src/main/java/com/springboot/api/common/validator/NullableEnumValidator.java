@@ -1,16 +1,16 @@
 package com.springboot.api.common.validator;
 
-import com.springboot.api.common.annotation.ValidEnum;
+import com.springboot.api.common.annotation.ValidNullableEnum;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import java.util.stream.Stream;
 
-public class NullableEnumValidator implements ConstraintValidator<ValidEnum, Enum<?>> {
+public class NullableEnumValidator implements ConstraintValidator<ValidNullableEnum, Enum<?>> {
 
     private Class<? extends Enum<?>> enumClass;
 
     @Override
-    public void initialize(ValidEnum constraintAnnotation) {
+    public void initialize(ValidNullableEnum constraintAnnotation) {
         this.enumClass = constraintAnnotation.enumClass();
     }
 
