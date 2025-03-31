@@ -1,7 +1,6 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
 import com.springboot.enums.CommunicationType;
@@ -76,10 +75,10 @@ public class Communication {
         if (communication == null) {
             return;
         }
-        this.sights = Objects.requireNonNullElse(communication.sights(), this.sights);
-        this.hearings = Objects.requireNonNullElse(communication.hearings(), this.hearings);
-        this.communications = Objects.requireNonNullElse(communication.communications(),
-            this.communications);
-        this.usingKoreans = Objects.requireNonNullElse(communication.usingKoreans(), this.usingKoreans);
+        this.sights = communication.sights() != null ? communication.sights() : List.of();
+        this.hearings = communication.hearings() != null ? communication.hearings() : List.of();
+        this.communications = communication.communications() != null ? communication.communications()
+                : CommunicationType.NOT_COMMUNICATE;
+        this.usingKoreans = communication.usingKoreans() != null ? communication.usingKoreans() : List.of();
     }
 }
