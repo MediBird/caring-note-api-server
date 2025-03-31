@@ -23,7 +23,7 @@ public class Nutrition {
     public static Nutrition initializeDefault() {
         Nutrition nutrition = new Nutrition();
         nutrition.mealPattern = null;
-        nutrition.nutritionNote = "";
+        nutrition.nutritionNote = null;
         return nutrition;
     }
 
@@ -38,7 +38,8 @@ public class Nutrition {
         if(Objects.isNull(nutritionDTO)) {
             return;
         }
-        this.mealPattern = Objects.requireNonNullElse(nutritionDTO.mealPattern(), this.mealPattern);
-        this.nutritionNote = Objects.requireNonNullElse(nutritionDTO.nutritionNote(), this.nutritionNote);
+
+        this.mealPattern = nutritionDTO.mealPattern();
+        this.nutritionNote = nutritionDTO.nutritionNote();
     }
 }

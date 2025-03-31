@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity.information.independentlife;
 
+import jakarta.persistence.ForeignKey;
 import java.util.List;
 
 import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
@@ -13,7 +14,6 @@ import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -57,7 +57,7 @@ public class Communication {
         Communication communication = new Communication();
         communication.sights = List.of();
         communication.hearings = List.of();
-        communication.communications = CommunicationType.NOT_COMMUNICATE;
+        communication.communications = null;
         communication.usingKoreans = List.of();
         return communication;
     }
@@ -75,10 +75,10 @@ public class Communication {
         if (communication == null) {
             return;
         }
-        this.sights = communication.sights() != null ? communication.sights() : List.of();
-        this.hearings = communication.hearings() != null ? communication.hearings() : List.of();
-        this.communications = communication.communications() != null ? communication.communications()
-                : CommunicationType.NOT_COMMUNICATE;
-        this.usingKoreans = communication.usingKoreans() != null ? communication.usingKoreans() : List.of();
+
+        this.sights = communication.sights();
+        this.hearings = communication.hearings();
+        this.communications = communication.communications();
+        this.usingKoreans = communication.usingKoreans();
     }
 }

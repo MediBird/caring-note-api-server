@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 public class Smoking {
-    @Column(nullable = false)
     private String smokingPeriodNote;
 
     @Column(nullable = false)
@@ -25,7 +24,7 @@ public class Smoking {
 
     public static Smoking initializeDefault() {
         Smoking smoking = new Smoking();
-        smoking.smokingPeriodNote = "";
+        smoking.smokingPeriodNote = null;
         smoking.smokingAmount = SmokingAmount.NONE;
         return smoking;
     }
@@ -41,7 +40,7 @@ public class Smoking {
         if(Objects.isNull(smokingDTO)) {
             return;
         }
-        this.smokingPeriodNote = Objects.requireNonNullElse(smokingDTO.smokingPeriodNote(), this.smokingPeriodNote);
-        this.smokingAmount = Objects.requireNonNullElse(smokingDTO.smokingAmount(), this.smokingAmount);
+        this.smokingPeriodNote = smokingDTO.smokingPeriodNote();
+        this.smokingAmount = Objects.requireNonNullElse(smokingDTO.smokingAmount(), SmokingAmount.NONE);
     }
 }

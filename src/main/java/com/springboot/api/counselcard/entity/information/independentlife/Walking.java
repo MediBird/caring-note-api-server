@@ -22,19 +22,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Walking {
     String walkingNote;
+
     @ElementCollection
     @CollectionTable(name = "walking_methods",
         joinColumns = @JoinColumn(name = "walking_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+            foreignKeyDefinition = "FOREIGN KEY (walking_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
     @Enumerated(EnumType.STRING)
     private List<WalkingType> walkingMethods;
+
     @ElementCollection
     @CollectionTable(name = "walking_equipments",
         joinColumns = @JoinColumn(name = "walking_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+            foreignKeyDefinition = "FOREIGN KEY (walking_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
     @Enumerated(EnumType.STRING)
     private List<WalkingEquipmentType> walkingEquipments;
@@ -43,7 +45,7 @@ public class Walking {
         Walking walking = new Walking();
         walking.walkingMethods = List.of();
         walking.walkingEquipments = List.of();
-        walking.walkingNote = "";
+        walking.walkingNote = null;
         return walking;
     }
 
@@ -59,8 +61,9 @@ public class Walking {
         if(Objects.isNull(walking)) {
             return;
         }
-        this.walkingMethods = Objects.requireNonNullElse(walking.walkingMethods(), this.walkingMethods);
-        this.walkingEquipments = Objects.requireNonNullElse(walking.walkingEquipments(), this.walkingEquipments);
-        this.walkingNote = Objects.requireNonNullElse(walking.walkingNote(), this.walkingNote);
+
+        this.walkingNote = walking.walkingNote();
+        this.walkingMethods = walking.walkingMethods();
+        this.walkingEquipments = walking.walkingEquipments();
     }
 }

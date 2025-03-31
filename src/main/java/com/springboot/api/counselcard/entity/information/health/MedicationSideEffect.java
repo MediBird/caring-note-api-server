@@ -14,17 +14,15 @@ public class MedicationSideEffect {
     @Column(nullable = false)
     private Boolean isMedicationSideEffect;
 
-    @Column(nullable = false)
     private String suspectedMedicationNote;
 
-    @Column(nullable = false)
     private String symptomsNote;
 
     public static MedicationSideEffect initializeDefault(){
         MedicationSideEffect medicationSideEffect = new MedicationSideEffect();
         medicationSideEffect.isMedicationSideEffect = false;
-        medicationSideEffect.suspectedMedicationNote = "";
-        medicationSideEffect.symptomsNote = "";
+        medicationSideEffect.suspectedMedicationNote = null;
+        medicationSideEffect.symptomsNote = null;
         return medicationSideEffect;
     }
 
@@ -40,13 +38,14 @@ public class MedicationSideEffect {
         if(Objects.isNull(medicationSideEffectDTO)){
             return;
         }
-        this.isMedicationSideEffect = Objects.requireNonNullElse(medicationSideEffectDTO.isMedicationSideEffect(), this.isMedicationSideEffect);
-        this.suspectedMedicationNote = Objects.requireNonNullElse(medicationSideEffectDTO.suspectedMedicationNote(), this.suspectedMedicationNote);
-        this.symptomsNote = Objects.requireNonNullElse(medicationSideEffectDTO.symptomsNote(), this.symptomsNote);
+
+        this.isMedicationSideEffect = Objects.requireNonNullElse(medicationSideEffectDTO.isMedicationSideEffect(), false);
+        this.suspectedMedicationNote = medicationSideEffectDTO.suspectedMedicationNote();
+        this.symptomsNote = medicationSideEffectDTO.symptomsNote();
 
         if(this.isMedicationSideEffect.equals(false)){
-            this.suspectedMedicationNote = "";
-            this.symptomsNote = "";
+            this.suspectedMedicationNote = null;
+            this.symptomsNote = null;
         }
     }
 }

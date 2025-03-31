@@ -30,15 +30,15 @@ public class CounselPurposeAndNote {
     @CollectionTable(name = "counsel_purpose",
         joinColumns = @JoinColumn(name = "counsel_purpose_and_note_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (communication_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+            foreignKeyDefinition = "FOREIGN KEY (counsel_purpose_and_note_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
     @Enumerated(EnumType.STRING)
     private List<CounselPurposeType> counselPurpose;
 
     public static CounselPurposeAndNote initializeDefault() {
         CounselPurposeAndNote counselPurposeAndNote = new CounselPurposeAndNote();
-        counselPurposeAndNote.significantNote = "";
-        counselPurposeAndNote.medicationNote = "";
+        counselPurposeAndNote.significantNote = null;
+        counselPurposeAndNote.medicationNote = null;
         counselPurposeAndNote.counselPurpose = List.of();
         return counselPurposeAndNote;
     }
@@ -55,6 +55,7 @@ public class CounselPurposeAndNote {
         if(Objects.isNull(counselPurposeAndNoteDTO)) {
             return;
         }
+
         this.significantNote = counselPurposeAndNoteDTO.significantNote();
         this.medicationNote = counselPurposeAndNoteDTO.medicationNote();
         this.counselPurpose = counselPurposeAndNoteDTO.counselPurpose();

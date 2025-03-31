@@ -23,7 +23,7 @@ public class Exercise {
 
     public static Exercise initializeDefault() {
         Exercise exercise = new Exercise();
-        exercise.exerciseNote = "";
+        exercise.exerciseNote = null;
         exercise.exercisePattern = null;
         return exercise;
     }
@@ -39,7 +39,8 @@ public class Exercise {
         if(Objects.isNull(exerciseDTO)) {
             return;
         }
-        this.exerciseNote = Objects.requireNonNullElse(exerciseDTO.exerciseNote(), this.exerciseNote);
-        this.exercisePattern = Objects.requireNonNullElse(exerciseDTO.exercisePattern(), this.exercisePattern);
+
+        this.exerciseNote = exerciseDTO.exerciseNote();
+        this.exercisePattern = exerciseDTO.exercisePattern();
     }
 }
