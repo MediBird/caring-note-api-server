@@ -8,7 +8,6 @@ import com.springboot.api.counselcard.dto.information.health.DiseaseInfoDTO;
 import com.springboot.enums.DiseaseType;
 
 import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
