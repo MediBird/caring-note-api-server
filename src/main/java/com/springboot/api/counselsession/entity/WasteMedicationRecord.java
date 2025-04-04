@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import com.springboot.api.medication.entity.Medication;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 

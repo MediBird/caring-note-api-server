@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import com.springboot.api.medication.entity.Medication;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

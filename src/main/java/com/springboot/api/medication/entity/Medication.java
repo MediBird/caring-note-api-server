@@ -1,4 +1,4 @@
-package com.springboot.api.counselsession.entity;
+package com.springboot.api.medication.entity;
 
 import java.time.LocalDate;
 import java.util.HashSet;
