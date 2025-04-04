@@ -17,7 +17,7 @@ import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
-import com.springboot.api.counselsession.entity.Medication;
+import com.springboot.api.medication.entity.Medication;
 import com.springboot.api.counselsession.entity.MedicationCounsel;
 import com.springboot.api.counselsession.entity.MedicationCounselHighlight;
 import com.springboot.api.counselsession.entity.MedicationRecordHist;

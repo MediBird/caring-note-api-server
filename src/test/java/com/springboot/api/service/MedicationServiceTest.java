@@ -13,7 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.springboot.api.counselsession.entity.Medication;
+import com.springboot.api.medication.entity.Medication;
 import com.springboot.api.medication.dto.SearchMedicationByKeywordRes;
 import com.springboot.api.medication.repository.MedicationRepository;
 import com.springboot.api.medication.service.MedicationService;
@@ -23,13 +23,11 @@ import de.huxhorn.sulky.ulid.ULID;
 @ExtendWith(MockitoExtension.class)
 public class MedicationServiceTest {
 
+    private static final ULID ulid = new ULID();
     @Mock
     private MedicationRepository medicationRepository;
-
     @InjectMocks
     private MedicationService medicationService;
-
-    private static final ULID ulid = new ULID();
 
     @Test
     public void testSearchMedicationsByName() {
