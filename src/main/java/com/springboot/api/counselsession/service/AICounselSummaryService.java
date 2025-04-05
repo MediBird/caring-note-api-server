@@ -21,6 +21,7 @@ import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
 import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.PromptTemplateRepository;
+import com.springboot.api.counselsession.service.eventlistener.STTCompleteEvent;
 import com.springboot.api.infra.external.NaverClovaExternalService;
 import java.io.File;
 import java.io.IOException;
@@ -41,6 +42,7 @@ import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -61,8 +63,8 @@ public class AICounselSummaryService {
         private final ChatModel chatModel;
         private final SttFileProperties sttFileProperties;
         private final PromptTemplateRepository promptTemplateRepository;
-
         private final FileUtil fileUtil;
+        private final ApplicationEventPublisher applicationEventPublisher;
 
         public void convertSpeechToText(MultipartFile multipartFile, ConvertSpeechToTextReq convertSpeechToTextReq) throws IOException {
 
@@ -101,28 +103,34 @@ public class AICounselSummaryService {
 
                 String originFileName = fileUtil.saveMultipartFile(multipartFile, sttFileProperties.getOrigin());
 
-                callNaverClovaAsync(headers, originFileName, speechToTextReq)
-                                .thenAcceptAsync(speechToTextRes -> updateAiCounselSummaryStatus(aiCounselSummary,
-                                                "COMPLETED".equals(speechToTextRes.result()) ? STT_COMPLETE
-                                                                : STT_FAILED,
-                                                objectMapper.valueToTree(speechToTextRes))
-
-                                )
-                                .exceptionally(ex -> {
-                                        log.error("Speech-to-text processing error", ex);
-                                        updateAiCounselSummaryStatus(aiCounselSummary, STT_FAILED, null);
-                                        return null;
-                                })
-                                .whenComplete((result, throwable) -> {
-                                        // ✅ 성공/실패 여부 상관없이 파일 삭제
-                                        try {
-                                                Files.deleteIfExists(Path.of(sttFileProperties.getOrigin()+originFileName));
-                                                Files.deleteIfExists(Path.of(sttFileProperties.getConvert()+originFileName.replace(".webm",".mp4")));
-                                        } catch (IOException e) {
-                                                log.warn("Failed to delete temp file: {}", originFileName, e);
-                                         }
-                        });
-
+    callNaverClovaAsync(headers, originFileName, speechToTextReq)
+        .thenAcceptAsync(
+            speechToTextRes -> {
+                updateAiCounselSummaryStatus(
+                    aiCounselSummary,
+                    "COMPLETED".equals(speechToTextRes.result()) ? STT_COMPLETE : STT_FAILED,
+                    objectMapper.valueToTree(speechToTextRes));
+                applicationEventPublisher.publishEvent(new STTCompleteEvent(convertSpeechToTextReq.getCounselSessionId()));
+            }
+        )
+        .exceptionally(
+            ex -> {
+              log.error("Speech-to-text processing error", ex);
+              updateAiCounselSummaryStatus(aiCounselSummary, STT_FAILED, null);
+              return null;
+            })
+        .whenComplete(
+            (result, throwable) -> {
+              // ✅ 성공/실패 여부 상관없이 파일 삭제
+              try {
+                Files.deleteIfExists(Path.of(sttFileProperties.getOrigin() + originFileName));
+                Files.deleteIfExists(
+                    Path.of(
+                        sttFileProperties.getConvert() + originFileName.replace(".webm", ".mp4")));
+              } catch (IOException e) {
+                log.warn("Failed to delete temp file: {}", originFileName, e);
+              }
+            });
         }
 
         @Async
@@ -147,12 +155,14 @@ public class AICounselSummaryService {
                 });
         }
 
-        private void updateAiCounselSummaryStatus(AICounselSummary aiCounselSummary, AICounselSummaryStatus status,
+        public void updateAiCounselSummaryStatus(AICounselSummary aiCounselSummary, AICounselSummaryStatus status,
                         JsonNode sttResult) {
                 aiCounselSummary.setAiCounselSummaryStatus(status);
                 aiCounselSummary.setSttResult(sttResult);
                 aiCounselSummaryRepository.save(aiCounselSummary);
         }
+
+
 
         public List<SelectSpeakerListRes> selectSpeakerList(String counselSessionId) throws JsonProcessingException {
 
@@ -223,15 +233,16 @@ public class AICounselSummaryService {
                                 .toList();
 
         }
-
+        
+        @Async
         @Transactional
-        public void analyseText(AnalyseTextReq analyseTextReq) throws JsonProcessingException {
+        public void analyseText(String  counselSessionId) throws JsonProcessingException {
 
-                counselSessionRepository.findById(analyseTextReq.getCounselSessionId())
+                counselSessionRepository.findById(counselSessionId)
                                 .orElseThrow(IllegalArgumentException::new);
 
                 AICounselSummary aiCounselSummary = aiCounselSummaryRepository
-                                .findByCounselSessionId(analyseTextReq.getCounselSessionId())
+                                .findByCounselSessionId(counselSessionId)
                                 .orElseThrow(NoContentException::new);
 
                 aiCounselSummary.setAiCounselSummaryStatus(GPT_PROGRESS);
@@ -241,9 +252,16 @@ public class AICounselSummaryService {
 
                 SpeechToTextRes speechToTextRes = objectMapper.treeToValue(sttResult, SpeechToTextRes.class);
 
+                List<SelectSpeakerListRes> selectAnalysedTextRes = this.selectSpeakerList(counselSessionId);
+                List<String> speakers = selectAnalysedTextRes
+                        .stream()
+                        .limit(3)
+                        .map(SelectSpeakerListRes::speaker)
+                        .toList();
+
                 List<STTMessageForPromptDTO> sttMessages = speechToTextRes.segments()
                                 .stream()
-                                .filter(segmentDTO -> analyseTextReq.getSpeakers()
+                                .filter(segmentDTO -> speakers
                                                 .contains(segmentDTO.speaker().name()))
                                 .map(segmentDTO -> STTMessageForPromptDTO
                                                 .builder()
@@ -260,7 +278,7 @@ public class AICounselSummaryService {
                 callGpt(promptTemplate.generatePromptMessages(new UserMessage(sttMessagesJson)))
                                 .thenAcceptAsync(
                                                 chatResponse -> {
-                                                        aiCounselSummary.setSpeakers(analyseTextReq.getSpeakers());
+                                                        aiCounselSummary.setSpeakers(speakers);
                                                         aiCounselSummary.setTaResult(
                                                                         objectMapper.valueToTree(chatResponse));
                                                         aiCounselSummary.setAiCounselSummaryStatus(GPT_COMPLETE);
@@ -268,7 +286,7 @@ public class AICounselSummaryService {
                                                 })
                                 .exceptionally(ex -> {
                                         log.error("error", ex);
-                                        aiCounselSummary.setSpeakers(analyseTextReq.getSpeakers());
+                                        aiCounselSummary.setSpeakers(speakers);
                                         aiCounselSummary.setAiCounselSummaryStatus(GPT_FAILED);
                                         aiCounselSummaryRepository.save(aiCounselSummary);
                                         return null;
