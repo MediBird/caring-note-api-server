@@ -47,6 +47,7 @@ public class AICounselSummaryController {
 
     @GetMapping("{counselSessionId}/stt/speaker/list")
     @Operation(summary = "발화자 별 발화 내용 조회", tags = { "AI요약" })
+    @Deprecated
     public ResponseEntity<CommonRes<List<SelectSpeakerListRes>>> selectSpeakerList(
             @PathVariable String counselSessionId) throws JsonProcessingException {
         List<SelectSpeakerListRes> selectSpeakerListResList = aiCounselSummaryService
@@ -78,10 +79,11 @@ public class AICounselSummaryController {
 
     @PostMapping("/ta")
     @Operation(summary = "선택 발화자 기준 TA", tags = { "AI요약" })
+    @Deprecated
     public ResponseEntity<SuccessRes> analyseText(
             @Valid @RequestBody AnalyseTextReq analyseTextReq) throws JsonProcessingException {
 
-        aiCounselSummaryService.analyseText(analyseTextReq);
+        aiCounselSummaryService.analyseText(analyseTextReq.getCounselSessionId());
         return ResponseEntity.ok(new SuccessRes());
 
     }
