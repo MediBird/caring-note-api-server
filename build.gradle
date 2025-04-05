@@ -79,6 +79,9 @@ dependencies {
 
     //Keycloak
     implementation 'org.keycloak:keycloak-admin-client:26.0.4'
+
+    //FixtureMonkey
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.10")
 }
 tasks.named('test') {
     useJUnitPlatform()
