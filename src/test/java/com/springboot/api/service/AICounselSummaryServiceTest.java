@@ -1,5 +1,26 @@
 package com.springboot.api.service;
 
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.counselsession.dto.aiCounselSummary.SpeakerStatsDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.counselsession.entity.AICounselSummary;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.service.AICounselSummaryService;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -10,18 +31,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.ArgumentCaptor;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,22 +49,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SpeakerStatsDTO;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.counselsession.entity.AICounselSummary;
-import com.springboot.api.counselsession.entity.CounselSession;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
-import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.counselsession.service.AICounselSummaryService;
 
 @SpringBootTest
 @EnableAsync
@@ -177,14 +175,10 @@ public class AICounselSummaryServiceTest {
 
         @Test
         void testAnalyseText() throws JsonProcessingException {
+                
+                String counselSessionId = "TEST-COUNSEL-SESSION-02";
 
-                AnalyseTextReq analyseTextReq = AnalyseTextReq
-                                .builder()
-                                .counselSessionId("TEST-COUNSEL-SESSION-02")
-                                .speakers(List.of("A", "E"))
-                                .build();
-
-                aiCounselSummaryService.analyseText(analyseTextReq);
+                aiCounselSummaryService.analyseText(counselSessionId);
 
         }
 
