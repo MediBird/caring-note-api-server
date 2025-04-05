@@ -14,14 +14,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,9 +28,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "counselees", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "name", "date_of_birth", "phone_number" })
-})
 @Getter
 @SuperBuilder
 @NoArgsConstructor
@@ -48,8 +44,6 @@ public class Counselee extends BaseEntity {
     @Temporal(TemporalType.DATE)
     private LocalDate dateOfBirth;
 
-    @Column(nullable = false, unique = true)
-    @NotBlank(message = "전화번호는 필수 입력 항목입니다.")
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "전화번호는 10~11자리의 숫자여야 합니다.")
     private String phoneNumber;
 
@@ -110,17 +104,16 @@ public class Counselee extends BaseEntity {
     }
 
     public void update(UpdateCounseleeReq updateCounseleeReq) {
-        this.name = Objects.requireNonNullElse(updateCounseleeReq.getName(), this.name);
-        this.phoneNumber = Objects.requireNonNullElse(updateCounseleeReq.getPhoneNumber(), this.phoneNumber);
-        this.dateOfBirth = Objects.requireNonNullElse(updateCounseleeReq.getDateOfBirth(), this.dateOfBirth);
-        this.genderType = Objects.requireNonNullElse(updateCounseleeReq.getGenderType(), this.genderType);
-        this.address = Objects.requireNonNullElse(updateCounseleeReq.getAddress(), this.address);
-        this.isDisability = Objects.requireNonNullElse(updateCounseleeReq.getIsDisability(), this.isDisability);
-        this.note = Objects.requireNonNullElse(updateCounseleeReq.getNote(), this.note);
-        this.careManagerName = Objects.requireNonNullElse(updateCounseleeReq.getCareManagerName(),
-                this.careManagerName);
-        this.affiliatedWelfareInstitution = Objects.requireNonNullElse(
-                updateCounseleeReq.getAffiliatedWelfareInstitution(), this.affiliatedWelfareInstitution);
+        Optional.ofNullable(updateCounseleeReq.getName()).ifPresent(value -> this.name = value);
+        Optional.ofNullable(updateCounseleeReq.getDateOfBirth()).ifPresent(value -> this.dateOfBirth = value);
+        Optional.ofNullable(updateCounseleeReq.getPhoneNumber()).ifPresent(value -> this.phoneNumber = value);
+        Optional.ofNullable(updateCounseleeReq.getLastCounselDate()).ifPresent(value -> this.lastCounselDate = value);
+        Optional.ofNullable(updateCounseleeReq.getAffiliatedWelfareInstitution()).ifPresent(value -> this.affiliatedWelfareInstitution = value);
+        Optional.ofNullable(updateCounseleeReq.getNote()).ifPresent(value -> this.note = value);
+        Optional.ofNullable(updateCounseleeReq.getGenderType()).ifPresent(value -> this.genderType = value);
+        Optional.ofNullable(updateCounseleeReq.getAddress()).ifPresent(value -> this.address = value);
+        Optional.ofNullable(updateCounseleeReq.getIsDisability()).ifPresent(value -> this.isDisability = value);
+        Optional.ofNullable(updateCounseleeReq.getCareManagerName()).ifPresent(value -> this.careManagerName = value);
     }
 
     public void counselSessionComplete(LocalDate lastCounselDate) {

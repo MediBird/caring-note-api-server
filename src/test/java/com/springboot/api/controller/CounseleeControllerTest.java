@@ -13,6 +13,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.springboot.api.fixture.CounseleeFixture;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,23 +55,18 @@ import com.springboot.enums.HealthInsuranceType;
 @Import({ SecurityConfig.class, TestSecurityConfig.class })
 public class CounseleeControllerTest {
 
-        @Autowired
-        private MockMvc mockMvc;
-
-        @MockBean
-        private CounseleeService counseleeService;
-
-        @MockBean
-        private JwtDecoder jwtDecoder;
-
-        @MockBean
-        private CustomJwtRoleConverter customJwtRoleConverter;
-
-        @Autowired
-        private ObjectMapper objectMapper;
-
         private final String VALID_COUNSEL_SESSION_ID = "01HQ7YXHG8ZYXM5T2Q3X4KDJPL";
         private final String INVALID_COUNSEL_SESSION_ID = "invalid-id";
+        @Autowired
+        private MockMvc mockMvc;
+        @MockBean
+        private CounseleeService counseleeService;
+        @MockBean
+        private JwtDecoder jwtDecoder;
+        @MockBean
+        private CustomJwtRoleConverter customJwtRoleConverter;
+        @Autowired
+        private ObjectMapper objectMapper;
 
         @Test
         public void testAddCounseleeSuccess() throws Exception {
@@ -147,27 +143,8 @@ public class CounseleeControllerTest {
                 Collection<GrantedAuthority> authorities = Collections.singletonList(
                                 new SimpleGrantedAuthority("ROLE_ADMIN"));
                 mockJwtToken(authorities);
-                Counselee mockCounselee1 = Counselee.builder().name("John Doe").address("서울특별시 강남구 역삼동")
-                                .phoneNumber("010-1234-5678")
-                                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                                .genderType(GenderType.MALE)
-                                .affiliatedWelfareInstitution("행복동 복지센터")
-                                .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
-                                .isDisability(false)
-                                .careManagerName("홍길동")
-                                .note("홍길동")
-                                .build();
-                Counselee mockCounselee2 = Counselee.builder().name("Jane Doe").address("서울특별시 강남구 역삼동")
-                                .phoneNumber("010-1234-5678")
-                                .dateOfBirth(LocalDate.of(1990, 1, 1))
-                                .genderType(GenderType.MALE)
-                                .affiliatedWelfareInstitution("행복동 복지센터")
-                                .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
-                                .isDisability(false)
-                                .careManagerName("홍길동")
-                                .note("홍길동")
-                                .build();
-                Page<Counselee> mockPage = new PageImpl<>(Arrays.asList(mockCounselee1, mockCounselee2),
+
+                Page<Counselee> mockPage = new PageImpl<>(CounseleeFixture.createList(2),
                                 PageRequest.of(0, 10), 2);
                 SelectCounseleePageRes mockPageRes = SelectCounseleePageRes.of(mockPage);
                 when(counseleeService.selectCounselees(

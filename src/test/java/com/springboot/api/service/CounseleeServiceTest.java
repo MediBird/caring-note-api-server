@@ -1,11 +1,14 @@
 package com.springboot.api.service;
 
-import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
+import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.api.fixture.CounseleeFixture;
+import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.GenderType;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
@@ -18,29 +21,90 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CounseleeServiceTest {
 
-    private CounseleeFixture counseleeFixture = new CounseleeFixture();
-
     @Mock
     private CounseleeRepository counseleeRepository;
-
-    @Mock
-    private CounselCardRepository counselCardRepository;
 
     @InjectMocks
     private CounseleeService counseleeService;
 
     @Test
+    public void updateCounselee_all(){
+        //Given
+        Counselee original = CounseleeFixture.create();
+
+        UpdateCounseleeReq request = UpdateCounseleeReq.builder()
+            .name("홍길동")
+            .dateOfBirth(LocalDate.of(1990, 1, 1))
+            .phoneNumber("010-1234-5678")
+            .lastCounselDate(LocalDate.of(2023, 10, 1))
+            .affiliatedWelfareInstitution("서울복지관")
+            .note("상담 노트")
+            .genderType(GenderType.FEMALE)
+            .address("서울시 강남구")
+            .isDisability(true)
+            .careManagerName("김철수")
+            .build();
+        //When
+
+        original.update(request);
+        //Then
+        assertThat(original.getName()).isEqualTo(request.getName());
+        assertThat(original.getDateOfBirth()).isEqualTo(request.getDateOfBirth());
+        assertThat(original.getPhoneNumber()).isEqualTo(request.getPhoneNumber());
+        assertThat(original.getLastCounselDate()).isEqualTo(request.getLastCounselDate());
+        assertThat(original.getAffiliatedWelfareInstitution()).isEqualTo(request.getAffiliatedWelfareInstitution());
+        assertThat(original.getNote()).isEqualTo(request.getNote());
+        assertThat(original.getGenderType()).isEqualTo(request.getGenderType());
+        assertThat(original.getAddress()).isEqualTo(request.getAddress());
+        assertThat(original.getIsDisability()).isEqualTo(request.getIsDisability());
+        assertThat(original.getCareManagerName()).isEqualTo(request.getCareManagerName());
+    }
+
+    @Test
+    public void updateCounselee_none(){
+        //Given
+        Counselee original = CounseleeFixture.create();
+
+        String name = original.getName();
+        String phoneNumber = original.getPhoneNumber();
+        LocalDate dateOfBirth = original.getDateOfBirth();
+        GenderType genderType = original.getGenderType();
+        String address = original.getAddress();
+        Boolean isDisability = original.getIsDisability();
+        String note = original.getNote();
+        String careManagerName = original.getCareManagerName();
+        String affiliatedWelfareInstitution = original.getAffiliatedWelfareInstitution();
+
+        UpdateCounseleeReq updateCounseleeReq = UpdateCounseleeReq.builder().build();
+        //When
+        original.update(updateCounseleeReq);
+        //Then
+        assertThat(original.getName()).isEqualTo(name);
+        assertThat(original.getPhoneNumber()).isEqualTo(phoneNumber);
+        assertThat(original.getDateOfBirth()).isEqualTo(dateOfBirth);
+        assertThat(original.getGenderType()).isEqualTo(genderType);
+        assertThat(original.getAddress()).isEqualTo(address);
+        assertThat(original.getIsDisability()).isEqualTo(isDisability);
+        assertThat(original.getNote()).isEqualTo(note);
+        assertThat(original.getCareManagerName()).isEqualTo(careManagerName);
+        assertThat(original.getAffiliatedWelfareInstitution()).isEqualTo(affiliatedWelfareInstitution);
+    }
+
+    @Test
     public void testSearchCounseleesByName_WithRandomKeyword() {
         // Given
-        List<Counselee> counselees = counseleeFixture.createCounselees(10);
+        List<Counselee> counselees = CounseleeFixture.createList(10);
 
         String randomKeyword = Optional.of(counselees)
             .filter(list -> !list.isEmpty())
@@ -100,10 +164,10 @@ public class CounseleeServiceTest {
     public void testSearchCounseleesByName_OrderByStartsWithFirst() {
         // Given
         List<Counselee> sortedCounselees = Arrays.asList(
-            counseleeFixture.createCounselee("홍박사"),
-            counseleeFixture.createCounselee("홍세달"),
-            counseleeFixture.createCounselee("백홍준"),
-            counseleeFixture.createCounselee("김지홍"));
+            CounseleeFixture.create("홍박사"),
+            CounseleeFixture.create("홍세달"),
+            CounseleeFixture.create("백홍준"),
+            CounseleeFixture.create("김지홍"));
 
         when(counseleeRepository.findByNameContaining("홍")).thenReturn(sortedCounselees);
 

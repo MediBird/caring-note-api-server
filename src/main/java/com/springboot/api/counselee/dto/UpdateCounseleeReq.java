@@ -1,6 +1,7 @@
 package com.springboot.api.counselee.dto;
 
 import com.springboot.api.common.annotation.ValidNullableEnum;
+import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
 import com.springboot.enums.GenderType;
@@ -22,11 +23,20 @@ public class UpdateCounseleeReq {
     @Size(min = 2, max = 50, message = "이름은 2자 이상 50자 이하여야 합니다")
     private String name;
 
+    @Past(message = "생년월일은 과거 날짜여야 합니다")
+    private LocalDate dateOfBirth;
+
     @Pattern(regexp = "^\\d{2,3}-\\d{3,4}-\\d{4}$", message = "올바른 전화번호 형식이 아닙니다")
     private String phoneNumber;
 
-    @Past(message = "생년월일은 과거 날짜여야 합니다")
-    private LocalDate dateOfBirth;
+    @PastOrPresent(message = "최근 상담일은 미래일 수 없습니다.")
+    private LocalDate lastCounselDate;
+
+    @Size(max = 100, message = "복지기관명은 100자를 초과할 수 없습니다")
+    private String affiliatedWelfareInstitution;
+
+    @Size(max = 1000, message = "비고는 1000자를 초과할 수 없습니다")
+    private String note;
 
     @ValidNullableEnum(enumClass = GenderType.class)
     private GenderType genderType;
@@ -36,12 +46,6 @@ public class UpdateCounseleeReq {
 
     private Boolean isDisability;
 
-    @Size(max = 1000, message = "비고는 1000자를 초과할 수 없습니다")
-    private String note;
-
     @Size(max = 50, message = "담당자 이름은 50자를 초과할 수 없습니다")
     private String careManagerName;
-
-    @Size(max = 100, message = "복지기관명은 100자를 초과할 수 없습니다")
-    private String affiliatedWelfareInstitution;
 }

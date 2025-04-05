@@ -8,41 +8,13 @@ import java.util.stream.IntStream;
 
 public class CounseleeFixture {
 
-    public Counselee createCounselee(){
-        FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-            .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-            .build();
-
-        return fixtureMonkey.giveMeBuilder(Counselee.class)
-                .set("id", FixtureRandomUtil.generateUUID())
-                .set("createdBy", null)
-                .set("updatedBy", null)
-                .set("name", FixtureRandomUtil.generateElderlyKoreanName())
-                .set("dateOfBirth", FixtureRandomUtil.generateElderlyBirthDate())
-                .set("phoneNumber", FixtureRandomUtil.generatePhoneNumber())
-                .set("counselCount", FixtureRandomUtil.generateCounselCount())
-                .set("registrationDate", FixtureRandomUtil.generateRegistrationDate())
-                .set("lastCounselDate", FixtureRandomUtil.generateLastCounselDate())
-                .set("affiliatedWelfareInstitution", FixtureRandomUtil.generateWelfareInstitution())
-                .set("note", FixtureRandomUtil.generateNote())
-                .set("genderType", FixtureRandomUtil.generateGender())
-                .set("healthInsuranceType", FixtureRandomUtil.generateInsuranceType())
-                .set("address", FixtureRandomUtil.generateAddress())
-                .set("isDisability", FixtureRandomUtil.generateDisabilityStatus())
-                .set("careManagerName", FixtureRandomUtil.generateCareManagerName())
-                .sample();
-    }
-
-    public Counselee createCounselee(String name){
-        FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-            .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-            .build();
-
-        return fixtureMonkey.giveMeBuilder(Counselee.class)
+    private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+        .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
+        .register(Counselee.class, builder -> builder.giveMeBuilder(Counselee.class)
             .set("id", FixtureRandomUtil.generateUUID())
             .set("createdBy", null)
             .set("updatedBy", null)
-            .set("name", name)
+            .set("name", FixtureRandomUtil.generateElderlyKoreanName())
             .set("dateOfBirth", FixtureRandomUtil.generateElderlyBirthDate())
             .set("phoneNumber", FixtureRandomUtil.generatePhoneNumber())
             .set("counselCount", FixtureRandomUtil.generateCounselCount())
@@ -55,33 +27,21 @@ public class CounseleeFixture {
             .set("address", FixtureRandomUtil.generateAddress())
             .set("isDisability", FixtureRandomUtil.generateDisabilityStatus())
             .set("careManagerName", FixtureRandomUtil.generateCareManagerName())
-            .sample();
+        )
+        .build();
+
+    public static Counselee create() {
+        return fixtureMonkey.giveMeOne(Counselee.class);
     }
 
-    public List<Counselee> createCounselees(int size) {
-        FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-            .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
-            .build();
-
+    public static Counselee create(String name) {
+        return fixtureMonkey.giveMeBuilder(Counselee.class)
+            .set("name", name)
+            .sample();
+    }
+    public static List<Counselee> createList(int size) {
         return IntStream.range(0, size)
-            .mapToObj(i -> fixtureMonkey.giveMeBuilder(Counselee.class)
-                .set("id", FixtureRandomUtil.generateUUID())
-                .set("createdBy", null)
-                .set("updatedBy", null)
-                .set("name", FixtureRandomUtil.generateElderlyKoreanName())
-                .set("dateOfBirth", FixtureRandomUtil.generateElderlyBirthDate())
-                .set("phoneNumber", FixtureRandomUtil.generatePhoneNumber())
-                .set("counselCount", FixtureRandomUtil.generateCounselCount())
-                .set("registrationDate", FixtureRandomUtil.generateRegistrationDate())
-                .set("lastCounselDate", FixtureRandomUtil.generateLastCounselDate())
-                .set("affiliatedWelfareInstitution", FixtureRandomUtil.generateWelfareInstitution())
-                .set("note", FixtureRandomUtil.generateNote())
-                .set("genderType", FixtureRandomUtil.generateGender())
-                .set("healthInsuranceType", FixtureRandomUtil.generateInsuranceType())
-                .set("address", FixtureRandomUtil.generateAddress())
-                .set("isDisability", FixtureRandomUtil.generateDisabilityStatus())
-                .set("careManagerName", FixtureRandomUtil.generateCareManagerName())
-                .sample())
+            .mapToObj(i -> fixtureMonkey.giveMeOne(Counselee.class))
             .toList();
     }
 }
