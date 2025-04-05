@@ -1,7 +1,6 @@
 package com.springboot.api.counselee.entity;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
@@ -114,14 +113,5 @@ public class Counselee extends BaseEntity {
         Optional.ofNullable(updateCounseleeReq.getAddress()).ifPresent(value -> this.address = value);
         Optional.ofNullable(updateCounseleeReq.getIsDisability()).ifPresent(value -> this.isDisability = value);
         Optional.ofNullable(updateCounseleeReq.getCareManagerName()).ifPresent(value -> this.careManagerName = value);
-    }
-
-    public void counselSessionComplete(LocalDate lastCounselDate) {
-        this.counselCount++;
-        this.lastCounselDate = lastCounselDate;
-    }
-
-    public void updateHealthInsuranceType(HealthInsuranceType healthInsuranceType) {
-        this.healthInsuranceType = healthInsuranceType;
     }
 }

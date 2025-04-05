@@ -6,7 +6,6 @@ import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.api.fixture.CounseleeFixture;
-import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.GenderType;
 import java.time.LocalDate;
 import java.util.Optional;
@@ -24,8 +23,6 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 

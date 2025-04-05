@@ -49,7 +49,6 @@ import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.enums.GenderType;
-import com.springboot.enums.HealthInsuranceType;
 
 @WebMvcTest(CounseleeController.class)
 @Import({ SecurityConfig.class, TestSecurityConfig.class })
