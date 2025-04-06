@@ -1,6 +1,7 @@
 package com.springboot.api.fixture;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import com.navercorp.fixturemonkey.api.arbitrary.MonkeyStringArbitrary;
 import com.navercorp.fixturemonkey.api.introspector.FieldReflectionArbitraryIntrospector;
 import com.springboot.api.counselee.entity.Counselee;
 import java.util.List;
@@ -11,7 +12,7 @@ public class CounseleeFixture {
     private static final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
         .objectIntrospector(FieldReflectionArbitraryIntrospector.INSTANCE)
         .register(Counselee.class, builder -> builder.giveMeBuilder(Counselee.class)
-            .set("id", FixtureRandomUtil.generateUUID())
+            .set("id", FixtureRandomUtil.generateULID())
             .set("createdBy", null)
             .set("updatedBy", null)
             .set("name", FixtureRandomUtil.generateElderlyKoreanName())
@@ -21,7 +22,7 @@ public class CounseleeFixture {
             .set("registrationDate", FixtureRandomUtil.generateRegistrationDate())
             .set("lastCounselDate", FixtureRandomUtil.generateLastCounselDate())
             .set("affiliatedWelfareInstitution", FixtureRandomUtil.generateWelfareInstitution())
-            .set("note", FixtureRandomUtil.generateNote())
+            .set("note", new MonkeyStringArbitrary().korean().ofLength(300))
             .set("genderType", FixtureRandomUtil.generateGender())
             .set("healthInsuranceType", FixtureRandomUtil.generateInsuranceType())
             .set("address", FixtureRandomUtil.generateAddress())

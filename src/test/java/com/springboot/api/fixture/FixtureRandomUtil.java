@@ -36,7 +36,7 @@ public class FixtureRandomUtil {
         "안소연", "권미경", "신혜선", "전하은", "홍가은"
     };
 
-    public static String generateUUID() {
+    public static String generateULID() {
         StringBuilder sb = new StringBuilder(26);
         char[] BASE32_CHARS = "0123456789ABCDEFGHJKMNPQRSTVWXYZ".toCharArray();
         for (int i = 0; i < 26; i++) {
@@ -44,6 +44,7 @@ public class FixtureRandomUtil {
         }
         return sb.toString();
     }
+
     public static String generateElderlyKoreanName() {
         String family = FAMILY_NAMES[RANDOM.nextInt(FAMILY_NAMES.length)];
         String first = FIRST_NAMES[RANDOM.nextInt(FIRST_NAMES.length)];
@@ -51,9 +52,9 @@ public class FixtureRandomUtil {
     }
 
     public static LocalDate generateElderlyBirthDate() {
-        int year = 1920 + RANDOM.nextInt(51); // 1920~1970
+        int year = 1920 + RANDOM.nextInt(100);
         int month = 1 + RANDOM.nextInt(12);
-        int day = 1 + RANDOM.nextInt(28); // 안전하게 28일까지
+        int day = 1 + RANDOM.nextInt(28);
         return LocalDate.of(year, month, day);
     }
 
@@ -64,7 +65,7 @@ public class FixtureRandomUtil {
     }
 
     public static int generateCounselCount() {
-        return 1 + RANDOM.nextInt(50); // 1 ~ 200회
+        return 1 + RANDOM.nextInt(50);
     }
 
     public static LocalDate generateRegistrationDate() {
@@ -99,9 +100,5 @@ public class FixtureRandomUtil {
 
     public static Boolean generateDisabilityStatus() {
         return RANDOM.nextBoolean();
-    }
-
-    public static String generateNote() {
-        return "정기 상담 대상자";
     }
 }

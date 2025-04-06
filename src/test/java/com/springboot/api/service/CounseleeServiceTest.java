@@ -1,5 +1,6 @@
 package com.springboot.api.service;
 
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
@@ -179,5 +180,11 @@ public class CounseleeServiceTest {
         // 그 다음 "홍"이 포함된 이름이 나오는지 확인
         assertTrue(result.get(2).getName().contains("홍"));
         assertTrue(result.get(3).getName().contains("홍"));
+    }
+
+    @Test
+    public void test(){
+        FixtureMonkey build = FixtureMonkey.builder().build();
+        build.giveMeBuilder(Counselee.class).build();
     }
 }
