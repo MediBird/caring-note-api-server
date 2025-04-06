@@ -1,24 +1,30 @@
 package com.springboot.api.service;
 
+import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
+import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselee.service.CounseleeService;
+import com.springboot.api.fixture.CounseleeFixture;
 import com.springboot.enums.GenderType;
-import com.springboot.enums.HealthInsuranceType;
+import java.time.LocalDate;
+import java.util.Optional;
+import java.util.Random;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,47 +37,96 @@ public class CounseleeServiceTest {
     private CounseleeService counseleeService;
 
     @Test
-    public void testSearchCounseleesByName_WithHongKeyword() {
+    public void updateCounselee_all(){
+        //Given
+        Counselee original = CounseleeFixture.create();
+
+        UpdateCounseleeReq request = UpdateCounseleeReq.builder()
+            .name("홍길동")
+            .dateOfBirth(LocalDate.of(1990, 1, 1))
+            .phoneNumber("010-1234-5678")
+            .lastCounselDate(LocalDate.of(2023, 10, 1))
+            .affiliatedWelfareInstitution("서울복지관")
+            .note("상담 노트")
+            .genderType(GenderType.FEMALE)
+            .address("서울시 강남구")
+            .isDisability(true)
+            .careManagerName("김철수")
+            .build();
+        //When
+
+        original.update(request);
+        //Then
+        assertThat(original.getName()).isEqualTo(request.getName());
+        assertThat(original.getDateOfBirth()).isEqualTo(request.getDateOfBirth());
+        assertThat(original.getPhoneNumber()).isEqualTo(request.getPhoneNumber());
+        assertThat(original.getLastCounselDate()).isEqualTo(request.getLastCounselDate());
+        assertThat(original.getAffiliatedWelfareInstitution()).isEqualTo(request.getAffiliatedWelfareInstitution());
+        assertThat(original.getNote()).isEqualTo(request.getNote());
+        assertThat(original.getGenderType()).isEqualTo(request.getGenderType());
+        assertThat(original.getAddress()).isEqualTo(request.getAddress());
+        assertThat(original.getIsDisability()).isEqualTo(request.getIsDisability());
+        assertThat(original.getCareManagerName()).isEqualTo(request.getCareManagerName());
+    }
+
+    @Test
+    public void updateCounselee_none(){
+        //Given
+        Counselee original = CounseleeFixture.create();
+
+        String name = original.getName();
+        String phoneNumber = original.getPhoneNumber();
+        LocalDate dateOfBirth = original.getDateOfBirth();
+        GenderType genderType = original.getGenderType();
+        String address = original.getAddress();
+        Boolean isDisability = original.getIsDisability();
+        String note = original.getNote();
+        String careManagerName = original.getCareManagerName();
+        String affiliatedWelfareInstitution = original.getAffiliatedWelfareInstitution();
+
+        UpdateCounseleeReq updateCounseleeReq = UpdateCounseleeReq.builder().build();
+        //When
+        original.update(updateCounseleeReq);
+        //Then
+        assertThat(original.getName()).isEqualTo(name);
+        assertThat(original.getPhoneNumber()).isEqualTo(phoneNumber);
+        assertThat(original.getDateOfBirth()).isEqualTo(dateOfBirth);
+        assertThat(original.getGenderType()).isEqualTo(genderType);
+        assertThat(original.getAddress()).isEqualTo(address);
+        assertThat(original.getIsDisability()).isEqualTo(isDisability);
+        assertThat(original.getNote()).isEqualTo(note);
+        assertThat(original.getCareManagerName()).isEqualTo(careManagerName);
+        assertThat(original.getAffiliatedWelfareInstitution()).isEqualTo(affiliatedWelfareInstitution);
+    }
+
+    @Test
+    public void testSearchCounseleesByName_WithRandomKeyword() {
         // Given
-        List<Counselee> hongCounselees = Arrays.asList(
-                Counselee.builder()
-                        .name("홍박사")
-                        .dateOfBirth(LocalDate.of(1980, 1, 1))
-                        .phoneNumber("010-1234-5678")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build(),
-                Counselee.builder()
-                        .name("홍세달")
-                        .dateOfBirth(LocalDate.of(1987, 4, 4))
-                        .phoneNumber("010-2345-6789")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build(),
-                Counselee.builder()
-                        .name("백홍준")
-                        .dateOfBirth(LocalDate.of(1982, 2, 2))
-                        .phoneNumber("010-3456-7890")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build());
-        when(counseleeRepository.findByNameContaining("홍")).thenReturn(hongCounselees);
+        List<Counselee> counselees = CounseleeFixture.createList(10);
+
+        String randomKeyword = Optional.of(counselees)
+            .filter(list -> !list.isEmpty())
+            .map(list -> list.get(new Random().nextInt(list.size())))
+            .map(c -> c.getName().substring(1))
+            .orElseThrow();
+
+        List<Counselee> matched = counselees.stream()
+            .filter(c -> c.getName().contains(randomKeyword))
+            .toList();
+
+        given(counseleeRepository.findByNameContaining(randomKeyword))
+            .willReturn(matched);
 
         // When
-        List<SelectCounseleeAutocompleteRes> result = counseleeService.searchCounseleesByName("홍");
+        List<SelectCounseleeAutocompleteRes> result = counseleeService.searchCounseleesByName(randomKeyword);
 
         // Then
-        assertEquals(3, result.size());
-        assertEquals("홍박사", result.get(0).getName());
-        assertEquals("홍세달", result.get(1).getName());
-        assertEquals("백홍준", result.get(2).getName());
+        assertEquals(matched.size(), result.size());
+        for (int i = 0; i < matched.size(); i++) {
+            assertEquals(matched.get(i).getName(), result.get(i).getName());
+        }
     }
+
 
     @Test
     public void testSearchCounseleesByName_WithEmptyKeyword() {
@@ -107,42 +162,10 @@ public class CounseleeServiceTest {
     public void testSearchCounseleesByName_OrderByStartsWithFirst() {
         // Given
         List<Counselee> sortedCounselees = Arrays.asList(
-                Counselee.builder()
-                        .name("홍박사")
-                        .dateOfBirth(LocalDate.of(1980, 1, 1))
-                        .phoneNumber("010-1234-5678")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build(),
-                Counselee.builder()
-                        .name("홍세달")
-                        .dateOfBirth(LocalDate.of(1987, 4, 4))
-                        .phoneNumber("010-2345-6789")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build(),
-                Counselee.builder()
-                        .name("백홍준")
-                        .dateOfBirth(LocalDate.of(1982, 2, 2))
-                        .phoneNumber("010-3456-7890")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build(),
-                Counselee.builder()
-                        .name("김지홍")
-                        .dateOfBirth(LocalDate.of(1985, 3, 3))
-                        .phoneNumber("010-4567-8901")
-                        .genderType(GenderType.MALE)
-                        .healthInsuranceType(HealthInsuranceType.HEALTH_INSURANCE)
-                        .counselCount(0)
-                        .registrationDate(LocalDate.now())
-                        .build());
+            CounseleeFixture.create("홍박사"),
+            CounseleeFixture.create("홍세달"),
+            CounseleeFixture.create("백홍준"),
+            CounseleeFixture.create("김지홍"));
 
         when(counseleeRepository.findByNameContaining("홍")).thenReturn(sortedCounselees);
 
@@ -157,5 +180,11 @@ public class CounseleeServiceTest {
         // 그 다음 "홍"이 포함된 이름이 나오는지 확인
         assertTrue(result.get(2).getName().contains("홍"));
         assertTrue(result.get(3).getName().contains("홍"));
+    }
+
+    @Test
+    public void test(){
+        FixtureMonkey build = FixtureMonkey.builder().build();
+        build.giveMeBuilder(Counselee.class).build();
     }
 }
