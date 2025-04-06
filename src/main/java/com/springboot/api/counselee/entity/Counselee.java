@@ -1,5 +1,6 @@
 package com.springboot.api.counselee.entity;
 
+import jakarta.persistence.Table;
 import java.time.LocalDate;
 
 import com.springboot.api.common.entity.BaseEntity;
@@ -30,6 +31,7 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
+@Table(name = "counselees")
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class Counselee extends BaseEntity {
