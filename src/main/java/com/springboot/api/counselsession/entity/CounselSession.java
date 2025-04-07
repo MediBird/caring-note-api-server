@@ -1,5 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
+import jakarta.persistence.FetchType;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -29,21 +30,21 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "counsel_sessions", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "counselee_id", "scheduled_start_datetime" })
+    @UniqueConstraint(columnNames = {"counselee_id", "scheduled_start_datetime"})
 })
 @SuperBuilder
 @Getter
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselor", "counselee" })
-@ToString(callSuper = true, exclude = { "counselor", "counselee" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselor", "counselee"})
+@ToString(callSuper = true, exclude = {"counselor", "counselee"})
 public class CounselSession extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "counselor_id")
     private Counselor counselor;
 
     // 내담자와의 관계 매핑 (다대일)
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counselee_id")
     private Counselee counselee;
@@ -72,10 +73,10 @@ public class CounselSession extends BaseEntity {
 
     public static CounselSession createReservation(Counselee counselee, LocalDateTime scheduledStartDateTime) {
         return CounselSession.builder()
-                .counselee(counselee)
-                .scheduledStartDateTime(scheduledStartDateTime)
-                .status(ScheduleStatus.SCHEDULED)
-                .build();
+            .counselee(counselee)
+            .scheduledStartDateTime(scheduledStartDateTime)
+            .status(ScheduleStatus.SCHEDULED)
+            .build();
     }
 
     @PrePersist
