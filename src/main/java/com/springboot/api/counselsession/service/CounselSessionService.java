@@ -218,7 +218,7 @@ public class CounselSessionService {
 
         counselSessionRepository.delete(counselSession);
 
-        return new DeleteCounselSessionRes(counselSession.getCounselee().getId());
+        return new DeleteCounselSessionRes(counselSession.getId());
     }
 
     public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
