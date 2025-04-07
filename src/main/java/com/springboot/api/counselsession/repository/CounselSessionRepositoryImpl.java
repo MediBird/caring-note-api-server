@@ -1,11 +1,14 @@
 package com.springboot.api.counselsession.repository;
 
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.springboot.api.counselcard.entity.QCounselCard;
 import com.springboot.enums.CounselorStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -32,35 +35,35 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     @Override
     public List<LocalDate> findDistinctDatesByYearAndMonth(int year, int month) {
         return queryFactory
-                .select(counselSession.scheduledStartDateTime)
-                .from(counselSession)
-                .where(
-                        counselSession.scheduledStartDateTime.year().eq(year),
-                        counselSession.scheduledStartDateTime.month().eq(month))
-                .orderBy(counselSession.scheduledStartDateTime.asc())
-                .fetch()
-                .stream()
-                .map(LocalDateTime::toLocalDate)
-                .distinct()
-                .collect(Collectors.toList());
+            .select(counselSession.scheduledStartDateTime)
+            .from(counselSession)
+            .where(
+                counselSession.scheduledStartDateTime.year().eq(year),
+                counselSession.scheduledStartDateTime.month().eq(month))
+            .orderBy(counselSession.scheduledStartDateTime.asc())
+            .fetch()
+            .stream()
+            .map(LocalDateTime::toLocalDate)
+            .distinct()
+            .collect(Collectors.toList());
     }
 
     @Override
     public List<CounselSession> findCompletedSessionsByYearAndMonth(int year, int month) {
         return queryFactory
-                .selectFrom(counselSession)
-                .where(
-                        counselSession.startDateTime.year().eq(year),
-                        counselSession.startDateTime.month().eq(month),
-                        counselSession.status.eq(ScheduleStatus.COMPLETED),
-                        counselSession.startDateTime.isNotNull(),
-                        counselSession.endDateTime.isNotNull())
-                .fetch();
+            .selectFrom(counselSession)
+            .where(
+                counselSession.startDateTime.year().eq(year),
+                counselSession.startDateTime.month().eq(month),
+                counselSession.status.eq(ScheduleStatus.COMPLETED),
+                counselSession.startDateTime.isNotNull(),
+                counselSession.endDateTime.isNotNull())
+            .fetch();
     }
 
     @Override
     public List<Tuple> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
-            Pageable pageable) {
+        Pageable pageable) {
 
         QCounselCard counselCard = QCounselCard.counselCard;
 
@@ -82,37 +85,37 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
         }
 
         return queryFactory
-                .select(counselSession, counselCard.cardRecordStatus)
-                .from(counselSession)
-                .leftJoin(counselSession.counselee).fetchJoin()
-                .leftJoin(counselSession.counselor).fetchJoin()
-                .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
-                .where(builder)
-                .orderBy(counselSession.scheduledStartDateTime.asc())
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize() + 1)
-                .fetch();
+            .select(counselSession, counselCard.cardRecordStatus)
+            .from(counselSession)
+            .leftJoin(counselSession.counselee).fetchJoin()
+            .leftJoin(counselSession.counselor).fetchJoin()
+            .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
+            .where(builder)
+            .orderBy(counselSession.scheduledStartDateTime.asc())
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize() + 1)
+            .fetch();
     }
 
     @Override
     public long countByStatus(ScheduleStatus status) {
         return queryFactory
-                .select(counselSession.count())
-                .from(counselSession)
-                .where(counselSession.status.eq(status))
-                .fetchOne();
+            .select(counselSession.count())
+            .from(counselSession)
+            .where(counselSession.status.eq(status))
+            .fetchOne();
     }
 
     @Override
     public long countDistinctCounseleeForCurrentMonth() {
         LocalDate now = LocalDate.now();
         return queryFactory
-                .select(counselSession.counselee.countDistinct())
-                .from(counselSession)
-                .where(
-                        counselSession.scheduledStartDateTime.year().eq(now.getYear()),
-                        counselSession.scheduledStartDateTime.month().eq(now.getMonthValue()))
-                .fetchOne();
+            .select(counselSession.counselee.countDistinct())
+            .from(counselSession)
+            .where(
+                counselSession.scheduledStartDateTime.year().eq(now.getYear()),
+                counselSession.scheduledStartDateTime.month().eq(now.getMonthValue()))
+            .fetchOne();
     }
 
     @Override
@@ -120,34 +123,34 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
         LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
 
         return queryFactory
-                .update(counselSession)
-                .set(counselSession.status, ScheduleStatus.CANCELED)
-                .where(
-                        counselSession.status.eq(ScheduleStatus.SCHEDULED),
-                        counselSession.scheduledStartDateTime.before(twentyFourHoursAgo))
-                .execute();
+            .update(counselSession)
+            .set(counselSession.status, ScheduleStatus.CANCELED)
+            .where(
+                counselSession.status.eq(ScheduleStatus.SCHEDULED),
+                counselSession.scheduledStartDateTime.before(twentyFourHoursAgo))
+            .execute();
     }
 
     @Override
     public List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId,
-            LocalDateTime beforeDateTime) {
+        LocalDateTime beforeDateTime) {
         return queryFactory
-                .selectFrom(counselSession)
-                .where(
-                        counselSession.counselee.id.eq(counseleeId),
-                        counselSession.status.eq(ScheduleStatus.COMPLETED),
-                        counselSession.scheduledStartDateTime.lt(beforeDateTime))
-                .orderBy(counselSession.endDateTime.desc())
-                .fetch();
+            .selectFrom(counselSession)
+            .where(
+                counselSession.counselee.id.eq(counseleeId),
+                counselSession.status.eq(ScheduleStatus.COMPLETED),
+                counselSession.scheduledStartDateTime.lt(beforeDateTime))
+            .orderBy(counselSession.endDateTime.desc())
+            .fetch();
     }
 
     @Override
     @SuppressWarnings("Convert2Diamond")
     public Page<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
-            String counseleeNameKeyword,
-            List<String> counselorNames,
-            List<LocalDate> scheduledDates,
-            Pageable pageable) {
+        String counseleeNameKeyword,
+        List<String> counselorNames,
+        List<LocalDate> scheduledDates,
+        Pageable pageable) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -166,25 +169,25 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 LocalDateTime startOfDay = date.atStartOfDay();
                 LocalDateTime endOfDay = date.plusDays(1).atStartOfDay();
                 dateBuilder.or(
-                        counselSession.scheduledStartDateTime.goe(startOfDay)
-                                .and(counselSession.scheduledStartDateTime.lt(endOfDay)));
+                    counselSession.scheduledStartDateTime.goe(startOfDay)
+                        .and(counselSession.scheduledStartDateTime.lt(endOfDay)));
             }
             builder.and(dateBuilder);
         }
 
         List<CounselSession> content = queryFactory
-                .selectFrom(counselSession)
-                .where(builder)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .orderBy(counselSession.scheduledStartDateTime.desc())
-                .fetch();
+            .selectFrom(counselSession)
+            .where(builder)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .orderBy(counselSession.scheduledStartDateTime.desc())
+            .fetch();
 
         Long total = queryFactory
-                .select(counselSession.count())
-                .from(counselSession)
-                .where(builder)
-                .fetchOne();
+            .select(counselSession.count())
+            .from(counselSession)
+            .where(builder)
+            .fetchOne();
 
         return new PageImpl<CounselSession>(content, pageable, total != null ? total : 0L);
     }
@@ -195,7 +198,6 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
 
         builder.and(counselSession.counselee.id.eq(counseleeId));
 
-
         if (beforeDateTime != null) {
             builder.and(counselSession.scheduledStartDateTime.lt(beforeDateTime));
         }
@@ -204,11 +206,51 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
         builder.and(counselSession.status.ne(ScheduleStatus.CANCELED));
 
         Long count = queryFactory
-                .select(counselSession.count())
-                .from(counselSession)
-                .where(builder)
-                .fetchOne();
+            .select(counselSession.count())
+            .from(counselSession)
+            .where(builder)
+            .fetchOne();
 
         return count != null ? count.intValue() : 0;
+    }
+
+    @Override
+    public List<CounselSession> findValidCounselSessionsByCounseleeId(String counseleeId) {
+        return queryFactory.
+            selectFrom(counselSession)
+            .where(
+                counselSession.counselee.id.eq(counseleeId),
+                counselSession.status.ne(ScheduleStatus.CANCELED))
+            .orderBy(counselSession.scheduledStartDateTime.asc())
+            .fetch();
+    }
+
+    @Override
+    public void bulkUpdateCounselSessionNum(Map<String, Integer> sessionUpdates) {
+        CaseBuilder caseBuilder = new CaseBuilder();
+        CaseBuilder.Cases<Integer, NumberExpression<Integer>> caseExpression = null;
+
+        for (Map.Entry<String, Integer> entry : sessionUpdates.entrySet()) {
+            if (caseExpression == null) {
+                caseExpression = caseBuilder
+                    .when(counselSession.id.eq(entry.getKey()))
+                    .then(entry.getValue());
+            } else {
+                caseExpression = caseExpression
+                    .when(counselSession.id.eq(entry.getKey()))
+                    .then(entry.getValue());
+            }
+        }
+
+        if (caseExpression == null) {
+            return;
+        }
+
+        NumberExpression<Integer> finalExpression = caseExpression.otherwise(counselSession.sessionNumber);
+
+        queryFactory.update(counselSession)
+            .set(counselSession.sessionNumber, finalExpression)
+            .where(counselSession.id.in(sessionUpdates.keySet()))
+            .execute();
     }
 }

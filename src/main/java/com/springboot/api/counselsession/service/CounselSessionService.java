@@ -8,7 +8,10 @@ import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.dto.CommonCursorRes;
@@ -323,5 +327,25 @@ public class CounselSessionService {
         int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
             counseleeId, scheduledDateTime) + 1;
         counselSession.updateSessionNumber(sessionNumber);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void reassignSessionNumbers(String counseleeId) {
+        List<CounselSession> counselSessions = counselSessionRepository.findValidCounselSessionsByCounseleeId(
+            counseleeId);
+
+        Map<String, Integer> sessionUpdates = new HashMap<>();
+
+        int sessionNumber = 1;
+        for (CounselSession session : counselSessions) {
+            if (!Objects.equals(session.getSessionNumber(), sessionNumber)) {
+                sessionUpdates.put(session.getId(), sessionNumber);
+            }
+            sessionNumber++;
+        }
+
+        if (!sessionUpdates.isEmpty()) {
+            counselSessionRepository.bulkUpdateCounselSessionNum(sessionUpdates);
+        }
     }
 }
