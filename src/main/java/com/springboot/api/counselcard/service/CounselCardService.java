@@ -79,7 +79,7 @@ public class CounselCardService {
     @CacheEvict(value = "sessionList", allEntries = true)
     public CounselCardIdRes updateCounselCardStatus(String counselSessionId, CardRecordStatus status) {
         CounselCard counselCard = counselCardRepository
-            .findCounselCardWithCounselee(counselSessionId)
+            .findCounselCardByCounselSessionId(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
 
         switch (status) {
