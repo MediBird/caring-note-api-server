@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.springboot.api.counselcard.dto.information.living.DrinkingDTO;
 import com.springboot.enums.DrinkingAmount;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,13 +16,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Drinking {
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private DrinkingAmount drinkingAmount;
 
     public static Drinking initializeDefault() {
         Drinking drinking = new Drinking();
-        drinking.drinkingAmount = DrinkingAmount.NONE;
+        drinking.drinkingAmount = null;
         return drinking;
     }
 
@@ -34,10 +32,10 @@ public class Drinking {
     }
 
     public void update(DrinkingDTO drinkingDTO) {
-        if(Objects.isNull(drinkingDTO)) {
+        if (Objects.isNull(drinkingDTO)) {
             return;
         }
 
-        this.drinkingAmount = Objects.requireNonNullElse(drinkingDTO.drinkingAmount(), DrinkingAmount.NONE);
+        this.drinkingAmount = drinkingDTO.drinkingAmount();
     }
 }
