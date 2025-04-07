@@ -14,27 +14,15 @@ import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
 
 public interface CounselSessionRepository
-                extends JpaRepository<CounselSession, String>, CounselSessionRepositoryCustom {
+    extends JpaRepository<CounselSession, String>, CounselSessionRepositoryCustom {
 
-        @Override
-        void deleteById(@NonNull String id);
+    @Override
+    void deleteById(@NonNull String id);
 
-        @Query("""
-                        SELECT cs FROM CounselSession cs
-                        WHERE cs.counselee.id = :counseleeId
-                         AND cs.id < :id
-                        ORDER BY cs.id DESC
-                        """)
-        List<CounselSession> findByCounseleeIdPrevious(
-                        @Param("counseleeId") String counseleeId, @Param("id") String id, Pageable pageable);
+    List<CounselSession> findByCounseleeIdAndScheduledStartDateTimeLessThan(String counseleeId,
+        LocalDateTime scheduledStartDateTime);
 
-        List<CounselSession> findByCounseleeIdAndScheduledStartDateTimeLessThan(String counseleeId,
-                        LocalDateTime scheduledStartDateTime);
+    boolean existsByCounselorAndScheduledStartDateTime(Counselor counselor, LocalDateTime scheduledStartDateTime);
 
-        boolean existsByCounselorAndScheduledStartDateTime(Counselor counselor, LocalDateTime scheduledStartDateTime);
-
-        boolean existsByCounseleeAndScheduledStartDateTime(Counselee counselee, LocalDateTime scheduledStartDateTime);
-
-        // 상담사 ID로 상담 세션 찾기
-        List<CounselSession> findByCounselorId(String counselorId);
+    boolean existsByCounseleeAndScheduledStartDateTime(Counselee counselee, LocalDateTime scheduledStartDateTime);
 }
