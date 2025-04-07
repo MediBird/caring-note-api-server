@@ -1,6 +1,5 @@
 package com.springboot.api.counselcard.service;
 
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import java.util.List;
 import java.util.function.Function;
 
@@ -10,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
