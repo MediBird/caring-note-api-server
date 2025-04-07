@@ -9,7 +9,7 @@ public record SmokingDTO(
 
     public SmokingDTO(Smoking smoking) {
         this(
-                smoking.getSmokingPeriodNote(),
-                smoking.getSmokingAmount());
+                smoking != null ? smoking.getSmokingPeriodNote() : null,
+                smoking != null ? smoking.getSmokingAmount() : null);
     }
 }

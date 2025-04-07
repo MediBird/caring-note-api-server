@@ -7,6 +7,6 @@ public record DrinkingDTO(
         DrinkingAmount drinkingAmount) {
 
     public DrinkingDTO(Drinking drinking) {
-        this(drinking.getDrinkingAmount());
+        this(drinking != null ? drinking.getDrinkingAmount() : null);
     }
 }

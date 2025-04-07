@@ -1,6 +1,7 @@
 package com.springboot.api.counselcard.entity;
 
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
+import jakarta.persistence.PostLoad;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -101,6 +102,25 @@ public class CounselCard extends BaseEntity {
             .build();
         counselCard.initializeDefaultValues();
         return counselCard;
+    }
+
+    @PostLoad
+    public void onPostLoad() {
+        this.counselPurposeAndNote =
+            this.counselPurposeAndNote == null ? CounselPurposeAndNote.initializeDefault() : this.counselPurposeAndNote;
+        this.allergy = this.allergy == null ? Allergy.initializeDefault() : this.allergy;
+        this.diseaseInfo = this.diseaseInfo == null ? DiseaseInfo.initializeDefault() : this.diseaseInfo;
+        this.medicationSideEffect =
+            this.medicationSideEffect == null ? MedicationSideEffect.initializeDefault() : this.medicationSideEffect;
+        this.drinking = this.drinking == null ? Drinking.initializeDefault() : this.drinking;
+        this.exercise = this.exercise == null ? Exercise.initializeDefault() : this.exercise;
+        this.medicationManagement =
+            this.medicationManagement == null ? MedicationManagement.initializeDefault() : this.medicationManagement;
+        this.nutrition = this.nutrition == null ? Nutrition.initializeDefault() : this.nutrition;
+        this.smoking = this.smoking == null ? Smoking.initializeDefault() : this.smoking;
+        this.communication = this.communication == null ? Communication.initializeDefault() : this.communication;
+        this.evacuation = this.evacuation == null ? Evacuation.initializeDefault() : this.evacuation;
+        this.walking = this.walking == null ? Walking.initializeDefault() : this.walking;
     }
 
     public void importPreviousCardData(CounselCard previousCard) {

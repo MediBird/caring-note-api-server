@@ -8,8 +8,8 @@ public record NutritionDTO(
 
     public NutritionDTO (Nutrition nutrition){
         this(
-            nutrition.getMealPattern(),
-            nutrition.getNutritionNote()
+                nutrition != null ? nutrition.getMealPattern() : null,
+                nutrition != null ? nutrition.getNutritionNote() : null
         );
     }
 }

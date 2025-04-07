@@ -12,8 +12,8 @@ public record MedicationManagementDTO(
 
     public MedicationManagementDTO(MedicationManagement medicationManagement) {
         this(
-                medicationManagement.getIsAlone(),
-                medicationManagement.getHouseMateNote(),
-                medicationManagement.getMedicationAssistants());
+                medicationManagement != null ? medicationManagement.getIsAlone() : null,
+                medicationManagement != null ? medicationManagement.getHouseMateNote() : null,
+                medicationManagement != null ? medicationManagement.getMedicationAssistants() : null);
     }
 }
