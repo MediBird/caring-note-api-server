@@ -32,7 +32,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -97,25 +96,18 @@ public class CounselCard extends BaseEntity {
 
     public static CounselCard createFromSession(CounselSession counselSession) {
         CounselCard counselCard = CounselCard.builder()
-                .counselSession(counselSession)
-                .cardRecordStatus(CardRecordStatus.NOT_STARTED)
-                .build();
+            .counselSession(counselSession)
+            .cardRecordStatus(CardRecordStatus.NOT_STARTED)
+            .build();
         counselCard.initializeDefaultValues();
-        if(counselSession.getCounselee().getIsDisability().equals(true)){
-            counselCard.initializeDisabledSpecificDefaults();
-        }
         return counselCard;
     }
 
     public void importPreviousCardData(CounselCard previousCard) {
-        if(previousCard == null){
+        if (previousCard == null) {
             return;
         }
-
         copyValuesFrom(previousCard);
-        if(counselSession.getCounselee().getIsDisability().equals(true)){
-            copyDisabledSpecificValueFrom(previousCard);
-        }
     }
 
     public void updateBaseInformation(UpdateBaseInformationReq updateBaseInformationReq) {
@@ -144,14 +136,14 @@ public class CounselCard extends BaseEntity {
     }
 
     public void updateStatusToInProgress() {
-        if(this.cardRecordStatus.equals(CardRecordStatus.COMPLETED)){
+        if (this.cardRecordStatus.equals(CardRecordStatus.COMPLETED)) {
             throw new IllegalArgumentException("이미 완료된 상담 카드입니다");
         }
         this.cardRecordStatus = CardRecordStatus.IN_PROGRESS;
     }
 
     public void updateStatusToCompleted() {
-        if(!this.cardRecordStatus.equals(CardRecordStatus.IN_PROGRESS)){
+        if (!this.cardRecordStatus.equals(CardRecordStatus.IN_PROGRESS)) {
             throw new IllegalArgumentException("상담 카드가 진행 중이 아닙니다");
         }
         this.cardRecordStatus = CardRecordStatus.COMPLETED;
@@ -167,9 +159,6 @@ public class CounselCard extends BaseEntity {
         this.medicationManagement = MedicationManagement.copy(previousCard.getMedicationManagement());
         this.nutrition = Nutrition.copy(previousCard.getNutrition());
         this.smoking = Smoking.copy(previousCard.getSmoking());
-    }
-
-    void copyDisabledSpecificValueFrom(CounselCard previousCard) {
         this.communication = Communication.copy(previousCard.getCommunication());
         this.evacuation = Evacuation.copy(previousCard.getEvacuation());
         this.walking = Walking.copy(previousCard.getWalking());
@@ -185,18 +174,9 @@ public class CounselCard extends BaseEntity {
         this.medicationManagement = MedicationManagement.initializeDefault();
         this.nutrition = Nutrition.initializeDefault();
         this.smoking = Smoking.initializeDefault();
-    }
-
-    void initializeDisabledSpecificDefaults() {
         this.communication = Communication.initializeDefault();
         this.evacuation = Evacuation.initializeDefault();
         this.walking = Walking.initializeDefault();
-    }
-
-    @PrePersist
-    @Override
-    protected void onCreate() {
-        super.onCreate();
     }
 
     public void update(UpdateCounselCardReq updateCounselCardReq) {
