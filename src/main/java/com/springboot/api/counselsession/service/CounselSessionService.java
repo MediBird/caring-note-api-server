@@ -54,282 +54,274 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class CounselSessionService {
 
-        private final DateTimeUtil dateTimeUtil;
-        private final CounselSessionRepository counselSessionRepository;
-        private final CounselorService counselorService;
-        private final CounseleeRepository counseleeRepository;
-        private final CounselCardService counselCardService;
+    private final DateTimeUtil dateTimeUtil;
+    private final CounselSessionRepository counselSessionRepository;
+    private final CounselorService counselorService;
+    private final CounseleeRepository counseleeRepository;
+    private final CounselCardService counselCardService;
 
-        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
-        @Transactional
-        public CreateCounselReservationRes createReservation(CreateCounselReservationReq createReservationReq) {
-                LocalDateTime scheduledStartDateTime = dateTimeUtil
-                                .parseToDateTime(createReservationReq.getScheduledStartDateTime());
+    @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @Transactional
+    public CreateCounselReservationRes createReservation(CreateCounselReservationReq createReservationReq) {
+        LocalDateTime scheduledStartDateTime = dateTimeUtil
+            .parseToDateTime(createReservationReq.getScheduledStartDateTime());
 
-                Counselee counselee = findAndValidateCounseleeSchedule(createReservationReq.getCounseleeId(),
-                                scheduledStartDateTime);
+        Counselee counselee = findAndValidateCounseleeSchedule(createReservationReq.getCounseleeId(),
+            scheduledStartDateTime);
 
-                CounselSession counselSession = CounselSession.createReservation(
-                                counselee,
-                                scheduledStartDateTime);
-                updateSessionNumber(counselSession);
-                CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
+        CounselSession counselSession = CounselSession.createReservation(
+            counselee,
+            scheduledStartDateTime);
+        updateSessionNumber(counselSession);
+        CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
-                counselCardService.initializeCounselCard(savedCounselSession);
+        counselCardService.initializeCounselCard(savedCounselSession);
 
-                return new CreateCounselReservationRes(savedCounselSession.getId());
+        return new CreateCounselReservationRes(savedCounselSession.getId());
+    }
+
+    @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @Transactional
+    public ModifyCounselReservationRes modifyCounselReservation(
+        ModifyCounselReservationReq modifyCounselReservationReq) {
+        CounselSession counselSession = counselSessionRepository
+            .findById(modifyCounselReservationReq.getCounselSessionId()).orElseThrow(
+                NoContentException::new);
+
+        LocalDateTime scheduledStartDateTime = dateTimeUtil
+            .parseToDateTime(modifyCounselReservationReq.getScheduledStartDateTime());
+
+        Counselee counselee = findAndValidateCounseleeSchedule(modifyCounselReservationReq.getCounseleeId(),
+            scheduledStartDateTime);
+
+        counselSession.modifyReservation(scheduledStartDateTime, counselee);
+
+        return new ModifyCounselReservationRes(modifyCounselReservationReq.getCounselSessionId());
+    }
+
+    private Counselor findAndValidateCounselorSchedule(String counselorId, LocalDateTime scheduledStartDateTime) {
+        Counselor counselor = counselorService.findCounselorById(counselorId);
+
+        if (counselSessionRepository.existsByCounselorAndScheduledStartDateTime(counselor,
+            scheduledStartDateTime)) {
+            throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
         }
 
-        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
-        @Transactional
-        public ModifyCounselReservationRes modifyCounselReservation(
-                        ModifyCounselReservationReq modifyCounselReservationReq) {
-                CounselSession counselSession = counselSessionRepository
-                                .findById(modifyCounselReservationReq.getCounselSessionId()).orElseThrow(
-                                                NoContentException::new);
+        return counselor;
+    }
 
-                LocalDateTime scheduledStartDateTime = dateTimeUtil
-                                .parseToDateTime(modifyCounselReservationReq.getScheduledStartDateTime());
+    private Counselee findAndValidateCounseleeSchedule(String counseleeId, LocalDateTime scheduledStartDateTime) {
+        Counselee counselee = counseleeRepository.findById(counseleeId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 내담자 ID입니다"));
 
-                Counselee counselee = findAndValidateCounseleeSchedule(modifyCounselReservationReq.getCounseleeId(),
-                                scheduledStartDateTime);
-
-                counselSession.modifyReservation(scheduledStartDateTime, counselee);
-
-                return new ModifyCounselReservationRes(modifyCounselReservationReq.getCounselSessionId());
+        if (counselSessionRepository.existsByCounseleeAndScheduledStartDateTime(counselee,
+            scheduledStartDateTime)) {
+            throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
         }
 
-        private Counselor findAndValidateCounselorSchedule(String counselorId, LocalDateTime scheduledStartDateTime) {
-                Counselor counselor = counselorService.findCounselorById(counselorId);
+        return counselee;
+    }
 
-                if (counselSessionRepository.existsByCounselorAndScheduledStartDateTime(counselor,
-                                scheduledStartDateTime)) {
-                        throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
-                }
+    public SelectCounselSessionRes selectCounselSession(String id) {
+        CounselSession counselSession = counselSessionRepository.findById(id).orElseThrow(
+            IllegalArgumentException::new);
 
-                return counselor;
+        return SelectCounselSessionRes.from(counselSession);
+    }
+
+    @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
+    @Transactional(readOnly = true)
+    public CommonCursorRes<List<SelectCounselSessionListItem>> selectCounselSessionListByBaseDateAndCursorAndSize(
+        SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
+        Pageable pageable = PageRequest.of(0, req.size());
+
+        List<Tuple> sessions = counselSessionRepository.findSessionByCursorAndDate(req.baseDate(),
+            req.cursor(), null, pageable);
+
+        List<SelectCounselSessionListItem> selectCounselSessionListItems = sessions.stream()
+            .map(tuple -> {
+                CounselSession counselSession = tuple.get(0, CounselSession.class);
+                CardRecordStatus cardRecordStatus = tuple.get(1, CardRecordStatus.class);
+                return SelectCounselSessionListItem.from(counselSession, cardRecordStatus);
+            })
+            .toList();
+
+        boolean hasNext = selectCounselSessionListItems.size() > pageable.getPageSize();
+        List<SelectCounselSessionListItem> content =
+            hasNext ? selectCounselSessionListItems.subList(0, pageable.getPageSize()) : selectCounselSessionListItems;
+        String nextCursor = content.isEmpty() ? null : content.getLast().counselSessionId();
+
+        return new CommonCursorRes<>(content,
+            nextCursor,
+            hasNext);
+    }
+
+    @CacheEvict(value = {"sessionList"}, allEntries = true)
+    @Transactional
+    public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(
+        UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq) {
+        CounselSession counselSession = counselSessionRepository
+            .findById(updateCounselorInCounselSessionReq.counselSessionId())
+            .orElseThrow(NoContentException::new);
+
+        Counselor counselor = findAndValidateCounselorSchedule(updateCounselorInCounselSessionReq.counselorId(),
+            counselSession.getScheduledStartDateTime());
+
+        counselSession.updateCounselor(counselor);
+
+        return new UpdateCounselorInCounselSessionRes(counselSession.getId());
+    }
+
+    @CacheEvict(value = {"sessionStats", "sessionList"}, allEntries = true)
+    @Transactional
+    public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
+        UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+
+        CounselSession counselSession = counselSessionRepository.findById(
+                updateStatusInCounselSessionReq.counselSessionId())
+            .orElseThrow(NoContentException::new);
+
+        if (counselSession.getStatus() == ScheduleStatus.COMPLETED) {
+            throw new IllegalArgumentException("완료된 상담 세션은 상태를 변경할 수 없습니다.");
         }
 
-        private Counselee findAndValidateCounseleeSchedule(String counseleeId, LocalDateTime scheduledStartDateTime) {
-                Counselee counselee = counseleeRepository.findById(counseleeId)
-                                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 내담자 ID입니다"));
-
-                if (counselSessionRepository.existsByCounseleeAndScheduledStartDateTime(counselee,
-                                scheduledStartDateTime)) {
-                        throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
-                }
-
-                return counselee;
+        if (counselSession.getStatus() == ScheduleStatus.CANCELED) {
+            throw new IllegalArgumentException("취소된 상담 세션은 상태를 변경할 수 없습니다.");
         }
 
-        public SelectCounselSessionRes selectCounselSession(String id) {
-                CounselSession counselSession = counselSessionRepository.findById(id).orElseThrow(
-                                IllegalArgumentException::new);
-
-                return SelectCounselSessionRes.from(counselSession);
+        switch (updateStatusInCounselSessionReq.status()) {
+            case COMPLETED -> counselSession.completeCounselSession();
+            case IN_PROGRESS -> counselSession.progressCounselSession();
+            case CANCELED -> counselSession.cancelCounselSession();
+            case SCHEDULED -> counselSession.scheduleCounselSession();
         }
 
-        @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
-        @Transactional(readOnly = true)
-        public CommonCursorRes<List<SelectCounselSessionListItem>> selectCounselSessionListByBaseDateAndCursorAndSize(
-                        SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
-                Pageable pageable = PageRequest.of(0, req.size());
+        return new UpdateStatusInCounselSessionRes(counselSession.getId());
+    }
 
-                List<Tuple> sessions = counselSessionRepository.findSessionByCursorAndDate(req.baseDate(),
-                                req.cursor(), null, pageable);
+    @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @Transactional
+    public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
 
-                List<SelectCounselSessionListItem> selectCounselSessionListItems = sessions.stream()
-                                .map(tuple -> {
-                                        CounselSession counselSession = tuple.get(0, CounselSession.class);
-                                        CardRecordStatus cardRecordStatus = tuple.get(1, CardRecordStatus.class);
-                                        return SelectCounselSessionListItem.from(counselSession, cardRecordStatus);
-                                })
-                                .toList();
+        counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
 
-                boolean hasNext = selectCounselSessionListItems.size() > pageable.getPageSize();
-                List<SelectCounselSessionListItem> content = hasNext ? selectCounselSessionListItems.subList(0, pageable.getPageSize()) : selectCounselSessionListItems;
-                String nextCursor = content.isEmpty() ? null : content.getLast().counselSessionId();
+        return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
+    }
 
-                return new CommonCursorRes<>(content,
-                                nextCursor,
-                                hasNext);
+    public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+            .orElseThrow(NoContentException::new);
+
+        List<CounselSession> previousCounselSessions = counselSessionRepository
+            .findPreviousCompletedSessionsOrderByEndDateTimeDesc(counselee.getId(),
+                counselSession.getScheduledStartDateTime());
+
+        List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
+            .stream()
+            .map(session -> new SelectPreviousCounselSessionListRes(
+                session.getId(),
+                session.getSessionNumber(),
+                session.getScheduledStartDateTime().toLocalDate(),
+                session.getCounselor().getName(),
+                false))
+            .toList();
+
+        if (selectPreviousCounselSessionListResList.isEmpty()) {
+            throw new NoContentException();
         }
 
-        @CacheEvict(value = { "sessionList" }, allEntries = true)
-        @Transactional
-        public UpdateCounselorInCounselSessionRes updateCounselorInCounselSession(
-                        UpdateCounselorInCounselSessionReq updateCounselorInCounselSessionReq) {
-                CounselSession counselSession = counselSessionRepository
-                                .findById(updateCounselorInCounselSessionReq.counselSessionId())
-                                .orElseThrow(NoContentException::new);
+        return selectPreviousCounselSessionListResList;
 
-                Counselor counselor = findAndValidateCounselorSchedule(updateCounselorInCounselSessionReq.counselorId(),
-                                counselSession.getScheduledStartDateTime());
+    }
 
-                counselSession.updateCounselor(counselor);
-
-                return new UpdateCounselorInCounselSessionRes(counselSession.getId());
+    @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
+    public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
+        try {
+            return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
+        } catch (Exception e) {
+            throw new RuntimeException("상담 일정 조회 중 오류가 발생했습니다", e);
         }
+    }
 
-        @CacheEvict(value = { "sessionStats", "sessionList" }, allEntries = true)
-        @Transactional
-        public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
-                UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
+    @Cacheable(value = "sessionStats")
+    @Transactional(readOnly = true)
+    public CounselSessionStatRes getSessionStats() {
+        try {
+            long totalSessionCount = calculateTotalSessionCount();
+            long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
+            long totalCaringMessageCount = counselSessionRepository.count();
+            double counselHours = calculateCounselHoursForThisMonth();
 
-                CounselSession counselSession = counselSessionRepository.findById(updateStatusInCounselSessionReq.counselSessionId())
-                    .orElseThrow(NoContentException::new);
-
-                if(counselSession.getStatus() == ScheduleStatus.COMPLETED) {
-                    throw new IllegalArgumentException("완료된 상담 세션은 상태를 변경할 수 없습니다.");
-                }
-
-                if(counselSession.getStatus() == ScheduleStatus.CANCELED) {
-                    throw new IllegalArgumentException("취소된 상담 세션은 상태를 변경할 수 없습니다.");
-                }
-
-                switch (updateStatusInCounselSessionReq.status()) {
-                        case COMPLETED ->
-                                counselSession.completeCounselSession();
-                        case IN_PROGRESS ->
-                                counselSession.progressCounselSession();
-                        case CANCELED ->
-                                counselSession.cancelCounselSession();
-                        case SCHEDULED ->
-                                counselSession.scheduleCounselSession();
-                }
-
-                return new UpdateStatusInCounselSessionRes(counselSession.getId());
+            return CounselSessionStatRes.builder()
+                .totalSessionCount(totalSessionCount)
+                .counseleeCountForThisMonth(counseleeCount)
+                .totalCaringMessageCount(totalCaringMessageCount)
+                .counselHoursForThisMonth((long) counselHours)
+                .build();
+        } catch (Exception e) {
+            throw new RuntimeException("통계 정보 조회 중 오류가 발생했습니다", e);
         }
+    }
 
-        @CacheEvict(value = { "sessionDates", "sessionStats", "sessionList" }, allEntries = true)
-        @Transactional
-        public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
-
-                counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
-
-                return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
+    private long calculateTotalSessionCount() {
+        try {
+            return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+        } catch (Exception e) {
+            throw new RuntimeException("완료된 상담 세션 수 계산 중 오류 발생", e);
         }
+    }
 
-        public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
-                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                                .orElseThrow(IllegalArgumentException::new);
+    private double calculateCounselHoursForThisMonth() {
+        try {
+            int year = LocalDateTime.now().getYear();
+            int month = LocalDateTime.now().getMonthValue();
+            List<CounselSession> completedSessions = counselSessionRepository
+                .findCompletedSessionsByYearAndMonth(year, month);
 
-                Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
-                                .orElseThrow(NoContentException::new);
-
-                List<CounselSession> previousCounselSessions = counselSessionRepository
-                                .findPreviousCompletedSessionsOrderByEndDateTimeDesc(counselee.getId(),
-                                                counselSession.getScheduledStartDateTime());
-
-                List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionListResList = previousCounselSessions
-                                .stream()
-                                .map(session -> new SelectPreviousCounselSessionListRes(
-                                                session.getId(),
-                                                session.getSessionNumber(),
-                                                session.getScheduledStartDateTime().toLocalDate(),
-                                                session.getCounselor().getName(),
-                                                false))
-                                .toList();
-
-                if (selectPreviousCounselSessionListResList.isEmpty()) {
-                        throw new NoContentException();
-                }
-
-                return selectPreviousCounselSessionListResList;
-
+            return completedSessions.stream()
+                .mapToDouble(session -> {
+                    Duration duration = Duration.between(
+                        session.getStartDateTime(),
+                        session.getEndDateTime());
+                    return duration.toMinutes() / 60.0;
+                })
+                .sum();
+        } catch (Exception e) {
+            throw new RuntimeException("이번 달 상담 시간 계산 중 오류 발생", e);
         }
+    }
 
-        @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
-        public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
-                try {
-                        return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
-                } catch (Exception e) {
-                        throw new RuntimeException("상담 일정 조회 중 오류가 발생했습니다", e);
-                }
-        }
+    @Scheduled(cron = "0 0 * * * *") // 매시간 실행
+    @Transactional
+    public void cancelOverdueSessions() {
+        LocalDateTime now = LocalDateTime.now();
+        log.info("Checking for overdue sessions at {}", now);
+        long updateCount = counselSessionRepository.cancelOverDueSessions();
+        log.info("취소된 상담 세션 수: {}", updateCount);
+    }
 
-        @Cacheable(value = "sessionStats")
-        @Transactional(readOnly = true)
-        public CounselSessionStatRes getSessionStats() {
-                try {
-                        long totalSessionCount = calculateTotalSessionCount();
-                        long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
-                        long totalCaringMessageCount = counselSessionRepository.count();
-                        double counselHours = calculateCounselHoursForThisMonth();
+    @Transactional(readOnly = true)
+    public SelectCounselSessionPageRes searchCounselSessions(SearchCounselSessionReq req) {
+        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
 
-                        return CounselSessionStatRes.builder()
-                                        .totalSessionCount(totalSessionCount)
-                                        .counseleeCountForThisMonth(counseleeCount)
-                                        .totalCaringMessageCount(totalCaringMessageCount)
-                                        .counselHoursForThisMonth((long) counselHours)
-                                        .build();
-                } catch (Exception e) {
-                        throw new RuntimeException("통계 정보 조회 중 오류가 발생했습니다", e);
-                }
-        }
+        Page<CounselSession> page = counselSessionRepository
+            .findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+                req.getCounseleeNameKeyword(),
+                req.getCounselorNames(),
+                req.getScheduledDates(),
+                pageable);
 
-        private long calculateTotalSessionCount() {
-                try {
-                        return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
-                } catch (Exception e) {
-                        throw new RuntimeException("완료된 상담 세션 수 계산 중 오류 발생", e);
-                }
-        }
+        return SelectCounselSessionPageRes.of(page);
+    }
 
-        private double calculateCounselHoursForThisMonth() {
-                try {
-                        int year = LocalDateTime.now().getYear();
-                        int month = LocalDateTime.now().getMonthValue();
-                        List<CounselSession> completedSessions = counselSessionRepository
-                                        .findCompletedSessionsByYearAndMonth(year, month);
-
-                        return completedSessions.stream()
-                                        .mapToDouble(session -> {
-                                                Duration duration = Duration.between(
-                                                                session.getStartDateTime(),
-                                                                session.getEndDateTime());
-                                                return duration.toMinutes() / 60.0;
-                                        })
-                                        .sum();
-                } catch (Exception e) {
-                        throw new RuntimeException("이번 달 상담 시간 계산 중 오류 발생", e);
-                }
-        }
-
-        @Scheduled(cron = "0 0 * * * *") // 매시간 실행
-        @Transactional
-        public void cancelOverdueSessions() {
-                LocalDateTime now = LocalDateTime.now();
-                log.info("Checking for overdue sessions at {}", now);
-                long updateCount = counselSessionRepository.cancelOverDueSessions();
-                log.info("취소된 상담 세션 수: {}", updateCount);
-        }
-
-        @Transactional(readOnly = true)
-        public SelectCounselSessionPageRes searchCounselSessions(SearchCounselSessionReq req) {
-                Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-
-                Page<CounselSession> page = counselSessionRepository
-                                .findByCounseleeNameAndCounselorNameAndScheduledDateTime(
-                                                req.getCounseleeNameKeyword(),
-                                                req.getCounselorNames(),
-                                                req.getScheduledDates(),
-                                                pageable);
-
-                return SelectCounselSessionPageRes.of(page);
-        }
-
-        /**
-         * 상담 세션의 회차 정보를 업데이트합니다.
-         * 내담자별로 완료된 상담 세션의 수를 계산하여 회차를 설정합니다.
-         *
-         * @param counselSession 회차 정보를 업데이트할 상담 세션
-         */
-        public void updateSessionNumber(CounselSession counselSession) {
-                String counseleeId = counselSession.getCounselee().getId();
-                LocalDateTime scheduledDateTime = counselSession.getScheduledStartDateTime();
-                int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
-                                counseleeId, scheduledDateTime) + 1;
-                counselSession.updateSessionNumber(sessionNumber);
-        }
+    public void updateSessionNumber(CounselSession counselSession) {
+        String counseleeId = counselSession.getCounselee().getId();
+        LocalDateTime scheduledDateTime = counselSession.getScheduledStartDateTime();
+        int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
+            counseleeId, scheduledDateTime) + 1;
+        counselSession.updateSessionNumber(sessionNumber);
+    }
 }
