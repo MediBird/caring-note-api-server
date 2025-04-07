@@ -8,7 +8,10 @@ import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.dto.CommonCursorRes;
@@ -72,10 +76,11 @@ public class CounselSessionService {
         CounselSession counselSession = CounselSession.createReservation(
             counselee,
             scheduledStartDateTime);
-        updateSessionNumber(counselSession);
         CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
         counselCardService.initializeCounselCard(savedCounselSession);
+
+        reassignSessionNumbers(createReservationReq.getCounseleeId());
 
         return new CreateCounselReservationRes(savedCounselSession.getId());
     }
@@ -95,6 +100,8 @@ public class CounselSessionService {
             scheduledStartDateTime);
 
         counselSession.modifyReservation(scheduledStartDateTime, counselee);
+
+        reassignSessionNumbers(modifyCounselReservationReq.getCounseleeId());
 
         return new ModifyCounselReservationRes(modifyCounselReservationReq.getCounselSessionId());
     }
@@ -177,6 +184,7 @@ public class CounselSessionService {
     public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
         UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
 
+        // TODO 쿼리 최적화 고려
         CounselSession counselSession = counselSessionRepository.findById(
                 updateStatusInCounselSessionReq.counselSessionId())
             .orElseThrow(NoContentException::new);
@@ -196,16 +204,21 @@ public class CounselSessionService {
             case SCHEDULED -> counselSession.scheduleCounselSession();
         }
 
+        reassignSessionNumbers(counselSession.getCounselee().getId());
+
         return new UpdateStatusInCounselSessionRes(counselSession.getId());
     }
 
     @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
     @Transactional
     public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
+        CounselSession counselSession = counselSessionRepository.findById(
+                deleteCounselSessionReq.getCounselSessionId())
+            .orElseThrow(IllegalArgumentException::new);
 
-        counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
+        counselSessionRepository.delete(counselSession);
 
-        return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
+        return new DeleteCounselSessionRes(counselSession.getId());
     }
 
     public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
@@ -299,8 +312,12 @@ public class CounselSessionService {
     public void cancelOverdueSessions() {
         LocalDateTime now = LocalDateTime.now();
         log.info("Checking for overdue sessions at {}", now);
-        long updateCount = counselSessionRepository.cancelOverDueSessions();
-        log.info("취소된 상담 세션 수: {}", updateCount);
+        List<String> affectedCounseleeIds = counselSessionRepository.cancelOverDueSessionsAndReturnAffectedCounseleeIds();
+        log.info("취소된 세션으로 인해 영향을 받은 대상 수: {}", affectedCounseleeIds.size());
+
+        for (String counseleeId : affectedCounseleeIds) {
+            reassignSessionNumbers(counseleeId); // 회차 재정렬
+        }
     }
 
     @Transactional(readOnly = true)
@@ -317,11 +334,22 @@ public class CounselSessionService {
         return SelectCounselSessionPageRes.of(page);
     }
 
-    public void updateSessionNumber(CounselSession counselSession) {
-        String counseleeId = counselSession.getCounselee().getId();
-        LocalDateTime scheduledDateTime = counselSession.getScheduledStartDateTime();
-        int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
-            counseleeId, scheduledDateTime) + 1;
-        counselSession.updateSessionNumber(sessionNumber);
+    public void reassignSessionNumbers(String counseleeId) {
+        List<CounselSession> counselSessions = counselSessionRepository.findValidCounselSessionsByCounseleeId(
+            counseleeId);
+
+        Map<String, Integer> sessionUpdates = new HashMap<>();
+
+        int sessionNumber = 1;
+        for (CounselSession session : counselSessions) {
+            if (!Objects.equals(session.getSessionNumber(), sessionNumber)) {
+                sessionUpdates.put(session.getId(), sessionNumber);
+            }
+            sessionNumber++;
+        }
+
+        if (!sessionUpdates.isEmpty()) {
+            counselSessionRepository.bulkUpdateCounselSessionNum(sessionUpdates);
+        }
     }
 }

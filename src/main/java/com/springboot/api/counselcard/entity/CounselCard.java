@@ -2,6 +2,7 @@ package com.springboot.api.counselcard.entity;
 
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -102,6 +103,12 @@ public class CounselCard extends BaseEntity {
             .build();
         counselCard.initializeDefaultValues();
         return counselCard;
+    }
+
+    @PrePersist
+    @Override
+    protected void onCreate() {
+        super.onCreate();
     }
 
     @PostLoad
