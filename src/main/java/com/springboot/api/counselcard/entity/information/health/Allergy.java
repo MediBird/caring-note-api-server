@@ -4,7 +4,6 @@ import java.util.Objects;
 
 import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,15 +12,15 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Allergy {
+
     private String allergyNote;
 
-    @Column(nullable = false)
     private Boolean isAllergic;
 
     public static Allergy initializeDefault() {
         Allergy allergy = new Allergy();
         allergy.allergyNote = null;
-        allergy.isAllergic = false;
+        allergy.isAllergic = null;
         return allergy;
     }
 
@@ -33,14 +32,14 @@ public class Allergy {
     }
 
     public void update(AllergyDTO allergyDTO) {
-        if(Objects.isNull(allergyDTO)) {
+        if (Objects.isNull(allergyDTO)) {
             return;
         }
 
         this.allergyNote = allergyDTO.allergyNote();
-        this.isAllergic = Objects.requireNonNullElse(allergyDTO.isAllergic(), false);
+        this.isAllergic = allergyDTO.isAllergic();
 
-        if(this.isAllergic.equals(false)) {
+        if (Objects.equals(this.isAllergic, false)) {
             this.allergyNote = null;
         }
     }

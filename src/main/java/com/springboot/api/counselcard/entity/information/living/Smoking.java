@@ -5,7 +5,6 @@ import java.util.Objects;
 import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
 import com.springboot.enums.SmokingAmount;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -16,16 +15,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @Embeddable
 public class Smoking {
+
     private String smokingPeriodNote;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private SmokingAmount smokingAmount;
 
     public static Smoking initializeDefault() {
         Smoking smoking = new Smoking();
         smoking.smokingPeriodNote = null;
-        smoking.smokingAmount = SmokingAmount.NONE;
+        smoking.smokingAmount = null;
         return smoking;
     }
 
@@ -37,10 +36,10 @@ public class Smoking {
     }
 
     public void update(SmokingDTO smokingDTO) {
-        if(Objects.isNull(smokingDTO)) {
+        if (Objects.isNull(smokingDTO)) {
             return;
         }
         this.smokingPeriodNote = smokingDTO.smokingPeriodNote();
-        this.smokingAmount = Objects.requireNonNullElse(smokingDTO.smokingAmount(), SmokingAmount.NONE);
+        this.smokingAmount = smokingDTO.smokingAmount();
     }
 }
