@@ -58,7 +58,8 @@ public class CounselCardService {
         return new CounselCardHealthInformationRes(counselCard);
     }
 
-    public CounselCardIndependentLifeInformationRes selectCounselCardIndependentLifeInformation(String counselSessionId) {
+    public CounselCardIndependentLifeInformationRes selectCounselCardIndependentLifeInformation(
+        String counselSessionId) {
         CounselCard counselCard = counselCardRepository
             .findCounselCardWithCounselee(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
@@ -78,7 +79,7 @@ public class CounselCardService {
     @CacheEvict(value = "sessionList", allEntries = true)
     public CounselCardIdRes updateCounselCardStatus(String counselSessionId, CardRecordStatus status) {
         CounselCard counselCard = counselCardRepository
-            .findCounselCardWithCounselee(counselSessionId)
+            .findCounselCardByCounselSessionId(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
 
         switch (status) {
@@ -104,9 +105,10 @@ public class CounselCardService {
         counselCardRepository.save(counselCard);
     }
 
-    public void retrievePreviousCounselCardAndFill(CounselCard counselCard) {
+    private void retrievePreviousCounselCardAndFill(CounselCard counselCard) {
         CounselCard lastRecordedCounselCard =
-            counselCardRepository.findLastRecordedCounselCard(counselCard.getCounselSession().getCounselee().getId()).orElse(null);
+            counselCardRepository.findLastRecordedCounselCard(counselCard.getCounselSession().getCounselee().getId())
+                .orElse(null);
 
         counselCard.importPreviousCardData(lastRecordedCounselCard);
     }
@@ -153,10 +155,6 @@ public class CounselCardService {
         CounselCard counselCard = counselCardRepository.findCounselCardWithCounselee(
                 counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
-
-        if(counselCard.getCounselSession().getCounselee().getIsDisability().equals(false)){
-            throw new IllegalArgumentException();
-        }
 
         counselCard.updateIndependentLife(updateIndependentLifeInformationReq);
 
