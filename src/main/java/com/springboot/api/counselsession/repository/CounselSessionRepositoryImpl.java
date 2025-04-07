@@ -119,16 +119,37 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public long cancelOverDueSessions() {
+    public List<String> cancelOverDueSessionsAndReturnAffectedCounseleeIds() {
         LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
 
-        return queryFactory
-            .update(counselSession)
-            .set(counselSession.status, ScheduleStatus.CANCELED)
+        List<Tuple> canceledSessions = queryFactory
+            .select(counselSession.id, counselSession.counselee.id)
+            .from(counselSession)
             .where(
                 counselSession.status.eq(ScheduleStatus.SCHEDULED),
-                counselSession.scheduledStartDateTime.before(twentyFourHoursAgo))
+                counselSession.scheduledStartDateTime.before(twentyFourHoursAgo)
+            )
+            .fetch();
+
+        if (canceledSessions.isEmpty()) {
+            return List.of();
+        }
+        List<String> sessionIds = canceledSessions.stream()
+            .map(tuple -> tuple.get(counselSession.id))
+            .collect(Collectors.toList());
+
+        List<String> affectedCounseleeIds = canceledSessions.stream()
+            .map(tuple -> tuple.get(counselSession.counselee.id))
+            .distinct()
+            .toList();
+
+        queryFactory
+            .update(counselSession)
+            .set(counselSession.status, ScheduleStatus.CANCELED)
+            .where(counselSession.id.in(sessionIds))
             .execute();
+
+        return affectedCounseleeIds;
     }
 
     @Override

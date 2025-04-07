@@ -25,7 +25,7 @@ public interface CounselSessionRepositoryCustom {
 
     long countDistinctCounseleeForCurrentMonth();
 
-    long cancelOverDueSessions();
+    List<String> cancelOverDueSessionsAndReturnAffectedCounseleeIds();
 
     List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId,
         LocalDateTime beforeDateTime);

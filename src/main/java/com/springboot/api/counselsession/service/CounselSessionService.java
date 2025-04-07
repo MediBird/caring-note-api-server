@@ -76,10 +76,11 @@ public class CounselSessionService {
         CounselSession counselSession = CounselSession.createReservation(
             counselee,
             scheduledStartDateTime);
-        updateSessionNumber(counselSession);
         CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
         counselCardService.initializeCounselCard(savedCounselSession);
+
+        reassignSessionNumbers(createReservationReq.getCounseleeId());
 
         return new CreateCounselReservationRes(savedCounselSession.getId());
     }
@@ -99,6 +100,8 @@ public class CounselSessionService {
             scheduledStartDateTime);
 
         counselSession.modifyReservation(scheduledStartDateTime, counselee);
+
+        reassignSessionNumbers(modifyCounselReservationReq.getCounseleeId());
 
         return new ModifyCounselReservationRes(modifyCounselReservationReq.getCounselSessionId());
     }
@@ -181,6 +184,7 @@ public class CounselSessionService {
     public UpdateStatusInCounselSessionRes updateCounselSessionStatus(
         UpdateStatusInCounselSessionReq updateStatusInCounselSessionReq) {
 
+        // TODO 쿼리 최적화 고려
         CounselSession counselSession = counselSessionRepository.findById(
                 updateStatusInCounselSessionReq.counselSessionId())
             .orElseThrow(NoContentException::new);
@@ -200,16 +204,21 @@ public class CounselSessionService {
             case SCHEDULED -> counselSession.scheduleCounselSession();
         }
 
+        reassignSessionNumbers(counselSession.getCounselee().getId());
+
         return new UpdateStatusInCounselSessionRes(counselSession.getId());
     }
 
     @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
     @Transactional
     public DeleteCounselSessionRes deleteCounselSessionRes(DeleteCounselSessionReq deleteCounselSessionReq) {
+        CounselSession counselSession = counselSessionRepository.findById(
+                deleteCounselSessionReq.getCounselSessionId())
+            .orElseThrow(IllegalArgumentException::new);
 
-        counselSessionRepository.deleteById(deleteCounselSessionReq.getCounselSessionId());
+        counselSessionRepository.delete(counselSession);
 
-        return new DeleteCounselSessionRes(deleteCounselSessionReq.getCounselSessionId());
+        return new DeleteCounselSessionRes(counselSession.getCounselee().getId());
     }
 
     public List<SelectPreviousCounselSessionListRes> selectPreviousCounselSessionList(String counselSessionId) {
@@ -303,8 +312,12 @@ public class CounselSessionService {
     public void cancelOverdueSessions() {
         LocalDateTime now = LocalDateTime.now();
         log.info("Checking for overdue sessions at {}", now);
-        long updateCount = counselSessionRepository.cancelOverDueSessions();
-        log.info("취소된 상담 세션 수: {}", updateCount);
+        List<String> affectedCounseleeIds = counselSessionRepository.cancelOverDueSessionsAndReturnAffectedCounseleeIds();
+        log.info("취소된 세션으로 인해 영향을 받은 대상 수: {}", affectedCounseleeIds.size());
+
+        for (String counseleeId : affectedCounseleeIds) {
+            reassignSessionNumbers(counseleeId); // 회차 재정렬
+        }
     }
 
     @Transactional(readOnly = true)
@@ -321,15 +334,6 @@ public class CounselSessionService {
         return SelectCounselSessionPageRes.of(page);
     }
 
-    public void updateSessionNumber(CounselSession counselSession) {
-        String counseleeId = counselSession.getCounselee().getId();
-        LocalDateTime scheduledDateTime = counselSession.getScheduledStartDateTime();
-        int sessionNumber = counselSessionRepository.countSessionNumberByCounseleeId(
-            counseleeId, scheduledDateTime) + 1;
-        counselSession.updateSessionNumber(sessionNumber);
-    }
-
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void reassignSessionNumbers(String counseleeId) {
         List<CounselSession> counselSessions = counselSessionRepository.findValidCounselSessionsByCounseleeId(
             counseleeId);
