@@ -8,7 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.springboot.api.medication.entity.Medication;
 
-public interface MedicationRepository extends JpaRepository<Medication, String> {
+public interface MedicationRepository extends JpaRepository<Medication, String>, MedicationRepositoryCustom {
         List<Medication> findByItemNameContainingIgnoreCase(String keyword);
 
         // 또는 더 세밀한 제어를 위해

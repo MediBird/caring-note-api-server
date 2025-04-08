@@ -1,18 +1,13 @@
 package com.springboot.api.counselsession.entity;
 
-import java.util.List;
-
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import com.springboot.api.common.entity.BaseEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -27,8 +22,8 @@ import lombok.experimental.SuperBuilder;
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medicationCounselHighlights" })
-@ToString(callSuper = true, exclude = { "counselSession", "medicationCounselHighlights" })
+@EqualsAndHashCode(callSuper = true, exclude = { "counselSession" })
+@ToString(callSuper = true, exclude = { "counselSession" })
 public class MedicationCounsel extends BaseEntity {
 
     @OneToOne
@@ -38,9 +33,6 @@ public class MedicationCounsel extends BaseEntity {
 
     @Column(name = "counsel_record", columnDefinition = "TEXT")
     private String counselRecord;
-
-    @OneToMany(mappedBy = "medicationCounsel", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<MedicationCounselHighlight> medicationCounselHighlights;
 
     @PrePersist
     @Override

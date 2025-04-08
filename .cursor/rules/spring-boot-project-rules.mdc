@@ -1,0 +1,115 @@
+---
+description: 
+globs: *.java
+alwaysApply: false
+---
+# Spring Boot 프로젝트 규칙
+
+## 프로젝트 구조
+- 패키지 구조는 계층형 구조 또는 기능 중심으로 일관되게 구성
+- 도메인 중심 디자인 패턴 적용:
+  - 도메인 모델, 서비스, 리포지토리 분리
+  - 각 도메인별 패키지 구성
+- 공통 모듈과 도메인별 모듈 명확히 분리
+
+## 의존성 관리
+- Spring Boot 버전 업그레이드 정책 수립
+- 보안 취약점이 발견된 의존성은 즉시 업데이트
+- 사용하지 않는 의존성은 제거하여 빌드 속도 최적화
+- 의존성 버전 명시적 관리 (버전 충돌 방지)
+
+## 데이터 액세스
+- Spring Data JPA 활용:
+  - 엔티티 설계 원칙 준수
+  - 복잡한 쿼리는 JPQL 또는 QueryDSL 사용
+- 트랜잭션 관리:
+  - @Transactional 어노테이션 적절히 사용
+  - 트랜잭션 전파 속성 이해하고 적용
+  - 읽기 전용 트랜잭션은 @Transactional(readOnly = true) 사용
+- N+1 쿼리 문제 방지:
+  - 즉시 로딩(EAGER) 대신 지연 로딩(LAZY) 기본 적용
+  - 필요한 경우 페치 조인 사용
+  - @EntityGraph 활용한 최적화
+
+## 서비스 계층
+- 비즈니스 로직은 서비스 계층에 집중
+- 트랜잭션 경계는 서비스 레벨에서 관리
+- 도메인 서비스와 애플리케이션 서비스 분리 고려
+- 서비스간 순환 참조 방지
+
+## 컨트롤러 설계
+- REST API 설계 원칙 준수
+- @RestControllerAdvice를 통한 전역 예외 처리
+- 요청/응답 DTO 사용하여 도메인 모델과 API 계약 분리
+- 입력 유효성 검증은 컨트롤러 레벨에서 처리
+  - Bean Validation (@Valid) 활용
+  - 커스텀 유효성 검증기 구현
+
+## 캐싱 설정
+- @EnableCaching 및 캐시 매니저 설정
+- 캐시 추상화 계층 활용
+- 캐시 전략 수립:
+  - 로컬 캐시 vs 분산 캐시
+  - 캐시 무효화 정책
+  - 캐시 TTL 설정
+
+## 비동기 처리
+- @EnableAsync 및 비동기 실행기 설정
+- 스레드 풀 크기 및 큐 크기 적절히 설정
+- 비동기 메소드 예외 처리 방안 마련
+- CompletableFuture 활용
+
+## 메시징 및 이벤트
+- 이벤트 기반 아키텍처 적용:
+  - Spring ApplicationEvent 활용
+  - 도메인 이벤트 정의 및 발행
+- 메시지 큐 활용:
+  - 비동기 처리 구현
+  - 시스템 간 결합도 감소
+
+## 프로파일 관리
+- 환경별 프로파일 설정:
+  - application-{env}.yml 활용
+  - 개발, 테스트, 운영 환경 분리
+- 민감한 정보 외부화:
+  - 환경 변수 또는 외부 설정 서버 활용
+  - 비밀번호, API 키 등은 코드에 직접 포함 금지
+
+## 모니터링 및 관측성
+- Actuator 활용:
+  - 애플리케이션 상태 모니터링
+  - 건강 체크 엔드포인트 구성
+- Micrometer 통합:
+  - 주요 메트릭 수집
+  - Prometheus, Grafana 연동
+- 분산 추적:
+  - Spring Cloud Sleuth 또는 Micrometer Tracing 활용
+  - 요청 추적 ID 생성 및 전파
+
+## 테스트 전략
+- 단위 테스트:
+  - @WebMvcTest로 컨트롤러 테스트
+  - @DataJpaTest로 리포지토리 테스트
+  - @MockBean으로 의존성 모킹
+- 통합 테스트:
+  - @SpringBootTest 활용
+  - TestContainers로 인프라 의존성 테스트
+- 성능 테스트:
+  - JMeter 활용
+  - 부하 테스트 시나리오 작성
+
+## 문서화
+- Spring REST Docs 또는 Springdoc-OpenAPI 활용
+- API 문서를 테스트와 연동하여 최신 상태 유지
+- 예제 요청 및 응답 포함
+
+## 배포 및 운영
+- Docker 컨테이너화:
+  - 멀티 스테이지 빌드 활용
+  - 경량 베이스 이미지 사용
+- Kubernetes 배포:
+  - 리소스 요청 및 제한 설정
+  - 프로브 설정(Liveness, Readiness)
+- 무중단 배포 전략:
+  - Blue-Green 또는 Canary 배포
+  - 롤백 계획 수립 

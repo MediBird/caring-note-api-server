@@ -17,14 +17,13 @@ import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
-import com.springboot.api.medication.entity.Medication;
 import com.springboot.api.counselsession.entity.MedicationCounsel;
-import com.springboot.api.counselsession.entity.MedicationCounselHighlight;
 import com.springboot.api.counselsession.entity.MedicationRecordHist;
 import com.springboot.api.counselsession.entity.WasteMedicationDisposal;
 import com.springboot.api.counselsession.entity.WasteMedicationRecord;
 import com.springboot.api.counselsession.enums.wasteMedication.DrugRemainActionType;
 import com.springboot.api.counselsession.enums.wasteMedication.RecoveryAgreementType;
+import com.springboot.api.medication.entity.Medication;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
@@ -352,25 +351,6 @@ public class TestDataInitializer implements CommandLineRunner {
             medicationCounsel.setId(medicationCounselId);
             entityManager.persist(medicationCounsel);
 
-            List<MedicationCounselHighlight> medicationCounselHighlights = List.of(
-                    MedicationCounselHighlight.builder()
-                            .medicationCounsel(medicationCounsel)
-                            .highlight("I'm")
-                            .startIndex(0)
-                            .endIndex(2)
-                            .build(),
-                    MedicationCounselHighlight.builder()
-                            .medicationCounsel(medicationCounsel)
-                            .highlight("counselor")
-                            .startIndex(4)
-                            .endIndex(12)
-                            .build());
-
-            IntStream.range(0, medicationCounselHighlights.size())
-                    .forEach(i -> medicationCounselHighlights.get(i)
-                            .setId(medicationCounsel.getId() + "_HIGHLIGHT_" + i));
-
-            medicationCounselHighlights.forEach(entityManager::persist);
 
         }
     }
