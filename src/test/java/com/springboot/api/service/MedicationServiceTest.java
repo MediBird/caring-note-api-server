@@ -37,7 +37,8 @@ public class MedicationServiceTest {
                 String ulid2 = ulid.nextULID();
                 List<SearchMedicationByKeywordRes> expectedResults = Arrays.asList(
                                 SearchMedicationByKeywordRes.builder().id(ulid1).itemName("타이레놀")
-                                                .itemImage("image1.jpg").build(),
+                                                .itemImage("image1.jpg")
+                                                .build(),
                                 SearchMedicationByKeywordRes.builder().id(ulid2).itemName("타이레놀 500mg")
                                                 .itemImage("image2.jpg")
                                                 .build());
@@ -48,21 +49,22 @@ public class MedicationServiceTest {
                                 .itemImage("image1.jpg")
                                 .build();
 
-                Medication medication2 = Medication.builder()
-                                .id(ulid2)
-                                .itemName("타이레놀 500mg")
-                                .itemImage("image2.jpg")
-                                .build();
+            Medication medication2 = Medication.builder()
+                            .id(ulid2)
+                            .itemName("타이레놀 500mg")
+                            .itemImage("image2.jpg")
+                            .build();
 
-                List<Medication> medications = List.of(
-                                medication1,
-                                medication2);
-                when(medicationRepository.searchByItemNameWithPattern(keyword, "ㅌㅇㄹㄴ")).thenReturn(medications);
+        List<Medication> medications = List.of(
+                        medication1,
+                        medication2);
+        when(medicationRepository.searchByKeyword(keyword)).thenReturn(medications);
 
-                // when
-                List<SearchMedicationByKeywordRes> actualResults = medicationService.searchMedicationByKeyword(keyword);
-                // then
-                assertEquals(expectedResults, actualResults);
-        }
+        // when
+        List<SearchMedicationByKeywordRes> actualResults = medicationService.searchMedicationByKeyword(keyword);
+        // then
+        assertEquals(expectedResults, actualResults);
+}
+
 
 }
