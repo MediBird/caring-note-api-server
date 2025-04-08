@@ -45,18 +45,6 @@ alwaysApply: false
   - Bean Validation (@Valid) 활용
   - 커스텀 유효성 검증기 구현
 
-## 보안 설정
-- Spring Security 구성:
-  - SecurityFilterChain 명확히 설정
-  - 인증 및 인가 처리 분리
-  - CORS 및 CSRF 보호 설정
-- 사용자 권한 관리:
-  - RBAC(Role-Based Access Control) 구현
-  - 메소드 수준 보안(@PreAuthorize) 활용
-- 비밀번호 인코딩:
-  - BCryptPasswordEncoder 사용
-  - 보안 강도 적절히 설정
-
 ## 캐싱 설정
 - @EnableCaching 및 캐시 매니저 설정
 - 캐시 추상화 계층 활용

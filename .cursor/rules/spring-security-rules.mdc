@@ -1,0 +1,77 @@
+---
+description: Spring security와 관련된 코드에서 참조해야 하는 규칙들입니다.
+globs: 
+alwaysApply: false
+---
+# Keycloak 기반 Spring Security 설정 규칙
+
+## Keycloak 인증 서버 연동
+- Spring Security OAuth2 리소스 서버 설정:
+  - JWT 토큰 검증을 위한 `issuer-uri` 및 `jwk-set-uri` 정의
+  - 인증 서버 엔드포인트 환경별 분리 (application-{env}.yml)
+- Keycloak Admin Client 설정:
+  - 관리자 접근 권한이 필요한 작업을 위한 Admin 클라이언트 설정
+  - 중요 자격 증명은 application-secret.yml로 분리하여 보안 강화
+
+## SecurityFilterChain 구성
+- JWT 인증 및 권한 관리:
+  - `oauth2ResourceServer().jwt()` 설정으로 리소스 서버 활성화
+  - 커스텀 JWT 컨버터를 통한 Keycloak 역할과 애플리케이션 권한 매핑
+  - 세션리스 인증 설정 (`SessionCreationPolicy.STATELESS`)
+- URL 기반 접근 제어:
+  - 허용 URL 패턴은 외부 설정 파일로 관리 (`SecurityProperties`)
+  - API 경로별 적절한 권한 매핑
+- CORS 및 CSRF 보호:
+  - SPA 연동을 위한 적절한 CORS 설정
+  - 애플리케이션 유형에 따른 CSRF 보호 유무 결정
+
+## 토큰 처리 및 검증
+- JWT 컨버터 구현:
+  - Keycloak 토큰 클레임에서 역할 정보 추출
+  - 사용자 정보가 DB에 없을 경우 자동 등록 처리
+  - 권한 매핑 전략 수립 (Keycloak Realm Role → 애플리케이션 권한)
+- 토큰 관리:
+  - 토큰 갱신 메커니즘 구현
+  - 만료된 토큰 처리 전략
+
+## Keycloak 사용자 관리
+- 관리 서비스 구현:
+  - 사용자 생성, 수정, 삭제 기능 제공
+  - 비밀번호 초기화 및 계정 활성화/비활성화 작업
+  - 사용자 정보 동기화 (Keycloak ↔ 애플리케이션 DB)
+- 오류 처리:
+  - Keycloak 서버 연결 실패 시 폴백 메커니즘
+  - 트랜잭션 관리로 DB와 Keycloak 간 일관성 유지
+
+## 메소드 수준 보안
+- `@EnableMethodSecurity` 활용:
+  - `@PreAuthorize`, `@PostAuthorize` 어노테이션으로 메소드 수준 접근 제어
+  - SpEL 표현식으로 동적 권한 검사 구현
+- 커스텀 어노테이션:
+  - 도메인 특화 어노테이션 개발로 가독성 향상
+  - AOP 기반 접근 제어 구현
+
+## 보안 설정 모범 사례
+- 설정 파일 분리:
+  - 보안 관련 설정은 application-secret.yml로 분리
+  - 환경별 설정은 application-{env}.yml에서 관리
+- 로깅 및 모니터링:
+  - 인증/인가 실패 이벤트 로깅
+  - 주요 보안 이벤트 모니터링 체계 구축
+- 패스워드 관리:
+  - `BCryptPasswordEncoder` 사용으로 안전한 패스워드 저장
+  - 정기적인 비밀번호 변경 정책 구현
+
+## 테스트 전략
+- 보안 테스트 자동화:
+  - 인증/인가 경로에 대한 테스트 코드 작성
+  - Keycloak 테스트 컨테이너 활용한 통합 테스트
+  - 모의 토큰 생성으로 다양한 권한 시나리오 테스트
+
+## 프론트엔드 연동
+- OAuth2 / OpenID Connect 흐름 구현:
+  - 권한 부여 코드 흐름 또는 PKCE 활용
+  - 토큰 저장 및 갱신 메커니즘 구현
+- 보안 헤더 설정:
+  - 적절한 Cache-Control, X-Content-Type-Options 설정
+  - Content-Security-Policy 구성으로 XSS 방어
