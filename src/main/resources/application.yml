@@ -1,6 +1,7 @@
 server:
   tomcat:
     max-http-form-post-size: 110MB
+  timezone: Asia/Seoul
 spring:
   security:
     oauth2:
@@ -31,7 +32,7 @@ spring:
         dialect: org.hibernate.dialect.H2Dialect
   jackson:
     date-format: yyyy-MM-dd
-    time-zone: UTC
+    time-zone: Asia/Seoul
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
     deserialization:
