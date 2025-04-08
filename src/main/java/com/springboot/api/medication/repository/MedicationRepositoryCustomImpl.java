@@ -3,7 +3,6 @@ package com.springboot.api.medication.repository;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -47,18 +46,14 @@ public class MedicationRepositoryCustomImpl implements MedicationRepositoryCusto
     }
 
     private List<Medication> searchByChosung(String keyword) {
-
-        OrderSpecifier<?> orderByPriority = new CaseBuilder()
-                .when(medication.itemNameChosung.startsWith(keyword)).then(1)
-                .when(medication.itemNameChosung.contains(keyword)).then(2)
-                .otherwise(3)
-                .as("priority")
-                .asc();
-
         return queryFactory
                 .selectFrom(medication)
                 .where(medication.itemNameChosung.like("%" + keyword + "%"))
-                .orderBy(orderByPriority)
+                .orderBy(new CaseBuilder()
+                        .when(medication.itemNameChosung.startsWith(keyword)).then(1)
+                        .when(medication.itemNameChosung.contains(keyword)).then(2)
+                        .otherwise(3)
+                        .asc())
                 .limit(10)
                 .fetch();
     }
@@ -66,17 +61,14 @@ public class MedicationRepositoryCustomImpl implements MedicationRepositoryCusto
     private List<Medication> searchByName(String keyword) {
         log.info("일반 텍스트 검색: {}", keyword);
 
-        OrderSpecifier<?> orderByPriority = new CaseBuilder()
-                .when(medication.itemName.startsWith(keyword)).then(1)
-                .when(medication.itemName.contains(keyword)).then(2)
-                .otherwise(3)
-                .as("priority")
-                .asc();
-
         return queryFactory
                 .selectFrom(medication)
                 .where(nameContains(keyword))
-                .orderBy(orderByPriority)
+                .orderBy(new CaseBuilder()
+                        .when(medication.itemName.startsWith(keyword)).then(1)
+                        .when(medication.itemName.contains(keyword)).then(2)
+                        .otherwise(3)
+                        .asc())
                 .limit(10)
                 .fetch();
     }
