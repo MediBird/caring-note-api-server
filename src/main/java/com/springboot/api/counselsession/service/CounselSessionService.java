@@ -1,10 +1,5 @@
 package com.springboot.api.counselsession.service;
 
-import com.querydsl.core.Tuple;
-import com.springboot.api.counselcard.service.CounselCardService;
-import com.springboot.api.counselor.service.CounselorService;
-import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
-import com.springboot.enums.CardRecordStatus;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,15 +16,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.querydsl.core.Tuple;
 import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
+import com.springboot.api.counselcard.service.CounselCardService;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselor.entity.Counselor;
+import com.springboot.api.counselor.service.CounselorService;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
@@ -45,9 +42,11 @@ import com.springboot.api.counselsession.dto.counselsession.SelectCounselSession
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
+import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
 
 import lombok.RequiredArgsConstructor;
