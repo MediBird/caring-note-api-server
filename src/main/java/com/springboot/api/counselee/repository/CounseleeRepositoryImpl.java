@@ -54,7 +54,7 @@ public class CounseleeRepositoryImpl extends QuerydslRepositorySupport implement
                 JPAQuery<Counselee> query = queryFactory
                                 .selectFrom(counselee)
                                 .where(builder)
-                                .orderBy(counselee.registrationDate.desc());
+                                .orderBy(counselee.updatedDatetime.desc());
 
                 long total = queryFactory
                                 .select(counselee.count())
