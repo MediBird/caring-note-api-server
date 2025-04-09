@@ -105,17 +105,6 @@ public class CounselSessionService {
         return new ModifyCounselReservationRes(modifyCounselReservationReq.getCounselSessionId());
     }
 
-    private Counselor findAndValidateCounselorSchedule(String counselorId, LocalDateTime scheduledStartDateTime) {
-        Counselor counselor = counselorService.findCounselorById(counselorId);
-
-        if (counselSessionRepository.existsByCounselorAndScheduledStartDateTime(counselor,
-            scheduledStartDateTime)) {
-            throw new IllegalArgumentException("해당 시간에 이미 상담이 예약되어 있습니다");
-        }
-
-        return counselor;
-    }
-
     private Counselee findAndValidateCounseleeSchedule(String counseleeId, LocalDateTime scheduledStartDateTime) {
         Counselee counselee = counseleeRepository.findById(counseleeId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 내담자 ID입니다"));
@@ -170,8 +159,7 @@ public class CounselSessionService {
             .findById(updateCounselorInCounselSessionReq.counselSessionId())
             .orElseThrow(NoContentException::new);
 
-        Counselor counselor = findAndValidateCounselorSchedule(updateCounselorInCounselSessionReq.counselorId(),
-            counselSession.getScheduledStartDateTime());
+        Counselor counselor = counselorService.findCounselorById(updateCounselorInCounselSessionReq.counselorId());
 
         counselSession.updateCounselor(counselor);
 
