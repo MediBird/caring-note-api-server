@@ -68,9 +68,10 @@ jobs:
       
       - name: Create pull request
         if: steps.check-pr.outputs.pr_exists == '0'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CHANGELOG_BODY: ${{ steps.changelog.outputs.changelog }}
         run: |
           gh pr create --base main --head staging \
             --title "🚀 릴리즈: Staging to Main" \
-            --body "${{ steps.changelog.outputs.changelog }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            --body "$CHANGELOG_BODY"
