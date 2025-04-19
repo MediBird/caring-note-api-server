@@ -2,7 +2,6 @@ package com.springboot.api.common.dto;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 

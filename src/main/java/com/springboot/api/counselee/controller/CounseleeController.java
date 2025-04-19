@@ -26,7 +26,6 @@ import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.counselee.dto.SelectCounseleePageRes;
 import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.service.CounseleeService;

@@ -4,7 +4,6 @@ import com.querydsl.jpa.impl.JPAQuery;
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import java.util.List;
-import java.util.function.Supplier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;

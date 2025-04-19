@@ -3,7 +3,6 @@ package com.springboot.api.controller;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -13,7 +12,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.fixture.CounseleeFixture;
 import java.time.LocalDate;
@@ -45,7 +43,6 @@ import com.springboot.api.counselee.controller.CounseleeController;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
 import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.counselee.dto.SelectCounseleePageRes;
 import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
