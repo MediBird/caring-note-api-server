@@ -39,4 +39,6 @@ jobs:
           port: ${{ secrets.VM_PORT }}
           script: |
             # staging 디플로이먼트를 대상으로 변경하고 github.sha 태그 사용
-            kubectl set image deployment/caring-note-api-staging caring-note-api=${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} --record -n caring-note-staging
+            kubectl set image deployment/caring-note-api caring-note-api=${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} -n caring-note-staging
+            
+            kubectl annotate deployment/caring-note-api kubernetes.io/change-cause="이미지 업데이트: ${{ github.sha }}" -n caring-note-staging

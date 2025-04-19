@@ -39,4 +39,5 @@ jobs:
           port: ${{ secrets.VM_PORT }}
           script: |
             cd /data/caring-note-deployment
-            kubectl set image deployment/caring-note-api-main caring-note-api=${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} --record
+            kubectl set image deployment/caring-note-api caring-note-api=${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} --record
+            kubectl annotate deployment/caring-note-api kubernetes.io/change-cause="이미지 업데이트: ${{ github.sha }}"
