@@ -1,0 +1,76 @@
+name: Create Release PR from Staging to Main
+
+on:
+  push:
+    branches: [staging]
+    
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          
+      - name: Check if PR already exists
+        id: check-pr
+        run: |
+          PR_EXISTS=$(gh pr list --base main --head staging --json number | jq '. | length')
+          echo "pr_exists=$PR_EXISTS" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Generate changelog
+        if: steps.check-pr.outputs.pr_exists == '0'
+        id: changelog
+        run: |
+          # 마지막 릴리즈 태그 이후의 커밋 가져오기
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"- %s (%an)" staging)
+          else
+            COMMITS=$(git log $LAST_TAG..staging --pretty=format:"- %s (%an)")
+          fi
+          
+          # 커밋 타입별로 분류
+          FEATURES=$(echo "$COMMITS" | grep -E "^- feat(\([^)]+\))?:" || echo "")
+          FIXES=$(echo "$COMMITS" | grep -E "^- fix(\([^)]+\))?:" || echo "")
+          OTHERS=$(echo "$COMMITS" | grep -v -E "^- (feat|fix)(\([^)]+\))?:" || echo "")
+          
+          # 버전 번호 추정 (실제로는 더 복잡한 로직이 필요할 수 있음)
+          CURRENT_VERSION=$(echo $LAST_TAG | sed 's/v//')
+          if [ -z "$CURRENT_VERSION" ]; then
+            CURRENT_VERSION="0.0.0"
+          fi
+          
+          # PR 설명 생성
+          echo 'changelog<<EOF' >> $GITHUB_OUTPUT
+          echo "# 릴리즈 노트" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          
+          if [ ! -z "$FEATURES" ]; then
+            echo "## 새로운 기능" >> $GITHUB_OUTPUT
+            echo "$FEATURES" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ ! -z "$FIXES" ]; then
+            echo "## 버그 수정" >> $GITHUB_OUTPUT
+            echo "$FIXES" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+          fi
+          
+          if [ ! -z "$OTHERS" ]; then
+            echo "## 기타 변경사항" >> $GITHUB_OUTPUT
+            echo "$OTHERS" >> $GITHUB_OUTPUT
+          fi
+          echo EOF >> $GITHUB_OUTPUT
+      
+      - name: Create pull request
+        if: steps.check-pr.outputs.pr_exists == '0'
+        run: |
+          gh pr create --base main --head staging \
+            --title "🚀 릴리즈: Staging to Main" \
+            --body "${{ steps.changelog.outputs.changelog }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
