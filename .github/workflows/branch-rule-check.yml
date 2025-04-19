@@ -1,0 +1,23 @@
+name: Branch Restriction Check
+
+on:
+  pull_request:
+    branches: [main, staging]
+    
+jobs:
+  check-branch-rules:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch rules
+        run: |
+          TARGET_BRANCH="${{ github.base_ref }}"
+          SOURCE_BRANCH="${{ github.head_ref }}"
+          
+          if [[ "$TARGET_BRANCH" == "main" && ! "$SOURCE_BRANCH" =~ ^hotfix/ && ! "$SOURCE_BRANCH" == "staging" ]]; then
+            echo "Error: Only hotfix/* branches or staging can merge to main"
+            exit 1
+          fi
+          
+          if [[ "$TARGET_BRANCH" == "staging" && "$SOURCE_BRANCH" =~ ^hotfix/ ]]; then
+            echo "Warning: hotfix branches typically merge to main first"
+          fi
