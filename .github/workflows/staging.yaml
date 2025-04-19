@@ -1,9 +1,9 @@
-name: CI/CD Pipeline (Main)
+name: CI/CD Pipeline (Staging)
 
 on:
   push:
     branches:
-      - main
+      - staging # staging 브랜치만 트리거
 
 jobs:
   build-and-deploy:
@@ -26,11 +26,11 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} # staging 태그 대신 github.sha 사용
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: VM에 배포 (Main)
+      - name: VM에 배포 (Staging)
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.VM_HOST }}
@@ -38,5 +38,5 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           port: ${{ secrets.VM_PORT }}
           script: |
-            cd /data/caring-note-deployment
-            kubectl set image deployment/caring-note-api-main caring-note-api=${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} --record
+            # staging 디플로이먼트를 대상으로 변경하고 github.sha 태그 사용
+            kubectl set image deployment/caring-note-api-staging caring-note-api=${{ secrets.DOCKERHUB_USERNAME }}/caring-note-api:${{ github.sha }} --record -n caring-note-staging
