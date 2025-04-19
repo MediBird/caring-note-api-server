@@ -1,12 +1,12 @@
 package com.springboot.api.counselor.repository;
 
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.common.util.QuerydslPagingUtil;
 import com.springboot.enums.CounselorStatus;
 import java.util.List;
 
 import java.util.Optional;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 import org.springframework.stereotype.Repository;
 
@@ -72,36 +72,25 @@ public class CounselorRepositoryImpl extends QuerydslRepositorySupport implement
     }
 
     @Override
-    public Page<Counselor> findAllActiveWithRoleTypeOrder(Pageable pageable) {
-        QCounselor counselor = QCounselor.counselor;
-
+    public PageRes<Counselor> findAllActiveWithRoleTypeOrder(PageReq pageReq) {
         // ROLE_ASSISTANT가 먼저 오는 순서 조건 생성
         OrderSpecifier<?> roleTypeOrder = new CaseBuilder()
-                .when(counselor.roleType.eq(RoleType.ROLE_ASSISTANT)).then(0)
-                .otherwise(1)
-                .asc();
+            .when(counselor.roleType.eq(RoleType.ROLE_ASSISTANT)).then(0)
+            .otherwise(1)
+            .asc();
 
-        // 쿼리 생성
-        JPAQuery<Counselor> query = queryFactory
-                .selectFrom(counselor)
-                .where(counselor.status.eq(CounselorStatus.ACTIVE))
-                .orderBy(
-                        roleTypeOrder,
-                        counselor.updatedDatetime.desc());
+        JPAQuery<Counselor> contentQuery = queryFactory
+            .selectFrom(counselor)
+            .where(counselor.status.eq(CounselorStatus.ACTIVE))
+            .orderBy(
+                roleTypeOrder,
+                counselor.updatedDatetime.desc());
 
-        // 전체 카운트 쿼리
-        long total = queryFactory
-                .select(counselor.count())
-                .from(counselor)
-                .fetchOne();
+        JPAQuery<Long> countQuery = queryFactory
+            .select(counselor.count())
+            .from(counselor)
+            .where(counselor.status.eq(CounselorStatus.ACTIVE));
 
-        // 페이징 적용 및 결과 조회
-        List<Counselor> results = query
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-
-        // 페이징 결과 반환
-        return new PageImpl<>(results, pageable, total);
+        return QuerydslPagingUtil.applyPagination(pageReq, contentQuery, countQuery);
     }
 }
