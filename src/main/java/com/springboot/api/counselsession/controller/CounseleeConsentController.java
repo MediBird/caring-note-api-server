@@ -45,6 +45,7 @@ public class CounseleeConsentController {
         return ResponseEntity.ok(new CommonRes<>(selectCounseleeConsentByCounseleeIdRes));
     }
 
+    @Deprecated
     @PostMapping
     @Operation(summary = "내담자 개인정보 수집 동의 여부 등록", tags = {"개인 정보 수집 동의"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
