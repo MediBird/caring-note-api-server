@@ -12,7 +12,6 @@ import com.springboot.api.common.util.QuerydslPagingUtil;
 import com.springboot.api.counselcard.entity.QCounselCard;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.QCounselSession;
-import com.springboot.api.counselsession.entity.QCounseleeConsent;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.ScheduleStatus;
 import java.time.LocalDate;
@@ -65,7 +64,6 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     public PageRes<Tuple> findSessionByCursorAndDate(LocalDate date, PageReq pageReq) {
 
         QCounselCard counselCard = QCounselCard.counselCard;
-        QCounseleeConsent counseleeConsent = QCounseleeConsent.counseleeConsent;
 
         BooleanBuilder builder = new BooleanBuilder();
 
