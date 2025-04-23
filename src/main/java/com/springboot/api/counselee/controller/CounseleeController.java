@@ -1,25 +1,10 @@
 package com.springboot.api.counselee.controller;
 
-import com.springboot.api.common.dto.PageReq;
-import com.springboot.api.common.dto.PageRes;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.message.HttpMessages;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
@@ -30,7 +15,6 @@ import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.enums.RoleType;
-
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Max;
@@ -39,7 +23,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @ApiController(name = "CounseleeController", description = "내담자 관련 API를 제공하는 Controller", path = "/v1/counsel/counselee")
 @RequiredArgsConstructor
@@ -90,7 +87,7 @@ public class CounseleeController {
     @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "내담자 목록 조회", tags = {"내담자 관리"})
     @RoleSecured(RoleType.ROLE_ADMIN)
-    public ResponseEntity<PageRes<SelectCounseleeRes>> selectCounseleesNew(
+    public ResponseEntity<PageRes<SelectCounseleeRes>> selectCounselees(
         @RequestParam("page") @Min(0) int page,
         @RequestParam("size") @Min(1) @Max(100) int size,
         @RequestParam(required = false, name = "name") @Pattern(regexp = "^[가-힣a-zA-Z\\s]*$", message = "이름은 한글과 영문만 허용됩니다") String name,
