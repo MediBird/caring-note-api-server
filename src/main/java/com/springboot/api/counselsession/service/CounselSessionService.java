@@ -1,25 +1,8 @@
 package com.springboot.api.counselsession.service;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.querydsl.core.Tuple;
-import com.springboot.api.common.dto.CommonCursorRes;
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.counselcard.service.CounselCardService;
@@ -35,9 +18,7 @@ import com.springboot.api.counselsession.dto.counselsession.DeleteCounselSession
 import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationReq;
 import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReservationRes;
 import com.springboot.api.counselsession.dto.counselsession.SearchCounselSessionReq;
-import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListByBaseDateAndCursorAndSizeReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
-import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionPageRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
@@ -48,9 +29,21 @@ import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
-
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -124,31 +117,18 @@ public class CounselSessionService {
         return SelectCounselSessionRes.from(counselSession);
     }
 
-    @Cacheable(value = "sessionList", key = "#req.baseDate + '-' + #req.cursor + '-' + #req.size")
+    @Cacheable(value = "sessionList", key = "#baseDate + '-' + #req.page + '-' + #req.size")
     @Transactional(readOnly = true)
-    public CommonCursorRes<List<SelectCounselSessionListItem>> selectCounselSessionListByBaseDateAndCursorAndSize(
-        SelectCounselSessionListByBaseDateAndCursorAndSizeReq req) {
-        Pageable pageable = PageRequest.of(0, req.size());
+    public PageRes<SelectCounselSessionListItem> selectCounselSessionListByBaseDate(PageReq req,
+        LocalDate baseDate) {
 
-        List<Tuple> sessions = counselSessionRepository.findSessionByCursorAndDate(req.baseDate(),
-            req.cursor(), null, pageable);
+        PageRes<Tuple> sessions = counselSessionRepository.findSessionByCursorAndDate(baseDate, req);
 
-        List<SelectCounselSessionListItem> selectCounselSessionListItems = sessions.stream()
-            .map(tuple -> {
-                CounselSession counselSession = tuple.get(0, CounselSession.class);
-                CardRecordStatus cardRecordStatus = tuple.get(1, CardRecordStatus.class);
-                return SelectCounselSessionListItem.from(counselSession, cardRecordStatus);
-            })
-            .toList();
-
-        boolean hasNext = selectCounselSessionListItems.size() > pageable.getPageSize();
-        List<SelectCounselSessionListItem> content =
-            hasNext ? selectCounselSessionListItems.subList(0, pageable.getPageSize()) : selectCounselSessionListItems;
-        String nextCursor = content.isEmpty() ? null : content.getLast().counselSessionId();
-
-        return new CommonCursorRes<>(content,
-            nextCursor,
-            hasNext);
+        return sessions.map(tuple -> {
+            CounselSession counselSession = tuple.get(0, CounselSession.class);
+            CardRecordStatus cardRecordStatus = tuple.get(1, CardRecordStatus.class);
+            return SelectCounselSessionListItem.from(counselSession, cardRecordStatus);
+        });
     }
 
     @CacheEvict(value = {"sessionList"}, allEntries = true)
@@ -239,59 +219,43 @@ public class CounselSessionService {
 
     @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
     public List<LocalDate> getSessionDatesByYearAndMonth(int year, int month) {
-        try {
-            return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
-        } catch (Exception e) {
-            throw new RuntimeException("상담 일정 조회 중 오류가 발생했습니다", e);
-        }
+        return counselSessionRepository.findDistinctDatesByYearAndMonth(year, month);
     }
 
     @Cacheable(value = "sessionStats")
     @Transactional(readOnly = true)
     public CounselSessionStatRes getSessionStats() {
-        try {
-            long totalSessionCount = calculateTotalSessionCount();
-            long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
-            long totalCaringMessageCount = counselSessionRepository.count();
-            double counselHours = calculateCounselHoursForThisMonth();
+        long totalSessionCount = calculateTotalSessionCount();
+        long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
+        long totalCaringMessageCount = counselSessionRepository.count();
+        double counselHours = calculateCounselHoursForThisMonth();
 
-            return CounselSessionStatRes.builder()
-                .totalSessionCount(totalSessionCount)
-                .counseleeCountForThisMonth(counseleeCount)
-                .totalCaringMessageCount(totalCaringMessageCount)
-                .counselHoursForThisMonth((long) counselHours)
-                .build();
-        } catch (Exception e) {
-            throw new RuntimeException("통계 정보 조회 중 오류가 발생했습니다", e);
-        }
+        return CounselSessionStatRes.builder()
+            .totalSessionCount(totalSessionCount)
+            .counseleeCountForThisMonth(counseleeCount)
+            .totalCaringMessageCount(totalCaringMessageCount)
+            .counselHoursForThisMonth((long) counselHours)
+            .build();
     }
 
     private long calculateTotalSessionCount() {
-        try {
-            return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
-        } catch (Exception e) {
-            throw new RuntimeException("완료된 상담 세션 수 계산 중 오류 발생", e);
-        }
+        return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
     }
 
     private double calculateCounselHoursForThisMonth() {
-        try {
-            int year = LocalDateTime.now().getYear();
-            int month = LocalDateTime.now().getMonthValue();
-            List<CounselSession> completedSessions = counselSessionRepository
-                .findCompletedSessionsByYearAndMonth(year, month);
+        int year = LocalDateTime.now().getYear();
+        int month = LocalDateTime.now().getMonthValue();
+        List<CounselSession> completedSessions = counselSessionRepository
+            .findCompletedSessionsByYearAndMonth(year, month);
 
-            return completedSessions.stream()
-                .mapToDouble(session -> {
-                    Duration duration = Duration.between(
-                        session.getStartDateTime(),
-                        session.getEndDateTime());
-                    return duration.toMinutes() / 60.0;
-                })
-                .sum();
-        } catch (Exception e) {
-            throw new RuntimeException("이번 달 상담 시간 계산 중 오류 발생", e);
-        }
+        return completedSessions.stream()
+            .mapToDouble(session -> {
+                Duration duration = Duration.between(
+                    session.getStartDateTime(),
+                    session.getEndDateTime());
+                return duration.toMinutes() / 60.0;
+            })
+            .sum();
     }
 
     @Scheduled(cron = "0 0 * * * *") // 매시간 실행
@@ -308,17 +272,16 @@ public class CounselSessionService {
     }
 
     @Transactional(readOnly = true)
-    public SelectCounselSessionPageRes searchCounselSessions(SearchCounselSessionReq req) {
-        Pageable pageable = PageRequest.of(req.getPage(), req.getSize());
-
-        Page<CounselSession> page = counselSessionRepository
+    public PageRes<SelectCounselSessionRes> searchCounselSessions(SearchCounselSessionReq req) {
+        PageRes<CounselSession> counselSessionPageRes = counselSessionRepository
             .findByCounseleeNameAndCounselorNameAndScheduledDateTime(
-                req.getCounseleeNameKeyword(),
-                req.getCounselorNames(),
-                req.getScheduledDates(),
-                pageable);
+                req.pageReq(),
+                req.counseleeNameKeyword(),
+                req.counselorNames(),
+                req.scheduledDates()
+            );
 
-        return SelectCounselSessionPageRes.of(page);
+        return counselSessionPageRes.map(SelectCounselSessionRes::from);
     }
 
     public void reassignSessionNumbers(String counseleeId) {
