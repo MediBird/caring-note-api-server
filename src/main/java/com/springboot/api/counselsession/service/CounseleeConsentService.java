@@ -7,6 +7,8 @@ import com.springboot.api.counselsession.dto.counseleeconsent.AddCounseleeConsen
 import com.springboot.api.counselsession.dto.counseleeconsent.AddCounseleeConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.DeleteCounseleeConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
+import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentReq;
+import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
@@ -74,9 +76,15 @@ public class CounseleeConsentService {
     }
 
     @Transactional
-    public void createCounseleeConsent(CounselSession counselSession, Counselee counselee) {
-        CounseleeConsent counseleeConsent = CounseleeConsent.of(counselSession, counselee);
-        counseleeConsentRepository.save(counseleeConsent);
+    public UpdateCounseleeConsentRes updateCounseleeConsent(UpdateCounseleeConsentReq updateCounseleeConsentReq) {
+        CounseleeConsent counseleeConsent = counseleeConsentRepository
+            .findById(updateCounseleeConsentReq.getCounseleeConsentId())
+            .orElseThrow(IllegalArgumentException::new);
+
+        counseleeConsent.setConsentDateTime(LocalDateTime.now());
+        counseleeConsent.setConsent(updateCounseleeConsentReq.isConsent());
+
+        return new UpdateCounseleeConsentRes(counseleeConsent.getId());
     }
 
     @Transactional
