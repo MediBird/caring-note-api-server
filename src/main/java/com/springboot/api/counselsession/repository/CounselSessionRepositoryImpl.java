@@ -1,26 +1,25 @@
 package com.springboot.api.counselsession.repository;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.NumberExpression;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.common.util.QuerydslPagingUtil;
 import com.springboot.api.counselcard.entity.QCounselCard;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.entity.QCounselSession;
 import com.springboot.enums.CounselorStatus;
+import com.springboot.enums.ScheduleStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import com.querydsl.core.BooleanBuilder;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.entity.QCounselSession;
-import com.springboot.enums.ScheduleStatus;
 
 @Repository
 public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCustom {
@@ -62,8 +61,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public List<Tuple> findSessionByCursorAndDate(LocalDate date, String cursorId, String counselorId,
-        Pageable pageable) {
+    public PageRes<Tuple> findSessionByCursorAndDate(LocalDate date, PageReq pageReq) {
 
         QCounselCard counselCard = QCounselCard.counselCard;
 
@@ -76,25 +74,21 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             builder.and(counselSession.scheduledStartDateTime.lt(endOfDay));
         }
 
-        if (cursorId != null) {
-            builder.and(counselSession.id.gt(cursorId));
-        }
-
-        if (counselorId != null) {
-            builder.and(counselSession.counselor.id.eq(counselorId));
-        }
-
-        return queryFactory
+        JPAQuery<Tuple> contentQuery = queryFactory
             .select(counselSession, counselCard.cardRecordStatus)
             .from(counselSession)
             .leftJoin(counselSession.counselee).fetchJoin()
             .leftJoin(counselSession.counselor).fetchJoin()
             .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
             .where(builder)
-            .orderBy(counselSession.scheduledStartDateTime.asc())
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize() + 1)
-            .fetch();
+            .orderBy(counselSession.scheduledStartDateTime.asc());
+
+        JPAQuery<Long> countQuery = queryFactory
+            .select(counselSession.count())
+            .from(counselSession)
+            .where(builder);
+
+        return QuerydslPagingUtil.applyPagination(pageReq, contentQuery, countQuery);
     }
 
     @Override
@@ -166,12 +160,11 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    @SuppressWarnings("Convert2Diamond")
-    public Page<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+    public PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+        PageReq pageReq,
         String counseleeNameKeyword,
         List<String> counselorNames,
-        List<LocalDate> scheduledDates,
-        Pageable pageable) {
+        List<LocalDate> scheduledDates) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -196,21 +189,17 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             builder.and(dateBuilder);
         }
 
-        List<CounselSession> content = queryFactory
+        JPAQuery<CounselSession> contentQuery = queryFactory
             .selectFrom(counselSession)
             .where(builder)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .orderBy(counselSession.scheduledStartDateTime.desc())
-            .fetch();
+            .orderBy(counselSession.scheduledStartDateTime.desc());
 
-        Long total = queryFactory
+        JPAQuery<Long> countQuery = queryFactory
             .select(counselSession.count())
             .from(counselSession)
-            .where(builder)
-            .fetchOne();
+            .where(builder);
 
-        return new PageImpl<CounselSession>(content, pageable, total != null ? total : 0L);
+        return QuerydslPagingUtil.applyPagination(pageReq, contentQuery, countQuery);
     }
 
     @Override

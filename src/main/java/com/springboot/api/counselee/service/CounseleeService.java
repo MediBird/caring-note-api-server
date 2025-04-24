@@ -1,5 +1,7 @@
 package com.springboot.api.counselee.service;
 
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +10,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +21,6 @@ import com.springboot.api.counselee.dto.DeleteCounseleeBatchReq;
 import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.counselee.dto.SelectCounseleePageRes;
 import com.springboot.api.counselee.dto.SelectCounseleeRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
@@ -82,21 +81,23 @@ public class CounseleeService {
         return SelectCounseleeRes.from(counselee);
     }
 
-    public SelectCounseleePageRes selectCounselees(int page, int size, String name,
+    public PageRes<SelectCounseleeRes> selectCounselees(PageReq pageReq, String name,
         List<LocalDate> birthDates, List<String> affiliatedWelfareInstitutions) {
 
-        Page<Counselee> counseleePage = counseleeRepository.findWithFilters(name, birthDates,
-            affiliatedWelfareInstitutions, PageRequest.of(page, size));
+        PageRes<Counselee> counseleePage = counseleeRepository.findWithFilters(name, birthDates,
+            affiliatedWelfareInstitutions, pageReq);
 
-        return SelectCounseleePageRes.of(counseleePage);
+        return counseleePage.map(SelectCounseleeRes::from);
     }
 
-    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats",
+        "sessionList"}, allEntries = true)
     public void deleteCounselee(String counseleeId) {
         counseleeRepository.deleteById(counseleeId);
     }
 
-    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats",
+        "sessionList"}, allEntries = true)
     @Transactional
     public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(
         List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {
