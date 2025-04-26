@@ -1,19 +1,7 @@
 package com.springboot.api.counselsession.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.messages.AssistantMessage;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.SystemMessage;
-import org.springframework.ai.chat.messages.UserMessage;
-
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselsession.enums.PromptTemplateType;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,19 +11,28 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.messages.AssistantMessage;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.SystemMessage;
+import org.springframework.ai.chat.messages.UserMessage;
 
 @Entity
 @Table(name = "prompt_templates")
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "promptLearnings" })
-@ToString(callSuper = true, exclude = { "promptLearnings" })
+@EqualsAndHashCode(callSuper = true, exclude = {"promptLearnings"})
+@ToString(callSuper = true, exclude = {"promptLearnings"})
 public class PromptTemplate extends BaseEntity {
 
     private static final Logger log = LoggerFactory.getLogger(PromptTemplate.class);

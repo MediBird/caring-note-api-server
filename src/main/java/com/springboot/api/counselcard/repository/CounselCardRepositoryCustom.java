@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.springboot.api.counselcard.entity.CounselCard;
 
 public interface CounselCardRepositoryCustom {
+
     Optional<CounselCard> findCounselCardWithCounselee(String counselSessionId);
 
     Optional<CounselCard> findCounselCardByCounselSessionId(String counselSessionId);

@@ -1,10 +1,5 @@
 package com.springboot.api.counselsession.service;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
-import org.springframework.stereotype.Service;
-
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
@@ -18,87 +13,90 @@ import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.CounseleeConsentRepository;
-
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class CounseleeConsentService {
 
-        private final CounseleeConsentRepository counseleeConsentRepository;
-        private final CounselSessionRepository counselSessionRepository;
-        private final CounseleeRepository counseleeRepository;
+    private final CounseleeConsentRepository counseleeConsentRepository;
+    private final CounselSessionRepository counselSessionRepository;
+    private final CounseleeRepository counseleeRepository;
 
-        public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId,
-                        String counseleeId) {
+    public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId,
+        String counseleeId) {
 
-                CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
-                                .orElseThrow(IllegalArgumentException::new);
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
 
-                Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
-                                .orElseThrow(IllegalArgumentException::new);
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+            .orElseThrow(IllegalArgumentException::new);
 
-                if (!counseleeId.equals(counselee.getId())) {
-                        throw new IllegalArgumentException();
-                }
-
-                CounseleeConsent counseleeConsent = counseleeConsentRepository
-                                .findByCounselSessionIdAndCounseleeId(counselSessionId, counseleeId)
-                                .orElseThrow(NoContentException::new);
-
-                return new SelectCounseleeConsentByCounseleeIdRes(counseleeConsent.getId(),
-                                counselee.getId(),
-                                counselee.getName(),
-                                counselSession.getId(),
-                                counseleeConsent.getConsentDateTime(),
-                                counseleeConsent.isConsent());
-
+        if (!counseleeId.equals(counselee.getId())) {
+            throw new IllegalArgumentException();
         }
 
-        @Transactional
-        public AddCounseleeConsentRes addCounseleeConsent(AddCounseleeConsentReq addCounseleeConsentReq) {
+        CounseleeConsent counseleeConsent = counseleeConsentRepository
+            .findByCounselSessionIdAndCounseleeId(counselSessionId, counseleeId)
+            .orElseThrow(NoContentException::new);
 
-                CounselSession counselSession = counselSessionRepository
-                                .findById(addCounseleeConsentReq.getCounselSessionId())
-                                .orElseThrow(IllegalArgumentException::new);
+        return new SelectCounseleeConsentByCounseleeIdRes(counseleeConsent.getId(),
+            counselee.getId(),
+            counselee.getName(),
+            counselSession.getId(),
+            counseleeConsent.getConsentDateTime(),
+            counseleeConsent.isConsent());
 
-                Counselee counselee = counseleeRepository.findById(addCounseleeConsentReq.getCounseleeId())
-                                .orElseThrow(IllegalArgumentException::new);
+    }
 
-                CounseleeConsent counseleeConsent = CounseleeConsent
-                                .builder()
-                                .counselSession(counselSession)
-                                .counselee(counselee)
-                                .isConsent(addCounseleeConsentReq.isConsent())
-                                .consentDateTime(LocalDateTime.now())
-                                .build();
-                CounseleeConsent savedCounselConsent = counseleeConsentRepository.save(counseleeConsent);
+    @Transactional
+    public AddCounseleeConsentRes addCounseleeConsent(AddCounseleeConsentReq addCounseleeConsentReq) {
 
-                return new AddCounseleeConsentRes(savedCounselConsent.getId());
-        }
+        CounselSession counselSession = counselSessionRepository
+            .findById(addCounseleeConsentReq.getCounselSessionId())
+            .orElseThrow(IllegalArgumentException::new);
 
-        @Transactional
-        public UpdateCounseleeConsentRes updateCounseleeConsent(UpdateCounseleeConsentReq updateCounseleeConsentReq) {
-                CounseleeConsent counseleeConsent = counseleeConsentRepository
-                                .findById(updateCounseleeConsentReq.getCounseleeConsentId())
-                                .orElseThrow(IllegalArgumentException::new);
+        Counselee counselee = counseleeRepository.findById(addCounseleeConsentReq.getCounseleeId())
+            .orElseThrow(IllegalArgumentException::new);
 
-                counseleeConsent.setConsentDateTime(LocalDateTime.now());
-                counseleeConsent.setConsent(updateCounseleeConsentReq.isConsent());
+        CounseleeConsent counseleeConsent = CounseleeConsent
+            .builder()
+            .counselSession(counselSession)
+            .counselee(counselee)
+            .isConsent(addCounseleeConsentReq.isConsent())
+            .consentDateTime(LocalDateTime.now())
+            .build();
+        CounseleeConsent savedCounselConsent = counseleeConsentRepository.save(counseleeConsent);
 
-                return new UpdateCounseleeConsentRes(counseleeConsent.getId());
-        }
+        return new AddCounseleeConsentRes(savedCounselConsent.getId());
+    }
 
-        @Transactional
-        public DeleteCounseleeConsentRes deleteCounseleeConsent(String counseleeConsentId) {
+    @Transactional
+    public UpdateCounseleeConsentRes updateCounseleeConsent(UpdateCounseleeConsentReq updateCounseleeConsentReq) {
+        CounseleeConsent counseleeConsent = counseleeConsentRepository
+            .findById(updateCounseleeConsentReq.getCounseleeConsentId())
+            .orElseThrow(IllegalArgumentException::new);
 
-                CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(counseleeConsentId)
-                                .orElseThrow(IllegalArgumentException::new);
+        counseleeConsent.setConsentDateTime(LocalDateTime.now());
+        counseleeConsent.setConsent(updateCounseleeConsentReq.isConsent());
 
-                counseleeConsentRepository.deleteById(counseleeConsentId);
+        return new UpdateCounseleeConsentRes(counseleeConsent.getId());
+    }
 
-                return new DeleteCounseleeConsentRes(counseleeConsent.getId());
-        }
+
+    @Transactional
+    public DeleteCounseleeConsentRes deleteCounseleeConsent(String counseleeConsentId) {
+
+        CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(counseleeConsentId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        counseleeConsentRepository.deleteById(counseleeConsentId);
+
+        return new DeleteCounseleeConsentRes(counseleeConsent.getId());
+    }
 
 }

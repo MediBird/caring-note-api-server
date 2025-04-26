@@ -13,10 +13,10 @@ public class AuthUtil {
     public RoleType getRoleType(UserDetails userDetails) throws RuntimeException {
 
         return userDetails.getAuthorities().stream()
-                .findFirst()
-                .map(GrantedAuthority::getAuthority)
-                .map(RoleType::valueOf)
-                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessages.INVALID_AUTHORITY));
+            .findFirst()
+            .map(GrantedAuthority::getAuthority)
+            .map(RoleType::valueOf)
+            .orElseThrow(() -> new IllegalArgumentException(ExceptionMessages.INVALID_AUTHORITY));
 
     }
 }

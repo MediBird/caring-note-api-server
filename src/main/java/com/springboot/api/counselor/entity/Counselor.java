@@ -32,9 +32,9 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "counselors", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "email" }),
-        @UniqueConstraint(columnNames = { "phone_number" }),
-        @UniqueConstraint(columnNames = { "username" })
+    @UniqueConstraint(columnNames = {"email"}),
+    @UniqueConstraint(columnNames = {"phone_number"}),
+    @UniqueConstraint(columnNames = {"username"})
 })
 @Data
 @SuperBuilder
@@ -101,15 +101,15 @@ public class Counselor extends BaseEntity implements UserDetails {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    public String getId(){
-        if(this.status.equals(CounselorStatus.INACTIVE)){
+    public String getId() {
+        if (this.status.equals(CounselorStatus.INACTIVE)) {
             return null;
         }
         return super.getId();
     }
 
-    public String getName(){
-        if(this.status.equals(CounselorStatus.INACTIVE)){
+    public String getName() {
+        if (this.status.equals(CounselorStatus.INACTIVE)) {
             return "탈퇴사용자";
         }
         return this.name;

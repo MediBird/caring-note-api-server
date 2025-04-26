@@ -15,4 +15,6 @@ public record UpdateIndependentLifeInformationReq(
 
     @NotNull
     WalkingDTO walking
-) {}
+) {
+
+}

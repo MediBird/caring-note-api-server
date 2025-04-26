@@ -11,5 +11,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FfmpegProperties {
+
     private String path;
 }

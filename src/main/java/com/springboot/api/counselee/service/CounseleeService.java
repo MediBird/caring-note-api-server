@@ -91,12 +91,14 @@ public class CounseleeService {
         return SelectCounseleePageRes.of(counseleePage);
     }
 
-    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats",
+        "sessionList"}, allEntries = true)
     public void deleteCounselee(String counseleeId) {
         counseleeRepository.deleteById(counseleeId);
     }
 
-    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats", "sessionList"}, allEntries = true)
+    @CacheEvict(value = {"birthDates", "welfareInstitutions", "sessionDates", "sessionStats",
+        "sessionList"}, allEntries = true)
     @Transactional
     public List<DeleteCounseleeBatchRes> deleteCounseleeBatch(
         List<DeleteCounseleeBatchReq> deleteCounseleeBatchReqList) {

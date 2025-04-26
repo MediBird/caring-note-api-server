@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DateTimeUtil {
+
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public LocalDateTime parseToDateTime(String dateTime) {
@@ -17,7 +18,7 @@ public class DateTimeUtil {
             return LocalDateTime.parse(dateTime, FORMATTER);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException(
-                    "Invalid date format: " + dateTime + ". Expected format: yyyy-MM-dd HH:mm");
+                "Invalid date format: " + dateTime + ". Expected format: yyyy-MM-dd HH:mm");
         }
     }
 

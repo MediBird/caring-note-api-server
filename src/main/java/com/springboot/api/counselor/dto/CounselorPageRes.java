@@ -15,6 +15,7 @@ import lombok.Getter;
 
 @Getter
 public class CounselorPageRes {
+
     private final List<CounselorListItem> counselors;
     private final PageRes pageInfo;
 
@@ -25,8 +26,8 @@ public class CounselorPageRes {
 
     public static CounselorPageRes fromPage(Page<Counselor> counselorPage) {
         List<CounselorListItem> counselorList = counselorPage.getContent().stream()
-                .map(CounselorListItem::fromCounselor)
-                .collect(Collectors.toList());
+            .map(CounselorListItem::fromCounselor)
+            .collect(Collectors.toList());
 
         PageRes pageInfo = PageRes.from(counselorPage);
 
@@ -36,6 +37,7 @@ public class CounselorPageRes {
     @Builder
     @Getter
     public static class CounselorListItem {
+
         private final String id;
         private final String name;
         private final RoleType roleType;
@@ -47,14 +49,14 @@ public class CounselorPageRes {
         // Counselor 엔티티로부터 CounselorListItem 객체 생성
         public static CounselorListItem fromCounselor(Counselor counselor) {
             return CounselorListItem.builder()
-                    .id(counselor.getId())
-                    .name(counselor.getName())
-                    .roleType(counselor.getRoleType())
-                    .username(counselor.getUsername())
-                    .phoneNumber(counselor.getPhoneNumber())
-                    .registrationDate(counselor.getRegistrationDate())
-                    .description(counselor.getDescription() != null ? counselor.getDescription() : "")
-                    .build();
+                .id(counselor.getId())
+                .name(counselor.getName())
+                .roleType(counselor.getRoleType())
+                .username(counselor.getUsername())
+                .phoneNumber(counselor.getPhoneNumber())
+                .registrationDate(counselor.getRegistrationDate())
+                .description(counselor.getDescription() != null ? counselor.getDescription() : "")
+                .build();
         }
     }
 }

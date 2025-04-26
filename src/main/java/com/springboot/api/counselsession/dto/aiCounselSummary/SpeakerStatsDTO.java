@@ -5,28 +5,29 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class SpeakerStatsDTO{
+public class SpeakerStatsDTO {
+
     private int speakCount;
     private String maxLengthText;
     private int textLengthSum;
     private int maxLengthTextLength;
 
-    public void updateSpeakerStats(String text){
+    public void updateSpeakerStats(String text) {
         textLengthSum += text.length();
         speakCount++;
 
-        if(text.length() > maxLengthTextLength){
+        if (text.length() > maxLengthTextLength) {
             maxLengthText = text;
-            maxLengthTextLength =  text.length();
+            maxLengthTextLength = text.length();
         }
     }
 
-    public boolean isValidSpeaker(){
+    public boolean isValidSpeaker() {
 
         return speakCount >= 3 && maxLengthTextLength >= 3;
     }
 
-    public boolean isRecommendedSpeaker(int totalSpeakCount){
+    public boolean isRecommendedSpeaker(int totalSpeakCount) {
 
         if (totalSpeakCount == 0) {
             return false;

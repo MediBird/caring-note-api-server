@@ -11,5 +11,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class NaverClovaProperties {
+
     private String apiKey;
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class STTCompleteEventListener {
+
     private final AICounselSummaryService aiCounselSummaryService;
 
     @Async

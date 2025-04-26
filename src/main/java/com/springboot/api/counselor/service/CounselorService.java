@@ -49,12 +49,12 @@ public class CounselorService {
     public AddCounselorRes addCounselor(AddCounselorReq addCounselorReq) {
 
         Counselor counselor = Counselor.builder()
-                .name(addCounselorReq.getName())
-                .email(addCounselorReq.getEmail())
-                .password("encodedPassword")
-                .phoneNumber(addCounselorReq.getPhoneNumber())
-                .roleType(addCounselorReq.getRoleType())
-                .build();
+            .name(addCounselorReq.getName())
+            .email(addCounselorReq.getEmail())
+            .password("encodedPassword")
+            .phoneNumber(addCounselorReq.getPhoneNumber())
+            .roleType(addCounselorReq.getRoleType())
+            .build();
 
         if (counselorRepository.existsActiveByEmail(addCounselorReq.getEmail())) {
             throw new DuplicatedEmailException();
@@ -73,12 +73,12 @@ public class CounselorService {
         String username = jwt.getClaimAsString("preferred_username");
 
         Counselor counselor = counselorRepository
-                .findActiveByUsername(username)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID"));
+            .findActiveByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID"));
 
         return new GetCounselorRes(counselor.getId(), counselor.getName(), counselor.getEmail(),
-                counselor.getPhoneNumber(), counselor.getRoleType(), counselor.getMedicationCounselingCount(),
-                counselor.getCounseledCounseleeCount(), counselor.getParticipationDays());
+            counselor.getPhoneNumber(), counselor.getRoleType(), counselor.getMedicationCounselingCount(),
+            counselor.getCounseledCounseleeCount(), counselor.getParticipationDays());
     }
 
     @Transactional
@@ -87,43 +87,41 @@ public class CounselorService {
         Page<Counselor> counselorPage = counselorRepository.findAll(pageRequest);
 
         return counselorPage.getContent().stream()
-                .sorted(Comparator.comparing(Counselor::getCreatedDatetime).reversed())
-                .map(counselor -> SelectCounselorRes.builder()
-                        .id(counselor.getId())
-                        .name(counselor.getName())
-                        .email(counselor.getEmail())
-                        .phoneNumber(counselor.getPhoneNumber())
-                        .roleType(counselor.getRoleType())
-                        .medicationCounselingCount(counselor.getMedicationCounselingCount())
-                        .counseledCounseleeCount(counselor.getCounseledCounseleeCount())
-                        .participationDays(counselor.getParticipationDays())
-                        .build())
-                .collect(Collectors.toList());
+            .sorted(Comparator.comparing(Counselor::getCreatedDatetime).reversed())
+            .map(counselor -> SelectCounselorRes.builder()
+                .id(counselor.getId())
+                .name(counselor.getName())
+                .email(counselor.getEmail())
+                .phoneNumber(counselor.getPhoneNumber())
+                .roleType(counselor.getRoleType())
+                .medicationCounselingCount(counselor.getMedicationCounselingCount())
+                .counseledCounseleeCount(counselor.getCounseledCounseleeCount())
+                .participationDays(counselor.getParticipationDays())
+                .build())
+            .collect(Collectors.toList());
     }
 
     /**
-     * 모든 Counselor의 이름 목록을 반환합니다.
-     * "counselorNames" 캐시에 결과가 저장됩니다.
-     * 빈 문자열이나 null은 필터링됩니다.
-     * 
+     * 모든 Counselor의 이름 목록을 반환합니다. "counselorNames" 캐시에 결과가 저장됩니다. 빈 문자열이나 null은 필터링됩니다.
+     *
      * @return CounselorNameListRes 객체 (이름 목록 포함)
      */
     @Cacheable("counselorNames")
     @Transactional
     public CounselorNameListRes getCounselorNames() {
         List<String> counselorNames = counselorRepository
-                .findActiveByRoleTypes(Arrays.asList(RoleType.ROLE_USER, RoleType.ROLE_ADMIN)).stream()
-                .map(Counselor::getName)
-                .filter(name -> name != null && !name.trim().isEmpty())
-                .sorted()
-                .collect(Collectors.toList());
+            .findActiveByRoleTypes(Arrays.asList(RoleType.ROLE_USER, RoleType.ROLE_ADMIN)).stream()
+            .map(Counselor::getName)
+            .filter(name -> name != null && !name.trim().isEmpty())
+            .sorted()
+            .collect(Collectors.toList());
 
         return new CounselorNameListRes(counselorNames);
     }
 
     /**
      * Counselor 정보를 업데이트하고 캐시를 무효화합니다.
-     * 
+     *
      * @param counselorId        업데이트할 상담사 ID
      * @param updateCounselorReq 업데이트할 상담사 정보
      * @return 업데이트된 상담사 정보
@@ -132,7 +130,7 @@ public class CounselorService {
     @Transactional
     public UpdateCounselorRes updateCounselor(String counselorId, UpdateCounselorReq updateCounselorReq) {
         Counselor counselor = counselorRepository.findById(counselorId)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID: " + counselorId));
+            .orElseThrow(() -> new IllegalArgumentException("Invalid counselor ID: " + counselorId));
 
         // 이름이 변경된 경우에만 업데이트
         if (updateCounselorReq.getName() != null && !updateCounselorReq.getName().trim().isEmpty()) {
@@ -155,22 +153,21 @@ public class CounselorService {
         Counselor updatedCounselor = counselorRepository.save(counselor);
 
         return new UpdateCounselorRes(
-                updatedCounselor.getId(),
-                updatedCounselor.getName(),
-                updatedCounselor.getRoleType());
+            updatedCounselor.getId(),
+            updatedCounselor.getName(),
+            updatedCounselor.getRoleType());
     }
 
     /**
-     * Counselor를 삭제하고 캐시를 무효화합니다.
-     * Keycloak에서도 해당 사용자를 삭제합니다.
-     * 
+     * Counselor를 삭제하고 캐시를 무효화합니다. Keycloak에서도 해당 사용자를 삭제합니다.
+     *
      * @param counselorId 삭제할 상담사 ID
      */
-    @CacheEvict(value = {"counselorNames", "sessionList"} , allEntries = true)
+    @CacheEvict(value = {"counselorNames", "sessionList"}, allEntries = true)
     @Transactional
     public void deleteCounselor(String counselorId) {
         Counselor counselor = counselorRepository.findById(counselorId)
-                .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
+            .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
 
         try {
             // Keycloak에서 사용자 찾기 시도
@@ -193,16 +190,15 @@ public class CounselorService {
     }
 
     /**
-     * 상담사의 비밀번호를 초기화합니다.
-     * Keycloak에서 해당 사용자의 비밀번호를 초기화합니다.
-     * 
+     * 상담사의 비밀번호를 초기화합니다. Keycloak에서 해당 사용자의 비밀번호를 초기화합니다.
+     *
      * @param counselorId      비밀번호를 초기화할 상담사 ID
      * @param resetPasswordReq 비밀번호 초기화 요청 정보
      */
     @Transactional
     public void resetPassword(String counselorId, ResetPasswordReq resetPasswordReq) {
         Counselor counselor = counselorRepository.findById(counselorId)
-                .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
+            .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
 
         if (counselor.getUsername() == null) {
             throw new IllegalStateException("사용자명이 없는 상담사입니다: " + counselorId);
@@ -217,9 +213,9 @@ public class CounselorService {
 
             // 비밀번호 초기화
             keycloakUserService.resetPassword(
-                    users.getFirst().getId(),
-                    resetPasswordReq.getNewPassword(),
-                    resetPasswordReq.isTemporary());
+                users.getFirst().getId(),
+                resetPasswordReq.getNewPassword(),
+                resetPasswordReq.isTemporary());
 
             log.info("사용자 비밀번호 초기화 완료: {}", counselor.getUsername());
         } catch (ResourceNotFoundException e) {
@@ -229,9 +225,8 @@ public class CounselorService {
     }
 
     /**
-     * 상담사의 권한을 변경합니다.
-     * DB와 Keycloak 모두에서 권한을 업데이트합니다.
-     * 
+     * 상담사의 권한을 변경합니다. DB와 Keycloak 모두에서 권한을 업데이트합니다.
+     *
      * @param counselorId   권한을 변경할 상담사 ID
      * @param updateRoleReq 권한 변경 요청 정보
      * @return 업데이트된 상담사 정보
@@ -239,7 +234,7 @@ public class CounselorService {
     @Transactional
     public UpdateCounselorRes updateRole(String counselorId, UpdateRoleReq updateRoleReq) {
         Counselor counselor = counselorRepository.findById(counselorId)
-                .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
+            .orElseThrow(() -> new ResourceNotFoundException("상담사를 찾을 수 없습니다. ID: " + counselorId));
 
         if (counselor.getUsername() == null) {
             throw new IllegalStateException("사용자명이 없는 상담사입니다: " + counselorId);
@@ -251,9 +246,9 @@ public class CounselorService {
         log.info("DB에서 상담사 권한 업데이트 완료: {} -> {}", counselorId, updateRoleReq.getRoleType());
 
         return new UpdateCounselorRes(
-                updatedCounselor.getId(),
-                updatedCounselor.getName(),
-                updatedCounselor.getRoleType());
+            updatedCounselor.getId(),
+            updatedCounselor.getName(),
+            updatedCounselor.getRoleType());
     }
 
     @Transactional
@@ -265,7 +260,7 @@ public class CounselorService {
         return CounselorPageRes.fromPage(counselorPage);
     }
 
-    public Counselor findCounselorById(String counselorId){
+    public Counselor findCounselorById(String counselorId) {
         return counselorRepository.findActiveById(counselorId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담사 ID입니다"));
     }

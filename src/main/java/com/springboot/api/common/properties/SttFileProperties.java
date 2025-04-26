@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SttFileProperties {
+
     private String origin;
     private String convert;
 }

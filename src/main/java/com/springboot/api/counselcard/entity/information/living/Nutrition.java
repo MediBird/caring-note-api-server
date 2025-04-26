@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class Nutrition {
+
     @Enumerated(EnumType.STRING)
     private MealPattern mealPattern;
 
@@ -35,7 +36,7 @@ public class Nutrition {
     }
 
     public void update(NutritionDTO nutritionDTO) {
-        if(Objects.isNull(nutritionDTO)) {
+        if (Objects.isNull(nutritionDTO)) {
             return;
         }
 

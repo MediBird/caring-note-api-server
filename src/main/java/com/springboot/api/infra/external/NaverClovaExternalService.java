@@ -13,6 +13,6 @@ public interface NaverClovaExternalService {
 
     @PostExchange("/recognizer/upload")
     ResponseEntity<SpeechToTextRes> convertSpeechToText(@RequestHeader Map<String, String> headers,
-            @RequestPart("media") FileSystemResource mediaFile,
-            @RequestPart("params") SpeechToTextReq speechToTextReq);
+        @RequestPart("media") FileSystemResource mediaFile,
+        @RequestPart("params") SpeechToTextReq speechToTextReq);
 }

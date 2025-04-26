@@ -10,11 +10,12 @@ import org.springframework.data.domain.Pageable;
 import com.springboot.api.counselee.entity.Counselee;
 
 public interface CounseleeRepositoryCustom {
+
     Page<Counselee> findWithFilters(
-            String name,
-            List<LocalDate> birthDates,
-            List<String> affiliatedWelfareInstitutions,
-            Pageable pageable);
+        String name,
+        List<LocalDate> birthDates,
+        List<String> affiliatedWelfareInstitutions,
+        Pageable pageable);
 
     List<LocalDate> findDistinctBirthDates();
 

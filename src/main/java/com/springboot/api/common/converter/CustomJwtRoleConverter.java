@@ -65,7 +65,7 @@ public class CustomJwtRoleConverter implements Converter<Jwt, Collection<Granted
                 // 성과 이름이 모두 있는 경우
                 // 한글 문자 범위 체크 (유니코드: AC00-D7A3)
                 boolean isKoreanName = (familyName + givenName).chars()
-                        .anyMatch(c -> c >= 0xAC00 && c <= 0xD7A3);
+                    .anyMatch(c -> c >= 0xAC00 && c <= 0xD7A3);
 
                 if (isKoreanName) {
                     // 한국식: 성+이름 (공백 없음)

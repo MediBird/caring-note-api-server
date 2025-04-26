@@ -77,29 +77,29 @@ public class CounselorRepositoryImpl extends QuerydslRepositorySupport implement
 
         // ROLE_ASSISTANT가 먼저 오는 순서 조건 생성
         OrderSpecifier<?> roleTypeOrder = new CaseBuilder()
-                .when(counselor.roleType.eq(RoleType.ROLE_ASSISTANT)).then(0)
-                .otherwise(1)
-                .asc();
+            .when(counselor.roleType.eq(RoleType.ROLE_ASSISTANT)).then(0)
+            .otherwise(1)
+            .asc();
 
         // 쿼리 생성
         JPAQuery<Counselor> query = queryFactory
-                .selectFrom(counselor)
-                .where(counselor.status.eq(CounselorStatus.ACTIVE))
-                .orderBy(
-                        roleTypeOrder,
-                        counselor.updatedDatetime.desc());
+            .selectFrom(counselor)
+            .where(counselor.status.eq(CounselorStatus.ACTIVE))
+            .orderBy(
+                roleTypeOrder,
+                counselor.updatedDatetime.desc());
 
         // 전체 카운트 쿼리
         long total = queryFactory
-                .select(counselor.count())
-                .from(counselor)
-                .fetchOne();
+            .select(counselor.count())
+            .from(counselor)
+            .fetchOne();
 
         // 페이징 적용 및 결과 조회
         List<Counselor> results = query
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
 
         // 페이징 결과 반환
         return new PageImpl<>(results, pageable, total);

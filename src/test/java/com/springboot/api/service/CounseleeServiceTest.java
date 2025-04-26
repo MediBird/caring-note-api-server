@@ -1,5 +1,11 @@
 package com.springboot.api.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
@@ -9,6 +15,9 @@ import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.api.fixture.CounseleeFixture;
 import com.springboot.enums.GenderType;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
@@ -16,16 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CounseleeServiceTest {
@@ -37,7 +36,7 @@ public class CounseleeServiceTest {
     private CounseleeService counseleeService;
 
     @Test
-    public void updateCounselee_all(){
+    public void updateCounselee_all() {
         //Given
         Counselee original = CounseleeFixture.create();
 
@@ -70,7 +69,7 @@ public class CounseleeServiceTest {
     }
 
     @Test
-    public void updateCounselee_none(){
+    public void updateCounselee_none() {
         //Given
         Counselee original = CounseleeFixture.create();
 
@@ -183,7 +182,7 @@ public class CounseleeServiceTest {
     }
 
     @Test
-    public void test(){
+    public void test() {
         FixtureMonkey build = FixtureMonkey.builder().build();
         build.giveMeBuilder(Counselee.class).build();
     }

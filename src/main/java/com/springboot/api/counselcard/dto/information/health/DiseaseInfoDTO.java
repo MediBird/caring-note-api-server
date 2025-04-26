@@ -8,9 +8,9 @@ import com.springboot.enums.DiseaseType;
 public record DiseaseInfoDTO(
     List<DiseaseType> diseases,
     String historyNote,
-        String mainInconvenienceNote) {
+    String mainInconvenienceNote) {
 
-    public DiseaseInfoDTO (DiseaseInfo diseaseInfo){
+    public DiseaseInfoDTO(DiseaseInfo diseaseInfo) {
         this(
             diseaseInfo.getDiseases(),
             diseaseInfo.getHistoryNote(),

@@ -47,7 +47,7 @@ public class Evacuation {
     }
 
     public void update(EvacuationDTO evacuation) {
-        if(Objects.isNull(evacuation)) {
+        if (Objects.isNull(evacuation)) {
             return;
         }
 

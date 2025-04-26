@@ -5,11 +5,11 @@ import com.springboot.enums.HealthInsuranceType;
 import java.util.Objects;
 
 public record BaseInfoDTO(
-        String counseleeId,
-        String counseleeName,
-        String birthDate,
-        String lastCounselDate,
-        HealthInsuranceType healthInsuranceType
+    String counseleeId,
+    String counseleeName,
+    String birthDate,
+    String lastCounselDate,
+    HealthInsuranceType healthInsuranceType
 ) {
 
     public BaseInfoDTO(Counselee counselee) {
