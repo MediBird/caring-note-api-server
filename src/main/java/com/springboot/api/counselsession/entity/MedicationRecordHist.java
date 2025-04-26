@@ -40,7 +40,7 @@ public class MedicationRecordHist extends BaseEntity {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "medication_id", nullable = true)
+    @JoinColumn(name = "medication_id")
     private Medication medication;
 
     private String name;

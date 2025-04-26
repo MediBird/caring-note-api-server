@@ -1,11 +1,6 @@
 package com.springboot.api.medication.entity;
 
-import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-
 import com.springboot.api.common.entity.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -18,6 +13,9 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -46,31 +44,27 @@ public class Medication extends BaseEntity {
     @Column(nullable = false)
     private Integer itemSeq;
 
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String entpName;
-    @Column(nullable = true, length = 3000)
+    @Column(length = 3000)
     private String itemImage;
-    @Column(nullable = true, length = 3000)
+    @Column(length = 3000)
     private String chart;
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String printFront;
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String printBack;
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String drugShape;
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String colorClass1;
-    @Column(nullable = true, length = 255)
+    @Column(length = 255)
     private String colorClass2;
     private String lineFront;
     private String lineBack;
-    @Column(nullable = true)
     private Float lengLong;
-    @Column(nullable = true)
     private Float lengShort;
-    @Column(nullable = true)
     private Float thick;
-    @Column(nullable = true)
     @Temporal(TemporalType.DATE)
     private LocalDate imgRegistTs;
     private Integer classNo;

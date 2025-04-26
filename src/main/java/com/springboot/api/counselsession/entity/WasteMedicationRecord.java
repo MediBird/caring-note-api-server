@@ -32,7 +32,7 @@ public class WasteMedicationRecord extends BaseEntity {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "medication_id", nullable = true)
+    @JoinColumn(name = "medication_id")
     private Medication medication;
 
     private String medicationName;
