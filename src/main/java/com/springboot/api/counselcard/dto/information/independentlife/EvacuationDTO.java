@@ -6,8 +6,8 @@ import com.springboot.api.counselcard.entity.information.independentlife.Evacuat
 import com.springboot.enums.EvacuationType;
 
 public record EvacuationDTO(
-        List<EvacuationType> evacuations,
-            String evacuationNote) {
+    List<EvacuationType> evacuations,
+    String evacuationNote) {
 
     public EvacuationDTO(Evacuation evacuation) {
         this(

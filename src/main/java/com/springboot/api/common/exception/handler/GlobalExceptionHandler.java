@@ -38,28 +38,28 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<CommonRes<ValidationErrorRes>> handleValidationException(
-            MethodArgumentNotValidException ex) {
+        MethodArgumentNotValidException ex) {
         List<ValidationError> errors = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(error -> ValidationError.builder()
-                        .field(error.getField())
-                        .message(error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid request")
-                        .build())
-                .collect(Collectors.toList());
+            .getFieldErrors()
+            .stream()
+            .map(error -> ValidationError.builder()
+                .field(error.getField())
+                .message(error.getDefaultMessage() != null ? error.getDefaultMessage() : "Invalid request")
+                .build())
+            .collect(Collectors.toList());
 
         ValidationErrorRes errorResponse = ValidationErrorRes.builder()
-                .errors(errors)
-                .build();
+            .errors(errors)
+            .build();
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonRes<>(errorResponse));
+            .status(HttpStatus.BAD_REQUEST)
+            .body(new CommonRes<>(errorResponse));
     }
 
     // 잘못된 요청 파라미터 처리
-    @ExceptionHandler({ MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
-            IllegalArgumentException.class })
+    @ExceptionHandler({MissingServletRequestParameterException.class, MethodArgumentTypeMismatchException.class,
+        IllegalArgumentException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorRes handleBadRequest(Exception ex) {
         return buildErrorResponse(ex.getMessage());
@@ -105,26 +105,26 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ExceptionHandler(HandlerMethodValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<CommonRes<ValidationErrorRes>> handleMethodValidationException(
-            HandlerMethodValidationException ex) {
+        HandlerMethodValidationException ex) {
         List<ValidationError> errors = ex.getAllValidationResults()
-                .stream()
-                .map(error -> ValidationError.builder()
-                        .field(error.getMethodParameter().getParameterName())
-                        .message(error.getResolvableErrors()
-                                .stream()
-                                .findFirst()
-                                .map(err -> err.getDefaultMessage())
-                                .orElse("Invalid request"))
-                        .build())
-                .collect(Collectors.toList());
+            .stream()
+            .map(error -> ValidationError.builder()
+                .field(error.getMethodParameter().getParameterName())
+                .message(error.getResolvableErrors()
+                    .stream()
+                    .findFirst()
+                    .map(err -> err.getDefaultMessage())
+                    .orElse("Invalid request"))
+                .build())
+            .collect(Collectors.toList());
 
         ValidationErrorRes errorResponse = ValidationErrorRes.builder()
-                .errors(errors)
-                .build();
+            .errors(errors)
+            .build();
 
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(new CommonRes<>(errorResponse));
+            .status(HttpStatus.BAD_REQUEST)
+            .body(new CommonRes<>(errorResponse));
     }
 
     // 500 - 서버 에러 처리

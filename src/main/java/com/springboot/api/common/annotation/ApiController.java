@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping
 @Tag(name = "")
 public @interface ApiController {
+
     @AliasFor(annotation = RequestMapping.class, attribute = "value")
     String path();
 

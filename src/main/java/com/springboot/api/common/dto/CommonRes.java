@@ -8,6 +8,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class CommonRes<T> {
+
     private String message;
     private T data;
 

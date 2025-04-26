@@ -6,10 +6,10 @@ import com.springboot.enums.MealPattern;
 public record NutritionDTO(
     MealPattern mealPattern, String nutritionNote) {
 
-    public NutritionDTO (Nutrition nutrition){
+    public NutritionDTO(Nutrition nutrition) {
         this(
-                nutrition != null ? nutrition.getMealPattern() : null,
-                nutrition != null ? nutrition.getNutritionNote() : null
+            nutrition != null ? nutrition.getMealPattern() : null,
+            nutrition != null ? nutrition.getNutritionNote() : null
         );
     }
 }

@@ -7,6 +7,7 @@ import java.io.InputStream;
 import org.springframework.web.multipart.MultipartFile;
 
 public class ByteArrayMultipartFile implements MultipartFile {
+
     private final String name;
     private final String originalFilename;
     private final String contentType;

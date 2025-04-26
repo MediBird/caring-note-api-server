@@ -38,15 +38,15 @@ public class RoleSecuredAspect {
         log.info("Current user authentication: {}", authentication.getName());
 
         boolean hasRole = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .anyMatch(authority -> Arrays.asList(requiredRoles)
-                        .stream()
-                        .map(RoleType::name)
-                        .anyMatch(authority::equals));
+            .map(GrantedAuthority::getAuthority)
+            .anyMatch(authority -> Arrays.asList(requiredRoles)
+                .stream()
+                .map(RoleType::name)
+                .anyMatch(authority::equals));
 
         if (!hasRole) {
             log.warn("Access denied for user: {} - Required roles: {}",
-                    authentication.getName(), Arrays.toString(requiredRoles));
+                authentication.getName(), Arrays.toString(requiredRoles));
             throw new AccessDeniedException("User does not have the required role");
         }
     }

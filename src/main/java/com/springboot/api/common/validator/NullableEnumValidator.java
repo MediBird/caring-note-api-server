@@ -20,6 +20,6 @@ public class NullableEnumValidator implements ConstraintValidator<ValidNullableE
             return true;
         }
         return Stream.of(enumClass.getEnumConstants())
-                .anyMatch(enumValue -> enumValue.name().equals(value.name()));
+            .anyMatch(enumValue -> enumValue.name().equals(value.name()));
     }
 }

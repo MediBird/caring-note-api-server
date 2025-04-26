@@ -30,15 +30,15 @@ public class SelectCounseleeAutocompleteRes {
 
     public static SelectCounseleeAutocompleteRes from(Counselee counselee) {
         return SelectCounseleeAutocompleteRes.builder()
-                .counseleeId(counselee.getId())
-                .name(counselee.getName())
-                .birthDate(counselee.getDateOfBirth())
-                .build();
+            .counseleeId(counselee.getId())
+            .name(counselee.getName())
+            .birthDate(counselee.getDateOfBirth())
+            .build();
     }
 
     public static List<SelectCounseleeAutocompleteRes> fromList(List<Counselee> counselees) {
         return counselees.stream()
-                .map(SelectCounseleeAutocompleteRes::from)
-                .collect(Collectors.toList());
+            .map(SelectCounseleeAutocompleteRes::from)
+            .collect(Collectors.toList());
     }
 }

@@ -22,6 +22,6 @@ public class EnumValidator implements ConstraintValidator<ValidEnum, Enum<?>> {
             return false; // 값이 null이면 유효하지 않음
         }
         return Stream.of(enumClass.getEnumConstants())
-                .anyMatch(enumValue -> enumValue.name().equals(value.name()));
+            .anyMatch(enumValue -> enumValue.name().equals(value.name()));
     }
 }

@@ -56,12 +56,12 @@ public abstract class BaseEntity {
 
     private String getCurrentUserId() {
         return Optional.ofNullable(SecurityContextHolder.getContext().getAuthentication())
-                .filter(Authentication::isAuthenticated)
-                .filter(auth -> auth instanceof JwtAuthenticationToken)
-                .map(auth -> (JwtAuthenticationToken) auth)
-                .map(JwtAuthenticationToken::getToken)
-                .map(jwt -> jwt.getClaimAsString("preferred_username"))
-                .orElse("system");
+            .filter(Authentication::isAuthenticated)
+            .filter(auth -> auth instanceof JwtAuthenticationToken)
+            .map(auth -> (JwtAuthenticationToken) auth)
+            .map(JwtAuthenticationToken::getToken)
+            .map(jwt -> jwt.getClaimAsString("preferred_username"))
+            .orElse("system");
     }
 
 }

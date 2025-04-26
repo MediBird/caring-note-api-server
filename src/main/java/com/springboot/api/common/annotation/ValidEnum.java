@@ -13,9 +13,10 @@ import jakarta.validation.Payload;
 
 @Documented
 @Constraint(validatedBy = EnumValidator.class)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidEnum {
+
     String message() default "Invalid value for enum";
 
     Class<?>[] groups() default {};

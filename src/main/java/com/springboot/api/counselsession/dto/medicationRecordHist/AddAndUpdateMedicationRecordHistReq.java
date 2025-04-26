@@ -3,13 +3,13 @@ package com.springboot.api.counselsession.dto.medicationRecordHist;
 import com.springboot.api.common.annotation.ValidEnum;
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
-
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
 public class AddAndUpdateMedicationRecordHistReq {
+
     @Nullable
     private String rowId;
 

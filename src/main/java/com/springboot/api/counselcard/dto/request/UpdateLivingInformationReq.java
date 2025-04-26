@@ -23,4 +23,6 @@ public record UpdateLivingInformationReq(
 
     @NotNull
     SmokingDTO smoking
-) {}
+) {
+
+}

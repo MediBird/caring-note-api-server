@@ -1,7 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
 import com.springboot.api.common.entity.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -19,8 +18,8 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "promptTemplate" })
-@ToString(callSuper = true, exclude = { "promptTemplate" })
+@EqualsAndHashCode(callSuper = true, exclude = {"promptTemplate"})
+@ToString(callSuper = true, exclude = {"promptTemplate"})
 public class PromptLearning extends BaseEntity {
 
     @ManyToOne

@@ -1,15 +1,9 @@
 package com.springboot.api.counselsession.entity;
 
-import com.springboot.api.medication.entity.Medication;
-import java.time.LocalDate;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.springboot.api.common.entity.BaseEntity;
+import com.springboot.api.medication.entity.Medication;
 import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -18,19 +12,22 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.PastOrPresent;
+import java.time.LocalDate;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "medication_records_hist")
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medication" })
-@ToString(callSuper = true, exclude = { "counselSession", "medication" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "medication"})
+@ToString(callSuper = true, exclude = {"counselSession", "medication"})
 public class MedicationRecordHist extends BaseEntity {
 
     @ManyToOne

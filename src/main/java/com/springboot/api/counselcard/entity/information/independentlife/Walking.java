@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @NoArgsConstructor
 public class Walking {
+
     String walkingNote;
 
     @ElementCollection
@@ -58,7 +59,7 @@ public class Walking {
     }
 
     public void update(WalkingDTO walking) {
-        if(Objects.isNull(walking)) {
+        if (Objects.isNull(walking)) {
             return;
         }
 

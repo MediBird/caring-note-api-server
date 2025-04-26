@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MedicationService {
+
     private final MedicationRepository medicationRepository;
 
     @Cacheable(value = "medicationSearch")
@@ -29,12 +30,12 @@ public class MedicationService {
         }
 
         return medicationRepository.searchByKeyword(keyword.trim())
-                .stream()
-                .map(medication -> SearchMedicationByKeywordRes.builder()
-                        .id(medication.getId())
-                        .itemName(medication.getItemName())
-                        .itemImage(medication.getItemImage())
-                        .build())
-                .collect(Collectors.toList());
+            .stream()
+            .map(medication -> SearchMedicationByKeywordRes.builder()
+                .id(medication.getId())
+                .itemName(medication.getItemName())
+                .itemImage(medication.getItemImage())
+                .build())
+            .collect(Collectors.toList());
     }
 }

@@ -20,47 +20,49 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record AddDisabledCounselCardReq(
-        @NotBlank(message = "상담 세션 ID는 필수 입력값입니다")
-        @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다")
-        String counselSessionId,
+    @NotBlank(message = "상담 세션 ID는 필수 입력값입니다")
+    @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다")
+    String counselSessionId,
 
-        @ValidEnum(enumClass = CardRecordStatus.class)
-        @Schema(description = "상담카드기록상태(IN_PROGRESS, COMPLETED", example = "IN_PROGRESS")
-        CardRecordStatus cardRecordStatus,
+    @ValidEnum(enumClass = CardRecordStatus.class)
+    @Schema(description = "상담카드기록상태(IN_PROGRESS, COMPLETED", example = "IN_PROGRESS")
+    CardRecordStatus cardRecordStatus,
 
-        @NotNull
-        CounselPurposeAndNoteDTO counselPurposeAndNote,
+    @NotNull
+    CounselPurposeAndNoteDTO counselPurposeAndNote,
 
-        @NotNull
-        AllergyDTO allergy,
+    @NotNull
+    AllergyDTO allergy,
 
-        @NotNull
-        DiseaseInfoDTO diseaseInfo,
+    @NotNull
+    DiseaseInfoDTO diseaseInfo,
 
-        @NotNull
-        MedicationSideEffectDTO medicationSideEffect,
+    @NotNull
+    MedicationSideEffectDTO medicationSideEffect,
 
-        @NotNull
-        DrinkingDTO drinking,
+    @NotNull
+    DrinkingDTO drinking,
 
-        @NotNull
-        ExerciseDTO exercise,
+    @NotNull
+    ExerciseDTO exercise,
 
-        @NotNull
-        MedicationManagementDTO medicationManagement,
+    @NotNull
+    MedicationManagementDTO medicationManagement,
 
-        @NotNull
-        NutritionDTO nutrition,
+    @NotNull
+    NutritionDTO nutrition,
 
-        @NotNull
-        SmokingDTO smoking,
+    @NotNull
+    SmokingDTO smoking,
 
-        @NotNull
-        CommunicationDTO communication,
+    @NotNull
+    CommunicationDTO communication,
 
-        @NotNull
-        EvacuationDTO evacuation,
+    @NotNull
+    EvacuationDTO evacuation,
 
-        @NotNull
-        WalkingDTO walking
-    ) {}
+    @NotNull
+    WalkingDTO walking
+) {
+
+}

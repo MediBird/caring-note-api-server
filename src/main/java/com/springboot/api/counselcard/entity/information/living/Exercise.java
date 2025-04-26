@@ -36,7 +36,7 @@ public class Exercise {
     }
 
     public void update(ExerciseDTO exerciseDTO) {
-        if(Objects.isNull(exerciseDTO)) {
+        if (Objects.isNull(exerciseDTO)) {
             return;
         }
 

@@ -38,4 +38,6 @@ public record UpdateCounselCardReq(
     EvacuationDTO evacuation,
 
     WalkingDTO walking
-) {}
+) {
+
+}

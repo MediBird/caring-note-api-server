@@ -16,7 +16,7 @@ public class RestClientConfig {
     public NaverClovaExternalService naverClovaExternalService() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
-                "https://clovaspeech-gw.ncloud.com/external/v1/10310/3ae57a3d3c79f41de8bb6429f954bcc3cb78905e2fb7e41b2116f2213e449197"));
+            "https://clovaspeech-gw.ncloud.com/external/v1/10310/3ae57a3d3c79f41de8bb6429f954bcc3cb78905e2fb7e41b2116f2213e449197"));
         RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
         HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 

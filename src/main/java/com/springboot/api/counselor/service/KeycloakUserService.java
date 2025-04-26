@@ -48,7 +48,7 @@ public class KeycloakUserService {
 
     /**
      * 사용자의 비밀번호를 초기화합니다.
-     * 
+     *
      * @param userId      비밀번호를 초기화할 사용자 ID
      * @param newPassword 새 비밀번호
      * @param isTemporary 임시 비밀번호 여부 (true인 경우 사용자는 다음 로그인 시 비밀번호 변경 필요)
@@ -64,7 +64,7 @@ public class KeycloakUserService {
 
     /**
      * 사용자 ID로 Keycloak 사용자를 찾습니다.
-     * 
+     *
      * @param userId 찾을 사용자 ID
      * @return 사용자 표현 객체
      */
@@ -74,7 +74,7 @@ public class KeycloakUserService {
 
     /**
      * 이메일로 Keycloak 사용자를 찾습니다.
-     * 
+     *
      * @param email 찾을 사용자 이메일
      * @return 사용자 표현 객체 목록
      */
@@ -84,7 +84,7 @@ public class KeycloakUserService {
 
     /**
      * 사용자명으로 Keycloak 사용자를 찾습니다.
-     * 
+     *
      * @param username 찾을 사용자명
      * @return 사용자 표현 객체 목록
      */

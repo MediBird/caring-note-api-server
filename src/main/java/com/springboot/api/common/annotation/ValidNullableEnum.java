@@ -11,9 +11,10 @@ import java.lang.annotation.Target;
 
 @Documented
 @Constraint(validatedBy = NullableEnumValidator.class)
-@Target({ ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER })
+@Target({ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ValidNullableEnum {
+
     String message() default "Invalid value for enum";
 
     Class<?>[] groups() default {};

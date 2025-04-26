@@ -1,13 +1,7 @@
 package com.springboot.api.counselsession.entity;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselee.entity.Counselee;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
@@ -17,21 +11,24 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "counselee_consents", uniqueConstraints = {
-        @UniqueConstraint(columnNames = { "counsel_session_id", "counselee_id" })
+    @UniqueConstraint(columnNames = {"counsel_session_id", "counselee_id"})
 })
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "counselee", })
-@ToString(callSuper = true, exclude = { "counselSession", "counselee" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "counselee",})
+@ToString(callSuper = true, exclude = {"counselSession", "counselee"})
 public class CounseleeConsent extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
