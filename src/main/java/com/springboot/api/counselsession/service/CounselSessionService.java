@@ -218,9 +218,9 @@ public class CounselSessionService {
     @Cacheable(value = "sessionStats")
     @Transactional(readOnly = true)
     public CounselSessionStatRes getSessionStats() {
-        Long totalSessionCount = calculateTotalSessionCount();
+        long totalSessionCount = calculateTotalSessionCount();
         Long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
-        Long totalCaringMessageCount = counselSessionRepository.count();
+        long totalCaringMessageCount = counselSessionRepository.count();
         double counselHours = calculateCounselHoursForThisMonth();
 
         return CounselSessionStatRes.builder()
