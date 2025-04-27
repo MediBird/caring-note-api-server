@@ -93,8 +93,15 @@ security:
     - "/*/api-docs/**"
     - "/swagger-ui.html"
     - "/h2-console/**"
+    - "/actuator/health"
 keycloak:
   url: https://caringnote.co.kr/keycloak/
   admin-username: cnAdmin
   admin-password: caringNote@2024
   realm: caringnote
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
