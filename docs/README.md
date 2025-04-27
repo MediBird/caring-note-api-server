@@ -137,7 +137,7 @@
     file:
       path:
         origin: <<stt-audio-origin-file-upload-path>>
-        convert:<<stt-audio-convert-file-upload-path>>
+        convert: <<stt-audio-convert-file-upload-path>>
         
   ffmpeg:
     path: <<ffmpeg-bin-path>>
@@ -337,7 +337,7 @@
 #### ERD
 
 * 테이블이 많아 상세 내용은 .erd 파일 첨부함
-*  [caringnote.erd](./images/caringnote.erd) 
+*  [caringnote.erd](./assets/caringnote.erd) 
 
 
 

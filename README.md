@@ -80,15 +80,15 @@
 
 #### 가입
 
-![sign_in](./assets/signin.png)
+![sign_in](./docs/assets/signin.png)
 
 #### 로그인
 
-![log_in](./assets/login.png)
+![log_in](./docs/assets/login.png)
 
 #### API 호출
 
-![apicall](./assets/apicall.png)
+![apicall](./docs/assets/apicall.png)
 
 
 
@@ -137,7 +137,7 @@
     file:
       path:
         origin: <<stt-audio-origin-file-upload-path>>
-        convert:<<stt-audio-convert-file-upload-path>>
+        convert: <<stt-audio-convert-file-upload-path>>
         
   ffmpeg:
     path: <<ffmpeg-bin-path>>
@@ -337,7 +337,7 @@
 #### ERD
 
 * 테이블이 많아 상세 내용은 .erd 파일 첨부함
-*  [caringnote.erd](./images/caringnote.erd) 
+*  [caringnote.erd](./docs/assets/caringnote.erd) 
 
 
 
