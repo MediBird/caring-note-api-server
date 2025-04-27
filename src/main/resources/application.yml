@@ -103,7 +103,5 @@ keycloak:
 management:
   endpoints:
     web:
-      discovery:
-        enabled: true
       exposure:
-        include: "*"
+        include: health
