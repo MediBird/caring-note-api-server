@@ -1,26 +1,9 @@
 package com.springboot.api.service;
 
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeast;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SpeakerStatsDTO;
-import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
-import com.springboot.api.counselsession.entity.AICounselSummary;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.counselsession.service.AICounselSummaryService;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -46,9 +29,22 @@ import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
+import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
+import com.springboot.api.counselsession.dto.aiCounselSummary.SpeakerStatsDTO;
+import com.springboot.api.counselsession.dto.naverClova.SpeechToTextRes;
+import com.springboot.api.counselsession.entity.AICounselSummary;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.service.AICounselSummaryService;
 
 @SpringBootTest
 @EnableAsync
@@ -60,10 +56,10 @@ public class AICounselSummaryServiceTest {
     @Autowired
     private AICounselSummaryService aiCounselSummaryService; // 실제 서비스 주입
 
-    @MockBean
+    @MockitoBean
     private CounselSessionRepository counselSessionRepository;
 
-    @MockBean
+    @MockitoBean
     private AICounselSummaryRepository aiCounselSummaryRepository;
 
     @ParameterizedTest
