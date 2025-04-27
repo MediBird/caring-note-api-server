@@ -217,28 +217,6 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(counselSession.counselee.id.eq(counseleeId));
-
-        if (beforeDateTime != null) {
-            builder.and(counselSession.scheduledStartDateTime.lt(beforeDateTime));
-        }
-
-        // 취소가 아닌 상담 세션들로 회차 계산
-        builder.and(counselSession.status.ne(ScheduleStatus.CANCELED));
-
-        Long count = queryFactory
-            .select(counselSession.count())
-            .from(counselSession)
-            .where(builder)
-            .fetchOne();
-
-        return count != null ? count.intValue() : 0;
-    }
-
-    @Override
     public List<CounselSession> findValidCounselSessionsByCounseleeId(String counseleeId) {
         return queryFactory.
             selectFrom(counselSession)

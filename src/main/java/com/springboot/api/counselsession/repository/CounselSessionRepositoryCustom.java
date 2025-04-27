@@ -33,8 +33,6 @@ public interface CounselSessionRepositoryCustom {
         List<String> counselorNames,
         List<LocalDate> scheduledDates);
 
-    int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime);
-
     List<CounselSession> findValidCounselSessionsByCounseleeId(String counseleeId);
 
     void bulkUpdateCounselSessionNum(Map<String, Integer> sessionUpdates);
