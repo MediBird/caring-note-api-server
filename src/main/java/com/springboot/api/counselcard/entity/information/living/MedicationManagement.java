@@ -54,6 +54,11 @@ public class MedicationManagement {
         this.isAlone = medicationManagementDTO.isAlone();
         this.houseMateNote = medicationManagementDTO.houseMateNote();
         this.medicationAssistants = medicationManagementDTO.medicationAssistants();
-        this.customMedicationAssistant = medicationManagementDTO.customMedicationAssistant();
+        if (Objects.nonNull(this.medicationAssistants)
+                && !this.medicationAssistants.contains(MedicationAssistant.OTHER)) {
+            this.customMedicationAssistant = null;
+        } else {
+            this.customMedicationAssistant = medicationManagementDTO.customMedicationAssistant();
+        }
     }
 }
