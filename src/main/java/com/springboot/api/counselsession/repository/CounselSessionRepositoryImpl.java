@@ -106,7 +106,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public long countByStatus(ScheduleStatus status) {
+    public Long countByStatus(ScheduleStatus status) {
         return queryFactory
             .select(counselSession.count())
             .from(counselSession)
@@ -115,7 +115,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public long countDistinctCounseleeForCurrentMonth() {
+    public Long countDistinctCounseleeForCurrentMonth() {
         LocalDate now = LocalDate.now();
         return queryFactory
             .select(counselSession.counselee.countDistinct())

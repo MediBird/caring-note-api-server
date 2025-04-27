@@ -18,9 +18,9 @@ public interface CounselSessionRepositoryCustom {
 
     PageRes<SelectCounselSessionListItem> findSessionByCursorAndDate(LocalDate date, PageReq pageReq);
 
-    long countByStatus(ScheduleStatus status);
+    Long countByStatus(ScheduleStatus status);
 
-    long countDistinctCounseleeForCurrentMonth();
+    Long countDistinctCounseleeForCurrentMonth();
 
     List<String> cancelOverDueSessionsAndReturnAffectedCounseleeIds();
 
