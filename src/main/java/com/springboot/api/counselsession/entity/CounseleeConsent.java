@@ -58,11 +58,6 @@ public class CounseleeConsent extends BaseEntity {
         this.isConsent = true;
     }
 
-    public void reject() {
-        this.consentDateTime = LocalDateTime.now();
-        this.isConsent = false;
-    }
-
     @PrePersist
     @Override
     protected void onCreate() {
