@@ -4,6 +4,7 @@ import java.util.Objects;
 
 import com.springboot.api.counselcard.dto.information.living.NutritionDTO;
 import com.springboot.enums.MealPattern;
+import com.springboot.enums.WaterIntake;
 
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -21,10 +22,14 @@ public class Nutrition {
 
     private String nutritionNote;
 
+    @Enumerated(EnumType.STRING)
+    private WaterIntake waterIntake;
+
     public static Nutrition initializeDefault() {
         Nutrition nutrition = new Nutrition();
         nutrition.mealPattern = null;
         nutrition.nutritionNote = null;
+        nutrition.waterIntake = null;
         return nutrition;
     }
 
@@ -32,6 +37,7 @@ public class Nutrition {
         Nutrition copiedNutrition = new Nutrition();
         copiedNutrition.mealPattern = nutrition.mealPattern;
         copiedNutrition.nutritionNote = nutrition.nutritionNote;
+        copiedNutrition.waterIntake = nutrition.waterIntake;
         return copiedNutrition;
     }
 
@@ -42,5 +48,6 @@ public class Nutrition {
 
         this.mealPattern = nutritionDTO.mealPattern();
         this.nutritionNote = nutritionDTO.nutritionNote();
+        this.waterIntake = nutritionDTO.waterIntake();
     }
 }

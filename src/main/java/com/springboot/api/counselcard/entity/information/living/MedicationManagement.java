@@ -1,24 +1,23 @@
 package com.springboot.api.counselcard.entity.information.living;
 
-import jakarta.persistence.ForeignKey;
 import java.util.List;
 import java.util.Objects;
-
 import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;
-import com.springboot.enums.MedicationAssistant;
-
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class MedicationManagement {
 
     private Boolean isAlone;
@@ -26,20 +25,19 @@ public class MedicationManagement {
     private String houseMateNote;
 
     @ElementCollection
-    @CollectionTable(name = "medication_assistants",
-        joinColumns = @JoinColumn(name = "medication_management_id"),
+    @CollectionTable(name = "medication_assistant_details",
+                joinColumns = @JoinColumn(name = "medication_management_id"),
         foreignKey = @ForeignKey(
             foreignKeyDefinition = "FOREIGN KEY (medication_management_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
-    @Enumerated(EnumType.STRING)
-    private List<MedicationAssistant> medicationAssistants;
+    private List<MedicationAssistantDetail> medicationAssistants;
 
     public static MedicationManagement initializeDefault() {
-        MedicationManagement medicationManagement = new MedicationManagement();
-        medicationManagement.isAlone = false;
-        medicationManagement.houseMateNote = null;
-        medicationManagement.medicationAssistants = List.of();
-        return medicationManagement;
+        return MedicationManagement.builder()
+            .isAlone(null)
+            .houseMateNote(null)
+            .medicationAssistants(List.of())
+            .build();
     }
 
     public static MedicationManagement copy(MedicationManagement medicationManagement) {

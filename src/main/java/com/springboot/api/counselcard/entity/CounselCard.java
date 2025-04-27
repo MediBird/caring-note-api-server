@@ -1,13 +1,10 @@
 package com.springboot.api.counselcard.entity;
 
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
-import jakarta.persistence.PostLoad;
-import jakarta.persistence.PrePersist;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
-
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
@@ -25,7 +22,6 @@ import com.springboot.api.counselcard.entity.information.living.Nutrition;
 import com.springboot.api.counselcard.entity.information.living.Smoking;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.CardRecordStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -34,6 +30,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

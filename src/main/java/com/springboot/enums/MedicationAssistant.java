@@ -7,5 +7,6 @@ public enum MedicationAssistant {
     RELATIVES, // 친인척
     FRIEND, // 친구
     CAREGIVER, // 요양보호사 또는 돌봄종사자
+    PARENT, // 부모
     OTHER // 기타
 }
