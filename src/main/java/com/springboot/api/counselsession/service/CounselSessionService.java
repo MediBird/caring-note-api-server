@@ -1,6 +1,5 @@
 package com.springboot.api.counselsession.service;
 
-import com.querydsl.core.Tuple;
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.exception.NoContentException;
@@ -27,7 +26,6 @@ import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounse
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -123,13 +121,7 @@ public class CounselSessionService {
     public PageRes<SelectCounselSessionListItem> selectCounselSessionListByBaseDate(PageReq req,
         LocalDate baseDate) {
 
-        PageRes<Tuple> sessions = counselSessionRepository.findSessionByCursorAndDate(baseDate, req);
-
-        return sessions.map(tuple -> {
-            CounselSession counselSession = tuple.get(0, CounselSession.class);
-            CardRecordStatus cardRecordStatus = tuple.get(1, CardRecordStatus.class);
-            return SelectCounselSessionListItem.from(counselSession, cardRecordStatus);
-        });
+        return counselSessionRepository.findSessionByCursorAndDate(baseDate, req);
     }
 
     @CacheEvict(value = {"sessionList"}, allEntries = true)
