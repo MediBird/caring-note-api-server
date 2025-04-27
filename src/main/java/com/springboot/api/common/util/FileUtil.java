@@ -23,7 +23,8 @@ public class FileUtil {
 
     private final FfmpegProperties ffmpegProperties;
 
-    public String saveMultipartFile(@NotNull MultipartFile multipartFile, @NotNull String saveFilePath) throws IOException {
+    public String saveMultipartFile(@NotNull MultipartFile multipartFile, @NotNull String saveFilePath)
+        throws IOException {
 
         if (multipartFile.isEmpty()) {
             throw new IllegalArgumentException();
@@ -45,30 +46,29 @@ public class FileUtil {
 
         Files.copy(multipartFile.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
-
         return hashedFilename;
 
     }
 
     public File convertWebmToMp4(String fileName, String originFilePath, String convertFilePath)
-            throws IOException {
+        throws IOException {
 
         String convertedMultipartFileName = fileName.replace(".webm", ".mp4");
 
         FFmpeg ffmpeg = new FFmpeg(ffmpegProperties.getPath());
 
         FFmpegBuilder builder = new FFmpegBuilder()
-                .setInput(originFilePath + fileName)
-                .overrideOutputFiles(true)
-                .addOutput(convertFilePath + convertedMultipartFileName) // 출력 파일 설정
-                .setFormat("mp4") // 출력 포맷 설정
-                .setAudioCodec("aac") // 오디오 코덱 설정 (AAC)
-                .setAudioBitRate(192000) // 오디오 비트레이트 설정 (192kbps)
-                .done();
+            .setInput(originFilePath + fileName)
+            .overrideOutputFiles(true)
+            .addOutput(convertFilePath + convertedMultipartFileName) // 출력 파일 설정
+            .setFormat("mp4") // 출력 포맷 설정
+            .setAudioCodec("aac") // 오디오 코덱 설정 (AAC)
+            .setAudioBitRate(192000) // 오디오 비트레이트 설정 (192kbps)
+            .done();
 
         ffmpeg.run(builder);
 
-        return Path.of(convertFilePath+convertedMultipartFileName).toFile();
+        return Path.of(convertFilePath + convertedMultipartFileName).toFile();
     }
 
 }

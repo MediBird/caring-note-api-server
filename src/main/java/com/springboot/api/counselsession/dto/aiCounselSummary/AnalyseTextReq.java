@@ -8,6 +8,7 @@ import lombok.Data;
 @Builder
 @Data
 public class AnalyseTextReq {
+
     @NotBlank
     private String counselSessionId;
 }

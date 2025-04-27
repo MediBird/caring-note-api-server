@@ -15,6 +15,7 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class SelectCounseleeRes {
+
     private final String id;
     private final String name;
     private final int age;
@@ -33,21 +34,21 @@ public class SelectCounseleeRes {
 
     public static SelectCounseleeRes from(Counselee counselee) {
         return SelectCounseleeRes.builder()
-                .id(counselee.getId())
-                .name(counselee.getName())
-                .age(DateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
-                .dateOfBirth(counselee.getDateOfBirth())
-                .phoneNumber(counselee.getPhoneNumber())
-                .gender(counselee.getGenderType())
-                .address(counselee.getAddress())
-                .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
-                .healthInsuranceType(counselee.getHealthInsuranceType())
-                .counselCount(counselee.getCounselCount())
-                .lastCounselDate(counselee.getLastCounselDate())
-                .registrationDate(counselee.getRegistrationDate())
-                .careManagerName(counselee.getCareManagerName())
-                .note(counselee.getNote())
-                .isDisability(counselee.getIsDisability())
-                .build();
+            .id(counselee.getId())
+            .name(counselee.getName())
+            .age(DateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
+            .dateOfBirth(counselee.getDateOfBirth())
+            .phoneNumber(counselee.getPhoneNumber())
+            .gender(counselee.getGenderType())
+            .address(counselee.getAddress())
+            .affiliatedWelfareInstitution(counselee.getAffiliatedWelfareInstitution())
+            .healthInsuranceType(counselee.getHealthInsuranceType())
+            .counselCount(counselee.getCounselCount())
+            .lastCounselDate(counselee.getLastCounselDate())
+            .registrationDate(counselee.getRegistrationDate())
+            .careManagerName(counselee.getCareManagerName())
+            .note(counselee.getNote())
+            .isDisability(counselee.getIsDisability())
+            .build();
     }
 }

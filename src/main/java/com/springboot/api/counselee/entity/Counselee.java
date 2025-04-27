@@ -109,7 +109,8 @@ public class Counselee extends BaseEntity {
         Optional.ofNullable(updateCounseleeReq.getDateOfBirth()).ifPresent(value -> this.dateOfBirth = value);
         Optional.ofNullable(updateCounseleeReq.getPhoneNumber()).ifPresent(value -> this.phoneNumber = value);
         Optional.ofNullable(updateCounseleeReq.getLastCounselDate()).ifPresent(value -> this.lastCounselDate = value);
-        Optional.ofNullable(updateCounseleeReq.getAffiliatedWelfareInstitution()).ifPresent(value -> this.affiliatedWelfareInstitution = value);
+        Optional.ofNullable(updateCounseleeReq.getAffiliatedWelfareInstitution())
+            .ifPresent(value -> this.affiliatedWelfareInstitution = value);
         Optional.ofNullable(updateCounseleeReq.getNote()).ifPresent(value -> this.note = value);
         Optional.ofNullable(updateCounseleeReq.getGenderType()).ifPresent(value -> this.genderType = value);
         Optional.ofNullable(updateCounseleeReq.getAddress()).ifPresent(value -> this.address = value);

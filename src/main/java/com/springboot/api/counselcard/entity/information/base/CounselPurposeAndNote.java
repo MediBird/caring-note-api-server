@@ -52,7 +52,7 @@ public class CounselPurposeAndNote {
     }
 
     public void update(CounselPurposeAndNoteDTO counselPurposeAndNoteDTO) {
-        if(Objects.isNull(counselPurposeAndNoteDTO)) {
+        if (Objects.isNull(counselPurposeAndNoteDTO)) {
             return;
         }
 

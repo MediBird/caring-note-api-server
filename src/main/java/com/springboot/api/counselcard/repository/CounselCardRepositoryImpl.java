@@ -75,14 +75,14 @@ public class CounselCardRepositoryImpl extends QuerydslRepositorySupport impleme
         }
 
         return queryFactory
-                .selectFrom(currentCounselCard)
-                .join(currentCounselCard.counselSession, counselSession)
+            .selectFrom(currentCounselCard)
+            .join(currentCounselCard.counselSession, counselSession)
             .fetchJoin()
             .where(
                 counselSession.scheduledStartDateTime.before(currentSessionStartTime),
                 counselSession.status.ne(ScheduleStatus.CANCELED),
-                        currentCounselCard.cardRecordStatus.eq(
-                                CardRecordStatus.COMPLETED)
+                currentCounselCard.cardRecordStatus.eq(
+                    CardRecordStatus.COMPLETED)
             )
             .orderBy(counselSession.scheduledStartDateTime.desc())
             .fetch();

@@ -19,10 +19,10 @@ public class CacheConfig {
     public CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .expireAfterWrite(1, TimeUnit.HOURS)
-                .maximumSize(100));
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .maximumSize(100));
         cacheManager.setCacheNames(Arrays.asList("sessionDates", "sessionStats", "sessionList", "medicationSearch",
-                "birthDates", "welfareInstitutions", "counselorNames"));
+            "birthDates", "welfareInstitutions", "counselorNames"));
         return cacheManager;
     }
 }

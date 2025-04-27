@@ -6,5 +6,6 @@ import lombok.Data;
 
 @Data
 public class SuccessRes {
+
     private String message = HttpMessages.SUCCESS;
 }

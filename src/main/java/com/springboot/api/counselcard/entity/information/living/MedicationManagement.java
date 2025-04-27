@@ -20,6 +20,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MedicationManagement {
+
     private Boolean isAlone;
 
     private String houseMateNote;

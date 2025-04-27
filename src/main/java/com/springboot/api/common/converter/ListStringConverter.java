@@ -36,8 +36,8 @@ public class ListStringConverter implements AttributeConverter<List<String>, Str
             }
 
             return Arrays.stream(dbData.split(delimiter))
-                    .filter(s -> !s.isEmpty()) // 빈 문자열 필터링
-                    .toList();
+                .filter(s -> !s.isEmpty()) // 빈 문자열 필터링
+                .toList();
 
         } catch (Exception e) {
             throw new JsonConvertException();

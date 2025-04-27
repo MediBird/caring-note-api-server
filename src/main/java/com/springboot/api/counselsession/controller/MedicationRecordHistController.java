@@ -1,14 +1,5 @@
 package com.springboot.api.counselsession.controller;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
@@ -17,10 +8,16 @@ import com.springboot.api.counselsession.dto.medicationRecordHist.AddAndUpdateMe
 import com.springboot.api.counselsession.dto.medicationRecordHist.SelectMedicationRecordHistRes;
 import com.springboot.api.counselsession.service.MedicationRecordHistService;
 import com.springboot.enums.RoleType;
-
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @ApiController(name = "MedicationRecordHistController", path = "/v1/counsel/medication/record", description = "본상담 내 복약상담 관련 API를 제공하는 Controller")
 @RequiredArgsConstructor
@@ -29,14 +26,14 @@ public class MedicationRecordHistController {
     private final MedicationRecordHistService medicationRecordHistService;
 
     @PostMapping("/{counselSessionId}")
-    @Operation(summary = "처방 의약품 추가", tags = { "본상담 - 복약 상담" })
-    @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @Operation(summary = "처방 의약품 추가", tags = {"본상담 - 복약 상담"})
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<List<AddAndUpdateMedicationRecordHistRes>>> addAndUpdateMedicationRecordHist(
-            @PathVariable("counselSessionId") String counselSessionId,
-            @RequestBody @Valid List<AddAndUpdateMedicationRecordHistReq> addAndUpdateMedicationRecordHistReqs) {
+        @PathVariable("counselSessionId") String counselSessionId,
+        @RequestBody @Valid List<AddAndUpdateMedicationRecordHistReq> addAndUpdateMedicationRecordHistReqs) {
 
         List<AddAndUpdateMedicationRecordHistRes> addAndUpdateMedicationRecordHistRes = medicationRecordHistService
-                .addAndUpdateMedicationRecordHists(counselSessionId, addAndUpdateMedicationRecordHistReqs);
+            .addAndUpdateMedicationRecordHists(counselSessionId, addAndUpdateMedicationRecordHistReqs);
 
         return ResponseEntity.ok(new CommonRes<>(addAndUpdateMedicationRecordHistRes));
     }
@@ -54,13 +51,13 @@ public class MedicationRecordHistController {
     // return ResponseEntity.ok(new CommonRes<>(addMedicationRecordHistRes));
     // }
     @GetMapping("/{counselSessionId}")
-    @Operation(summary = "처방 의약품 리스트 조회", tags = { "본상담 - 복약 상담" })
-    @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @Operation(summary = "처방 의약품 리스트 조회", tags = {"본상담 - 복약 상담"})
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<List<SelectMedicationRecordHistRes>>> selectMedicationRecordListBySessionId(
-            @PathVariable("counselSessionId") String counselSessionId) {
+        @PathVariable("counselSessionId") String counselSessionId) {
 
         List<SelectMedicationRecordHistRes> selectMedicationRecordListBySessionIdRes = medicationRecordHistService
-                .selectMedicationRecordHistByCounselSessionId(counselSessionId);
+            .selectMedicationRecordHistByCounselSessionId(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectMedicationRecordListBySessionIdRes));
     }
@@ -78,11 +75,11 @@ public class MedicationRecordHistController {
     // return ResponseEntity.ok(new CommonRes<>(updateMedicationRecordHistRes));
     // }
     @DeleteMapping("/{counselSessionId}/{id}")
-    @Operation(summary = "처방 의약품 삭제", tags = { "본상담 - 복약 상담" })
-    @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @Operation(summary = "처방 의약품 삭제", tags = {"본상담 - 복약 상담"})
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<Void>> deleteMedicationRecordHist(
-            @PathVariable("counselSessionId") String counselSessionId,
-            @PathVariable("id") String id) {
+        @PathVariable("counselSessionId") String counselSessionId,
+        @PathVariable("id") String id) {
 
         medicationRecordHistService.deleteMedicationRecordHist(counselSessionId, id);
 
@@ -90,10 +87,10 @@ public class MedicationRecordHistController {
     }
 
     @DeleteMapping("/{counselSessionId}")
-    @Operation(summary = "처방 의약품 일괄 삭제", tags = { "본상담 - 복약 상담" })
-    @RoleSecured({ RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @Operation(summary = "처방 의약품 일괄 삭제", tags = {"본상담 - 복약 상담"})
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<Void>> deleteMedicationRecordHistsByCounselSessionId(
-            @PathVariable("counselSessionId") String counselSessionId) {
+        @PathVariable("counselSessionId") String counselSessionId) {
 
         medicationRecordHistService.deleteMedicationRecordHistByCounselSessionId(counselSessionId);
 

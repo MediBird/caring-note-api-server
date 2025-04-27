@@ -21,13 +21,14 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class MedicationController {
+
     private final MedicationService medicationService;
 
-    @Operation(summary = "약 검색", tags = { "약 검색" })
+    @Operation(summary = "약 검색", tags = {"약 검색"})
     @GetMapping
-    @RoleSecured({ RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER })
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<List<SearchMedicationByKeywordRes>>> searchMedicationByKeyword(
-            @RequestParam String keyword) {
+        @RequestParam String keyword) {
         List<SearchMedicationByKeywordRes> medications = medicationService.searchMedicationByKeyword(keyword);
         log.info("medications: {}", medications);
         return ResponseEntity.ok(new CommonRes<>(medications));

@@ -15,4 +15,6 @@ public record UpdateHealthInformationReq(
 
     @NotNull
     MedicationSideEffectDTO medicationSideEffect
-) {}
+) {
+
+}

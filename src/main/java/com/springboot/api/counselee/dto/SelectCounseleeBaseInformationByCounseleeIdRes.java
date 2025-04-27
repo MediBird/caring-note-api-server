@@ -20,20 +20,20 @@ public record SelectCounseleeBaseInformationByCounseleeIdRes(
     Set<DiseaseType> diseases, CardRecordStatus cardRecordStatus, boolean isDisability) {
 
     public static SelectCounseleeBaseInformationByCounseleeIdRes from(Counselee counselee, List<DiseaseType> diseases,
-            CardRecordStatus cardRecordStatus) {
+        CardRecordStatus cardRecordStatus) {
         return SelectCounseleeBaseInformationByCounseleeIdRes.builder()
-                .counseleeId(counselee.getId())
-                .name(counselee.getName())
-                .age(DateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
-                .dateOfBirth(counselee.getDateOfBirth().toString())
-                .gender(counselee.getGenderType())
-                .address(counselee.getAddress())
-                .healthInsuranceType(counselee.getHealthInsuranceType())
-                .counselCount(counselee.getCounselCount())
-                .lastCounselDate(counselee.getLastCounselDate())
-                .diseases(Set.copyOf(diseases))
-                .cardRecordStatus(cardRecordStatus)
-                .isDisability(counselee.getIsDisability())
-                .build();
+            .counseleeId(counselee.getId())
+            .name(counselee.getName())
+            .age(DateTimeUtil.calculateKoreanAge(counselee.getDateOfBirth(), LocalDate.now()))
+            .dateOfBirth(counselee.getDateOfBirth().toString())
+            .gender(counselee.getGenderType())
+            .address(counselee.getAddress())
+            .healthInsuranceType(counselee.getHealthInsuranceType())
+            .counselCount(counselee.getCounselCount())
+            .lastCounselDate(counselee.getLastCounselDate())
+            .diseases(Set.copyOf(diseases))
+            .cardRecordStatus(cardRecordStatus)
+            .isDisability(counselee.getIsDisability())
+            .build();
     }
 }

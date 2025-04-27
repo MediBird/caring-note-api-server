@@ -4,7 +4,7 @@ import com.springboot.api.counselcard.entity.information.living.Drinking;
 import com.springboot.enums.DrinkingAmount;
 
 public record DrinkingDTO(
-        DrinkingAmount drinkingAmount) {
+    DrinkingAmount drinkingAmount) {
 
     public DrinkingDTO(Drinking drinking) {
         this(drinking != null ? drinking.getDrinkingAmount() : null);

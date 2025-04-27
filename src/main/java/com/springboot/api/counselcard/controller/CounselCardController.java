@@ -98,7 +98,8 @@ public class CounselCardController {
         @RequestBody @Valid UpdateCounselCardStatusReq updateCounselCardStatusReq) {
 
         return ResponseEntity.ok(
-            new CommonRes<>(counselCardService.updateCounselCardStatus(counselSessionId, updateCounselCardStatusReq.status())));
+            new CommonRes<>(
+                counselCardService.updateCounselCardStatus(counselSessionId, updateCounselCardStatusReq.status())));
     }
 
     @PutMapping("/{counselSessionId}")

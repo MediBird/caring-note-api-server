@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiarizationDTO {
+
     @Builder.Default
     private final Boolean enable = Boolean.TRUE;
     private Integer speakerCountMin;

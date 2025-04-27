@@ -51,7 +51,7 @@ public class DiseaseInfo {
     }
 
     public void update(DiseaseInfoDTO diseaseInfoDTO) {
-        if(Objects.isNull(diseaseInfoDTO)) {
+        if (Objects.isNull(diseaseInfoDTO)) {
             return;
         }
 

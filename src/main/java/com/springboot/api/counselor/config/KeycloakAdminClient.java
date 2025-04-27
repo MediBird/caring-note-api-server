@@ -23,12 +23,12 @@ public class KeycloakAdminClient {
     @Bean
     public Keycloak keycloak() {
         return KeycloakBuilder.builder()
-                .serverUrl(url)
-                .realm("master")
-                .username(adminUsername)
-                .password(adminPassword)
-                .clientId(clientId)
-                .build();
+            .serverUrl(url)
+            .realm("master")
+            .username(adminUsername)
+            .password(adminPassword)
+            .clientId(clientId)
+            .build();
     }
 
     @Bean

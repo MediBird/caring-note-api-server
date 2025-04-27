@@ -20,6 +20,7 @@ public class CounselorUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        return counselorRepository.findActiveByUsername(username).orElseThrow(() -> new UsernameNotFoundException(username));
+        return counselorRepository.findActiveByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 }

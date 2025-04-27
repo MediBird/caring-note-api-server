@@ -1,16 +1,10 @@
 package com.springboot.api.counselsession.entity;
 
-import java.util.List;
-
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.converter.JsonStringConverter;
 import com.springboot.api.common.converter.ListStringConverter;
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -21,19 +15,22 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import java.util.List;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "ai_counsel_summarys")
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession" })
-@ToString(callSuper = true, exclude = { "counselSession" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
+@ToString(callSuper = true, exclude = {"counselSession"})
 public class AICounselSummary extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)

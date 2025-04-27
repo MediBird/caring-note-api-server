@@ -5,5 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record DeleteCounseleeBatchRes(
-        @NotBlank String deletedCounseleeId) {
+    @NotBlank String deletedCounseleeId) {
+
 }

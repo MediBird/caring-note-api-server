@@ -1,11 +1,7 @@
 package com.springboot.api.counselsession.entity;
 
-import com.springboot.api.medication.entity.Medication;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.springboot.api.common.entity.BaseEntity;
-
+import com.springboot.api.medication.entity.Medication;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,14 +12,16 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "waste_medication_records")
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession", "medication" })
-@ToString(callSuper = true, exclude = { "counselSession", "medication" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "medication"})
+@ToString(callSuper = true, exclude = {"counselSession", "medication"})
 
 public class WasteMedicationRecord extends BaseEntity {
 
@@ -34,7 +32,7 @@ public class WasteMedicationRecord extends BaseEntity {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "medication_id", nullable = true)
+    @JoinColumn(name = "medication_id")
     private Medication medication;
 
     private String medicationName;

@@ -47,30 +47,30 @@ public class MedicationRepositoryCustomImpl implements MedicationRepositoryCusto
 
     private List<Medication> searchByChosung(String keyword) {
         return queryFactory
-                .selectFrom(medication)
-                .where(medication.itemNameChosung.like("%" + keyword + "%"))
-                .orderBy(new CaseBuilder()
-                        .when(medication.itemNameChosung.startsWith(keyword)).then(1)
-                        .when(medication.itemNameChosung.contains(keyword)).then(2)
-                        .otherwise(3)
-                        .asc())
-                .limit(10)
-                .fetch();
+            .selectFrom(medication)
+            .where(medication.itemNameChosung.like("%" + keyword + "%"))
+            .orderBy(new CaseBuilder()
+                .when(medication.itemNameChosung.startsWith(keyword)).then(1)
+                .when(medication.itemNameChosung.contains(keyword)).then(2)
+                .otherwise(3)
+                .asc())
+            .limit(10)
+            .fetch();
     }
 
     private List<Medication> searchByName(String keyword) {
         log.info("일반 텍스트 검색: {}", keyword);
 
         return queryFactory
-                .selectFrom(medication)
-                .where(nameContains(keyword))
-                .orderBy(new CaseBuilder()
-                        .when(medication.itemName.startsWith(keyword)).then(1)
-                        .when(medication.itemName.contains(keyword)).then(2)
-                        .otherwise(3)
-                        .asc())
-                .limit(10)
-                .fetch();
+            .selectFrom(medication)
+            .where(nameContains(keyword))
+            .orderBy(new CaseBuilder()
+                .when(medication.itemName.startsWith(keyword)).then(1)
+                .when(medication.itemName.contains(keyword)).then(2)
+                .otherwise(3)
+                .asc())
+            .limit(10)
+            .fetch();
     }
 
     private BooleanExpression nameContains(String keyword) {

@@ -9,10 +9,10 @@ import com.springboot.enums.SightType;
 import com.springboot.enums.UsingKoreanType;
 
 public record CommunicationDTO(
-        List<SightType> sights,
-        List<HearingType> hearings,
-        CommunicationType communications,
-        List<UsingKoreanType> usingKoreans) {
+    List<SightType> sights,
+    List<HearingType> hearings,
+    CommunicationType communications,
+    List<UsingKoreanType> usingKoreans) {
 
     public CommunicationDTO(Communication communication) {
         this(

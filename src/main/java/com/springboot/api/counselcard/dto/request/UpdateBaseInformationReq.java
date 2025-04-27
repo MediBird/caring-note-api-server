@@ -7,4 +7,6 @@ import jakarta.validation.constraints.NotNull;
 public record UpdateBaseInformationReq(
     @NotNull
     CounselPurposeAndNoteDTO counselPurposeAndNote
-) {}
+) {
+
+}

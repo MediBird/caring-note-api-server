@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteCounseleeBatchReq {
+
     @NotBlank
     private String counseleeId;
 }

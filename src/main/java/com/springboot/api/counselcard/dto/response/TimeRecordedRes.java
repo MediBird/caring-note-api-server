@@ -3,7 +3,7 @@ package com.springboot.api.counselcard.dto.response;
 import lombok.Getter;
 
 @Getter
-public class TimeRecordedRes<T>{
+public class TimeRecordedRes<T> {
 
     private final String counselDate;
     private final T data;

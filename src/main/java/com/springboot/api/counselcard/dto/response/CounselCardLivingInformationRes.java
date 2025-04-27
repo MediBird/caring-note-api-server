@@ -23,11 +23,11 @@ public record CounselCardLivingInformationRes(
 
     public CounselCardLivingInformationRes(CounselCard counselCard) {
         this(
-                counselCard != null ? new DrinkingDTO(counselCard.getDrinking()) : null,
-                counselCard != null ? new ExerciseDTO(counselCard.getExercise()) : null,
-                counselCard != null ? new MedicationManagementDTO(counselCard.getMedicationManagement()) : null,
-                counselCard != null ? new NutritionDTO(counselCard.getNutrition()) : null,
-                counselCard != null ? new SmokingDTO(counselCard.getSmoking()) : null
+            counselCard != null ? new DrinkingDTO(counselCard.getDrinking()) : null,
+            counselCard != null ? new ExerciseDTO(counselCard.getExercise()) : null,
+            counselCard != null ? new MedicationManagementDTO(counselCard.getMedicationManagement()) : null,
+            counselCard != null ? new NutritionDTO(counselCard.getNutrition()) : null,
+            counselCard != null ? new SmokingDTO(counselCard.getSmoking()) : null
         );
     }
 }

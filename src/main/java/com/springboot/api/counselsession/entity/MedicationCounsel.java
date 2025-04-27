@@ -1,10 +1,6 @@
 package com.springboot.api.counselsession.entity;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.springboot.api.common.entity.BaseEntity;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -16,14 +12,16 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "medication_counsels")
 @Data
 @SuperBuilder
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = { "counselSession" })
-@ToString(callSuper = true, exclude = { "counselSession" })
+@EqualsAndHashCode(callSuper = true, exclude = {"counselSession"})
+@ToString(callSuper = true, exclude = {"counselSession"})
 public class MedicationCounsel extends BaseEntity {
 
     @OneToOne

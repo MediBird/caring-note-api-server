@@ -9,8 +9,8 @@ public record ExerciseDTO(
 
     public ExerciseDTO(Exercise exercise) {
         this(
-                exercise != null ? exercise.getExercisePattern() : null,
-                exercise != null ? exercise.getExerciseNote() : null
+            exercise != null ? exercise.getExercisePattern() : null,
+            exercise != null ? exercise.getExerciseNote() : null
         );
     }
 }

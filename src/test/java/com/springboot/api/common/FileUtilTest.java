@@ -26,51 +26,50 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 @Disabled
 public class FileUtilTest {
 
-        @Autowired
-        FileUtil fileUtil;
+    @Autowired
+    FileUtil fileUtil;
 
-        @ParameterizedTest
-        @ValueSource(strings = { "test5.webm" })
-        void testConvertWebmToM4a(String filename) throws IOException {
+    @ParameterizedTest
+    @ValueSource(strings = {"test5.webm"})
+    void testConvertWebmToM4a(String filename) throws IOException {
 
-                File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/" + filename);
-                String originPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/origin/";
-                String convertPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/convert/";
-                
+        File mp4File = ResourceUtils.getFile("classpath:" + "stt/audio/" + filename);
+        String originPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/origin/";
+        String convertPath = "/Users/choisunpil/Desktop/development/2024/spring-boot-boilerplate/src/test/resources/stt/audio/test/convert/";
 
-                File convertedFile = fileUtil.convertWebmToMp4(mp4File.getName(), originPath,
-                                convertPath);
+        File convertedFile = fileUtil.convertWebmToMp4(mp4File.getName(), originPath,
+            convertPath);
 
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
-                                "https://clovaspeech-gw.ncloud.com/external/v1/10309/338f74c076c81a57b47313f867ab35519c289e3f8dede43066bea9f266708cb1"));
-                RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
-                HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
+        RestTemplate restTemplate = new RestTemplate();
+        restTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory(
+            "https://clovaspeech-gw.ncloud.com/external/v1/10309/338f74c076c81a57b47313f867ab35519c289e3f8dede43066bea9f266708cb1"));
+        RestTemplateAdapter adapter = RestTemplateAdapter.create(restTemplate);
+        HttpServiceProxyFactory factory = HttpServiceProxyFactory.builderFor(adapter).build();
 
-                NaverClovaExternalService service = factory.createClient(NaverClovaExternalService.class);
+        NaverClovaExternalService service = factory.createClient(NaverClovaExternalService.class);
 
-                Map<String, String> headers = new HashMap<>();
-                headers.put("Accept", "application/json");
-                headers.put("X-CLOVASPEECH-API-KEY", "796d7a638753441eb241a266f1f10d49");
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", "application/json");
+        headers.put("X-CLOVASPEECH-API-KEY", "796d7a638753441eb241a266f1f10d49");
 
-                SpeechToTextReq speechToTextReq = SpeechToTextReq
-                                .builder()
-                                .language("ko-KR")
-                                .completion("sync")
-                                .wordAlignment(true)
-                                .fullText(true)
-                                .build();
+        SpeechToTextReq speechToTextReq = SpeechToTextReq
+            .builder()
+            .language("ko-KR")
+            .completion("sync")
+            .wordAlignment(true)
+            .fullText(true)
+            .build();
 
-                SpeechToTextRes speechToTextRes = service
-                                .convertSpeechToText(headers, new FileSystemResource(convertedFile), speechToTextReq)
-                                .getBody();
+        SpeechToTextRes speechToTextRes = service
+            .convertSpeechToText(headers, new FileSystemResource(convertedFile), speechToTextReq)
+            .getBody();
 
-                ObjectMapper objectMapper = new ObjectMapper();
-                objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-                File file = new File("src/test/resources/stt/output/" + mp4File.getName() + ".json");
-                objectMapper.writeValue(file, speechToTextRes);
+        File file = new File("src/test/resources/stt/output/" + mp4File.getName() + ".json");
+        objectMapper.writeValue(file, speechToTextRes);
 
-        }
+    }
 
 }
