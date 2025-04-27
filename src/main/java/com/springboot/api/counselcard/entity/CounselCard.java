@@ -1,16 +1,7 @@
 package com.springboot.api.counselcard.entity;
 
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
-import jakarta.persistence.PostLoad;
-import jakarta.persistence.PrePersist;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import com.springboot.api.common.entity.BaseEntity;
-import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import com.springboot.api.counselcard.entity.information.base.CounselPurposeAndNote;
 import com.springboot.api.counselcard.entity.information.health.Allergy;
 import com.springboot.api.counselcard.entity.information.health.DiseaseInfo;
@@ -25,7 +16,6 @@ import com.springboot.api.counselcard.entity.information.living.Nutrition;
 import com.springboot.api.counselcard.entity.information.living.Smoking;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.CardRecordStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -34,12 +24,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
@@ -135,31 +129,6 @@ public class CounselCard extends BaseEntity {
             return;
         }
         copyValuesFrom(previousCard);
-    }
-
-    public void updateBaseInformation(UpdateBaseInformationReq updateBaseInformationReq) {
-        this.counselPurposeAndNote.update(updateBaseInformationReq.counselPurposeAndNote());
-    }
-
-    public void updateHealthInformation(UpdateHealthInformationReq updateHealthInformationReq) {
-        this.allergy.update(updateHealthInformationReq.allergy());
-        this.diseaseInfo.update(updateHealthInformationReq.diseaseInfo());
-        this.medicationSideEffect.update(updateHealthInformationReq.medicationSideEffect());
-    }
-
-    public void updateIndependentLife(
-        UpdateIndependentLifeInformationReq updateIndependentLifeInformationReq) {
-        this.communication.update(updateIndependentLifeInformationReq.communication());
-        this.evacuation.update(updateIndependentLifeInformationReq.evacuation());
-        this.walking.update(updateIndependentLifeInformationReq.walking());
-    }
-
-    public void updateLiving(UpdateLivingInformationReq updateLivingInformationReq) {
-        this.drinking.update(updateLivingInformationReq.drinking());
-        this.exercise.update(updateLivingInformationReq.exercise());
-        this.medicationManagement.update(updateLivingInformationReq.medicationManagement());
-        this.nutrition.update(updateLivingInformationReq.nutrition());
-        this.smoking.update(updateLivingInformationReq.smoking());
     }
 
     public void updateStatusToInProgress() {
