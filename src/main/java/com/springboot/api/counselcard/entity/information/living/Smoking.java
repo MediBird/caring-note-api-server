@@ -1,10 +1,8 @@
 package com.springboot.api.counselcard.entity.information.living;
 
 import java.util.Objects;
-
 import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
 import com.springboot.enums.SmokingAmount;
-
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

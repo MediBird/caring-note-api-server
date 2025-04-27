@@ -2,7 +2,6 @@ package com.springboot.api.common.exception.handler;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.ErrorRes;
@@ -25,7 +23,6 @@ import com.springboot.api.common.dto.ValidationError;
 import com.springboot.api.common.dto.ValidationErrorRes;
 import com.springboot.api.common.message.ExceptionMessages;
 import com.springboot.api.common.message.HttpMessages;
-
 import jakarta.persistence.EntityExistsException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -106,12 +103,11 @@ public class GlobalExceptionHandler extends CommonHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<CommonRes<ValidationErrorRes>> handleMethodValidationException(
         HandlerMethodValidationException ex) {
-        List<ValidationError> errors = ex.getAllValidationResults()
+        List<ValidationError> errors = ex.getValueResults()
             .stream()
-            .map(error -> ValidationError.builder()
-                .field(error.getMethodParameter().getParameterName())
-                .message(error.getResolvableErrors()
-                    .stream()
+                .map(result -> ValidationError.builder()
+                        .field(result.getMethodParameter().getParameterName())
+                        .message(result.getResolvableErrors().stream()
                     .findFirst()
                     .map(err -> err.getDefaultMessage())
                     .orElse("Invalid request"))
