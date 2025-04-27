@@ -8,7 +8,7 @@
 | ------------- | ------------------------- |
 | Language      | Java 21                   |
 | Build         | Gradle 8.10.2             |
-| Framework     | Spring Boot 3.3.4         |
+| Framework     | Spring Boot 3.4.5         |
 | ORM           | Spring Data JPA, QueryDSL |
 | MVC           | Spring Web                |
 | Test          | Junit5                    |
