@@ -12,11 +12,9 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -24,15 +22,11 @@ import org.hibernate.annotations.OnDeleteAction;
 @Table(name = "counselee_consents", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"counsel_session_id", "counselee_id"})
 })
-@Data
-@SuperBuilder
-@NoArgsConstructor
-@EqualsAndHashCode(callSuper = true, exclude = {"counselSession", "counselee",})
-@ToString(callSuper = true, exclude = {"counselSession", "counselee"})
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CounseleeConsent extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
-    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "counsel_session_id", nullable = false)
     private CounselSession counselSession;
 
@@ -41,16 +35,37 @@ public class CounseleeConsent extends BaseEntity {
     @JoinColumn(name = "counselee_id", nullable = false)
     private Counselee counselee;
 
-    @NotNull
     private LocalDateTime consentDateTime;
 
     @NotNull
     private boolean isConsent;
+
+    protected CounseleeConsent(CounselSession counselSession, Counselee counselee) {
+        if (counselSession == null || counselee == null) {
+            throw new IllegalArgumentException("CounselSession and Counselee must not be null");
+        }
+        this.counselSession = counselSession;
+        this.counselee = counselee;
+        this.isConsent = false;
+    }
+
+    public static CounseleeConsent create(CounselSession counselSession, Counselee counselee) {
+        return new CounseleeConsent(counselSession, counselee);
+    }
+
+    public void accept() {
+        this.consentDateTime = LocalDateTime.now();
+        this.isConsent = true;
+    }
+
+    public void reject() {
+        this.consentDateTime = LocalDateTime.now();
+        this.isConsent = false;
+    }
 
     @PrePersist
     @Override
     protected void onCreate() {
         super.onCreate();
     }
-
 }

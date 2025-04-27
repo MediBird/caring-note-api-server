@@ -58,6 +58,7 @@ public class CounseleeConsentController {
         return ResponseEntity.ok(new CommonRes<>(addCounseleeConsentRes));
     }
 
+    @Deprecated
     @PutMapping
     @Operation(summary = "내담자 개인정보 수집 동의 여부 수정", tags = {"개인 정보 수집 동의"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
@@ -68,7 +69,18 @@ public class CounseleeConsentController {
             updateCounseleeConsentReq);
 
         return ResponseEntity.ok(new CommonRes<>(updateCounseleeConsentRes));
+    }
 
+    @PutMapping("/{counseleeConsentId}")
+    @Operation(summary = "내담자 개인정보 수집 동의", tags = {"개인 정보 수집 동의"})
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    public ResponseEntity<CommonRes<UpdateCounseleeConsentRes>> acceptCounseleeConsent(
+        @PathVariable @NotBlank(message = "내담자 동의 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 동의 ID는 26자여야 합니다") String counseleeConsentId) {
+
+        UpdateCounseleeConsentRes updateCounseleeConsentRes = counseleeConsentService.acceptCounseleeConsent(
+            counseleeConsentId);
+
+        return ResponseEntity.ok(new CommonRes<>(updateCounseleeConsentRes));
     }
 
     @DeleteMapping("/{counseleeConsentId}")
@@ -83,5 +95,4 @@ public class CounseleeConsentController {
         return ResponseEntity.ok(new CommonRes<>(deleteCounseleeConsentRes));
 
     }
-
 }
