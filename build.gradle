@@ -1,8 +1,7 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '3.3.4'
+    id 'org.springframework.boot' version '3.4.5'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'io.freefair.lombok' version '8.6' 
 }
 
 group = 'com.springboot'
@@ -38,6 +37,8 @@ sourceSets {
     }
 }
 dependencies {
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -47,23 +48,21 @@ dependencies {
     implementation 'com.h2database:h2'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'com.github.ben-manes.caffeine:caffeine'
-    compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'org.postgresql:postgresql:42.7.4'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
-    annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     //JWT
-    implementation 'io.jsonwebtoken:jjwt-api:0.11.5'  // JWT API
-    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'    // JWT 구현체
-    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 처리를 위한 Jackson 모듈
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'  // JWT API
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'    // JWT 구현체
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6' // JSON 처리를 위한 Jackson 모듈
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     compileOnly 'jakarta.servlet:jakarta.servlet-api:6.1.0'  // JWT 인증 관련 jakarta 추가
     //Swagger
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.6'
     //ULID
     implementation 'de.huxhorn.sulky:de.huxhorn.sulky.ulid:8.3.0'
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
@@ -79,7 +78,7 @@ dependencies {
     implementation 'net.bramp.ffmpeg:ffmpeg:0.6.2'
 
     //Keycloak
-    implementation 'org.keycloak:keycloak-admin-client:26.0.4'
+    implementation 'org.keycloak:keycloak-admin-client:26.0.5'
 
     //FixtureMonkey
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.1.10")

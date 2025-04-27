@@ -1,7 +1,14 @@
 package com.springboot.api.counselcard.entity;
 
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import com.springboot.api.common.entity.BaseEntity;
+import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
+import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
+import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
 import com.springboot.api.counselcard.entity.information.base.CounselPurposeAndNote;
 import com.springboot.api.counselcard.entity.information.health.Allergy;
 import com.springboot.api.counselcard.entity.information.health.DiseaseInfo;
