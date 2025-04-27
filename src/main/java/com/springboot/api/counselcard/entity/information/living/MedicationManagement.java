@@ -25,9 +25,9 @@ public class MedicationManagement {
 
     @ElementCollection
     @CollectionTable(name = "medication_assistant_details",
-                joinColumns = @JoinColumn(name = "medication_management_id"),
+        joinColumns = @JoinColumn(name = "medication_management_id"),
         foreignKey = @ForeignKey(
-            foreignKeyDefinition = "FOREIGN KEY (medication_management_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
+        foreignKeyDefinition = "FOREIGN KEY (medication_management_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
     )
     private List<MedicationAssistant> medicationAssistants;
 
