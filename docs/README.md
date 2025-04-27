@@ -80,15 +80,15 @@
 
 #### 가입
 
-![sign_in](./docs/assets/signin.png)
+![sign_in](./assets/signin.png)
 
 #### 로그인
 
-![log_in](./docs/assets/login.png)
+![log_in](./assets/login.png)
 
 #### API 호출
 
-![apicall](./docs/assets/apicall.png)
+![apicall](./assets/apicall.png)
 
 
 
@@ -337,7 +337,7 @@
 #### ERD
 
 * 테이블이 많아 상세 내용은 .erd 파일 첨부함
-*  [caringnote.erd](./docs/assets/caringnote.erd) 
+*  [caringnote.erd](./assets/caringnote.erd) 
 
 
 
