@@ -36,7 +36,7 @@ public class CounseleeConsentController {
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<SelectCounseleeConsentByCounseleeIdRes>> selectCounseleeConsentByCounseleeId(
         @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId,
-        @RequestParam(required = true) @NotBlank(message = "내담자 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 ID는 26자여야 합니다") String counseleeId) {
+        @RequestParam @NotBlank(message = "내담자 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 ID는 26자여야 합니다") String counseleeId) {
 
         SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeIdRes = counseleeConsentService
             .selectCounseleeConsentByCounseleeId(

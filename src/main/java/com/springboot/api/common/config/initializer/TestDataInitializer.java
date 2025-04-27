@@ -45,7 +45,7 @@ public class TestDataInitializer implements CommandLineRunner {
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         if (Arrays.asList(args).contains("--initTestData")) {
             initTestData();
