@@ -24,7 +24,7 @@ public class MedicationManagement {
     private String houseMateNote;
 
     @ElementCollection
-    @CollectionTable(name = "medication_assistant_details",
+    @CollectionTable(name = "medication_assistants",
         joinColumns = @JoinColumn(name = "medication_management_id"),
         foreignKey = @ForeignKey(
         foreignKeyDefinition = "FOREIGN KEY (medication_management_id) REFERENCES counsel_cards(id) ON DELETE CASCADE")
