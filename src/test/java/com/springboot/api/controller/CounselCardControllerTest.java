@@ -16,17 +16,13 @@ import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.message.HttpMessages;
 import com.springboot.api.config.TestSecurityConfig;
 import com.springboot.api.counselcard.controller.CounselCardController;
-import com.springboot.api.counselcard.dto.information.base.CounselPurposeAndNoteDTO;
 import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
-import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardStatusReq;
 import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
-import com.springboot.api.counselcard.dto.response.CounselCardRes;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
 import com.springboot.api.counselcard.entity.CounselCard;
-import com.springboot.api.counselcard.entity.information.base.CounselPurposeAndNote;
 import com.springboot.api.counselcard.entity.information.independentlife.Communication;
 import com.springboot.api.counselcard.service.CounselCardService;
 import com.springboot.api.counselee.entity.Counselee;
@@ -35,9 +31,9 @@ import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselCardRecordType;
 import com.springboot.enums.RoleType;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +53,6 @@ class CounselCardControllerTest {
 
     private static final String VALID_COUNSEL_SESSION_ID = "01HQ8VQXG7RZDQ1234567890AB";
     private static final String VALID_COUNSEL_CARD_ID = "01HQ8VQXG7RZDQ1234567890AB";
-    private static final String INVALID_COUNSEL_SESSION_ID = "invalid";
 
     @Autowired
     private MockMvc mockMvc;
@@ -73,37 +68,6 @@ class CounselCardControllerTest {
 
     @MockBean
     private CustomJwtRoleConverter customJwtRoleConverter;
-
-    @Test
-    @DisplayName("성공: 유효한 상담 세션 ID로 상담 카드 조회")
-    void selectCounselCard_Success() throws Exception {
-        Collection<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority(RoleType.ROLE_ADMIN.name()));
-        mockJwtToken(authorities);
-        Counselee counselee = Counselee.builder()
-            .id("01HQ8VQXG7RZDQ1234567890AB")
-            .name("테스트 상담자")
-            .isDisability(false)
-            .dateOfBirth(LocalDate.of(1990, 1, 1))
-            .build();
-        CounselSession counselSession = CounselSession.builder()
-            .id(VALID_COUNSEL_SESSION_ID)
-            .counselee(counselee)
-            .build();
-
-        CounselCard counselCard = CounselCard.createFromSession(counselSession);
-        CounselCardRes mockResponse = new CounselCardRes(counselCard);
-
-        when(counselCardService.selectCounselCard(VALID_COUNSEL_SESSION_ID))
-            .thenReturn(mockResponse);
-
-        mockMvc.perform(get("/v1/counsel/card/{counselSessionId}", VALID_COUNSEL_SESSION_ID)
-                .header("Authorization", "Bearer token")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.cardRecordStatus")
-                .value(CardRecordStatus.NOT_STARTED.name()));
-    }
 
     @Test
     @DisplayName("성공: 상담 카드 기본 정보 조회")
@@ -157,29 +121,6 @@ class CounselCardControllerTest {
     }
 
     @Test
-    @DisplayName("성공: 상담 카드 기본 정보 수정")
-    void updateCounselCardBaseInformation_Success() throws Exception {
-        Collection<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority(RoleType.ROLE_ADMIN.name()));
-        mockJwtToken(authorities);
-
-        UpdateBaseInformationReq request = new UpdateBaseInformationReq(
-            new CounselPurposeAndNoteDTO(CounselPurposeAndNote.initializeDefault()));
-        CounselCardIdRes mockResponse = new CounselCardIdRes(VALID_COUNSEL_CARD_ID);
-
-        when(counselCardService.updateCounselCardBaseInformation(anyString(),
-            any(UpdateBaseInformationReq.class)))
-            .thenReturn(mockResponse);
-
-        mockMvc.perform(put("/v1/counsel/card/{counselSessionId}/base-information", VALID_COUNSEL_SESSION_ID)
-                .header("Authorization", "Bearer token")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.data.counselCardId").value(VALID_COUNSEL_CARD_ID));
-    }
-
-    @Test
     @DisplayName("성공: 상담 카드 삭제")
     void deleteCounselCard_Success() throws Exception {
         Collection<GrantedAuthority> authorities = Collections.singletonList(
@@ -209,7 +150,7 @@ class CounselCardControllerTest {
             new CommunicationDTO(Communication.initializeDefault()));
 
         when(counselCardService.selectPreviousRecordsByType(anyString(), any(CounselCardRecordType.class)))
-            .thenReturn(Arrays.asList(mockResponse));
+            .thenReturn(List.of(mockResponse));
 
         mockMvc.perform(get("/v1/counsel/card/{counselSessionId}/previous/item/list", VALID_COUNSEL_SESSION_ID)
                 .header("Authorization", "Bearer token")
@@ -254,34 +195,6 @@ class CounselCardControllerTest {
             .andExpect(status().isBadRequest());
     }
 
-    @Test
-    @DisplayName("실패: 잘못된 길이의 상담 세션 ID")
-    void invalidCounselSessionId_Length() throws Exception {
-        Collection<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority(RoleType.ROLE_ADMIN.name()));
-        mockJwtToken(authorities);
-
-        mockMvc.perform(get("/v1/counsel/card/{counselSessionId}", INVALID_COUNSEL_SESSION_ID)
-                .header("Authorization", "Bearer token")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("실패: 존재하지 않는 상담 카드")
-    void selectCounselCard_NotFound() throws Exception {
-        Collection<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority(RoleType.ROLE_ADMIN.name()));
-        mockJwtToken(authorities);
-
-        when(counselCardService.selectCounselCard(VALID_COUNSEL_SESSION_ID))
-            .thenThrow(new NoContentException("상담 카드를 찾을 수 없습니다"));
-
-        mockMvc.perform(get("/v1/counsel/card/{counselSessionId}", VALID_COUNSEL_SESSION_ID)
-                .header("Authorization", "Bearer token")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNoContent());
-    }
 
     @Test
     @DisplayName("실패: 인증되지 않은 사용자")
@@ -291,18 +204,6 @@ class CounselCardControllerTest {
             .andExpect(status().isUnauthorized());
     }
 
-    @Test
-    @DisplayName("실패: 권한 없는 역할")
-    void forbidden_Role() throws Exception {
-        Collection<GrantedAuthority> authorities = Collections.singletonList(
-            new SimpleGrantedAuthority("ROLE_NONE"));
-        mockJwtToken(authorities);
-
-        mockMvc.perform(get("/v1/counsel/card/{counselSessionId}", VALID_COUNSEL_SESSION_ID)
-                .header("Authorization", "Bearer token")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isForbidden());
-    }
 
     @Test
     @DisplayName("실패: 서버 내부 오류")

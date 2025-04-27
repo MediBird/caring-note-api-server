@@ -4,13 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.dto.CommonRes;
 import com.springboot.api.common.dto.SuccessRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.AnalyseTextReq;
 import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
 import com.springboot.api.counselsession.dto.aiCounselSummary.DeleteAICounselSummaryReq;
 import com.springboot.api.counselsession.dto.aiCounselSummary.SelectAICounselSummaryPopUpRes;
 import com.springboot.api.counselsession.dto.aiCounselSummary.SelectAICounselSummaryStatusRes;
 import com.springboot.api.counselsession.dto.aiCounselSummary.SelectAnalysedTextRes;
-import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeakerListRes;
 import com.springboot.api.counselsession.dto.aiCounselSummary.SelectSpeechToTextRes;
 import com.springboot.api.counselsession.service.AICounselSummaryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,17 +43,6 @@ public class AICounselSummaryController {
 
     }
 
-    @GetMapping("{counselSessionId}/stt/speaker/list")
-    @Operation(summary = "발화자 별 발화 내용 조회", tags = {"AI요약"})
-    @Deprecated
-    public ResponseEntity<CommonRes<List<SelectSpeakerListRes>>> selectSpeakerList(
-        @PathVariable String counselSessionId) throws JsonProcessingException {
-        List<SelectSpeakerListRes> selectSpeakerListResList = aiCounselSummaryService
-            .selectSpeakerList(counselSessionId);
-
-        return ResponseEntity.ok(new CommonRes<>(selectSpeakerListResList));
-    }
-
     @GetMapping("{counselSessionId}/stt")
     @Operation(summary = "stt 결과 조회", tags = {"AI요약"})
     public ResponseEntity<CommonRes<List<SelectSpeechToTextRes>>> selectSpeechToText(
@@ -75,17 +62,6 @@ public class AICounselSummaryController {
         SelectAnalysedTextRes selectAnalysedTextRes = aiCounselSummaryService.selectAnalysedText(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(selectAnalysedTextRes));
-    }
-
-    @PostMapping("/ta")
-    @Operation(summary = "선택 발화자 기준 TA", tags = {"AI요약"})
-    @Deprecated
-    public ResponseEntity<SuccessRes> analyseText(
-        @Valid @RequestBody AnalyseTextReq analyseTextReq) throws JsonProcessingException {
-
-        aiCounselSummaryService.analyseText(analyseTextReq.getCounselSessionId());
-        return ResponseEntity.ok(new SuccessRes());
-
     }
 
     @DeleteMapping
