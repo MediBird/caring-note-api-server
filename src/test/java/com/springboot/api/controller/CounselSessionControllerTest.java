@@ -34,7 +34,7 @@ public class CounselSessionControllerTest {
 
     private static final String VALID_COUNSEL_SESSION_ID = "01HQ8VQXG7RZDQ1234567890AB";
     private static final String VALID_COUNSELEE_ID = "01HQ8VQXG7RZDQ1234567890AB";
-
+    // TODO: MockMvcTester로 수정
     @Autowired
     private MockMvc mockMvc;
     @Autowired

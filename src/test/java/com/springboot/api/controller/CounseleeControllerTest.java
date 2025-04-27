@@ -46,6 +46,7 @@ public class CounseleeControllerTest {
 
     private final String VALID_COUNSEL_SESSION_ID = "01HQ7YXHG8ZYXM5T2Q3X4KDJPL";
     private final String INVALID_COUNSEL_SESSION_ID = "invalid-id";
+    // TODO: MockMvcTester로 수정
     @Autowired
     private MockMvc mockMvc;
     @MockitoBean

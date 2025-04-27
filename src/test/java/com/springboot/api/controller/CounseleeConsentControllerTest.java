@@ -38,6 +38,7 @@ public class CounseleeConsentControllerTest {
     private final String VALID_COUNSELEE_ID = "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ";
     private final String VALID_COUNSEL_SESSION_ID = "01HQ7YXHG8ZYXM5T2Q3X4KDJPL";
     private final String VALID_COUNSELEE_CONSENT_ID = "01HQ7YXHG8ZYXM5T2Q3X4KDJPJ";
+    // TODO: MockMvcTester로 수정
     @Autowired
     private MockMvc mockMvc;
     @MockitoBean

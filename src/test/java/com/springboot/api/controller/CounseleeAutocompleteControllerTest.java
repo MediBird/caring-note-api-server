@@ -33,6 +33,7 @@ import com.springboot.api.counselee.service.CounseleeService;
 public class CounseleeAutocompleteControllerTest {
 
     private static final String TEST_TOKEN = "test-token";
+    // TODO: MockMvcTester로 수정
     @Autowired
     private MockMvc mockMvc;
     @MockitoBean
