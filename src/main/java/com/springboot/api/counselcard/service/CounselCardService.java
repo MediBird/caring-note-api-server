@@ -1,12 +1,5 @@
 package com.springboot.api.counselcard.service;
 
-import java.util.List;
-import java.util.function.Function;
-
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
@@ -25,8 +18,13 @@ import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselCardRecordType;
-
+import java.util.List;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -94,7 +92,7 @@ public class CounselCardService {
         return new CounselCardIdRes(counselCard.getId());
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void initializeCounselCard(CounselSession counselSession) {
         if (counselCardRepository.existsByCounselSessionId(counselSession.getId())) {
             throw new IllegalArgumentException("해당 상담 세션에 대한 상담 카드가 이미 존재합니다");

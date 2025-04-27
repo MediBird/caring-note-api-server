@@ -55,6 +55,7 @@ public class CounselSessionService {
     private final CounselorService counselorService;
     private final CounseleeRepository counseleeRepository;
     private final CounselCardService counselCardService;
+    private final CounseleeConsentService counseleeConsentService;
 
     @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
     @Transactional
@@ -71,7 +72,7 @@ public class CounselSessionService {
         CounselSession savedCounselSession = counselSessionRepository.save(counselSession);
 
         counselCardService.initializeCounselCard(savedCounselSession);
-
+        counseleeConsentService.initializeCounseleeConsent(counselSession, counselee);
         reassignSessionNumbers(createReservationReq.getCounseleeId());
 
         return new CreateCounselReservationRes(savedCounselSession.getId());

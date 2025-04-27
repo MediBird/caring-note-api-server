@@ -13,10 +13,11 @@ import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.CounseleeConsentRepository;
-import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -77,6 +78,17 @@ public class CounseleeConsentService {
         counseleeConsent.accept();
 
         return new UpdateCounseleeConsentRes(counseleeConsent.getId());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void initializeCounseleeConsent(CounselSession counselSession, Counselee counselee) {
+        if (counseleeConsentRepository.existsByCounselSessionIdAndCounseleeId(counselSession.getId(),
+            counselee.getId())) {
+            throw new IllegalArgumentException("해당 상담 세션에 대한 내담자 동의가 이미 존재합니다");
+        }
+
+        CounseleeConsent counseleeConsent = CounseleeConsent.create(counselSession, counselee);
+        counseleeConsentRepository.save(counseleeConsent);
     }
 
     @Transactional
