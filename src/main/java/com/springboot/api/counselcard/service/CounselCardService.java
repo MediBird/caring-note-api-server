@@ -1,11 +1,7 @@
 package com.springboot.api.counselcard.service;
 
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
-import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
 import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
@@ -118,55 +114,6 @@ public class CounselCardService {
             .orElseThrow(IllegalArgumentException::new);
 
         counselCard.update(updateCounselCardReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardBaseInformation(String counselSessionId,
-        UpdateBaseInformationReq updateBaseInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateBaseInformation(updateBaseInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardHealthInformation(String counselSessionId,
-        UpdateHealthInformationReq updateHealthInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateHealthInformation(updateHealthInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardIndependentLifeInformation(
-        String counselSessionId,
-        UpdateIndependentLifeInformationReq updateIndependentLifeInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardWithCounselee(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateIndependentLife(updateIndependentLifeInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardLivingInformation(String counselSessionId,
-        UpdateLivingInformationReq updateLivingInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateLiving(updateLivingInformationReq);
 
         return new CounselCardIdRes(counselCard.getId());
     }
