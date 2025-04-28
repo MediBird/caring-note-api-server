@@ -1,18 +1,7 @@
 package com.springboot.api.counselcard.service;
 
-import java.util.List;
-import java.util.function.Function;
-
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.counselcard.dto.request.UpdateBaseInformationReq;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
-import com.springboot.api.counselcard.dto.request.UpdateHealthInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateIndependentLifeInformationReq;
-import com.springboot.api.counselcard.dto.request.UpdateLivingInformationReq;
 import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
@@ -25,8 +14,13 @@ import com.springboot.api.counselcard.repository.CounselCardRepository;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.CounselCardRecordType;
-
+import java.util.List;
+import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -94,7 +88,7 @@ public class CounselCardService {
         return new CounselCardIdRes(counselCard.getId());
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void initializeCounselCard(CounselSession counselSession) {
         if (counselCardRepository.existsByCounselSessionId(counselSession.getId())) {
             throw new IllegalArgumentException("해당 상담 세션에 대한 상담 카드가 이미 존재합니다");
@@ -120,55 +114,6 @@ public class CounselCardService {
             .orElseThrow(IllegalArgumentException::new);
 
         counselCard.update(updateCounselCardReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardBaseInformation(String counselSessionId,
-        UpdateBaseInformationReq updateBaseInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateBaseInformation(updateBaseInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardHealthInformation(String counselSessionId,
-        UpdateHealthInformationReq updateHealthInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateHealthInformation(updateHealthInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardIndependentLifeInformation(
-        String counselSessionId,
-        UpdateIndependentLifeInformationReq updateIndependentLifeInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardWithCounselee(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateIndependentLife(updateIndependentLifeInformationReq);
-
-        return new CounselCardIdRes(counselCard.getId());
-    }
-
-    @Transactional
-    public CounselCardIdRes updateCounselCardLivingInformation(String counselSessionId,
-        UpdateLivingInformationReq updateLivingInformationReq) {
-        CounselCard counselCard = counselCardRepository.findCounselCardByCounselSessionId(
-                counselSessionId)
-            .orElseThrow(IllegalArgumentException::new);
-
-        counselCard.updateLiving(updateLivingInformationReq);
 
         return new CounselCardIdRes(counselCard.getId());
     }

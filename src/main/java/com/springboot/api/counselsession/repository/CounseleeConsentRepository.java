@@ -1,10 +1,8 @@
 package com.springboot.api.counselsession.repository;
 
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.springboot.api.counselsession.entity.CounseleeConsent;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CounseleeConsentRepository extends JpaRepository<CounseleeConsent, String> {
 
@@ -12,4 +10,5 @@ public interface CounseleeConsentRepository extends JpaRepository<CounseleeConse
 
     Optional<CounseleeConsent> findByCounselSessionIdAndCounseleeId(String counselSessionId, String CounseleeId);
 
+    Boolean existsByCounselSessionIdAndCounseleeId(String counselSessionId, String counseleeId);
 }

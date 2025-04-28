@@ -1,8 +1,8 @@
 package com.springboot.api.counselsession.repository;
 
-import com.querydsl.core.Tuple;
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.ScheduleStatus;
 import java.time.LocalDate;
@@ -16,11 +16,11 @@ public interface CounselSessionRepositoryCustom {
 
     List<CounselSession> findCompletedSessionsByYearAndMonth(int year, int month);
 
-    PageRes<Tuple> findSessionByCursorAndDate(LocalDate date, PageReq pageReq);
+    PageRes<SelectCounselSessionListItem> findSessionByCursorAndDate(LocalDate date, PageReq pageReq);
 
-    long countByStatus(ScheduleStatus status);
+    Long countByStatus(ScheduleStatus status);
 
-    long countDistinctCounseleeForCurrentMonth();
+    Long countDistinctCounseleeForCurrentMonth();
 
     List<String> cancelOverDueSessionsAndReturnAffectedCounseleeIds();
 
@@ -32,8 +32,6 @@ public interface CounselSessionRepositoryCustom {
         String counseleeNameKeyword,
         List<String> counselorNames,
         List<LocalDate> scheduledDates);
-
-    int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime);
 
     List<CounselSession> findValidCounselSessionsByCounseleeId(String counseleeId);
 

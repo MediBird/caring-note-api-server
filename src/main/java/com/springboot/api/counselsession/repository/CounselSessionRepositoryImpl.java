@@ -10,8 +10,11 @@ import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.util.QuerydslPagingUtil;
 import com.springboot.api.counselcard.entity.QCounselCard;
+import com.springboot.api.counselsession.dto.counselsession.QSelectCounselSessionListItem;
+import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.QCounselSession;
+import com.springboot.api.counselsession.entity.QCounseleeConsent;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.ScheduleStatus;
 import java.time.LocalDate;
@@ -61,9 +64,10 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public PageRes<Tuple> findSessionByCursorAndDate(LocalDate date, PageReq pageReq) {
+    public PageRes<SelectCounselSessionListItem> findSessionByCursorAndDate(LocalDate date, PageReq pageReq) {
 
         QCounselCard counselCard = QCounselCard.counselCard;
+        QCounseleeConsent counseleeConsent = QCounseleeConsent.counseleeConsent;
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -74,12 +78,22 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             builder.and(counselSession.scheduledStartDateTime.lt(endOfDay));
         }
 
-        JPAQuery<Tuple> contentQuery = queryFactory
-            .select(counselSession, counselCard.cardRecordStatus)
+        JPAQuery<SelectCounselSessionListItem> contentQuery = queryFactory
+            .select(new QSelectCounselSessionListItem(
+                counselSession.id,
+                counselSession.scheduledStartDateTime,
+                counselSession.counselee.id,
+                counselSession.counselee.name,
+                counselSession.counselor.id,
+                counselSession.counselor.name,
+                counselSession.status,
+                counselCard.cardRecordStatus,
+                counseleeConsent.isConsent))
             .from(counselSession)
-            .leftJoin(counselSession.counselee).fetchJoin()
-            .leftJoin(counselSession.counselor).fetchJoin()
+            .leftJoin(counselSession.counselee)
+            .leftJoin(counselSession.counselor)
             .leftJoin(counselCard).on(counselSession.eq(counselCard.counselSession))
+            .leftJoin(counseleeConsent).on(counselSession.eq(counseleeConsent.counselSession))
             .where(builder)
             .orderBy(counselSession.scheduledStartDateTime.asc());
 
@@ -92,7 +106,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public long countByStatus(ScheduleStatus status) {
+    public Long countByStatus(ScheduleStatus status) {
         return queryFactory
             .select(counselSession.count())
             .from(counselSession)
@@ -101,7 +115,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public long countDistinctCounseleeForCurrentMonth() {
+    public Long countDistinctCounseleeForCurrentMonth() {
         LocalDate now = LocalDate.now();
         return queryFactory
             .select(counselSession.counselee.countDistinct())
@@ -200,28 +214,6 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             .where(builder);
 
         return QuerydslPagingUtil.applyPagination(pageReq, contentQuery, countQuery);
-    }
-
-    @Override
-    public int countSessionNumberByCounseleeId(String counseleeId, LocalDateTime beforeDateTime) {
-        BooleanBuilder builder = new BooleanBuilder();
-
-        builder.and(counselSession.counselee.id.eq(counseleeId));
-
-        if (beforeDateTime != null) {
-            builder.and(counselSession.scheduledStartDateTime.lt(beforeDateTime));
-        }
-
-        // 취소가 아닌 상담 세션들로 회차 계산
-        builder.and(counselSession.status.ne(ScheduleStatus.CANCELED));
-
-        Long count = queryFactory
-            .select(counselSession.count())
-            .from(counselSession)
-            .where(builder)
-            .fetchOne();
-
-        return count != null ? count.intValue() : 0;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.springboot.api.counselcard.entity;
 
+
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import com.springboot.api.common.entity.BaseEntity;
@@ -38,6 +39,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Getter
 @Entity
@@ -133,31 +136,6 @@ public class CounselCard extends BaseEntity {
             return;
         }
         copyValuesFrom(previousCard);
-    }
-
-    public void updateBaseInformation(UpdateBaseInformationReq updateBaseInformationReq) {
-        this.counselPurposeAndNote.update(updateBaseInformationReq.counselPurposeAndNote());
-    }
-
-    public void updateHealthInformation(UpdateHealthInformationReq updateHealthInformationReq) {
-        this.allergy.update(updateHealthInformationReq.allergy());
-        this.diseaseInfo.update(updateHealthInformationReq.diseaseInfo());
-        this.medicationSideEffect.update(updateHealthInformationReq.medicationSideEffect());
-    }
-
-    public void updateIndependentLife(
-        UpdateIndependentLifeInformationReq updateIndependentLifeInformationReq) {
-        this.communication.update(updateIndependentLifeInformationReq.communication());
-        this.evacuation.update(updateIndependentLifeInformationReq.evacuation());
-        this.walking.update(updateIndependentLifeInformationReq.walking());
-    }
-
-    public void updateLiving(UpdateLivingInformationReq updateLivingInformationReq) {
-        this.drinking.update(updateLivingInformationReq.drinking());
-        this.exercise.update(updateLivingInformationReq.exercise());
-        this.medicationManagement.update(updateLivingInformationReq.medicationManagement());
-        this.nutrition.update(updateLivingInformationReq.nutrition());
-        this.smoking.update(updateLivingInformationReq.smoking());
     }
 
     public void updateStatusToInProgress() {

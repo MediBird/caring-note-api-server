@@ -45,7 +45,7 @@ public class TestDataInitializer implements CommandLineRunner {
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
         if (Arrays.asList(args).contains("--initTestData")) {
             initTestData();
@@ -320,12 +320,8 @@ public class TestDataInitializer implements CommandLineRunner {
         Counselee counselee = entityManager.getReference(Counselee.class, counseleeId);
 
         if (entityManager.find(CounseleeConsent.class, counseleeConsentId) == null) {
-            CounseleeConsent counseleeConsent = CounseleeConsent.builder()
-                .isConsent(true)
-                .counselSession(counselSession)
-                .counselee(counselee)
-                .consentDateTime(counselSession.getStartDateTime())
-                .build();
+            CounseleeConsent counseleeConsent = CounseleeConsent.create(counselSession, counselee);
+            counseleeConsent.accept();
             counseleeConsent.setId(counseleeConsentId);
 
             entityManager.persist(counseleeConsent);

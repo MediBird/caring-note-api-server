@@ -1,47 +1,56 @@
 package com.springboot.api.counselsession.dto.counselsession;
 
-import com.springboot.api.counselor.entity.Counselor;
-import com.springboot.api.counselsession.entity.CounselSession;
+import com.querydsl.core.annotations.QueryProjection;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
-import lombok.Builder;
+import lombok.Getter;
 
-@Builder
-public record SelectCounselSessionListItem(
-    String counselSessionId,
-    String scheduledTime,
-    String scheduledDate,
-    String counseleeId,
-    String counseleeName,
-    String counselorId,
-    String counselorName,
-    @Schema(description = "상담 상태(SCHEDULED, IN_PROGRESS, COMPLETED, CANCELED", example = "SCHEDULED") ScheduleStatus status,
-    @Schema(description = "상담 카드 기록 상태(NOT_STARTED, IN_PROGRESS, COMPLETED", example = "NOT_STARTED") CardRecordStatus cardRecordStatus,
-    boolean isCounselorAssign) {
+@Getter
+public class SelectCounselSessionListItem {
 
-    public static SelectCounselSessionListItem from(CounselSession counselSession, CardRecordStatus cardRecordStatus) {
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
+    private final String counselSessionId;
+    private final String scheduledTime;
+    private final String scheduledDate;
+    private final String counseleeId;
+    private final String counseleeName;
+    private final String counselorId;
+    private final String counselorName;
+    @Schema(description = "상담 상태(SCHEDULED, IN_PROGRESS, COMPLETED, CANCELED", example = "SCHEDULED")
+    private final ScheduleStatus status;
+    @Schema(description = "상담 카드 기록 상태(NOT_STARTED, IN_PROGRESS, COMPLETED", example = "NOT_STARTED")
+    private final CardRecordStatus cardRecordStatus;
+    private final Boolean isCounselorAssign;
+    private final Boolean isConsent;
 
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        return SelectCounselSessionListItem
-            .builder()
-            .counseleeId(counselSession.getCounselee().getId())
-            .counselorName(Optional.ofNullable(counselSession.getCounselor())
-                .map(Counselor::getName)
-                .orElse(""))
-            .counselorId(Optional.ofNullable(counselSession.getCounselor())
-                .map(Counselor::getId)
-                .orElse(""))
-            .counseleeName(counselSession.getCounselee().getName())
-            .scheduledDate(counselSession.getScheduledStartDateTime().toLocalDate().toString())
-            .scheduledTime(counselSession.getScheduledStartDateTime().toLocalTime().format(timeFormatter))
-            .counselSessionId(counselSession.getId())
-            .isCounselorAssign(Optional.ofNullable(counselSession.getCounselor()).isPresent())
-            .status(counselSession.getStatus())
-            .cardRecordStatus(Optional.ofNullable(cardRecordStatus).orElse(CardRecordStatus.NOT_STARTED))
-            .build();
+    @QueryProjection
+    public SelectCounselSessionListItem(
+        String counselSessionId,
+        @NotNull
+        LocalDateTime scheduledStartDateTime,
+        String counseleeId,
+        String counseleeName,
+        String counselorId,
+        String counselorName,
+        ScheduleStatus status,
+        CardRecordStatus cardRecordStatus,
+        Boolean isConsent
+    ) {
+        this.counselSessionId = counselSessionId;
+        this.scheduledTime = scheduledStartDateTime.toLocalTime().format(TIME_FORMATTER);
+        this.scheduledDate = scheduledStartDateTime.toLocalDate().toString();
+        this.counseleeId = counseleeId;
+        this.counseleeName = counseleeName;
+        this.counselorId = counselorId != null ? counselorId : "";
+        this.counselorName = counselorName != null ? counselorName : "";
+        this.status = status;
+        this.cardRecordStatus = cardRecordStatus;
+        this.isCounselorAssign = (counselorId != null);
+        // TODO 차후에 모든 CounselSession에 CounseleeConsent가 있으면 제거해야함
+        this.isConsent = isConsent != null ? isConsent : false;
     }
 }
