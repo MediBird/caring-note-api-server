@@ -80,6 +80,10 @@ stt:
 ffmpeg:
   path: /usr/local/bin/ffmpeg
 
+tus:
+  uploadPath: /data/tus/upload/
+  extension: ".webm"
+
 logging:
   level:
     org.springframework.security: DEBUG
