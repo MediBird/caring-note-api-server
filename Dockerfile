@@ -36,6 +36,9 @@ WORKDIR $APP_HOME
 RUN mkdir -p /data/stt/audio/origin /data/stt/audio/convert && \
     chmod -R 766 /data/stt/audio
 
+RUN mkdir -p /data/tus/upload/ /data/tus/merge/ && \
+    chmod -R 766 /data/tus
+
 #COPY --from=build /apps/build/libs/demo-0.0.1-SNAPSHOT.jar app.jar
 COPY --from=build $APP_HOME/$JAR_FILE_PATH $ARTIFACT_NAME
 
