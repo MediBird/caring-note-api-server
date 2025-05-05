@@ -1,19 +1,26 @@
 package com.springboot.api.tus.service;
 
+import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.tus.config.TusProperties;
 import com.springboot.api.tus.dto.response.TusFileInfoRes;
 import com.springboot.api.tus.entity.TusFileInfo;
 import com.springboot.api.tus.repository.TusFileInfoRepository;
-import com.springboot.api.tus.util.TusUtil;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +32,12 @@ public class TusService {
     private final TusFileInfoRepository tusFileInfoRepository;
     private final CounselSessionRepository counselSessionRepository;
     private final TusProperties tusProperties;
+    private final FileUtil fileUtil;
 
     @Transactional
     public String initUpload(String metadata, Long contentLength, Boolean isDefer) {
 
-        Map<String, String> parsedMetadata = TusUtil.parseMetadata(metadata);
+        Map<String, String> parsedMetadata = parseMetadata(metadata);
 
         CounselSession counselSession = counselSessionRepository.findById(parsedMetadata.get("counselSessionId"))
             .orElseThrow(() -> new IllegalArgumentException("상담 세션을 찾을 수 없습니다."));
@@ -38,19 +46,18 @@ public class TusService {
 
         tusFileInfoRepository.save(fileInfo);
 
-        createUploadFile(fileInfo);
+        fileUtil.createUploadFile(fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()));
 
         return fileInfo.getId();
     }
 
-    private void createUploadFile(TusFileInfo fileInfo) {
-        try {
-            Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
-            Files.createDirectories(path.getParent());
-            Files.createFile(path);
-        } catch (IOException e) {
-            throw new RuntimeException("Tus 업로드 파일 생성에 실패했습니다.");
-        }
+    private Map<String, String> parseMetadata(@NonNull String metadata) {
+        return Arrays.stream(Optional.of(metadata).filter(StringUtils::isNotBlank)
+                .orElseThrow(() -> new RuntimeException("metadata 가 없습니다."))
+                .split(","))
+            .map(keyAndValue -> keyAndValue.split(" "))
+            .collect(
+                Collectors.toMap(values -> values[0], values -> new String(Base64.getDecoder().decode(values[1]))));
     }
 
     @Transactional(readOnly = true)
@@ -84,5 +91,20 @@ public class TusService {
         }
 
         return fileInfo.getContentOffset();
+    }
+
+    @Transactional(readOnly = true)
+    public void mergeUploadedFile(String counselSessionId) {
+
+        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
+            counselSessionId);
+
+        List<String> pathList = tusFileInfoList.stream()
+            .map(tusFileInfo -> tusFileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()))
+            .map(Path::toAbsolutePath)
+            .map(Path::toString)
+            .toList();
+
+        fileUtil.mergeWebmFile(pathList, tusProperties.getMergePath());
     }
 }

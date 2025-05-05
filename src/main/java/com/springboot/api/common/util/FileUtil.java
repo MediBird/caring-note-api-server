@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
@@ -71,4 +73,43 @@ public class FileUtil {
         return Path.of(convertFilePath + convertedMultipartFileName).toFile();
     }
 
+
+    public void createUploadFile(Path path) {
+        try {
+            Files.createDirectories(path.getParent());
+            Files.createFile(path);
+        } catch (IOException e) {
+            throw new RuntimeException("업로드 파일 생성에 실패했습니다.");
+        }
+    }
+
+    public void mergeWebmFile(List<String> fileList, String outputFilePath) {
+        try {
+            FFmpeg ffmpeg = new FFmpeg(ffmpegProperties.getPath());
+
+            FFmpegBuilder builder = new FFmpegBuilder()
+                .overrideOutputFiles(true);
+
+            fileList.forEach(builder::addInput);
+
+            String filterInput = IntStream.range(0, fileList.size())
+                .mapToObj(i -> "[" + i + ":a]")
+                .reduce("", String::concat);
+            String complexFilter = filterInput + "concat=n=" + fileList.size() + ":v=0:a=1[out]";
+
+            builder.setComplexFilter(complexFilter)
+                .addOutput(outputFilePath)
+                .addExtraArgs("-map", "[out]")
+                .addExtraArgs("-c:a", "aac")
+                .addExtraArgs("-b:a", "192k")
+                .addExtraArgs("-movflags", "+faststart")
+                .done();
+
+            ffmpeg.run(builder);
+        } catch (IOException e) {
+            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다.");
+        }
+
+
+    }
 }

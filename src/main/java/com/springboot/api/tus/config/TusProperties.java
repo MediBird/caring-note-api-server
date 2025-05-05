@@ -13,4 +13,5 @@ public class TusProperties {
 
     String uploadPath;
     String extension;
+    String mergePath;
 }

@@ -33,6 +33,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -115,5 +116,15 @@ public class TusController {
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
+    }
+
+    @Operation(summary = "업로드한 상담세션 녹음 파일을 병합합니다.", tags = {"TUS"})
+    @GetMapping(value = "/{counselSessionId}")
+    public ResponseEntity<Object> mergeMediaFile(
+        @PathVariable("counselSessionId") final String counselSessionId
+    ){
+
+        tusService.mergeUploadedFile(counselSessionId);
+        return ResponseEntity.ok().build();
     }
 }
