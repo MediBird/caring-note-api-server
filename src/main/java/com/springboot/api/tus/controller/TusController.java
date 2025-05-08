@@ -7,10 +7,11 @@ import static com.springboot.api.tus.config.TusConstant.ACCESS_CONTROL_ALLOW_ORI
 import static com.springboot.api.tus.config.TusConstant.ACCESS_CONTROL_EXPOSE_HEADER;
 import static com.springboot.api.tus.config.TusConstant.ACCESS_CONTROL_EXPOSE_OPTIONS_VALUE;
 import static com.springboot.api.tus.config.TusConstant.ACCESS_CONTROL_EXPOSE_POST_VALUE;
+import static com.springboot.api.tus.config.TusConstant.AUDIO_WEBM;
 import static com.springboot.api.tus.config.TusConstant.CACHE_CONTROL_HEADER;
 import static com.springboot.api.tus.config.TusConstant.CACHE_CONTROL_VALUE;
-import static com.springboot.api.tus.config.TusConstant.CONTENT_TYPE;
 import static com.springboot.api.tus.config.TusConstant.LOCATION_HEADER;
+import static com.springboot.api.tus.config.TusConstant.OFFSET_OCTET_STREAM;
 import static com.springboot.api.tus.config.TusConstant.TUS_EXTENSION_HEADER;
 import static com.springboot.api.tus.config.TusConstant.TUS_RESUMABLE_HEADER;
 import static com.springboot.api.tus.config.TusConstant.TUS_RESUMABLE_VALUE;
@@ -31,7 +32,10 @@ import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -100,7 +104,7 @@ public class TusController {
     }
 
     @Operation(summary = "업로드 리소스에 데이터를 이어서 전송하고 오프셋을 갱신합니다.", tags = {"TUS"})
-    @PatchMapping(value = "/{fileId}", consumes = {CONTENT_TYPE})
+    @PatchMapping(value = "/{fileId}", consumes = {OFFSET_OCTET_STREAM})
     public ResponseEntity<Object> uploadProcess(
         @NonNull @PathVariable("fileId") final String fileId,
         @NonNull final HttpServletRequest request,
@@ -119,12 +123,24 @@ public class TusController {
     }
 
     @Operation(summary = "업로드한 상담세션 녹음 파일을 병합합니다.", tags = {"TUS"})
-    @GetMapping(value = "/{counselSessionId}")
+    @GetMapping(value = "/merge/{counselSessionId}")
     public ResponseEntity<Object> mergeMediaFile(
         @PathVariable("counselSessionId") final String counselSessionId
-    ){
+    ) {
 
         tusService.mergeUploadedFile(counselSessionId);
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "업로드한 상담세션 녹음 파일을 다운로드 합니다.", tags = {"TUS"})
+    @GetMapping(value = "/{fileId}")
+    public ResponseEntity<Resource> getMediaFile(@PathVariable("fileId") final String fileId) {
+        Resource uploadedFile = tusService.getUploadedFile(fileId);
+
+        return ResponseEntity.ok()
+            .contentType(MediaType.parseMediaType(AUDIO_WEBM))
+            .header(HttpHeaders.CONTENT_DISPOSITION,
+                "attachment; filename=\"" + uploadedFile.getFilename() + "\"")
+            .body(uploadedFile);
     }
 }

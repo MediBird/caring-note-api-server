@@ -83,7 +83,7 @@ ffmpeg:
 tus:
   uploadPath: /data/tus/upload/
   extension: ".webm"
-  mergePath: /data/tus/merge/
+  mergePath: /data/tus/merge/merge.mp4
 
 logging:
   level:

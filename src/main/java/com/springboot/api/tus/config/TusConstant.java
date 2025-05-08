@@ -35,5 +35,7 @@ public interface TusConstant {
 
     String URL_PREFIX = "/v1/tus";
 
-    String CONTENT_TYPE = "application/offset+octet-stream";
+    String OFFSET_OCTET_STREAM = "application/offset+octet-stream";
+
+    String AUDIO_WEBM = "audio/webm";
 }

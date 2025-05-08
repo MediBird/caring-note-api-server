@@ -74,6 +74,6 @@ public class TusFileInfo extends BaseEntity {
     }
 
     public Path getFilePath(String uploadPath, String extension) {
-        return Paths.get(uploadPath, this.savedName, getId() + extension);
+        return Paths.get(uploadPath, this.counselSession.getId(), this.savedName + extension);
     }
 }

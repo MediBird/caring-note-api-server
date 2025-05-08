@@ -5,6 +5,7 @@ import de.huxhorn.sulky.ulid.ULID;
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -14,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -85,7 +88,7 @@ public class FileUtil {
 
     public void mergeWebmFile(List<String> fileList, String outputFilePath) {
         try {
-            FFmpeg ffmpeg = new FFmpeg(ffmpegProperties.getPath());
+            FFmpeg ffmpeg = new FFmpeg();
 
             FFmpegBuilder builder = new FFmpegBuilder()
                 .overrideOutputFiles(true);
@@ -109,7 +112,13 @@ public class FileUtil {
         } catch (IOException e) {
             throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다.");
         }
+    }
 
-
+    public Resource getUrlResource(Path path) {
+        try {
+            return new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("잘못된 파일 경로: " + path, e);
+        }
     }
 }

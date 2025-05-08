@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -106,5 +107,15 @@ public class TusService {
             .toList();
 
         fileUtil.mergeWebmFile(pathList, tusProperties.getMergePath());
+    }
+
+    @Transactional(readOnly = true)
+    public Resource getUploadedFile(String fileId) {
+        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보을 찾을 수 없습니다."));
+
+        Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
+
+        return fileUtil.getUrlResource(path);
     }
 }
