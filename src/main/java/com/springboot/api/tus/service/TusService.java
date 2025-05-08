@@ -64,7 +64,7 @@ public class TusService {
     @Transactional(readOnly = true)
     public TusFileInfoRes getTusFileInfo(String fileId) {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보을 찾을 수 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
         return new TusFileInfoRes(fileInfo);
     }
