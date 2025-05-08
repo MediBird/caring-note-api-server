@@ -5,13 +5,18 @@ import de.huxhorn.sulky.ulid.ULID;
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -71,4 +76,49 @@ public class FileUtil {
         return Path.of(convertFilePath + convertedMultipartFileName).toFile();
     }
 
+
+    public void createUploadFile(Path path) {
+        try {
+            Files.createDirectories(path.getParent());
+            Files.createFile(path);
+        } catch (IOException e) {
+            throw new RuntimeException("업로드 파일 생성에 실패했습니다.");
+        }
+    }
+
+    public void mergeWebmFile(List<String> fileList, String outputFilePath) {
+        try {
+            FFmpeg ffmpeg = new FFmpeg();
+
+            FFmpegBuilder builder = new FFmpegBuilder()
+                .overrideOutputFiles(true);
+
+            fileList.forEach(builder::addInput);
+
+            String filterInput = IntStream.range(0, fileList.size())
+                .mapToObj(i -> "[" + i + ":a]")
+                .reduce("", String::concat);
+            String complexFilter = filterInput + "concat=n=" + fileList.size() + ":v=0:a=1[out]";
+
+            builder.setComplexFilter(complexFilter)
+                .addOutput(outputFilePath)
+                .addExtraArgs("-map", "[out]")
+                .addExtraArgs("-c:a", "aac")
+                .addExtraArgs("-b:a", "192k")
+                .addExtraArgs("-movflags", "+faststart")
+                .done();
+
+            ffmpeg.run(builder);
+        } catch (IOException e) {
+            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다.");
+        }
+    }
+
+    public Resource getUrlResource(Path path) {
+        try {
+            return new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("잘못된 파일 경로: " + path, e);
+        }
+    }
 }
