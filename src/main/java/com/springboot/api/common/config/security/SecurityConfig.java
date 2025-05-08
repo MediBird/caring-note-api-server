@@ -57,7 +57,8 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(
             List.of("https://caringnote.co.kr", "http://localhost:3000", "http://localhost:5173",
-                "https://localhost:5173", "https://localhost:8080", "http://localhost:8080"));
+                "https://localhost:5173", "https://localhost:8080", "http://localhost:8080",
+                "https://tus.rappire.p-e.kr/"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
