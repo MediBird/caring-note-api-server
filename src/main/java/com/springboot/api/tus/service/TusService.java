@@ -8,6 +8,7 @@ import com.springboot.api.tus.dto.response.TusFileInfoRes;
 import com.springboot.api.tus.entity.TusFileInfo;
 import com.springboot.api.tus.repository.TusFileInfoRepository;
 import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -41,7 +42,7 @@ public class TusService {
         Map<String, String> parsedMetadata = parseMetadata(metadata);
 
         CounselSession counselSession = counselSessionRepository.findById(parsedMetadata.get("counselSessionId"))
-            .orElseThrow(() -> new IllegalArgumentException("상담 세션을 찾을 수 없습니다."));
+            .orElseThrow(() -> new EntityNotFoundException("상담 세션을 찾을 수 없습니다."));
 
         TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer);
 
@@ -56,7 +57,13 @@ public class TusService {
         return Arrays.stream(Optional.of(metadata).filter(StringUtils::isNotBlank)
                 .orElseThrow(() -> new RuntimeException("metadata 가 없습니다."))
                 .split(","))
-            .map(keyAndValue -> keyAndValue.split(" "))
+            .map(keyAndValue -> {
+                String[] values = keyAndValue.split(" ", 2);
+                if (values.length != 2) {
+                    throw new IllegalArgumentException("메타데이터 형식이 올바르지 않습니다.");
+                }
+                return new String[]{values[0], values[1]};
+            })
             .collect(
                 Collectors.toMap(values -> values[0], values -> new String(Base64.getDecoder().decode(values[1]))));
     }
@@ -85,10 +92,10 @@ public class TusService {
 
         try (OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.APPEND)) {
             byte[] buffer = new byte[8192];
-            long read;
-            while ((read = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, (int) read);
-                fileInfo.updateOffset(read);
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+                fileInfo.updateOffset(bytesRead);
             }
         } catch (IOException e) {
             throw new RuntimeException("Tus 파일 업로드에 실패했습니다.");
