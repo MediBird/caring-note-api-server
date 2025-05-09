@@ -116,7 +116,9 @@ public class TusService {
             .map(Path::toString)
             .toList();
 
-        fileUtil.mergeWebmFile(pathList, tusProperties.getMergePath());
+        Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
+
+        fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
     }
 
     @Transactional(readOnly = true)
