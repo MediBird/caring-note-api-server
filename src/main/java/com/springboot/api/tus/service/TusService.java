@@ -66,13 +66,16 @@ public class TusService {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
             .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
-        return new TusFileInfoRes(fileInfo);
+        String location =
+            tusProperties.getPathPrefix() + "/" + fileInfo.getCounselSession().getId() + "/" + fileInfo.getId();
+
+        return new TusFileInfoRes(fileInfo, location);
     }
 
     @Transactional
     public Long appendData(String fileId, long offset, ServletInputStream inputStream) {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보을 찾을 수 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
         if (fileInfo.getContentOffset() != offset) {
             throw new IllegalArgumentException("Offset 정보가 맞지 않습니다.");
@@ -112,7 +115,7 @@ public class TusService {
     @Transactional(readOnly = true)
     public Resource getUploadedFile(String fileId) {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보을 찾을 수 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
 

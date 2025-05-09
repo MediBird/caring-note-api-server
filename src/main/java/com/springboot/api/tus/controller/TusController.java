@@ -25,6 +25,7 @@ import static com.springboot.api.tus.config.TusConstant.UPLOAD_OFFSET_HEADER;
 import static com.springboot.api.tus.config.TusConstant.URL_PREFIX;
 
 import com.springboot.api.common.annotation.ApiController;
+import com.springboot.api.tus.config.TusProperties;
 import com.springboot.api.tus.dto.response.TusFileInfoRes;
 import com.springboot.api.tus.service.TusService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +52,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 public class TusController {
 
     private final TusService tusService;
+    private final TusProperties tusProperties;
 
     @Operation(summary = "서버의 tus 업로드 지원 버전 및 확장 정보를 반환합니다.", tags = {"TUS"})
     @RequestMapping(method = RequestMethod.OPTIONS)
@@ -76,7 +78,7 @@ public class TusController {
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .header(ACCESS_CONTROL_EXPOSE_HEADER, ACCESS_CONTROL_EXPOSE_POST_VALUE)
-            .header(LOCATION_HEADER, URL_PREFIX + "/" + fileId)
+            .header(LOCATION_HEADER, tusProperties.getPathPrefix() + "/" + fileId)
             .header(TUS_RESUMABLE_HEADER, TUS_RESUMABLE_VALUE)
             .build();
     }

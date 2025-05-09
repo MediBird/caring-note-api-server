@@ -84,6 +84,7 @@ tus:
   uploadPath: /data/tus/upload/
   extension: ".webm"
   mergePath: /data/tus/merge/merge.mp4
+  pathPrefix: /api/v1/tus
 
 logging:
   level:
