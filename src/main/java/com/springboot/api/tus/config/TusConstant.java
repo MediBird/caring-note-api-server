@@ -9,6 +9,7 @@ public interface TusConstant {
     String TUS_VERSION_VALUE = "1.0.0,0.2.2,0.2.1";
 
     String TUS_EXTENSION_HEADER = "Tus-Extension";
+    String TUS_EXTENSION_VALUE = "creation,expiration,termination,concatenation";
 
     String UPLOAD_OFFSET_HEADER = "Upload-Offset";
 

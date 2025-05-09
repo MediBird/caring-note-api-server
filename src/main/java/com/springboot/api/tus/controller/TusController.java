@@ -13,6 +13,7 @@ import static com.springboot.api.tus.config.TusConstant.CACHE_CONTROL_VALUE;
 import static com.springboot.api.tus.config.TusConstant.LOCATION_HEADER;
 import static com.springboot.api.tus.config.TusConstant.OFFSET_OCTET_STREAM;
 import static com.springboot.api.tus.config.TusConstant.TUS_EXTENSION_HEADER;
+import static com.springboot.api.tus.config.TusConstant.TUS_EXTENSION_VALUE;
 import static com.springboot.api.tus.config.TusConstant.TUS_RESUMABLE_HEADER;
 import static com.springboot.api.tus.config.TusConstant.TUS_RESUMABLE_VALUE;
 import static com.springboot.api.tus.config.TusConstant.TUS_VERSION_HEADER;
@@ -59,7 +60,7 @@ public class TusController {
             .header(ACCESS_CONTROL_EXPOSE_HEADER, ACCESS_CONTROL_EXPOSE_OPTIONS_VALUE)
             .header(TUS_RESUMABLE_HEADER, TUS_RESUMABLE_VALUE)
             .header(TUS_VERSION_HEADER, TUS_VERSION_VALUE)
-            .header(TUS_EXTENSION_HEADER, TUS_EXTENSION_HEADER)
+            .header(TUS_EXTENSION_HEADER, TUS_EXTENSION_VALUE)
             .header(ACCESS_CONTROL_ALLOW_METHODS_HEADER, ACCESS_CONTROL_ALLOW_METHODS_VALUE)
             .build();
     }
