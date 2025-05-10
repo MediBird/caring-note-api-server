@@ -69,7 +69,7 @@ public class TusFileInfo extends BaseEntity {
         super.onCreate();
     }
 
-    public void updateOffset(Long uploadLength) {
+    public void updateOffset(Integer uploadLength) {
         contentOffset += uploadLength;
     }
 

@@ -1,7 +1,5 @@
 package com.springboot.api.tus.dto.response;
 
-import static com.springboot.api.tus.config.TusConstant.URL_PREFIX;
-
 import com.springboot.api.tus.entity.TusFileInfo;
 import lombok.Getter;
 
@@ -13,8 +11,8 @@ public class TusFileInfoRes {
     private final Long contentOffset;
     private final Boolean isDefer;
 
-    public TusFileInfoRes(TusFileInfo tusFileInfo) {
-        this.location = URL_PREFIX + "/" + tusFileInfo.getCounselSession().getId() + "/" + tusFileInfo.getId();
+    public TusFileInfoRes(TusFileInfo tusFileInfo, String location) {
+        this.location = location;
         this.contentLength = tusFileInfo.getContentLength();
         this.contentOffset = tusFileInfo.getContentOffset();
         this.isDefer = tusFileInfo.getIsDefer();
