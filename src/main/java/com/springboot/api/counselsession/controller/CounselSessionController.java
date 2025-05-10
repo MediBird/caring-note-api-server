@@ -1,7 +1,5 @@
 package com.springboot.api.counselsession.controller;
 
-import com.springboot.api.common.dto.PageReq;
-import com.springboot.api.common.dto.PageRes;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -16,8 +14,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
-import com.springboot.api.common.dto.CommonCursorRes;
 import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.counselsession.dto.counselsession.CounselSessionStatRes;
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
@@ -35,6 +34,7 @@ import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounse
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
 import com.springboot.api.counselsession.service.CounselSessionService;
 import com.springboot.enums.RoleType;
+import com.springboot.enums.ScheduleStatus;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -105,13 +105,15 @@ public class CounselSessionController {
         @RequestParam("size") @Min(1) @Max(100) int size,
         @RequestParam(required = false, name = "counseleeNameKeyword") @Pattern(regexp = "^[가-힣a-zA-Z\\s]*$", message = "이름은 한글과 영문만 허용됩니다") String counseleeNameKeyword,
         @RequestParam(required = false, name = "counselorNames") List<String> counselorNames,
-        @RequestParam(required = false) List<LocalDate> scheduledDates) {
+        @RequestParam(required = false) List<LocalDate> scheduledDates,
+        @RequestParam(required = false) List<ScheduleStatus> statuses) {
 
         SearchCounselSessionReq searchCounselSessionReq = new SearchCounselSessionReq(
             new PageReq(page, size),
             counseleeNameKeyword,
             counselorNames,
-            scheduledDates);
+            scheduledDates,
+            statuses);
 
         return ResponseEntity.ok(counselSessionService.searchCounselSessions(searchCounselSessionReq));
     }
