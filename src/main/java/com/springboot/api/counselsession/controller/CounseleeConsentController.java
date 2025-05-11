@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
 import com.springboot.api.common.dto.CommonRes;
+import com.springboot.api.counselsession.dto.counseleeconsent.AcceptConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.DeleteCounseleeConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
-import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentRes;
 import com.springboot.api.counselsession.service.CounseleeConsentService;
 import com.springboot.enums.RoleType;
 
@@ -40,17 +40,17 @@ public class CounseleeConsentController {
 
         return ResponseEntity.ok(new CommonRes<>(selectCounseleeConsentByCounseleeIdRes));
     }
-    
+
     @PutMapping("/{counseleeConsentId}")
     @Operation(summary = "내담자 개인정보 수집 동의", tags = {"개인 정보 수집 동의"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
-    public ResponseEntity<CommonRes<UpdateCounseleeConsentRes>> acceptCounseleeConsent(
+    public ResponseEntity<CommonRes<AcceptConsentRes>> acceptCounseleeConsent(
         @PathVariable @NotBlank(message = "내담자 동의 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 동의 ID는 26자여야 합니다") String counseleeConsentId) {
 
-        UpdateCounseleeConsentRes updateCounseleeConsentRes = counseleeConsentService.acceptCounseleeConsent(
+        AcceptConsentRes acceptConsentRes = counseleeConsentService.acceptCounseleeConsent(
             counseleeConsentId);
 
-        return ResponseEntity.ok(new CommonRes<>(updateCounseleeConsentRes));
+        return ResponseEntity.ok(new CommonRes<>(acceptConsentRes));
     }
 
     @DeleteMapping("/{counseleeConsentId}")

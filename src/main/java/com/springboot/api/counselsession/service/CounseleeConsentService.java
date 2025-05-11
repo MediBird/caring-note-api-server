@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselee.entity.Counselee;
+import com.springboot.api.counselsession.dto.counseleeconsent.AcceptConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.DeleteCounseleeConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
-import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
@@ -63,14 +63,14 @@ public class CounseleeConsentService {
     }
 
     @Transactional
-    public UpdateCounseleeConsentRes acceptCounseleeConsent(String counselSessionId) {
+    public AcceptConsentRes acceptCounseleeConsent(String counselSessionId) {
         CounseleeConsent counseleeConsent = counseleeConsentRepository
             .findByCounselSessionId(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
 
         counseleeConsent.accept();
 
-        return new UpdateCounseleeConsentRes(counseleeConsent.getId());
+        return new AcceptConsentRes(counseleeConsent.getId());
     }
 
     @Transactional
