@@ -1,7 +1,16 @@
 package com.springboot.api.tus.entity;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselsession.entity.CounselSession;
+
 import de.huxhorn.sulky.ulid.ULID;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,14 +18,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "tus_file_info")
@@ -39,11 +43,13 @@ public class TusFileInfo extends BaseEntity {
 
     private String savedName;
 
+    private Long duration;
+
     private TusFileInfo(CounselSession counselSession, String originalName, Long contentLength, Boolean isDefer) {
         this.counselSession = Objects.requireNonNull(counselSession);
         this.originalName = Objects.requireNonNullElse(originalName, "NONE");
         this.contentLength = contentLength;
-        this.isDefer = isDefer;
+        this.isDefer = Optional.ofNullable(isDefer).orElse(false);
         this.contentOffset = 0L;
         this.savedName = new ULID().nextULID();
 
@@ -58,9 +64,10 @@ public class TusFileInfo extends BaseEntity {
         }
     }
 
-    public static TusFileInfo of(CounselSession counselSession, String originalName, Long contentLength,
-        Boolean isDefer) {
-        return new TusFileInfo(counselSession, originalName, contentLength, isDefer);
+    public static TusFileInfo of(CounselSession counselSession, String originalName, Long contentLength, Boolean isDefer, Long duration) {
+        TusFileInfo tusFileInfo = new TusFileInfo(counselSession, originalName, contentLength, isDefer);
+        tusFileInfo.duration = duration;
+        return tusFileInfo;
     }
 
     @PrePersist
@@ -71,6 +78,10 @@ public class TusFileInfo extends BaseEntity {
 
     public void updateOffset(Integer uploadLength) {
         contentOffset += uploadLength;
+    }
+
+    public void updateDuration(Long duration) {
+        this.duration = duration;
     }
 
     public Path getFilePath(String uploadPath, String extension) {

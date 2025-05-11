@@ -1,15 +1,5 @@
 package com.springboot.api.tus.service;
 
-import com.springboot.api.common.util.FileUtil;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.tus.config.TusProperties;
-import com.springboot.api.tus.dto.response.TusFileInfoRes;
-import com.springboot.api.tus.entity.TusFileInfo;
-import com.springboot.api.tus.repository.TusFileInfoRepository;
-import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -21,14 +11,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.springboot.api.common.util.FileUtil;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.tus.config.TusProperties;
+import com.springboot.api.tus.dto.response.TusFileInfoRes;
+import com.springboot.api.tus.entity.TusFileInfo;
+import com.springboot.api.tus.repository.TusFileInfoRepository;
+
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.ServletInputStream;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TusService {
 
     private final TusFileInfoRepository tusFileInfoRepository;
@@ -37,14 +42,14 @@ public class TusService {
     private final FileUtil fileUtil;
 
     @Transactional
-    public String initUpload(String metadata, Long contentLength, Boolean isDefer) {
+    public String initUpload(String metadata, Long contentLength, Boolean isDefer, Long duration) {
 
         Map<String, String> parsedMetadata = parseMetadata(metadata);
 
         CounselSession counselSession = counselSessionRepository.findById(parsedMetadata.get("counselSessionId"))
             .orElseThrow(() -> new EntityNotFoundException("상담 세션을 찾을 수 없습니다."));
 
-        TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer);
+        TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer, duration);
 
         tusFileInfoRepository.save(fileInfo);
 
@@ -80,12 +85,16 @@ public class TusService {
     }
 
     @Transactional
-    public Long appendData(String fileId, long offset, ServletInputStream inputStream) {
+    public Long appendData(String fileId, long offset, ServletInputStream inputStream, Long duration) {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
             .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
         if (fileInfo.getContentOffset() != offset) {
             throw new IllegalArgumentException("Offset 정보가 맞지 않습니다.");
+        }
+
+        if (duration != null) {
+            fileInfo.updateDuration(duration);
         }
 
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
@@ -129,5 +138,27 @@ public class TusService {
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
 
         return fileUtil.getUrlResource(path);
+    }
+
+    @Transactional
+    public void deleteUploadedFile(String fileId) {
+        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다. fileId: " + fileId));
+
+        Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
+
+        try {
+            boolean deleted = Files.deleteIfExists(path);
+            if (deleted) {
+                log.info("Tus 파일이 성공적으로 삭제되었습니다. 경로: {}", path);
+            } else {
+                log.warn("삭제할 Tus 파일을 찾을 수 없거나 이미 삭제되었습니다. 경로: {}", path);
+            }
+            tusFileInfoRepository.delete(fileInfo);
+            log.info("Tus 파일 정보가 데이터베이스에서 성공적으로 삭제되었습니다. fileId: {}", fileId);
+        } catch (IOException e) {
+            log.error("Tus 파일 삭제 중 오류가 발생했습니다. fileId: {}, 경로: {}", fileId, path, e);
+            throw new RuntimeException("Tus 파일 삭제에 실패했습니다. fileId: " + fileId, e);
+        }
     }
 }
