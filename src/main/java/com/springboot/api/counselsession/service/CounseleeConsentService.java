@@ -1,23 +1,22 @@
 package com.springboot.api.counselsession.service;
 
+import java.util.Optional;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.counselee.entity.Counselee;
-import com.springboot.api.counselee.repository.CounseleeRepository;
-import com.springboot.api.counselsession.dto.counseleeconsent.AddCounseleeConsentReq;
-import com.springboot.api.counselsession.dto.counseleeconsent.AddCounseleeConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.DeleteCounseleeConsentRes;
 import com.springboot.api.counselsession.dto.counseleeconsent.SelectCounseleeConsentByCounseleeIdRes;
-import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentReq;
 import com.springboot.api.counselsession.dto.counseleeconsent.UpdateCounseleeConsentRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.CounseleeConsent;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.CounseleeConsentRepository;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +24,6 @@ public class CounseleeConsentService {
 
     private final CounseleeConsentRepository counseleeConsentRepository;
     private final CounselSessionRepository counselSessionRepository;
-    private final CounseleeRepository counseleeRepository;
 
     public SelectCounseleeConsentByCounseleeIdRes selectCounseleeConsentByCounseleeId(String counselSessionId,
         String counseleeId) {
@@ -53,33 +51,6 @@ public class CounseleeConsentService {
 
     }
 
-    @Transactional
-    public AddCounseleeConsentRes addCounseleeConsent(AddCounseleeConsentReq addCounseleeConsentReq) {
-
-        CounselSession counselSession = counselSessionRepository
-            .findById(addCounseleeConsentReq.getCounselSessionId())
-            .orElseThrow(IllegalArgumentException::new);
-
-        Counselee counselee = counseleeRepository.findById(addCounseleeConsentReq.getCounseleeId())
-            .orElseThrow(IllegalArgumentException::new);
-
-        CounseleeConsent counseleeConsent = CounseleeConsent.create(counselSession, counselee);
-        CounseleeConsent savedCounselConsent = counseleeConsentRepository.save(counseleeConsent);
-
-        return new AddCounseleeConsentRes(savedCounselConsent.getId());
-    }
-
-    @Transactional
-    public UpdateCounseleeConsentRes updateCounseleeConsent(UpdateCounseleeConsentReq updateCounseleeConsentReq) {
-        CounseleeConsent counseleeConsent = counseleeConsentRepository
-            .findById(updateCounseleeConsentReq.getCounseleeConsentId())
-            .orElseThrow(IllegalArgumentException::new);
-
-        counseleeConsent.accept();
-
-        return new UpdateCounseleeConsentRes(counseleeConsent.getId());
-    }
-
     @Transactional(propagation = Propagation.REQUIRED)
     public void initializeCounseleeConsent(CounselSession counselSession, Counselee counselee) {
         if (counseleeConsentRepository.existsByCounselSessionIdAndCounseleeId(counselSession.getId(),
@@ -92,9 +63,9 @@ public class CounseleeConsentService {
     }
 
     @Transactional
-    public UpdateCounseleeConsentRes acceptCounseleeConsent(String counseleeConsentId) {
+    public UpdateCounseleeConsentRes acceptCounseleeConsent(String counselSessionId) {
         CounseleeConsent counseleeConsent = counseleeConsentRepository
-            .findById(counseleeConsentId)
+            .findByCounselSessionId(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
 
         counseleeConsent.accept();
@@ -103,12 +74,12 @@ public class CounseleeConsentService {
     }
 
     @Transactional
-    public DeleteCounseleeConsentRes deleteCounseleeConsent(String counseleeConsentId) {
+    public DeleteCounseleeConsentRes deleteCounseleeConsent(String counselSessionId) {
 
-        CounseleeConsent counseleeConsent = counseleeConsentRepository.findById(counseleeConsentId)
+        CounseleeConsent counseleeConsent = counseleeConsentRepository.findByCounselSessionId(counselSessionId)
             .orElseThrow(IllegalArgumentException::new);
 
-        counseleeConsentRepository.deleteById(counseleeConsentId);
+        counseleeConsentRepository.deleteById(counseleeConsent.getId());
 
         return new DeleteCounseleeConsentRes(counseleeConsent.getId());
     }
