@@ -41,26 +41,26 @@ public class CounseleeConsentController {
         return ResponseEntity.ok(new CommonRes<>(selectCounseleeConsentByCounseleeIdRes));
     }
 
-    @PutMapping("/{counseleeConsentId}")
+    @PutMapping("/{counselSessionId}")
     @Operation(summary = "내담자 개인정보 수집 동의", tags = {"개인 정보 수집 동의"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<AcceptConsentRes>> acceptCounseleeConsent(
-        @PathVariable @NotBlank(message = "내담자 동의 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 동의 ID는 26자여야 합니다") String counseleeConsentId) {
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
 
         AcceptConsentRes acceptConsentRes = counseleeConsentService.acceptCounseleeConsent(
-            counseleeConsentId);
+            counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(acceptConsentRes));
     }
 
-    @DeleteMapping("/{counseleeConsentId}")
+    @DeleteMapping("/{counselSessionId}")
     @Operation(summary = "내담자 개인정보 수집 동의 여부 삭제", tags = {"개인 정보 수집 동의"})
     @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
     public ResponseEntity<CommonRes<DeleteCounseleeConsentRes>> deleteCounseleeConsent(
-        @PathVariable @NotBlank(message = "내담자 동의 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "내담자 동의 ID는 26자여야 합니다") String counseleeConsentId) {
+        @PathVariable @NotBlank(message = "상담 세션 ID는 필수 입력값입니다") @Size(min = 26, max = 26, message = "상담 세션 ID는 26자여야 합니다") String counselSessionId) {
 
         DeleteCounseleeConsentRes deleteCounseleeConsentRes = counseleeConsentService
-            .deleteCounseleeConsent(counseleeConsentId);
+            .deleteCounseleeConsent(counselSessionId);
 
         return ResponseEntity.ok(new CommonRes<>(deleteCounseleeConsentRes));
 
