@@ -1,5 +1,15 @@
 package com.springboot.api.tus.service;
 
+import com.springboot.api.common.util.FileUtil;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.tus.config.TusProperties;
+import com.springboot.api.tus.dto.response.TusFileInfoRes;
+import com.springboot.api.tus.entity.TusFileInfo;
+import com.springboot.api.tus.repository.TusFileInfoRepository;
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -11,25 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.springboot.api.common.util.FileUtil;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.tus.config.TusProperties;
-import com.springboot.api.tus.dto.response.TusFileInfoRes;
-import com.springboot.api.tus.entity.TusFileInfo;
-import com.springboot.api.tus.repository.TusFileInfoRepository;
-
-import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.ServletInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,14 +39,14 @@ public class TusService {
     private final FileUtil fileUtil;
 
     @Transactional
-    public String initUpload(String metadata, Long contentLength, Boolean isDefer, Long duration) {
+    public String initUpload(String metadata, Long contentLength, Boolean isDefer) {
 
         Map<String, String> parsedMetadata = parseMetadata(metadata);
 
         CounselSession counselSession = counselSessionRepository.findById(parsedMetadata.get("counselSessionId"))
             .orElseThrow(() -> new EntityNotFoundException("상담 세션을 찾을 수 없습니다."));
 
-        TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer, duration);
+        TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer);
 
         tusFileInfoRepository.save(fileInfo);
 

@@ -1,7 +1,30 @@
 package com.springboot.api.tus.controller;
 
-import java.io.IOException;
+import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_ALLOW_METHODS_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_ALLOW_ORIGIN_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_EXPOSE_OPTIONS_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_EXPOSE_POST_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.API_URL_PREFIX;
+import static com.springboot.api.tus.config.TusHeaderKeys.CACHE_CONTROL_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.CONTENT_TYPE_AUDIO_WEBM;
+import static com.springboot.api.tus.config.TusHeaderKeys.CONTENT_TYPE_OFFSET_OCTET_STREAM;
+import static com.springboot.api.tus.config.TusHeaderKeys.TUS_EXTENSION_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.TUS_RESUMABLE_VALUE;
+import static com.springboot.api.tus.config.TusHeaderKeys.TUS_VERSION_VALUE;
 
+import com.springboot.api.common.annotation.ApiController;
+import com.springboot.api.tus.config.TusHeaderKeys;
+import com.springboot.api.tus.config.TusProperties;
+import com.springboot.api.tus.dto.response.TusFileInfoRes;
+import com.springboot.api.tus.service.TusService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotNull;
+import java.io.IOException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -15,32 +38,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import com.springboot.api.common.annotation.ApiController;
-import com.springboot.api.tus.config.TusHeaderKeys;
-import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_ALLOW_METHODS_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_ALLOW_ORIGIN_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_EXPOSE_OPTIONS_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.ACCESS_CONTROL_EXPOSE_POST_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.API_URL_PREFIX;
-import static com.springboot.api.tus.config.TusHeaderKeys.CACHE_CONTROL_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.CONTENT_TYPE_AUDIO_WEBM;
-import static com.springboot.api.tus.config.TusHeaderKeys.CONTENT_TYPE_OFFSET_OCTET_STREAM;
-import static com.springboot.api.tus.config.TusHeaderKeys.TUS_EXTENSION_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.TUS_RESUMABLE_VALUE;
-import static com.springboot.api.tus.config.TusHeaderKeys.TUS_VERSION_VALUE;
-import com.springboot.api.tus.config.TusProperties;
-import com.springboot.api.tus.dto.response.TusFileInfoRes;
-import com.springboot.api.tus.service.TusService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotNull;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 @ApiController(name = "TusController", description = "Tus 프로토콜 구현 Controller", path = API_URL_PREFIX)
 @RequiredArgsConstructor
@@ -63,20 +60,16 @@ public class TusController {
     }
 
     @Operation(summary = "새로운 tus 업로드 리소스를 생성합니다. X-Recording-Duration 헤더로 녹음 길이(초)를 전달할 수 있습니다.", tags = {"TUS"})
-    @Parameters({
-        @Parameter(name = TusHeaderKeys.UPLOAD_METADATA, description = "업로드 메타데이터", required = true, in = ParameterIn.HEADER),
-        @Parameter(name = TusHeaderKeys.UPLOAD_LENGTH, description = "전체 파일 크기 (bytes)", required = false, in = ParameterIn.HEADER),
-        @Parameter(name = TusHeaderKeys.UPLOAD_DEFER_LENGTH, description = "업로드 크기 지연 여부 (1이면 true)", required = false, in = ParameterIn.HEADER),
-        @Parameter(name = TusHeaderKeys.X_RECORDING_DURATION, description = "녹음 길이 (초 단위)", required = false, in = ParameterIn.HEADER)
-    })
+    @Parameter(name = TusHeaderKeys.UPLOAD_METADATA, description = "업로드 메타데이터", required = true, in = ParameterIn.HEADER)
+    @Parameter(name = TusHeaderKeys.UPLOAD_LENGTH, description = "전체 파일 크기 (bytes)", required = false, in = ParameterIn.HEADER)
+    @Parameter(name = TusHeaderKeys.UPLOAD_DEFER_LENGTH, description = "업로드 크기 지연 여부 (1이면 true)", required = false, in = ParameterIn.HEADER)
     @PostMapping
     public ResponseEntity<Object> startUpload(
         @NotNull @RequestHeader(name = TusHeaderKeys.UPLOAD_METADATA) final String metadata,
         @RequestHeader(name = TusHeaderKeys.UPLOAD_LENGTH, required = false) final Long contentLength,
-        @RequestHeader(name = TusHeaderKeys.UPLOAD_DEFER_LENGTH, required = false) final Boolean isDefer,
-        @RequestHeader(name = TusHeaderKeys.X_RECORDING_DURATION, required = false) final Long duration
+        @RequestHeader(name = TusHeaderKeys.UPLOAD_DEFER_LENGTH, required = false) final Boolean isDefer
     ) {
-        String fileId = tusService.initUpload(metadata, contentLength, isDefer, duration);
+        String fileId = tusService.initUpload(metadata, contentLength, isDefer);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .header(TusHeaderKeys.ACCESS_CONTROL_EXPOSE_HEADERS, ACCESS_CONTROL_EXPOSE_POST_VALUE)
@@ -97,6 +90,7 @@ public class TusController {
                 .header(TusHeaderKeys.UPLOAD_DEFER_LENGTH, "1")
                 .header(TusHeaderKeys.UPLOAD_OFFSET, String.valueOf(tusFileInfo.getContentOffset()))
                 .header(TusHeaderKeys.TUS_RESUMABLE, TUS_RESUMABLE_VALUE)
+                .header(TusHeaderKeys.X_RECORDING_DURATION, String.valueOf(tusFileInfo.getDuration()))
                 .build();
         }
         return ResponseEntity.noContent()
@@ -105,15 +99,15 @@ public class TusController {
             .header(TusHeaderKeys.UPLOAD_LENGTH, String.valueOf(tusFileInfo.getContentLength()))
             .header(TusHeaderKeys.UPLOAD_OFFSET, String.valueOf(tusFileInfo.getContentOffset()))
             .header(TusHeaderKeys.TUS_RESUMABLE, TUS_RESUMABLE_VALUE)
+            .header(TusHeaderKeys.X_RECORDING_DURATION, String.valueOf(tusFileInfo.getDuration()))
             .build();
     }
 
-    @Operation(summary = "업로드 리소스에 데이터를 이어서 전송하고 오프셋을 갱신합니다. X-Recording-Duration 헤더로 현재까지의 녹음 길이(초)를 전달할 수 있습니다.", tags = {"TUS"})
-    @Parameters({
-        @Parameter(name = TusHeaderKeys.UPLOAD_OFFSET, description = "현재 파일 오프셋", required = true, in = ParameterIn.HEADER),
-        @Parameter(name = TusHeaderKeys.CONTENT_TYPE, description = "application/offset+octet-stream", required = true, in = ParameterIn.HEADER),
-        @Parameter(name = TusHeaderKeys.X_RECORDING_DURATION, description = "현재까지의 녹음 길이 (초 단위)", required = false, in = ParameterIn.HEADER)
-    })
+    @Operation(summary = "업로드 리소스에 데이터를 이어서 전송하고 오프셋을 갱신합니다. X-Recording-Duration 헤더로 현재까지의 녹음 길이(초)를 전달할 수 있습니다.", tags = {
+        "TUS"})
+    @Parameter(name = TusHeaderKeys.UPLOAD_OFFSET, description = "현재 파일 오프셋", required = true, in = ParameterIn.HEADER)
+    @Parameter(name = TusHeaderKeys.CONTENT_TYPE, description = "application/offset+octet-stream", required = true, in = ParameterIn.HEADER)
+    @Parameter(name = TusHeaderKeys.X_RECORDING_DURATION, description = "현재까지의 녹음 길이 (초 단위)", required = false, in = ParameterIn.HEADER)
     @PatchMapping(value = "/{fileId}", consumes = {CONTENT_TYPE_OFFSET_OCTET_STREAM})
     public ResponseEntity<Object> uploadProcess(
         @NonNull @PathVariable("fileId") final String fileId,
