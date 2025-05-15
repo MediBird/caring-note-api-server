@@ -5,6 +5,7 @@ import de.huxhorn.sulky.ulid.ULID;
 import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +15,7 @@ import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import net.bramp.ffmpeg.FFmpeg;
 import net.bramp.ffmpeg.builder.FFmpegBuilder;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -119,6 +121,28 @@ public class FileUtil {
             return new UrlResource(path.toUri());
         } catch (MalformedURLException e) {
             throw new RuntimeException("잘못된 파일 경로: " + path, e);
+        }
+    }
+
+    public void deleteDirectory(String directoryPath) {
+        File directory = new File(directoryPath);
+
+        if (!directory.exists()) {
+            log.warn("삭제 시도한 디렉토리가 존재하지 않습니다: {}", directoryPath);
+            return;
+        }
+
+        if (!directory.isDirectory()) {
+            throw new IllegalArgumentException("경로가 디렉토리가 아닙니다: " + directoryPath);
+        }
+
+        try {
+            FileUtils.cleanDirectory(directory);
+            if (!directory.delete()) {
+                throw new IOException("디렉토리 삭제 실패: " + directoryPath);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException("디렉토리 삭제 중 오류 발생", e);
         }
     }
 }

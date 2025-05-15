@@ -138,24 +138,11 @@ public class TusService {
     }
 
     @Transactional
-    public void deleteUploadedFile(String fileId) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다. fileId: " + fileId));
+    public void deleteUploadedFile(String counselSessionId) {
+        String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
 
-        Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
+        fileUtil.deleteDirectory(folderPath);
 
-        try {
-            boolean deleted = Files.deleteIfExists(path);
-            if (deleted) {
-                log.info("Tus 파일이 성공적으로 삭제되었습니다. 경로: {}", path);
-            } else {
-                log.warn("삭제할 Tus 파일을 찾을 수 없거나 이미 삭제되었습니다. 경로: {}", path);
-            }
-            tusFileInfoRepository.delete(fileInfo);
-            log.info("Tus 파일 정보가 데이터베이스에서 성공적으로 삭제되었습니다. fileId: {}", fileId);
-        } catch (IOException e) {
-            log.error("Tus 파일 삭제 중 오류가 발생했습니다. fileId: {}, 경로: {}", fileId, path, e);
-            throw new RuntimeException("Tus 파일 삭제에 실패했습니다. fileId: " + fileId, e);
-        }
+        tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
     }
 }
