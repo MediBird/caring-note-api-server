@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface TusFileInfoRepository extends JpaRepository<TusFileInfo, String> {
 
     List<TusFileInfo> findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(String counselSessionId);
+
+    void deleteAllByCounselSessionId(String counselSessionId);
 }

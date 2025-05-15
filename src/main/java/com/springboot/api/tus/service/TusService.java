@@ -23,12 +23,14 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class TusService {
 
     private final TusFileInfoRepository tusFileInfoRepository;
@@ -80,12 +82,16 @@ public class TusService {
     }
 
     @Transactional
-    public Long appendData(String fileId, long offset, ServletInputStream inputStream) {
+    public Long appendData(String fileId, long offset, ServletInputStream inputStream, Long duration) {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
             .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
         if (fileInfo.getContentOffset() != offset) {
             throw new IllegalArgumentException("Offset 정보가 맞지 않습니다.");
+        }
+
+        if (duration != null) {
+            fileInfo.updateDuration(duration);
         }
 
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
@@ -129,5 +135,14 @@ public class TusService {
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
 
         return fileUtil.getUrlResource(path);
+    }
+
+    @Transactional
+    public void deleteUploadedFile(String counselSessionId) {
+        String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
+
+        fileUtil.deleteDirectory(folderPath);
+
+        tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
     }
 }

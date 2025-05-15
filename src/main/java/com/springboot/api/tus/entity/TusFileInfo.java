@@ -39,6 +39,8 @@ public class TusFileInfo extends BaseEntity {
 
     private String savedName;
 
+    private Long duration;
+
     private TusFileInfo(CounselSession counselSession, String originalName, Long contentLength, Boolean isDefer) {
         this.counselSession = Objects.requireNonNull(counselSession);
         this.originalName = Objects.requireNonNullElse(originalName, "NONE");
@@ -46,6 +48,7 @@ public class TusFileInfo extends BaseEntity {
         this.isDefer = isDefer;
         this.contentOffset = 0L;
         this.savedName = new ULID().nextULID();
+        this.duration = 0L;
 
         if (isDefer == null && contentLength == null) {
             throw new IllegalArgumentException("isDefer, contentLength 둘 다 null일 수 없습니다.");
@@ -71,6 +74,10 @@ public class TusFileInfo extends BaseEntity {
 
     public void updateOffset(Integer uploadLength) {
         contentOffset += uploadLength;
+    }
+
+    public void updateDuration(Long duration) {
+        this.duration = duration;
     }
 
     public Path getFilePath(String uploadPath, String extension) {
