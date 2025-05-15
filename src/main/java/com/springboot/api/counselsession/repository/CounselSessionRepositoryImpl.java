@@ -1,5 +1,13 @@
 package com.springboot.api.counselsession.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Repository;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -17,12 +25,6 @@ import com.springboot.api.counselsession.entity.QCounselSession;
 import com.springboot.api.counselsession.entity.QCounseleeConsent;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.ScheduleStatus;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCustom {
@@ -174,11 +176,12 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+    public PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTimeAndStatus(
         PageReq pageReq,
         String counseleeNameKeyword,
         List<String> counselorNames,
-        List<LocalDate> scheduledDates) {
+        List<LocalDate> scheduledDates,
+        List<ScheduleStatus> statuses) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -201,6 +204,10 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                         .and(counselSession.scheduledStartDateTime.lt(endOfDay)));
             }
             builder.and(dateBuilder);
+        }
+
+        if (statuses != null && !statuses.isEmpty()) {
+            builder.and(counselSession.status.in(statuses));
         }
 
         JPAQuery<CounselSession> contentQuery = queryFactory

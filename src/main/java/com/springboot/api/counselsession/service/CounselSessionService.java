@@ -1,5 +1,20 @@
 package com.springboot.api.counselsession.service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.exception.NoContentException;
@@ -27,21 +42,9 @@ import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounse
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.enums.ScheduleStatus;
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -267,11 +270,12 @@ public class CounselSessionService {
     @Transactional(readOnly = true)
     public PageRes<SelectCounselSessionRes> searchCounselSessions(SearchCounselSessionReq req) {
         PageRes<CounselSession> counselSessionPageRes = counselSessionRepository
-            .findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+            .findByCounseleeNameAndCounselorNameAndScheduledDateTimeAndStatus(
                 req.pageReq(),
                 req.counseleeNameKeyword(),
                 req.counselorNames(),
-                req.scheduledDates()
+                req.scheduledDates(),
+                req.statuses()
             );
 
         return counselSessionPageRes.map(SelectCounselSessionRes::from);
