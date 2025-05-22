@@ -33,6 +33,7 @@ public class AICounselSummaryController {
 
     private final AICounselSummaryService aiCounselSummaryService;
 
+    @Deprecated
     @PostMapping(value = "/stt", consumes = "multipart/form-data")
     @Operation(summary = "convert Speech to Text", tags = {"AI요약"})
     public ResponseEntity<SuccessRes> convertSpeechToText(
@@ -41,6 +42,14 @@ public class AICounselSummaryController {
         aiCounselSummaryService.convertSpeechToText(file, convertSpeechToTextReq);
         return ResponseEntity.ok(new SuccessRes());
 
+    }
+
+    @PostMapping(value = "{counselSessionId}/stt")
+    @Operation(summary = "음성 파일 STT 변환", tags = {"AI요약"})
+    public ResponseEntity<SuccessRes> convertSpeechToText(
+        @PathVariable String counselSessionId) throws IOException {
+        aiCounselSummaryService.convertSpeechToText(counselSessionId);
+        return ResponseEntity.ok(new SuccessRes());
     }
 
     @GetMapping("{counselSessionId}/stt")
