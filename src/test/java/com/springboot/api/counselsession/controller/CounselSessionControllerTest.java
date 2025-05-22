@@ -1,10 +1,20 @@
-package com.springboot.api.controller;
+package com.springboot.api.counselsession.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.BDDMockito.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.common.config.security.SecurityConfig;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+import com.springboot.api.config.TestSecurityConfig;
+import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
+import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
+import com.springboot.api.counselsession.service.CounselSessionService;
 import java.util.Collection;
 import java.util.Collections;
 import org.junit.jupiter.api.DisplayName;
@@ -19,14 +29,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.common.config.security.SecurityConfig;
-import com.springboot.api.common.converter.CustomJwtRoleConverter;
-import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.counselsession.controller.CounselSessionController;
-import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationReq;
-import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
-import com.springboot.api.counselsession.service.CounselSessionService;
 
 @WebMvcTest(CounselSessionController.class)
 @Import({SecurityConfig.class, TestSecurityConfig.class})

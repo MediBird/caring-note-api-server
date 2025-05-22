@@ -1,11 +1,10 @@
-package com.springboot.api.repository;
+package com.springboot.api.counselee.repository;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import com.springboot.api.counselee.entity.Counselee;
-import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.enums.GenderType;
 import com.springboot.enums.HealthInsuranceType;
 import java.time.LocalDate;

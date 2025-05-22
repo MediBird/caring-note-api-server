@@ -1,9 +1,31 @@
-package com.springboot.api.controller;
+package com.springboot.api.counselee.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.common.config.security.SecurityConfig;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.config.TestSecurityConfig;
+import com.springboot.api.counselee.dto.AddCounseleeReq;
+import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
+import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
+import com.springboot.api.counselee.dto.SelectCounseleeRes;
+import com.springboot.api.counselee.dto.UpdateCounseleeReq;
+import com.springboot.api.counselee.entity.Counselee;
+import com.springboot.api.counselee.service.CounseleeService;
+import com.springboot.api.fixture.CounseleeFixture;
+import com.springboot.enums.GenderType;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,21 +46,6 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.common.config.security.SecurityConfig;
-import com.springboot.api.common.converter.CustomJwtRoleConverter;
-import com.springboot.api.common.dto.PageRes;
-import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.counselee.controller.CounseleeController;
-import com.springboot.api.counselee.dto.AddCounseleeReq;
-import com.springboot.api.counselee.dto.DeleteCounseleeBatchRes;
-import com.springboot.api.counselee.dto.SelectCounseleeBaseInformationByCounseleeIdRes;
-import com.springboot.api.counselee.dto.SelectCounseleeRes;
-import com.springboot.api.counselee.dto.UpdateCounseleeReq;
-import com.springboot.api.counselee.entity.Counselee;
-import com.springboot.api.counselee.service.CounseleeService;
-import com.springboot.api.fixture.CounseleeFixture;
-import com.springboot.enums.GenderType;
 
 @WebMvcTest(CounseleeController.class)
 @Import({SecurityConfig.class, TestSecurityConfig.class})

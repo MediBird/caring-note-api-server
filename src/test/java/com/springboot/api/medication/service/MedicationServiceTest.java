@@ -1,4 +1,4 @@
-package com.springboot.api.service;
+package com.springboot.api.medication.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
@@ -6,7 +6,6 @@ import static org.mockito.Mockito.when;
 import com.springboot.api.medication.dto.SearchMedicationByKeywordRes;
 import com.springboot.api.medication.entity.Medication;
 import com.springboot.api.medication.repository.MedicationRepository;
-import com.springboot.api.medication.service.MedicationService;
 import de.huxhorn.sulky.ulid.ULID;
 import java.util.Arrays;
 import java.util.List;

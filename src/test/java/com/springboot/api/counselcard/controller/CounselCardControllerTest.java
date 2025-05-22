@@ -1,9 +1,34 @@
-package com.springboot.api.controller;
+package com.springboot.api.counselcard.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springboot.api.common.config.security.SecurityConfig;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.message.HttpMessages;
+import com.springboot.api.config.TestSecurityConfig;
+import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
+import com.springboot.api.counselcard.dto.request.UpdateCounselCardStatusReq;
+import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
+import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
+import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
+import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
+import com.springboot.api.counselcard.entity.CounselCard;
+import com.springboot.api.counselcard.entity.information.independentlife.Communication;
+import com.springboot.api.counselcard.service.CounselCardService;
+import com.springboot.api.counselee.entity.Counselee;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.enums.CardRecordStatus;
+import com.springboot.enums.CounselCardRecordType;
+import com.springboot.enums.RoleType;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,27 +45,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springboot.api.common.config.security.SecurityConfig;
-import com.springboot.api.common.converter.CustomJwtRoleConverter;
-import com.springboot.api.common.exception.NoContentException;
-import com.springboot.api.common.message.HttpMessages;
-import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.counselcard.controller.CounselCardController;
-import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
-import com.springboot.api.counselcard.dto.request.UpdateCounselCardStatusReq;
-import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
-import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
-import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
-import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
-import com.springboot.api.counselcard.entity.CounselCard;
-import com.springboot.api.counselcard.entity.information.independentlife.Communication;
-import com.springboot.api.counselcard.service.CounselCardService;
-import com.springboot.api.counselee.entity.Counselee;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.enums.CardRecordStatus;
-import com.springboot.enums.CounselCardRecordType;
-import com.springboot.enums.RoleType;
 
 @WebMvcTest(CounselCardController.class)
 @Import({SecurityConfig.class, TestSecurityConfig.class})
@@ -48,7 +52,7 @@ class CounselCardControllerTest {
 
     private static final String VALID_COUNSEL_SESSION_ID = "01HQ8VQXG7RZDQ1234567890AB";
     private static final String VALID_COUNSEL_CARD_ID = "01HQ8VQXG7RZDQ1234567890AB";
-    
+
     //TODO: MockMvcTester로 수정
     @Autowired
     private MockMvc mockMvc;

@@ -1,4 +1,4 @@
-package com.springboot.api.service;
+package com.springboot.api.counselsession.service;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -11,8 +11,6 @@ import com.springboot.api.counselsession.dto.counselsession.CreateCounselReserva
 import com.springboot.api.counselsession.dto.counselsession.CreateCounselReservationRes;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.counselsession.service.CounselSessionService;
-import com.springboot.api.counselsession.service.CounseleeConsentService;
 import com.springboot.enums.ScheduleStatus;
 import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;

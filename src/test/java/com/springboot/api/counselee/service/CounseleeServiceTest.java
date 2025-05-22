@@ -1,4 +1,4 @@
-package com.springboot.api.service;
+package com.springboot.api.counselee.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,6 @@ import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
 import com.springboot.api.counselee.dto.UpdateCounseleeReq;
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselee.repository.CounseleeRepository;
-import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.api.fixture.CounseleeFixture;
 import com.springboot.enums.GenderType;
 import java.time.LocalDate;

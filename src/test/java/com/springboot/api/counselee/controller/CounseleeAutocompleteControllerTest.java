@@ -1,9 +1,17 @@
-package com.springboot.api.controller;
+package com.springboot.api.counselee.controller;
 
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.springboot.api.common.config.security.SecurityConfig;
+import com.springboot.api.common.converter.CustomJwtRoleConverter;
+import com.springboot.api.config.TestSecurityConfig;
+import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
+import com.springboot.api.counselee.service.CounseleeService;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
@@ -21,12 +29,6 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
-import com.springboot.api.common.config.security.SecurityConfig;
-import com.springboot.api.common.converter.CustomJwtRoleConverter;
-import com.springboot.api.config.TestSecurityConfig;
-import com.springboot.api.counselee.controller.CounseleeController;
-import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
-import com.springboot.api.counselee.service.CounseleeService;
 
 @WebMvcTest(CounseleeController.class)
 @Import({SecurityConfig.class, TestSecurityConfig.class})
