@@ -47,7 +47,7 @@ public class AICounselSummaryController {
     @PostMapping(value = "{counselSessionId}/stt")
     @Operation(summary = "음성 파일 STT 변환", tags = {"AI요약"})
     public ResponseEntity<SuccessRes> convertSpeechToText(
-        @PathVariable String counselSessionId) throws IOException {
+        @PathVariable String counselSessionId) {
         aiCounselSummaryService.convertSpeechToText(counselSessionId);
         return ResponseEntity.ok(new SuccessRes());
     }
