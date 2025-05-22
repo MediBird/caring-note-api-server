@@ -88,7 +88,7 @@ public class FileUtil {
         }
     }
 
-    public void mergeWebmFile(List<String> fileList, String outputFilePath) {
+    public void mergeAndConvertWebmFile(List<String> fileList, String outputFilePath) {
         try {
             FFmpeg ffmpeg = new FFmpeg();
 

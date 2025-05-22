@@ -124,7 +124,7 @@ public class TusService {
 
         Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
 
-        fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
+        fileUtil.mergeAndConvertWebmFile(pathList, mergePath.toAbsolutePath().toString());
     }
 
     @Transactional(readOnly = true)
