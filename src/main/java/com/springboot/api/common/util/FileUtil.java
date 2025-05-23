@@ -1,8 +1,5 @@
 package com.springboot.api.common.util;
 
-import com.springboot.api.common.properties.FfmpegProperties;
-import de.huxhorn.sulky.ulid.ULID;
-import jakarta.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -12,15 +9,21 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.stream.IntStream;
-import lombok.RequiredArgsConstructor;
-import net.bramp.ffmpeg.FFmpeg;
-import net.bramp.ffmpeg.builder.FFmpegBuilder;
+
 import org.apache.commons.io.FileUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.springboot.api.common.properties.FfmpegProperties;
+
+import de.huxhorn.sulky.ulid.ULID;
+import jakarta.validation.constraints.NotNull;
+import lombok.RequiredArgsConstructor;
+import net.bramp.ffmpeg.FFmpeg;
+import net.bramp.ffmpeg.builder.FFmpegBuilder;
 
 @Component
 @RequiredArgsConstructor
@@ -89,7 +92,36 @@ public class FileUtil {
     }
 
     public void mergeWebmFile(List<String> fileList, String outputFilePath) {
+        if (fileList == null || fileList.isEmpty()) {
+            throw new IllegalArgumentException("병합할 파일 목록이 비어있습니다.");
+        }
+
+        // 파일 존재 여부 및 유효성 검사
+        for (String filePath : fileList) {
+            Path file = Path.of(filePath);
+            if (!Files.exists(file)) {
+                log.error("병합 대상 파일이 존재하지 않습니다: {}", filePath);
+                throw new RuntimeException("병합 대상 파일이 존재하지 않습니다: " + filePath);
+            }
+            
+            try {
+                if (Files.size(file) == 0) {
+                    log.error("병합 대상 파일이 비어있습니다: {}", filePath);
+                    throw new RuntimeException("병합 대상 파일이 비어있습니다: " + filePath);
+                }
+            } catch (IOException e) {
+                log.error("병합 대상 파일 크기 확인 실패: {}", filePath, e);
+                throw new RuntimeException("병합 대상 파일 크기 확인 실패: " + filePath, e);
+            }
+        }
+
+        log.info("FFmpeg 머지 시작. 파일 개수: {}, 출력: {}", fileList.size(), outputFilePath);
+        
         try {
+            // 출력 디렉토리 생성
+            Path outputPath = Path.of(outputFilePath);
+            Files.createDirectories(outputPath.getParent());
+            
             FFmpeg ffmpeg = new FFmpeg();
 
             FFmpegBuilder builder = new FFmpegBuilder()
@@ -111,8 +143,20 @@ public class FileUtil {
                 .done();
 
             ffmpeg.run(builder);
+            
+            // 출력 파일 생성 확인
+            if (!Files.exists(outputPath) || Files.size(outputPath) == 0) {
+                throw new RuntimeException("FFmpeg 실행 후 출력 파일이 생성되지 않았거나 비어있습니다.");
+            }
+            
+            log.info("FFmpeg 머지 완료. 출력 파일 크기: {} bytes", Files.size(outputPath));
+            
         } catch (IOException e) {
-            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다.");
+            log.error("FFmpeg 머지 중 IO 오류 발생. 입력 파일들: {}", fileList, e);
+            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다: " + e.getMessage(), e);
+        } catch (Exception e) {
+            log.error("FFmpeg 머지 중 예상치 못한 오류 발생. 입력 파일들: {}", fileList, e);
+            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다: " + e.getMessage(), e);
         }
     }
 
