@@ -33,7 +33,7 @@ public class SelectCounselSessionRes {
         res.counselorName = (counselor != null) ? counselor.getName() : "";
 
         res.status = counselSession.getStatus();
-        res.sessionNumber = res.status.equals(ScheduleStatus.CANCELED) ? "-" :
+        res.sessionNumber = res.status == ScheduleStatus.CANCELED ? "-" :
             String.valueOf(counselSession.getSessionNumber());
 
         return res;
