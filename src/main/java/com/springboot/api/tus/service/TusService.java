@@ -74,14 +74,43 @@ public class TusService {
     }
 
     @Transactional(readOnly = true)
-    public TusFileInfoRes getTusFileInfo(String fileId) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
+    public TusFileInfoRes getTusFileInfo(String counselSessionId) {
+        List<TusFileInfo> fileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(counselSessionId);
+        
+        if (fileInfoList.isEmpty()) {
+            throw new IllegalArgumentException("상담세션에 대한 Tus 파일 정보를 찾을 수 없습니다.");
+        }
 
-        String location =
-            tusProperties.getPathPrefix() + "/" + fileInfo.getCounselSession().getId() + "/" + fileInfo.getId();
+        // 가장 최근 업데이트된 파일 정보를 반환 (마지막 요소)
+        TusFileInfo latestFileInfo = fileInfoList.get(fileInfoList.size() - 1);
+        
+        // 전체 세션의 총 업로드 크기와 오프셋을 계산
+        long totalContentLength = fileInfoList.stream()
+            .filter(info -> info.getContentLength() != null)
+            .mapToLong(TusFileInfo::getContentLength)
+            .sum();
+            
+        long totalContentOffset = fileInfoList.stream()
+            .mapToLong(TusFileInfo::getContentOffset)
+            .sum();
+            
+        // 전체 녹음 시간을 계산 (최대 녹음 시간 사용)
+        Long maxDuration = fileInfoList.stream()
+            .filter(info -> info.getDuration() != null)
+            .mapToLong(TusFileInfo::getDuration)
+            .max()
+            .orElse(0L);
 
-        return new TusFileInfoRes(fileInfo, location);
+        String location = tusProperties.getPathPrefix() + "/status/" + counselSessionId;
+
+        return new TusFileInfoRes(
+            counselSessionId,
+            totalContentLength > 0 ? totalContentLength : null,
+            totalContentOffset,
+            latestFileInfo.getIsDefer(),
+            location,
+            maxDuration > 0 ? maxDuration : null
+        );
     }
 
     @Transactional
