@@ -277,55 +277,42 @@ public class TusService {
 
     @Transactional
     public void deleteUploadedFile(String fileId) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
+        log.info("Deleting uploaded files associated with TusFileInfo ID: {}", fileId);
 
-        // 개별 파일 삭제
-        Path filePath = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
-        try {
-            Files.deleteIfExists(filePath);
-        } catch (IOException e) {
-            log.error("파일 삭제 실패: {}", filePath, e);
+        TusFileInfo tusFileInfo = tusFileInfoRepository.findById(fileId)
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다. ID: " + fileId));
+
+        CounselSession counselSession = tusFileInfo.getCounselSession();
+        if (counselSession == null) {
+            log.error("TusFileInfo ID {} 에 연결된 상담 세션 정보가 없습니다.", fileId);
+            throw new IllegalStateException("TusFileInfo ID " + fileId + " 에 연결된 상담 세션 정보가 없습니다.");
         }
 
-        // DB 레코드 삭제
-        tusFileInfoRepository.delete(fileInfo);
-        entityManager.flush(); // 명시적으로 DB에 반영
-    }
+        String counselSessionId = counselSession.getId();
+        log.info("Associated CounselSession ID: {} for TusFileInfo ID: {}", counselSessionId, fileId);
 
-    @Transactional
-    public void deleteUploadedFilesByCounselSession(String counselSessionId) {
         String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
-
-        fileUtil.deleteDirectory(folderPath);
-
-        tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
-        entityManager.flush(); // 명시적으로 DB에 반영
-    }
-
-    @Transactional(readOnly = true)
-    public boolean validateUploadedFiles(String counselSessionId) {
-        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
-            counselSessionId);
-
-        if (tusFileInfoList.isEmpty()) {
-            log.debug("파일 검증 대상 없음. counselSessionId: {}", counselSessionId);
-            return false;
-        }
-
-        List<String> pathList = tusFileInfoList.stream()
-            .map(tusFileInfo -> tusFileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()))
-            .map(Path::toAbsolutePath)
-            .map(Path::toString)
-            .toList();
+        log.info("Attempting to delete directory: {}", folderPath);
 
         try {
-            validateFilesBeforeMerge(pathList);
-            log.debug("파일 검증 성공. counselSessionId: {}, fileCount: {}", counselSessionId, pathList.size());
-            return true;
-        } catch (IllegalArgumentException e) {
-            log.warn("파일 검증 실패. counselSessionId: {}, 오류: {}", counselSessionId, e.getMessage());
-            throw e;
+            fileUtil.deleteDirectory(folderPath);
+            log.info("Successfully deleted directory: {}", folderPath);
+        } catch (Exception e) { // Catching generic Exception as FileUtil.deleteDirectory might throw various runtime exceptions too.
+            log.error("Failed to delete directory {}: {}", folderPath, e.getMessage(), e);
+            // Depending on policy, you might re-throw or handle. For now, let it propagate if it's critical.
+            // If FileUtil.deleteDirectory declares specific checked exceptions, catch those.
+            // Assuming it might throw IOException or other runtime exceptions.
+            throw new RuntimeException("Failed to delete directory " + folderPath, e);
         }
+
+        try {
+            tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
+            log.info("Successfully deleted all TusFileInfo records for CounselSession ID: {}", counselSessionId);
+        } catch (Exception e) {
+            log.error("Failed to delete TusFileInfo records for CounselSession ID {}: {}", counselSessionId, e.getMessage(), e);
+            throw new RuntimeException("Failed to delete TusFileInfo records for CounselSession ID " + counselSessionId, e);
+        }
+
+        log.info("Successfully completed deletion process for files associated with TusFileInfo ID: {}", fileId);
     }
 }
