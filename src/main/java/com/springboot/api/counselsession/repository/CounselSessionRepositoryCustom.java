@@ -1,14 +1,15 @@
 package com.springboot.api.counselsession.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.enums.ScheduleStatus;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 public interface CounselSessionRepositoryCustom {
 
@@ -27,11 +28,12 @@ public interface CounselSessionRepositoryCustom {
     List<CounselSession> findPreviousCompletedSessionsOrderByEndDateTimeDesc(String counseleeId,
         LocalDateTime beforeDateTime);
 
-    PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+    PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTimeAndStatus(
         PageReq pageReq,
         String counseleeNameKeyword,
         List<String> counselorNames,
-        List<LocalDate> scheduledDates);
+        List<LocalDate> scheduledDates,
+        List<ScheduleStatus> statuses);
 
     List<CounselSession> findValidCounselSessionsByCounseleeId(String counseleeId);
 

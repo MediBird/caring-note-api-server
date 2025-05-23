@@ -1,7 +1,7 @@
 package com.springboot.api.counselee.entity;
 
-import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import com.springboot.api.common.entity.BaseEntity;
 import com.springboot.api.counselee.dto.AddCounseleeReq;
@@ -14,13 +14,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
-import java.util.Optional;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -116,5 +116,6 @@ public class Counselee extends BaseEntity {
         Optional.ofNullable(updateCounseleeReq.getAddress()).ifPresent(value -> this.address = value);
         Optional.ofNullable(updateCounseleeReq.getIsDisability()).ifPresent(value -> this.isDisability = value);
         Optional.ofNullable(updateCounseleeReq.getCareManagerName()).ifPresent(value -> this.careManagerName = value);
+        Optional.ofNullable(updateCounseleeReq.getHealthInsuranceType()).ifPresent(value -> this.healthInsuranceType = value);
     }
 }

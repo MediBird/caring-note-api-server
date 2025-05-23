@@ -64,7 +64,8 @@ public class SecurityConfig {
         configuration.setAllowCredentials(true);
         configuration.setExposedHeaders(
             List.of("Authorization", "Access-Token", "Uid", "Refresh-Token", "Access-Control-Expose-Headers",
-                "Upload-Offset, Location, Upload-Length, Tus-Version, Tus-Resumable, Tus-Max-Size, Tus-Extension, Upload-Metadata"));
+                "Upload-Offset", "Location", "Upload-Length", "Tus-Version", "Tus-Resumable", "Tus-Max-Size",
+                "Tus-Extension", "Upload-Metadata"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

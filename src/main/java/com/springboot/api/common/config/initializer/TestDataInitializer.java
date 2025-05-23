@@ -1,5 +1,17 @@
 package com.springboot.api.common.config.initializer;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.springboot.api.counselee.entity.Counselee;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselsession.entity.CounselSession;
@@ -18,19 +30,10 @@ import com.springboot.enums.MedicationDivision;
 import com.springboot.enums.MedicationUsageStatus;
 import com.springboot.enums.RoleType;
 import com.springboot.enums.ScheduleStatus;
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @RequiredArgsConstructor

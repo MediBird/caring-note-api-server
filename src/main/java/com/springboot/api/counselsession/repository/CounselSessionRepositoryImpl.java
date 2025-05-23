@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -47,7 +46,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             .stream()
             .map(LocalDateTime::toLocalDate)
             .distinct()
-            .collect(Collectors.toList());
+            .toList();
     }
 
     @Override
@@ -84,8 +83,14 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                 counselSession.scheduledStartDateTime,
                 counselSession.counselee.id,
                 counselSession.counselee.name,
-                counselSession.counselor.id,
-                counselSession.counselor.name,
+                new CaseBuilder()
+                    .when(counselSession.counselor.status.eq(CounselorStatus.INACTIVE))
+                    .then("")
+                    .otherwise(counselSession.counselor.id),
+                new CaseBuilder()
+                    .when(counselSession.counselor.status.eq(CounselorStatus.INACTIVE))
+                    .then("탈퇴사용자")
+                    .otherwise(counselSession.counselor.name),
                 counselSession.status,
                 counselCard.cardRecordStatus,
                 counseleeConsent.isConsent))
@@ -144,7 +149,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
         }
         List<String> sessionIds = canceledSessions.stream()
             .map(tuple -> tuple.get(counselSession.id))
-            .collect(Collectors.toList());
+            .toList();
 
         List<String> affectedCounseleeIds = canceledSessions.stream()
             .map(tuple -> tuple.get(counselSession.counselee.id))
@@ -174,11 +179,12 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
     }
 
     @Override
-    public PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTime(
+    public PageRes<CounselSession> findByCounseleeNameAndCounselorNameAndScheduledDateTimeAndStatus(
         PageReq pageReq,
         String counseleeNameKeyword,
         List<String> counselorNames,
-        List<LocalDate> scheduledDates) {
+        List<LocalDate> scheduledDates,
+        List<ScheduleStatus> statuses) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -201,6 +207,10 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
                         .and(counselSession.scheduledStartDateTime.lt(endOfDay)));
             }
             builder.and(dateBuilder);
+        }
+
+        if (statuses != null && !statuses.isEmpty()) {
+            builder.and(counselSession.status.in(statuses));
         }
 
         JPAQuery<CounselSession> contentQuery = queryFactory
