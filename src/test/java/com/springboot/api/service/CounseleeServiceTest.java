@@ -1,10 +1,22 @@
 package com.springboot.api.service;
 
+import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.BDDMockito.given;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import static org.mockito.Mockito.when;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import com.springboot.api.counselee.dto.SelectCounseleeAutocompleteRes;
@@ -14,17 +26,7 @@ import com.springboot.api.counselee.repository.CounseleeRepository;
 import com.springboot.api.counselee.service.CounseleeService;
 import com.springboot.api.fixture.CounseleeFixture;
 import com.springboot.enums.GenderType;
-import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import com.springboot.enums.HealthInsuranceType;
 
 @ExtendWith(MockitoExtension.class)
 public class CounseleeServiceTest {
@@ -51,6 +53,7 @@ public class CounseleeServiceTest {
             .address("서울시 강남구")
             .isDisability(true)
             .careManagerName("김철수")
+            .healthInsuranceType(HealthInsuranceType.MEDICAL_AID)
             .build();
         //When
 
@@ -66,6 +69,7 @@ public class CounseleeServiceTest {
         assertThat(original.getAddress()).isEqualTo(request.getAddress());
         assertThat(original.getIsDisability()).isEqualTo(request.getIsDisability());
         assertThat(original.getCareManagerName()).isEqualTo(request.getCareManagerName());
+        assertThat(original.getHealthInsuranceType()).isEqualTo(request.getHealthInsuranceType());
     }
 
     @Test
@@ -82,6 +86,7 @@ public class CounseleeServiceTest {
         String note = original.getNote();
         String careManagerName = original.getCareManagerName();
         String affiliatedWelfareInstitution = original.getAffiliatedWelfareInstitution();
+        HealthInsuranceType healthInsuranceType = original.getHealthInsuranceType();
 
         UpdateCounseleeReq updateCounseleeReq = UpdateCounseleeReq.builder().build();
         //When
@@ -96,6 +101,7 @@ public class CounseleeServiceTest {
         assertThat(original.getNote()).isEqualTo(note);
         assertThat(original.getCareManagerName()).isEqualTo(careManagerName);
         assertThat(original.getAffiliatedWelfareInstitution()).isEqualTo(affiliatedWelfareInstitution);
+        assertThat(original.getHealthInsuranceType()).isEqualTo(healthInsuranceType);
     }
 
     @Test

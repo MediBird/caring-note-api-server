@@ -1,13 +1,14 @@
 package com.springboot.api.counselee.dto;
 
-import com.springboot.api.common.annotation.ValidNullableEnum;
-import jakarta.validation.constraints.PastOrPresent;
 import java.time.LocalDate;
 
+import com.springboot.api.common.annotation.ValidNullableEnum;
 import com.springboot.enums.GenderType;
+import com.springboot.enums.HealthInsuranceType;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -49,4 +50,7 @@ public class UpdateCounseleeReq {
 
     @Size(max = 50, message = "담당자 이름은 50자를 초과할 수 없습니다")
     private String careManagerName;
+
+    @ValidNullableEnum(enumClass = HealthInsuranceType.class)
+    private HealthInsuranceType healthInsuranceType;
 }
