@@ -115,11 +115,14 @@ public class TusService {
 
     @Transactional
     public void mergeUploadedFile(String counselSessionId) {
+        log.info("파일 머지 시작. counselSessionId: {}", counselSessionId);
 
         List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
             counselSessionId);
+        log.info("조회된 파일 개수: {}", tusFileInfoList.size());
 
         if (tusFileInfoList.isEmpty()) {
+            log.warn("병합할 파일이 없음. counselSessionId: {}", counselSessionId);
             throw new IllegalArgumentException("병합할 파일이 없습니다.");
         }
 
@@ -128,32 +131,56 @@ public class TusService {
             .map(Path::toAbsolutePath)
             .map(Path::toString)
             .toList();
-
-        // 파일 유효성 사전 검증
-        validateFilesBeforeMerge(pathList);
-
-        Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
+        log.info("병합 대상 파일 경로: {}", pathList);
 
         try {
+            // 파일 유효성 사전 검증
+            log.info("파일 유효성 검증 시작");
+            validateFilesBeforeMerge(pathList);
+            log.info("파일 유효성 검증 완료");
+
+            Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
+            log.info("머지 파일 경로: {}", mergePath.toAbsolutePath());
+
+            log.info("FFmpeg 머지 시작");
             fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
+            log.info("FFmpeg 머지 완료. counselSessionId: {}", counselSessionId);
+            
+        } catch (IllegalArgumentException e) {
+            log.error("파일 유효성 검증 실패. counselSessionId: {}", counselSessionId, e);
+            cleanupFailedMerge(counselSessionId);
+            throw new RuntimeException("파일 검증 실패로 인해 업로드된 파일들을 모두 삭제했습니다. 다시 업로드해 주세요.", e);
         } catch (RuntimeException e) {
             // 머지 실패 시 업로드된 파일들과 DB 레코드 모두 삭제
             log.error("FFmpeg 머지 실패로 인한 파일 정리 시작. counselSessionId: {}", counselSessionId, e);
             cleanupFailedMerge(counselSessionId);
             throw new RuntimeException("머지 실패로 인해 업로드된 파일들을 모두 삭제했습니다. 다시 업로드해 주세요.", e);
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생. counselSessionId: {}", counselSessionId, e);
+            cleanupFailedMerge(counselSessionId);
+            throw new RuntimeException("파일 머지 중 예상치 못한 오류가 발생했습니다. 업로드된 파일들을 정리했습니다.", e);
         }
     }
     
     private void validateFilesBeforeMerge(List<String> pathList) {
-        for (String pathStr : pathList) {
+        log.info("파일 유효성 검증 대상 개수: {}", pathList.size());
+        
+        for (int i = 0; i < pathList.size(); i++) {
+            String pathStr = pathList.get(i);
+            log.debug("파일 검증 중 ({}/{}): {}", i + 1, pathList.size(), pathStr);
+            
             Path path = Path.of(pathStr);
             if (!Files.exists(path)) {
+                log.error("파일이 존재하지 않음: {}", pathStr);
                 throw new IllegalArgumentException("병합 대상 파일이 존재하지 않습니다: " + pathStr);
             }
             
             try {
                 long fileSize = Files.size(path);
+                log.debug("파일 크기: {} bytes ({})", fileSize, pathStr);
+                
                 if (fileSize == 0) {
+                    log.error("빈 파일 발견: {}", pathStr);
                     throw new IllegalArgumentException("병합 대상 파일이 비어있습니다: " + pathStr);
                 }
                 
@@ -164,9 +191,12 @@ public class TusService {
                 }
                 
             } catch (IOException e) {
+                log.error("파일 정보 읽기 실패: {}", pathStr, e);
                 throw new IllegalArgumentException("파일 정보를 읽을 수 없습니다: " + pathStr, e);
             }
         }
+        
+        log.info("모든 파일 유효성 검증 완료");
     }
     
     @Transactional
