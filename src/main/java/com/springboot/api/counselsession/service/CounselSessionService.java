@@ -11,10 +11,13 @@ import java.util.Optional;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.exception.NoContentException;
@@ -34,13 +37,18 @@ import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReserva
 import com.springboot.api.counselsession.dto.counselsession.SearchCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionRes;
+import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionDetailRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateStatusInCounselSessionRes;
+import com.springboot.api.counselsession.entity.AICounselSummary;
 import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.entity.MedicationCounsel;
+import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.counselsession.repository.MedicationCounselRepository;
 import com.springboot.enums.ScheduleStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -57,6 +65,8 @@ public class CounselSessionService {
     private final CounseleeRepository counseleeRepository;
     private final CounselCardService counselCardService;
     private final CounseleeConsentService counseleeConsentService;
+    private final MedicationCounselRepository medicationCounselRepository;
+    private final AICounselSummaryRepository aiCounselSummaryRepository;
 
     @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
     @Transactional
@@ -211,6 +221,74 @@ public class CounselSessionService {
 
         return selectPreviousCounselSessionListResList;
 
+    }
+
+    @Transactional(readOnly = true)
+    public PageRes<SelectPreviousCounselSessionDetailRes> selectPreviousCounselSessionDetailList(
+        String counselSessionId, PageReq pageReq) {
+        
+        CounselSession counselSession = counselSessionRepository.findById(counselSessionId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담 세션입니다."));
+
+        Counselee counselee = Optional.ofNullable(counselSession.getCounselee())
+            .orElseThrow(() -> new NoContentException("내담자 정보를 찾을 수 없습니다."));
+
+        // 이전 완료된 상담 세션들을 최신 순으로 조회
+        List<CounselSession> previousCounselSessions = counselSessionRepository
+            .findPreviousCompletedSessionsOrderByEndDateTimeDesc(counselee.getId(),
+                counselSession.getScheduledStartDateTime());
+
+        if (previousCounselSessions.isEmpty()) {
+            throw new NoContentException("이전 상담 내역이 없습니다.");
+        }
+
+        // 페이징 처리
+        int totalElements = previousCounselSessions.size();
+        int startIndex = pageReq.getPage() * pageReq.getSize();
+        int endIndex = Math.min(startIndex + pageReq.getSize(), totalElements);
+
+        if (startIndex >= totalElements) {
+            throw new NoContentException("요청한 페이지에 데이터가 없습니다.");
+        }
+
+        List<CounselSession> pagedSessions = previousCounselSessions.subList(startIndex, endIndex);
+
+        // 각 세션에 대한 상세 정보 조회
+        List<SelectPreviousCounselSessionDetailRes> detailList = pagedSessions.stream()
+            .map(session -> {
+                // 중재기록 조회
+                Optional<MedicationCounsel> medicationCounsel = medicationCounselRepository
+                    .findByCounselSessionId(session.getId());
+                String counselRecord = medicationCounsel
+                    .map(MedicationCounsel::getCounselRecord)
+                    .orElse(null);
+
+                // AI 요약 조회
+                Optional<AICounselSummary> aiCounselSummary = aiCounselSummaryRepository
+                    .findByCounselSessionId(session.getId());
+                JsonNode taResult = aiCounselSummary
+                    .map(AICounselSummary::getTaResult)
+                    .orElse(null);
+
+                String counselorName = Optional.ofNullable(session.getCounselor())
+                    .map(Counselor::getName)
+                    .orElse("미지정");
+
+                return SelectPreviousCounselSessionDetailRes.builder()
+                    .counselSessionId(session.getId())
+                    .counselSessionDate(session.getScheduledStartDateTime().toLocalDate())
+                    .sessionNumber(session.getSessionNumber())
+                    .counselorName(counselorName)
+                    .medicationCounselRecord(counselRecord)
+                    .aiSummary(taResult)
+                    .build();
+            })
+            .toList();
+
+        Page<SelectPreviousCounselSessionDetailRes> page = new PageImpl<>(
+            detailList, pageReq.toPageable(), totalElements);
+        
+        return new PageRes<>(page);
     }
 
     @Cacheable(value = "sessionDates", key = "#year + '-' + #month")
