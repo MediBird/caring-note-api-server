@@ -27,15 +27,12 @@ public class TusFileInfo extends BaseEntity {
     @JoinColumn(name = "session_record_id", nullable = false)
     private SessionRecord sessionRecord;
 
-    private Boolean isDefer;
-
     private Long contentOffset;
 
     private String savedName;
 
     private TusFileInfo(SessionRecord sessionRecord) {
         this.sessionRecord = sessionRecord;
-        this.isDefer = true;
         this.contentOffset = 0L;
         this.savedName = new ULID().nextULID();
     }

@@ -140,9 +140,9 @@ public class TusController {
     }
 
     @Operation(summary = "업로드된 tus 파일을 삭제합니다.", tags = {"TUS"})
-    @DeleteMapping(value = "/{fileId}")
-    public ResponseEntity<Object> deleteUploadedFile(@PathVariable("fileId") final String fileId) {
-        tusService.deleteUploadedFile(fileId);
+    @DeleteMapping(value = "/{counselSessionId}")
+    public ResponseEntity<Object> deleteUploadedFile(@PathVariable("counselSessionId") final String counselSessionId) {
+        tusService.deleteUploadedFile(counselSessionId);
         return ResponseEntity.noContent()
             .header(TusHeaderKeys.TUS_RESUMABLE, TUS_RESUMABLE_VALUE)
             .build();

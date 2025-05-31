@@ -8,14 +8,12 @@ public class TusFileInfoRes {
 
     private final String fileId;
     private final Long contentOffset;
-    private final Boolean isDefer;
     private final String location;
     private final Long duration;
 
     public TusFileInfoRes(TusFileInfo tusFileInfo, String location) {
         this.fileId = tusFileInfo.getId();
         this.contentOffset = tusFileInfo.getContentOffset();
-        this.isDefer = tusFileInfo.getIsDefer();
         this.location = location;
         this.duration = tusFileInfo.getSessionRecord().getDuration();
     }
