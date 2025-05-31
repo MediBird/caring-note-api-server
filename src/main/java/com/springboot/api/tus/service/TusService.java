@@ -46,7 +46,7 @@ public class TusService {
         SessionRecord sessionRecord = getOrCreateSessionRecord(counselSessionId, counselSession);
         TusFileInfo fileInfo = createAndSaveFile(sessionRecord);
         createUploadFile(fileInfo);
-        return fileInfo.getId();
+        return fileInfo.getLocation(tusProperties.getPathPrefix());
     }
 
     private String extractCounselSessionId(@NonNull String metadata) {

@@ -70,11 +70,11 @@ public class TusController {
         @NotNull @RequestHeader(name = TusHeaderKeys.UPLOAD_METADATA) final String metadata,
         @RequestHeader(name = TusHeaderKeys.UPLOAD_DEFER_LENGTH) final Boolean isDefer
     ) {
-        String fileId = tusService.initUpload(metadata);
+        String location = tusService.initUpload(metadata);
 
         return ResponseEntity.status(HttpStatus.CREATED)
             .header(TusHeaderKeys.ACCESS_CONTROL_EXPOSE_HEADERS, ACCESS_CONTROL_EXPOSE_POST_VALUE)
-            .header(TusHeaderKeys.LOCATION, tusProperties.getPathPrefix() + "/" + fileId)
+            .header(TusHeaderKeys.LOCATION, location)
             .header(TusHeaderKeys.TUS_RESUMABLE, TUS_RESUMABLE_VALUE)
             .build();
     }

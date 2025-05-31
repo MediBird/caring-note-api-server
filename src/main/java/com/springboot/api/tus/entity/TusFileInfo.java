@@ -56,7 +56,7 @@ public class TusFileInfo extends BaseEntity {
     }
 
     public String getLocation(String pathPrefix) {
-        return pathPrefix + "/" + sessionRecord.getId() + "/" + this.getId();
+        return pathPrefix + "/" + this.getId();
     }
 
     public boolean isNotOffsetEqual(Long contentOffset) {
