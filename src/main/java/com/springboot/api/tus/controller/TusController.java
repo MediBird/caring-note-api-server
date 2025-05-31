@@ -137,31 +137,8 @@ public class TusController {
     public ResponseEntity<Object> mergeMediaFile(
         @PathVariable("counselSessionId") final String counselSessionId
     ) {
-        try {
-            tusService.mergeUploadedFile(counselSessionId);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException e) {
-            // 머지 실패 시 500 에러 반환
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("머지 과정에서 오류가 발생했습니다. 업로드된 파일들이 정리되었습니다.");
-        }
-    }
-
-    @Operation(summary = "상담세션의 업로드된 파일들이 병합 가능한 상태인지 검증합니다.", tags = {"TUS"})
-    @GetMapping(value = "/validate/{counselSessionId}")
-    public ResponseEntity<Object> validateUploadedFiles(
-        @PathVariable("counselSessionId") final String counselSessionId
-    ) {
-        try {
-            boolean isValid = tusService.validateUploadedFiles(counselSessionId);
-            if (isValid) {
-                return ResponseEntity.ok().body("파일들이 병합 가능한 상태입니다.");
-            } else {
-                return ResponseEntity.badRequest().body("병합 가능한 파일이 없습니다.");
-            }
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body("검증 실패: " + e.getMessage());
-        }
+        tusService.mergeUploadedFile(counselSessionId);
+        return ResponseEntity.ok().build();
     }
 
     @Operation(summary = "업로드한 상담세션 녹음 파일을 다운로드 합니다.", tags = {"TUS"})
@@ -180,15 +157,6 @@ public class TusController {
     @DeleteMapping(value = "/{fileId}")
     public ResponseEntity<Object> deleteUploadedFile(@PathVariable("fileId") final String fileId) {
         tusService.deleteUploadedFile(fileId);
-        return ResponseEntity.noContent()
-            .header(TusHeaderKeys.TUS_RESUMABLE, TUS_RESUMABLE_VALUE)
-            .build();
-    }
-
-    @Operation(summary = "상담세션의 모든 업로드된 tus 파일들을 삭제합니다.", tags = {"TUS"})
-    @DeleteMapping(value = "/session/{counselSessionId}")
-    public ResponseEntity<Object> deleteUploadedFilesByCounselSession(@PathVariable("counselSessionId") final String counselSessionId) {
-        tusService.deleteUploadedFilesByCounselSession(counselSessionId);
         return ResponseEntity.noContent()
             .header(TusHeaderKeys.TUS_RESUMABLE, TUS_RESUMABLE_VALUE)
             .build();

@@ -1,5 +1,15 @@
 package com.springboot.api.tus.service;
 
+import com.springboot.api.common.util.FileUtil;
+import com.springboot.api.counselsession.entity.CounselSession;
+import com.springboot.api.counselsession.repository.CounselSessionRepository;
+import com.springboot.api.tus.config.TusProperties;
+import com.springboot.api.tus.dto.response.TusFileInfoRes;
+import com.springboot.api.tus.entity.TusFileInfo;
+import com.springboot.api.tus.repository.TusFileInfoRepository;
+import io.micrometer.common.util.StringUtils;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.ServletInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -11,25 +21,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.springboot.api.common.util.FileUtil;
-import com.springboot.api.counselsession.entity.CounselSession;
-import com.springboot.api.counselsession.repository.CounselSessionRepository;
-import com.springboot.api.tus.config.TusProperties;
-import com.springboot.api.tus.dto.response.TusFileInfoRes;
-import com.springboot.api.tus.entity.TusFileInfo;
-import com.springboot.api.tus.repository.TusFileInfoRepository;
-
-import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.servlet.ServletInputStream;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -113,15 +110,11 @@ public class TusService {
         return fileInfo.getContentOffset();
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public void mergeUploadedFile(String counselSessionId) {
 
         List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
             counselSessionId);
-
-        if (tusFileInfoList.isEmpty()) {
-            throw new IllegalArgumentException("병합할 파일이 없습니다.");
-        }
 
         List<String> pathList = tusFileInfoList.stream()
             .map(tusFileInfo -> tusFileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()))
@@ -129,66 +122,9 @@ public class TusService {
             .map(Path::toString)
             .toList();
 
-        // 파일 유효성 사전 검증
-        validateFilesBeforeMerge(pathList);
-
         Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
 
-        try {
-            fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
-        } catch (RuntimeException e) {
-            // 머지 실패 시 업로드된 파일들과 DB 레코드 모두 삭제
-            log.error("FFmpeg 머지 실패로 인한 파일 정리 시작. counselSessionId: {}", counselSessionId, e);
-            cleanupFailedMerge(counselSessionId);
-            throw new RuntimeException("머지 실패로 인해 업로드된 파일들을 모두 삭제했습니다. 다시 업로드해 주세요.", e);
-        }
-    }
-    
-    private void validateFilesBeforeMerge(List<String> pathList) {
-        for (String pathStr : pathList) {
-            Path path = Path.of(pathStr);
-            if (!Files.exists(path)) {
-                throw new IllegalArgumentException("병합 대상 파일이 존재하지 않습니다: " + pathStr);
-            }
-            
-            try {
-                long fileSize = Files.size(path);
-                if (fileSize == 0) {
-                    throw new IllegalArgumentException("병합 대상 파일이 비어있습니다: " + pathStr);
-                }
-                
-                // 최소 webm 파일 크기 검증 (매우 작은 파일은 손상되었을 가능성이 높음)
-                if (fileSize < 100) { // 100바이트 미만은 유효한 webm 파일이 아닐 가능성이 높음
-                    log.warn("의심스럽게 작은 webm 파일 발견: {} (크기: {} bytes)", pathStr, fileSize);
-                    throw new IllegalArgumentException("파일이 너무 작아서 유효하지 않을 수 있습니다: " + pathStr);
-                }
-                
-            } catch (IOException e) {
-                throw new IllegalArgumentException("파일 정보를 읽을 수 없습니다: " + pathStr, e);
-            }
-        }
-    }
-    
-    @Transactional
-    public void cleanupFailedMerge(String counselSessionId) {
-        try {
-            // 1. 업로드 파일 디렉토리 삭제
-            String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
-            fileUtil.deleteDirectory(folderPath);
-            
-            // 2. 머지 파일이 생성되었다면 삭제
-            Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
-            if (Files.exists(mergePath)) {
-                Files.delete(mergePath);
-            }
-            
-            // 3. 데이터베이스 레코드 삭제
-            tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
-            
-            log.info("머지 실패로 인한 파일 정리 완료. counselSessionId: {}", counselSessionId);
-        } catch (Exception cleanupException) {
-            log.error("파일 정리 중 오류 발생. counselSessionId: {}", counselSessionId, cleanupException);
-        }
+        fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
     }
 
     @Transactional(readOnly = true)
@@ -202,52 +138,11 @@ public class TusService {
     }
 
     @Transactional
-    public void deleteUploadedFile(String fileId) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
-
-        // 개별 파일 삭제
-        Path filePath = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
-        try {
-            Files.deleteIfExists(filePath);
-        } catch (IOException e) {
-            log.error("파일 삭제 실패: {}", filePath, e);
-        }
-
-        // DB 레코드 삭제
-        tusFileInfoRepository.delete(fileInfo);
-    }
-
-    @Transactional
-    public void deleteUploadedFilesByCounselSession(String counselSessionId) {
+    public void deleteUploadedFile(String counselSessionId) {
         String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
 
         fileUtil.deleteDirectory(folderPath);
 
         tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
-    }
-
-    @Transactional(readOnly = true)
-    public boolean validateUploadedFiles(String counselSessionId) {
-        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
-            counselSessionId);
-
-        if (tusFileInfoList.isEmpty()) {
-            return false;
-        }
-
-        List<String> pathList = tusFileInfoList.stream()
-            .map(tusFileInfo -> tusFileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()))
-            .map(Path::toAbsolutePath)
-            .map(Path::toString)
-            .toList();
-
-        try {
-            validateFilesBeforeMerge(pathList);
-            return true;
-        } catch (IllegalArgumentException e) {
-            log.warn("파일 검증 실패. counselSessionId: {}, 오류: {}", counselSessionId, e.getMessage());
-            throw e;
-        }
     }
 }
