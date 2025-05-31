@@ -116,31 +116,23 @@ public class FileUtil {
         }
 
         log.info("FFmpeg 머지 시작. 파일 개수: {}, 출력: {}", fileList.size(), outputFilePath);
-        log.debug("병합 대상 파일 목록: {}", fileList);
         
         try {
             // 출력 디렉토리 생성
             Path outputPath = Path.of(outputFilePath);
-            log.debug("출력 파일 경로: {}, 부모 디렉토리: {}", outputPath, outputPath.getParent());
             Files.createDirectories(outputPath.getParent());
-            log.debug("출력 디렉토리 생성 완료");
             
             FFmpeg ffmpeg = new FFmpeg();
-            log.debug("FFmpeg 인스턴스 생성 완료");
 
             FFmpegBuilder builder = new FFmpegBuilder()
                 .overrideOutputFiles(true);
 
-            fileList.forEach(file -> {
-                log.debug("FFmpeg 입력 파일 추가: {}", file);
-                builder.addInput(file);
-            });
+            fileList.forEach(builder::addInput);
 
             String filterInput = IntStream.range(0, fileList.size())
                 .mapToObj(i -> "[" + i + ":a]")
                 .reduce("", String::concat);
             String complexFilter = filterInput + "concat=n=" + fileList.size() + ":v=0:a=1[out]";
-            log.debug("FFmpeg 복합 필터: {}", complexFilter);
 
             builder.setComplexFilter(complexFilter)
                 .addOutput(outputFilePath)
@@ -150,35 +142,21 @@ public class FileUtil {
                 .addExtraArgs("-movflags", "+faststart")
                 .done();
 
-            log.info("FFmpeg 실행 시작");
             ffmpeg.run(builder);
-            log.info("FFmpeg 실행 완료");
             
             // 출력 파일 생성 확인
-            log.debug("출력 파일 검증 시작");
-            if (!Files.exists(outputPath)) {
-                log.error("FFmpeg 실행 후 출력 파일이 생성되지 않음: {}", outputPath);
-                throw new RuntimeException("FFmpeg 실행 후 출력 파일이 생성되지 않았습니다.");
+            if (!Files.exists(outputPath) || Files.size(outputPath) == 0) {
+                throw new RuntimeException("FFmpeg 실행 후 출력 파일이 생성되지 않았거나 비어있습니다.");
             }
             
-            long outputFileSize = Files.size(outputPath);
-            if (outputFileSize == 0) {
-                log.error("FFmpeg 실행 후 출력 파일이 비어있음: {}", outputPath);
-                throw new RuntimeException("FFmpeg 실행 후 출력 파일이 비어있습니다.");
-            }
-            
-            log.info("FFmpeg 머지 완료. 출력 파일 크기: {} bytes", outputFileSize);
+            log.info("FFmpeg 머지 완료. 출력 파일 크기: {} bytes", Files.size(outputPath));
             
         } catch (IOException e) {
             log.error("FFmpeg 머지 중 IO 오류 발생. 입력 파일들: {}", fileList, e);
-            throw new RuntimeException("FFmpeg 머지에서 IO 오류가 발생했습니다: " + e.getMessage(), e);
-        } catch (RuntimeException e) {
-            log.error("FFmpeg 머지 중 런타임 오류 발생. 입력 파일들: {}", fileList, e);
-            // RuntimeException은 그대로 다시 throw
-            throw e;
+            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다: " + e.getMessage(), e);
         } catch (Exception e) {
             log.error("FFmpeg 머지 중 예상치 못한 오류 발생. 입력 파일들: {}", fileList, e);
-            throw new RuntimeException("FFmpeg 머지에서 예상치 못한 오류가 발생했습니다: " + e.getMessage(), e);
+            throw new RuntimeException("FFmpeg 머지에서 오류가 발생했습니다: " + e.getMessage(), e);
         }
     }
 
