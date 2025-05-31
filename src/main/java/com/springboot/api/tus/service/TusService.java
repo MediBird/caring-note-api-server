@@ -74,55 +74,14 @@ public class TusService {
     }
 
     @Transactional(readOnly = true)
-    public TusFileInfoRes getTusFileInfo(String counselSessionId) {
-        List<TusFileInfo> fileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(counselSessionId);
-        
-        String location = tusProperties.getPathPrefix() + "/status/" + counselSessionId;
-        
-        if (fileInfoList.isEmpty()) {
-            log.debug("TUS 파일 정보가 없음. 초기 상태 반환. counselSessionId: {}", counselSessionId);
-            // 파일 정보가 없는 경우 초기 상태를 반환 (TUS 프로토콜에 맞는 응답)
-            return new TusFileInfoRes(
-                counselSessionId,
-                null,  // contentLength: 초기 상태에서는 null
-                0L,    // contentOffset: 초기 상태에서는 0
-                false, // isDefer: 기본값 false
-                location,
-                null   // duration: 초기 상태에서는 null
-            );
-        }
+    public TusFileInfoRes getTusFileInfo(String fileId) {
+        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
-        // 가장 최근 업데이트된 파일 정보를 반환 (마지막 요소)
-        TusFileInfo latestFileInfo = fileInfoList.get(fileInfoList.size() - 1);
-        
-        // 전체 세션의 총 업로드 크기와 오프셋을 계산
-        long totalContentLength = fileInfoList.stream()
-            .filter(info -> info.getContentLength() != null)
-            .mapToLong(TusFileInfo::getContentLength)
-            .sum();
-            
-        long totalContentOffset = fileInfoList.stream()
-            .mapToLong(TusFileInfo::getContentOffset)
-            .sum();
-            
-        // 전체 녹음 시간을 계산 (최대 녹음 시간 사용)
-        Long maxDuration = fileInfoList.stream()
-            .filter(info -> info.getDuration() != null)
-            .mapToLong(TusFileInfo::getDuration)
-            .max()
-            .orElse(0L);
+        String location =
+            tusProperties.getPathPrefix() + "/" + fileInfo.getCounselSession().getId() + "/" + fileInfo.getId();
 
-        log.debug("TUS 파일 정보 조회 완료. counselSessionId: {}, totalOffset: {}, fileCount: {}", 
-                 counselSessionId, totalContentOffset, fileInfoList.size());
-
-        return new TusFileInfoRes(
-            counselSessionId,
-            totalContentLength > 0 ? totalContentLength : null,
-            totalContentOffset,
-            latestFileInfo.getIsDefer(),
-            location,
-            maxDuration > 0 ? maxDuration : null
-        );
+        return new TusFileInfoRes(fileInfo, location);
     }
 
     @Transactional
@@ -304,7 +263,6 @@ public class TusService {
             counselSessionId);
 
         if (tusFileInfoList.isEmpty()) {
-            log.debug("파일 검증 대상 없음. counselSessionId: {}", counselSessionId);
             return false;
         }
 
@@ -316,7 +274,6 @@ public class TusService {
 
         try {
             validateFilesBeforeMerge(pathList);
-            log.debug("파일 검증 성공. counselSessionId: {}, fileCount: {}", counselSessionId, pathList.size());
             return true;
         } catch (IllegalArgumentException e) {
             log.warn("파일 검증 실패. counselSessionId: {}, 오류: {}", counselSessionId, e.getMessage());

@@ -83,10 +83,10 @@ public class TusController {
             .build();
     }
 
-    @Operation(summary = "상담세션의 업로드 리소스들의 현재 상태를 조회합니다.", tags = {"TUS"})
-    @RequestMapping(method = RequestMethod.HEAD, value = "/status/{counselSessionId}")
-    public ResponseEntity<Object> getUploadStatus(@PathVariable final String counselSessionId) {
-        TusFileInfoRes tusFileInfo = tusService.getTusFileInfo(counselSessionId);
+    @Operation(summary = "지정된 업로드 리소스의 현재 업로드 오프셋, 길이 및 녹음 길이를 조회합니다.", tags = {"TUS"})
+    @RequestMapping(method = RequestMethod.HEAD, value = "/{fileId}")
+    public ResponseEntity<Object> getUploadStatus(@PathVariable final String fileId) {
+        TusFileInfoRes tusFileInfo = tusService.getTusFileInfo(fileId);
 
         if (Boolean.TRUE.equals(tusFileInfo.getIsDefer())) {
             return ResponseEntity.noContent()
