@@ -1,6 +1,15 @@
 package com.springboot.api.counselcard.service;
 
 import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.counselcard.dto.information.health.AllergyDTO;
+import com.springboot.api.counselcard.dto.information.health.MedicationSideEffectDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.CommunicationDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.EvacuationDTO;
+import com.springboot.api.counselcard.dto.information.independentlife.WalkingDTO;
+import com.springboot.api.counselcard.dto.information.living.ExerciseDTO;
+import com.springboot.api.counselcard.dto.information.living.MedicationManagementDTO;
+import com.springboot.api.counselcard.dto.information.living.NutritionDTO;
+import com.springboot.api.counselcard.dto.information.living.SmokingDTO;
 import com.springboot.api.counselcard.dto.request.UpdateCounselCardReq;
 import com.springboot.api.counselcard.dto.response.CounselCardBaseInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardHealthInformationRes;
@@ -8,6 +17,11 @@ import com.springboot.api.counselcard.dto.response.CounselCardIdRes;
 import com.springboot.api.counselcard.dto.response.CounselCardIndependentLifeInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardLivingInformationRes;
 import com.springboot.api.counselcard.dto.response.CounselCardRes;
+import com.springboot.api.counselcard.dto.response.MainCounselBaseInformationRes;
+import com.springboot.api.counselcard.dto.response.MainCounselHealthInformationRes;
+import com.springboot.api.counselcard.dto.response.MainCounselIndependentLifeInformationRes;
+import com.springboot.api.counselcard.dto.response.MainCounselLivingInformationRes;
+import com.springboot.api.counselcard.dto.response.MainCounselRecordBuilder;
 import com.springboot.api.counselcard.dto.response.TimeRecordedRes;
 import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.api.counselcard.repository.CounselCardRepository;
@@ -158,5 +172,59 @@ public class CounselCardService {
         }
 
         return recordedCardsByPreviousSessions;
+    }
+
+    @Transactional(readOnly = true)
+    public MainCounselBaseInformationRes selectMainCounselBaseInformation(String counselSessionId) {
+        List<CounselCard> counselCards = counselCardRepository
+            .findCurrentAndPastCounselCardsBySessionId(counselSessionId);
+
+        return new MainCounselBaseInformationRes(
+            MainCounselRecordBuilder.build(counselCards, c -> c.getCounselPurposeAndNote().getCounselPurpose()),
+            MainCounselRecordBuilder.build(counselCards, c -> c.getCounselPurposeAndNote().getSignificantNote()),
+            MainCounselRecordBuilder.build(counselCards, c -> c.getCounselPurposeAndNote().getMedicationNote())
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public MainCounselHealthInformationRes selectMainCounselHealthInformation(String counselSessionId) {
+        List<CounselCard> counselCards = counselCardRepository
+            .findCurrentAndPastCounselCardsBySessionId(counselSessionId);
+
+        return new MainCounselHealthInformationRes(
+            MainCounselRecordBuilder.build(counselCards, c -> c.getDiseaseInfo().getDiseases()),
+            MainCounselRecordBuilder.build(counselCards, c -> c.getDiseaseInfo().getHistoryNote()),
+            MainCounselRecordBuilder.build(counselCards, c -> c.getDiseaseInfo().getMainInconvenienceNote()),
+            MainCounselRecordBuilder.build(counselCards, c -> new MedicationSideEffectDTO(c.getMedicationSideEffect())),
+            MainCounselRecordBuilder.build(counselCards, c -> new AllergyDTO(c.getAllergy()))
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public MainCounselLivingInformationRes selectMainCounselLivingInformation(
+        String counselSessionId) {
+        List<CounselCard> counselCards = counselCardRepository
+            .findCurrentAndPastCounselCardsBySessionId(counselSessionId);
+
+        return new MainCounselLivingInformationRes(
+            MainCounselRecordBuilder.build(counselCards, c -> new SmokingDTO(c.getSmoking())),
+            MainCounselRecordBuilder.build(counselCards, c -> c.getDrinking().getDrinkingAmount()),
+            MainCounselRecordBuilder.build(counselCards, c -> new ExerciseDTO(c.getExercise())),
+            MainCounselRecordBuilder.build(counselCards, c -> new MedicationManagementDTO(c.getMedicationManagement())),
+            MainCounselRecordBuilder.build(counselCards, c -> new NutritionDTO(c.getNutrition()))
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public MainCounselIndependentLifeInformationRes selectMainCounselIndependentLifeInformation(
+        String counselSessionId) {
+        List<CounselCard> counselCards = counselCardRepository
+            .findCurrentAndPastCounselCardsBySessionId(counselSessionId);
+
+        return new MainCounselIndependentLifeInformationRes(
+            MainCounselRecordBuilder.build(counselCards, c -> new CommunicationDTO(c.getCommunication())),
+            MainCounselRecordBuilder.build(counselCards, c -> new EvacuationDTO(c.getEvacuation())),
+            MainCounselRecordBuilder.build(counselCards, c -> new WalkingDTO(c.getWalking()))
+        );
     }
 }
