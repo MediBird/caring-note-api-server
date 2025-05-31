@@ -118,7 +118,7 @@ public class TusController {
         }
     }
 
-    @Operation(summary = "업로드한 상담세션 녹음 파일을 병합합니다.", tags = {"TUS"})
+    @Operation(summary = "업로드한 상담세션 녹음 파일을 병합합니다. 테스트용 API 입니다.", tags = {"TUS"})
     @GetMapping(value = "/merge/{counselSessionId}")
     public ResponseEntity<Object> mergeMediaFile(
         @PathVariable("counselSessionId") final String counselSessionId

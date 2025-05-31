@@ -28,16 +28,13 @@ public class SessionRecord extends BaseEntity {
 
     private Long duration;
 
-    private Boolean isMerged;
-
-    private SessionRecord(CounselSession counselSession, Long duration, Boolean isMerged) {
+    private SessionRecord(CounselSession counselSession, Long duration) {
         this.counselSession = counselSession;
         this.duration = duration;
-        this.isMerged = isMerged;
     }
 
     public static SessionRecord of(CounselSession counselSession) {
-        return new SessionRecord(counselSession, 0L, false);
+        return new SessionRecord(counselSession, 0L);
     }
 
     @PrePersist
@@ -52,9 +49,5 @@ public class SessionRecord extends BaseEntity {
 
     public String getFolderPath(String uploadPath) {
         return Path.of(uploadPath, this.getId()).toAbsolutePath().toString();
-    }
-
-    public void fileMerged() {
-        this.isMerged = true;
     }
 }

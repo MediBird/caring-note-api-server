@@ -126,7 +126,7 @@ public class TusService {
         return fileInfo.getContentOffset();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void mergeUploadedFile(String counselSessionId) {
 
         List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllBySessionRecordCounselSessionId(
@@ -136,9 +136,9 @@ public class TusService {
             .map(tusFileInfo -> tusFileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()))
             .map(Path::toAbsolutePath).map(Path::toString).toList();
 
-        Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
+        String mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4").toAbsolutePath().toString();
 
-        fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
+        fileUtil.mergeWebmFile(pathList, mergePath);
     }
 
     @Transactional(readOnly = true)
