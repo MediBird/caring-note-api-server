@@ -25,7 +25,6 @@ import com.springboot.api.tus.entity.TusFileInfo;
 import com.springboot.api.tus.repository.TusFileInfoRepository;
 
 import io.micrometer.common.util.StringUtils;
-import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.ServletInputStream;
 import lombok.NonNull;
@@ -41,7 +40,6 @@ public class TusService {
     private final CounselSessionRepository counselSessionRepository;
     private final TusProperties tusProperties;
     private final FileUtil fileUtil;
-    private final EntityManager entityManager;
 
     @Transactional
     public String initUpload(String metadata, Long contentLength, Boolean isDefer) {
@@ -257,7 +255,6 @@ public class TusService {
             
             // 3. 데이터베이스 레코드 삭제
             tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
-            entityManager.flush(); // 명시적으로 DB에 반영
             
             log.info("머지 실패로 인한 파일 정리 완료. counselSessionId: {}", counselSessionId);
         } catch (Exception cleanupException) {
@@ -290,7 +287,6 @@ public class TusService {
 
         // DB 레코드 삭제
         tusFileInfoRepository.delete(fileInfo);
-        entityManager.flush(); // 명시적으로 DB에 반영
     }
 
     @Transactional
@@ -300,7 +296,6 @@ public class TusService {
         fileUtil.deleteDirectory(folderPath);
 
         tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
-        entityManager.flush(); // 명시적으로 DB에 반영
     }
 
     @Transactional(readOnly = true)
