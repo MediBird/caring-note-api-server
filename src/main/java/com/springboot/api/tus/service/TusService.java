@@ -5,7 +5,9 @@ import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.tus.config.TusProperties;
 import com.springboot.api.tus.dto.response.TusFileInfoRes;
+import com.springboot.api.tus.entity.SessionRecord;
 import com.springboot.api.tus.entity.TusFileInfo;
+import com.springboot.api.tus.repository.SessionRecordRepository;
 import com.springboot.api.tus.repository.TusFileInfoRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -35,22 +37,25 @@ public class TusService {
 
     private final TusFileInfoRepository tusFileInfoRepository;
     private final CounselSessionRepository counselSessionRepository;
+    private final SessionRecordRepository sessionRecordRepository;
     private final TusProperties tusProperties;
     private final FileUtil fileUtil;
 
     @Transactional
-    public String initUpload(String metadata, Long contentLength, Boolean isDefer) {
-
+    public String initUpload(String metadata) {
         Map<String, String> parsedMetadata = parseMetadata(metadata);
 
         CounselSession counselSession = counselSessionRepository.findById(parsedMetadata.get("counselSessionId"))
             .orElseThrow(() -> new EntityNotFoundException("상담 세션을 찾을 수 없습니다."));
 
-        TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer);
+        SessionRecord sessionRecord = SessionRecord.of(counselSession);
+        sessionRecordRepository.save(sessionRecord);
 
+        TusFileInfo fileInfo = TusFileInfo.of(sessionRecord);
         tusFileInfoRepository.save(fileInfo);
 
-        fileUtil.createUploadFile(fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()));
+        Path filePath = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
+        fileUtil.createUploadFile(filePath);
 
         return fileInfo.getId();
     }
@@ -75,8 +80,7 @@ public class TusService {
         TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
             .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
 
-        String location =
-            tusProperties.getPathPrefix() + "/" + fileInfo.getCounselSession().getId() + "/" + fileInfo.getId();
+        String location = fileInfo.getLocation(tusProperties.getPathPrefix());
 
         return new TusFileInfoRes(fileInfo, location);
     }
@@ -91,7 +95,7 @@ public class TusService {
         }
 
         if (duration != null) {
-            fileInfo.updateDuration(duration);
+            fileInfo.getSessionRecord().updateDuration(duration);
         }
 
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
@@ -113,7 +117,7 @@ public class TusService {
     @Transactional(readOnly = true)
     public void mergeUploadedFile(String counselSessionId) {
 
-        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
+        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllBySessionRecordCounselSessionId(
             counselSessionId);
 
         List<String> pathList = tusFileInfoList.stream()
@@ -139,10 +143,12 @@ public class TusService {
 
     @Transactional
     public void deleteUploadedFile(String counselSessionId) {
-        String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
+        SessionRecord sessionRecord = sessionRecordRepository.findByCounselSessionId(counselSessionId)
+            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
+
+        String folderPath = sessionRecord.getFolderPath(tusProperties.getUploadPath());
 
         fileUtil.deleteDirectory(folderPath);
-
-        tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
+        sessionRecordRepository.delete(sessionRecord);
     }
 }
