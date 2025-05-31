@@ -1,18 +1,16 @@
 package com.springboot.api.counselcard.repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
-import org.springframework.stereotype.Repository;
-
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.springboot.api.counselcard.entity.CounselCard;
 import com.springboot.api.counselcard.entity.QCounselCard;
 import com.springboot.api.counselsession.entity.QCounselSession;
 import com.springboot.enums.CardRecordStatus;
 import com.springboot.enums.ScheduleStatus;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class CounselCardRepositoryImpl extends QuerydslRepositorySupport implements
@@ -84,6 +82,29 @@ public class CounselCardRepositoryImpl extends QuerydslRepositorySupport impleme
                 currentCounselCard.cardRecordStatus.eq(
                     CardRecordStatus.COMPLETED)
             )
+            .orderBy(counselSession.scheduledStartDateTime.desc())
+            .fetch();
+    }
+
+    @Override
+    public List<CounselCard> findCurrentAndPastCounselCardsBySessionId(String counselSessionId) {
+        QCounselSession counselSession = QCounselSession.counselSession;
+
+        String counseleeId = queryFactory
+            .select(counselSession.counselee.id)
+            .from(counselSession)
+            .where(counselSession.id.eq(counselSessionId))
+            .fetchOne();
+
+        return queryFactory
+            .selectFrom(counselCard)
+            .join(counselCard.counselSession, counselSession).fetchJoin()
+            .where(counselSession.counselee.id.eq(counseleeId)
+                .and(counselSession.id.eq(counselSessionId)
+                    .or(
+                        counselSession.counselee.id.eq(counseleeId)
+                            .and(counselSession.status.eq(ScheduleStatus.COMPLETED))
+                    )))
             .orderBy(counselSession.scheduledStartDateTime.desc())
             .fetch();
     }
