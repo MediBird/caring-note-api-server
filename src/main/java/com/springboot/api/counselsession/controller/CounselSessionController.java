@@ -27,6 +27,7 @@ import com.springboot.api.counselsession.dto.counselsession.ModifyCounselReserva
 import com.springboot.api.counselsession.dto.counselsession.SearchCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionListItem;
 import com.springboot.api.counselsession.dto.counselsession.SelectCounselSessionRes;
+import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionDetailRes;
 import com.springboot.api.counselsession.dto.counselsession.SelectPreviousCounselSessionListRes;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionReq;
 import com.springboot.api.counselsession.dto.counselsession.UpdateCounselorInCounselSessionRes;
@@ -166,5 +167,20 @@ public class CounselSessionController {
         List<SelectPreviousCounselSessionListRes> result = counselSessionService
             .selectPreviousCounselSessionList(counselSessionId);
         return ResponseEntity.ok(new CommonRes<>(result));
+    }
+
+    @Operation(summary = "이전 상담 내역 상세 조회 (페이징)", tags = {"본상담 - 이전 상담 내역"}, 
+        description = "현재 회차의 이전 회차들을 최신순으로 조회합니다. 날짜, 회차, 중재기록, AI요약 정보를 포함합니다.")
+    @GetMapping("/{counselSessionId}/previous/details")
+    @RoleSecured({RoleType.ROLE_ADMIN, RoleType.ROLE_USER})
+    public ResponseEntity<PageRes<SelectPreviousCounselSessionDetailRes>> selectPreviousCounselSessionDetailList(
+        @PathVariable("counselSessionId") String counselSessionId,
+        @RequestParam("page") @Min(0) int page,
+        @RequestParam("size") @Min(1) @Max(100) int size) {
+        
+        PageReq pageReq = PageReq.of(page, size);
+        PageRes<SelectPreviousCounselSessionDetailRes> result = counselSessionService
+            .selectPreviousCounselSessionDetailList(counselSessionId, pageReq);
+        return ResponseEntity.ok(result);
     }
 }
