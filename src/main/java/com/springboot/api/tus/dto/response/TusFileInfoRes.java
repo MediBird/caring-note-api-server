@@ -24,15 +24,4 @@ public class TusFileInfoRes {
         this.location = location;
         this.duration = tusFileInfo.getDuration();
     }
-
-    // 상담세션 전체 정보를 위한 생성자
-    public TusFileInfoRes(String counselSessionId, Long contentLength, Long contentOffset, Boolean isDefer, String location, Long duration) {
-        this.fileId = counselSessionId;
-        this.originalFilename = null; // 세션 전체 정보에서는 개별 파일명이 의미 없음
-        this.contentLength = contentLength;
-        this.contentOffset = contentOffset;
-        this.isDefer = isDefer;
-        this.location = location;
-        this.duration = duration;
-    }
 }
