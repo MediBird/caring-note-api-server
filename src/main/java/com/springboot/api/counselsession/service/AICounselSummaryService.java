@@ -1,11 +1,35 @@
 package com.springboot.api.counselsession.service;
 
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_COMPLETE;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_FAILED;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_PROGRESS;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_FAILED;
-import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.Message;
+import org.springframework.ai.chat.messages.UserMessage;
+import org.springframework.ai.chat.model.ChatModel;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.api.common.exception.NoContentException;
 import com.springboot.api.common.properties.NaverClovaProperties;
 import com.springboot.api.common.properties.SttFileProperties;
+import com.springboot.api.common.util.AiResponseParseUtil;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.common.util.FileUtil;
 import com.springboot.api.counselsession.dto.aiCounselSummary.ConvertSpeechToTextReq;
@@ -31,42 +56,20 @@ import com.springboot.api.counselsession.entity.AICounselSummary;
 import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.entity.PromptTemplate;
 import com.springboot.api.counselsession.enums.AICounselSummaryStatus;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_COMPLETE;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_FAILED;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.GPT_PROGRESS;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_COMPLETE;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_FAILED;
+import static com.springboot.api.counselsession.enums.AICounselSummaryStatus.STT_PROGRESS;
 import com.springboot.api.counselsession.repository.AICounselSummaryRepository;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.PromptTemplateRepository;
 import com.springboot.api.counselsession.service.eventlistener.STTCompleteEvent;
 import com.springboot.api.infra.external.NaverClovaExternalService;
 import com.springboot.api.tus.service.TusService;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.atomic.AtomicInteger;
+
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.ai.chat.client.ChatClient;
-import org.springframework.ai.chat.messages.Message;
-import org.springframework.ai.chat.messages.UserMessage;
-import org.springframework.ai.chat.model.ChatModel;
-import org.springframework.ai.chat.model.ChatResponse;
-import org.springframework.ai.chat.prompt.Prompt;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +88,7 @@ public class AICounselSummaryService {
     private final FileUtil fileUtil;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final TusService tusService;
+    private final AiResponseParseUtil aiResponseParseUtil;
 
     public void convertSpeechToText(MultipartFile multipartFile, ConvertSpeechToTextReq convertSpeechToTextReq)
         throws IOException {
@@ -404,7 +408,7 @@ public class AICounselSummaryService {
         JsonNode taResult = Optional.ofNullable(aiCounselSummary.getTaResult())
             .orElseThrow(NoContentException::new);
 
-        String taResultText = taResult.get("result").get("output").get("text").asText();
+        String taResultText = aiResponseParseUtil.extractAnalysedText(taResult);
 
         return new SelectAnalysedTextRes(taResultText);
     }
