@@ -1,5 +1,12 @@
 package com.springboot.api.counselsession.repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Repository;
+
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
@@ -17,11 +24,6 @@ import com.springboot.api.counselsession.entity.QCounselSession;
 import com.springboot.api.counselsession.entity.QCounseleeConsent;
 import com.springboot.enums.CounselorStatus;
 import com.springboot.enums.ScheduleStatus;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import org.springframework.stereotype.Repository;
 
 @Repository
 public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCustom {
@@ -139,7 +141,7 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             .select(counselSession.id, counselSession.counselee.id)
             .from(counselSession)
             .where(
-                counselSession.status.eq(ScheduleStatus.SCHEDULED),
+                counselSession.status.in(ScheduleStatus.SCHEDULED, ScheduleStatus.IN_PROGRESS),
                 counselSession.scheduledStartDateTime.before(twentyFourHoursAgo)
             )
             .fetch();
