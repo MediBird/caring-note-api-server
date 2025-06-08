@@ -2,11 +2,14 @@ package com.springboot.api.tus.repository;
 
 import com.springboot.api.tus.entity.TusFileInfo;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TusFileInfoRepository extends JpaRepository<TusFileInfo, String> {
 
-    List<TusFileInfo> findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(String counselSessionId);
+    @EntityGraph(attributePaths = "sessionRecord")
+    Optional<TusFileInfo> findById(String id);
 
-    void deleteAllByCounselSessionId(String counselSessionId);
+    List<TusFileInfo> findAllBySessionRecordCounselSessionId(String counselSessionId);
 }

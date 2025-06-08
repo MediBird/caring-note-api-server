@@ -5,7 +5,9 @@ import com.springboot.api.counselsession.entity.CounselSession;
 import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.tus.config.TusProperties;
 import com.springboot.api.tus.dto.response.TusFileInfoRes;
+import com.springboot.api.tus.entity.SessionRecord;
 import com.springboot.api.tus.entity.TusFileInfo;
+import com.springboot.api.tus.repository.SessionRecordRepository;
 import com.springboot.api.tus.repository.TusFileInfoRepository;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,9 +20,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,63 +35,79 @@ public class TusService {
 
     private final TusFileInfoRepository tusFileInfoRepository;
     private final CounselSessionRepository counselSessionRepository;
+    private final SessionRecordRepository sessionRecordRepository;
     private final TusProperties tusProperties;
     private final FileUtil fileUtil;
 
     @Transactional
-    public String initUpload(String metadata, Long contentLength, Boolean isDefer) {
-
-        Map<String, String> parsedMetadata = parseMetadata(metadata);
-
-        CounselSession counselSession = counselSessionRepository.findById(parsedMetadata.get("counselSessionId"))
-            .orElseThrow(() -> new EntityNotFoundException("상담 세션을 찾을 수 없습니다."));
-
-        TusFileInfo fileInfo = TusFileInfo.of(counselSession, parsedMetadata.get("filename"), contentLength, isDefer);
-
-        tusFileInfoRepository.save(fileInfo);
-
-        fileUtil.createUploadFile(fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()));
-
-        return fileInfo.getId();
+    public String initUpload(String metadata) {
+        String counselSessionId = extractCounselSessionId(metadata);
+        CounselSession counselSession = getCounselSession(counselSessionId);
+        SessionRecord sessionRecord = getOrCreateSessionRecord(counselSessionId, counselSession);
+        TusFileInfo fileInfo = createAndSaveFile(sessionRecord);
+        createUploadFile(fileInfo);
+        return fileInfo.getLocation(tusProperties.getPathPrefix());
     }
 
-    private Map<String, String> parseMetadata(@NonNull String metadata) {
+    private String extractCounselSessionId(@NonNull String metadata) {
         return Arrays.stream(Optional.of(metadata).filter(StringUtils::isNotBlank)
-                .orElseThrow(() -> new RuntimeException("metadata 가 없습니다."))
+                .orElseThrow(() -> new IllegalArgumentException("metadata 가 없습니다."))
                 .split(","))
-            .map(keyAndValue -> {
-                String[] values = keyAndValue.split(" ", 2);
-                if (values.length != 2) {
+            .map(kv -> {
+                String[] parts = kv.split(" ", 2);
+                if (parts.length != 2) {
                     throw new IllegalArgumentException("메타데이터 형식이 올바르지 않습니다.");
                 }
-                return new String[]{values[0], values[1]};
+                return new String[]{parts[0], parts[1]};
             })
-            .collect(
-                Collectors.toMap(values -> values[0], values -> new String(Base64.getDecoder().decode(values[1]))));
+            .filter(pair -> "counselSessionId".equals(pair[0]))
+            .findFirst()
+            .map(pair -> new String(Base64.getDecoder().decode(pair[1])))
+            .orElseThrow(() -> new IllegalArgumentException("counselSessionId 가 메타데이터에 없습니다."));
+    }
+
+    private CounselSession getCounselSession(String counselSessionId) {
+        return counselSessionRepository.findById(counselSessionId)
+            .orElseThrow(() -> new EntityNotFoundException("상담 세션을 찾을 수 없습니다. " + counselSessionId));
+    }
+
+    private SessionRecord getOrCreateSessionRecord(String counselSessionId, CounselSession counselSession) {
+        return sessionRecordRepository.findByCounselSessionId(counselSessionId)
+            .orElseGet(() -> sessionRecordRepository.save(SessionRecord.of(counselSession)));
+    }
+
+    private TusFileInfo createAndSaveFile(SessionRecord sessionRecord) {
+        TusFileInfo fileInfo = TusFileInfo.of(sessionRecord);
+        return tusFileInfoRepository.save(fileInfo);
+    }
+
+    private void createUploadFile(TusFileInfo fileInfo) {
+        Path filePath = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
+        fileUtil.createUploadFile(filePath);
     }
 
     @Transactional(readOnly = true)
     public TusFileInfoRes getTusFileInfo(String fileId) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
-
-        String location =
-            tusProperties.getPathPrefix() + "/" + fileInfo.getCounselSession().getId() + "/" + fileInfo.getId();
-
+        TusFileInfo fileInfo = getFileInfo(fileId);
+        String location = fileInfo.getLocation(tusProperties.getPathPrefix());
         return new TusFileInfoRes(fileInfo, location);
+    }
+
+    private TusFileInfo getFileInfo(String fileId) {
+        return tusFileInfoRepository.findById(fileId)
+            .orElseThrow(() -> new EntityNotFoundException("Tus 파일 정보를 찾을 수 없습니다."));
     }
 
     @Transactional
     public Long appendData(String fileId, long offset, ServletInputStream inputStream, Long duration) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
+        TusFileInfo fileInfo = getFileInfo(fileId);
 
-        if (fileInfo.getContentOffset() != offset) {
+        if (fileInfo.isNotOffsetEqual(offset)) {
             throw new IllegalArgumentException("Offset 정보가 맞지 않습니다.");
         }
 
         if (duration != null) {
-            fileInfo.updateDuration(duration);
+            fileInfo.getSessionRecord().updateDuration(duration);
         }
 
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
@@ -110,27 +126,24 @@ public class TusService {
         return fileInfo.getContentOffset();
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public void mergeUploadedFile(String counselSessionId) {
 
-        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllByCounselSessionIdOrderByUpdatedDatetimeAsc(
+        List<TusFileInfo> tusFileInfoList = tusFileInfoRepository.findAllBySessionRecordCounselSessionId(
             counselSessionId);
 
         List<String> pathList = tusFileInfoList.stream()
             .map(tusFileInfo -> tusFileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension()))
-            .map(Path::toAbsolutePath)
-            .map(Path::toString)
-            .toList();
+            .map(Path::toAbsolutePath).map(Path::toString).toList();
 
-        Path mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4");
+        String mergePath = Path.of(tusProperties.getMergePath(), counselSessionId + ".mp4").toAbsolutePath().toString();
 
-        fileUtil.mergeWebmFile(pathList, mergePath.toAbsolutePath().toString());
+        fileUtil.mergeWebmFile(pathList, mergePath);
     }
 
     @Transactional(readOnly = true)
     public Resource getUploadedFile(String fileId) {
-        TusFileInfo fileInfo = tusFileInfoRepository.findById(fileId)
-            .orElseThrow(() -> new IllegalArgumentException("Tus 파일 정보를 찾을 수 없습니다."));
+        TusFileInfo fileInfo = getFileInfo(fileId);
 
         Path path = fileInfo.getFilePath(tusProperties.getUploadPath(), tusProperties.getExtension());
 
@@ -139,10 +152,12 @@ public class TusService {
 
     @Transactional
     public void deleteUploadedFile(String counselSessionId) {
-        String folderPath = Path.of(tusProperties.getUploadPath(), counselSessionId).toAbsolutePath().toString();
+        SessionRecord sessionRecord = sessionRecordRepository.findByCounselSessionId(counselSessionId)
+            .orElseThrow(() -> new EntityNotFoundException("Tus 녹음 정보를 찾을 수 없습니다."));
+
+        String folderPath = sessionRecord.getFolderPath(tusProperties.getUploadPath());
 
         fileUtil.deleteDirectory(folderPath);
-
-        tusFileInfoRepository.deleteAllByCounselSessionId(counselSessionId);
+        sessionRecordRepository.delete(sessionRecord);
     }
 }
