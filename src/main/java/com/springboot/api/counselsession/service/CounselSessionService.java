@@ -17,10 +17,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.springboot.api.common.dto.PageReq;
 import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.exception.NoContentException;
+import com.springboot.api.common.util.AiResponseParseUtil;
 import com.springboot.api.common.util.DateTimeUtil;
 import com.springboot.api.counselcard.service.CounselCardService;
 import com.springboot.api.counselee.entity.Counselee;
@@ -67,6 +67,7 @@ public class CounselSessionService {
     private final CounseleeConsentService counseleeConsentService;
     private final MedicationCounselRepository medicationCounselRepository;
     private final AICounselSummaryRepository aiCounselSummaryRepository;
+    private final AiResponseParseUtil aiResponseParseUtil;
 
     @CacheEvict(value = {"sessionDates", "sessionStats", "sessionList"}, allEntries = true)
     @Transactional
@@ -266,8 +267,9 @@ public class CounselSessionService {
                 // AI 요약 조회
                 Optional<AICounselSummary> aiCounselSummary = aiCounselSummaryRepository
                     .findByCounselSessionId(session.getId());
-                JsonNode taResult = aiCounselSummary
+                String aiSummaryText = aiCounselSummary
                     .map(AICounselSummary::getTaResult)
+                    .flatMap(aiResponseParseUtil::extractAnalysedTextSafely)
                     .orElse(null);
 
                 String counselorName = Optional.ofNullable(session.getCounselor())
@@ -280,7 +282,7 @@ public class CounselSessionService {
                     .sessionNumber(session.getSessionNumber())
                     .counselorName(counselorName)
                     .medicationCounselRecord(counselRecord)
-                    .aiSummary(taResult)
+                    .aiSummary(aiSummaryText)
                     .build();
             })
             .toList();
