@@ -1,8 +1,5 @@
 package com.springboot.api.counselor.service;
 
-import com.springboot.api.common.dto.PageReq;
-import com.springboot.api.common.dto.PageRes;
-import com.springboot.api.counselor.dto.CounselorInfoListRes;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,12 +13,17 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
 import com.springboot.api.common.exception.ResourceNotFoundException;
+import com.springboot.api.counselor.dto.ChangePasswordReq;
+import com.springboot.api.counselor.dto.CounselorInfoListRes;
 import com.springboot.api.counselor.dto.CounselorNameListRes;
 import com.springboot.api.counselor.dto.GetCounselorRes;
 import com.springboot.api.counselor.dto.ResetPasswordReq;
 import com.springboot.api.counselor.dto.UpdateCounselorReq;
 import com.springboot.api.counselor.dto.UpdateCounselorRes;
+import com.springboot.api.counselor.dto.UpdateMyInfoReq;
 import com.springboot.api.counselor.dto.UpdateRoleReq;
 import com.springboot.api.counselor.entity.Counselor;
 import com.springboot.api.counselor.repository.CounselorRepository;
@@ -213,5 +215,117 @@ public class CounselorService {
     public Counselor findCounselorById(String counselorId) {
         return counselorRepository.findActiveById(counselorId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 상담사 ID입니다"));
+    }
+
+    /**
+     * 자기 자신의 정보를 업데이트합니다. 이름과 전화번호를 변경할 수 있습니다.
+     *
+     * @param updateMyInfoReq 업데이트할 내 정보
+     * @return 업데이트된 상담사 정보
+     */
+    @CacheEvict(value = "counselorNames", allEntries = true)
+    @Transactional
+    public UpdateCounselorRes updateMyInfo(UpdateMyInfoReq updateMyInfoReq) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        String username = jwt.getClaimAsString("preferred_username");
+
+        Counselor counselor = counselorRepository
+            .findActiveByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다"));
+
+        // 이름 업데이트
+        if (updateMyInfoReq.getName() != null && !updateMyInfoReq.getName().trim().isEmpty()) {
+            counselor.setName(updateMyInfoReq.getName());
+        }
+
+        // 전화번호 업데이트
+        if (updateMyInfoReq.getPhoneNumber() != null) {
+            counselor.setPhoneNumber(updateMyInfoReq.getPhoneNumber());
+        }
+
+        Counselor updatedCounselor = counselorRepository.save(counselor);
+        log.info("내 정보 업데이트 완료: {}", counselor.getUsername());
+
+        return new UpdateCounselorRes(
+            updatedCounselor.getId(),
+            updatedCounselor.getName(),
+            updatedCounselor.getRoleType());
+    }
+
+    /**
+     * 자기 자신의 비밀번호를 변경합니다. Keycloak에서 비밀번호를 변경합니다.
+     *
+     * @param changePasswordReq 비밀번호 변경 요청 정보
+     */
+    @Transactional
+    public void changeMyPassword(ChangePasswordReq changePasswordReq) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        String username = jwt.getClaimAsString("preferred_username");
+
+        Counselor counselor = counselorRepository
+            .findActiveByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다"));
+
+        if (counselor.getUsername() == null) {
+            throw new IllegalStateException("사용자명이 없는 상담사입니다");
+        }
+
+        try {
+            // Keycloak에서 사용자 찾기
+            List<UserRepresentation> users = keycloakUserService.getUsersByUsername(counselor.getUsername());
+            if (users.isEmpty()) {
+                throw new ResourceNotFoundException("Keycloak에서 사용자를 찾을 수 없습니다: " + counselor.getUsername());
+            }
+
+            UserRepresentation user = users.getFirst();
+
+            // 새 비밀번호로 변경 (임시 비밀번호 아님)
+            keycloakUserService.resetPassword(
+                user.getId(),
+                changePasswordReq.getNewPassword(),
+                false
+            );
+
+            log.info("사용자 비밀번호 변경 완료: {}", counselor.getUsername());
+        } catch (ResourceNotFoundException e) {
+            log.error("비밀번호 변경 중 오류 발생: {}", e.getMessage(), e);
+            throw new RuntimeException("비밀번호 변경 중 오류가 발생했습니다", e);
+        }
+    }
+
+    /**
+     * 자기 자신의 계정을 탈퇴합니다. Keycloak에서도 해당 사용자를 삭제합니다.
+     */
+    @CacheEvict(value = {"counselorNames", "sessionList"}, allEntries = true)
+    @Transactional
+    public void deleteMyAccount() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Jwt jwt = ((JwtAuthenticationToken) authentication).getToken();
+        String username = jwt.getClaimAsString("preferred_username");
+
+        Counselor counselor = counselorRepository
+            .findActiveByUsername(username)
+            .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다"));
+
+        try {
+            // Keycloak에서 사용자 찾기 시도
+            if (counselor.getUsername() != null) {
+                List<UserRepresentation> users = keycloakUserService.getUsersByUsername(counselor.getUsername());
+                if (!users.isEmpty()) {
+                    // Keycloak에서 사용자 삭제
+                    keycloakUserService.deleteUser(users.getFirst().getId());
+                    log.info("Keycloak에서 사용자 삭제 완료: {}", counselor.getUsername());
+                }
+            }
+        } catch (Exception e) {
+            log.error("Keycloak에서 사용자 삭제 중 오류 발생: {}", e.getMessage(), e);
+            // Keycloak 삭제 실패해도 DB에서는 삭제 진행
+        }
+
+        // DB에서 상담사 삭제 (soft delete)
+        counselorRepository.deleteById(counselor.getId());
+        log.info("내 계정 탈퇴 완료: {}", counselor.getId());
     }
 }
