@@ -40,7 +40,15 @@ public class AICounselSummaryController {
         @RequestPart("body") @Valid ConvertSpeechToTextReq convertSpeechToTextReq) throws IOException {
         aiCounselSummaryService.convertSpeechToText(file, convertSpeechToTextReq);
         return ResponseEntity.ok(new SuccessRes());
+    }
 
+    @PostMapping(value = "{counselSessionId}/stt")
+    @Operation(summary = "convert Speech to Text", tags = {"AI요약"})
+    public ResponseEntity<SuccessRes> convertSpeechToText(
+        @PathVariable String counselSessionId) throws IOException {
+        
+        aiCounselSummaryService.convertSpeechToText(counselSessionId);
+        return ResponseEntity.ok(new SuccessRes());
     }
 
     @GetMapping("{counselSessionId}/stt")

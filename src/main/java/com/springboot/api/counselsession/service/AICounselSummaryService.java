@@ -36,6 +36,7 @@ import com.springboot.api.counselsession.repository.CounselSessionRepository;
 import com.springboot.api.counselsession.repository.PromptTemplateRepository;
 import com.springboot.api.counselsession.service.eventlistener.STTCompleteEvent;
 import com.springboot.api.infra.external.NaverClovaExternalService;
+import com.springboot.api.tus.service.TusService;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -83,6 +84,7 @@ public class AICounselSummaryService {
     private final PromptTemplateRepository promptTemplateRepository;
     private final FileUtil fileUtil;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final TusService tusService;
 
     public void convertSpeechToText(MultipartFile multipartFile, ConvertSpeechToTextReq convertSpeechToTextReq)
         throws IOException {
@@ -149,6 +151,76 @@ public class AICounselSummaryService {
                                 sttFileProperties.getConvert() + originFileName.replace(".webm", ".mp4")));
                     } catch (IOException e) {
                         log.warn("Failed to delete temp file: {}", originFileName, e);
+                    }
+                });
+    }
+
+    public void convertSpeechToText(String counselSessionId)
+        throws IOException {
+
+        CounselSession counselSession = counselSessionRepository
+            .findById(counselSessionId)
+            .orElseThrow(IllegalArgumentException::new);
+
+        AICounselSummary aiCounselSummary = aiCounselSummaryRepository
+            .findByCounselSessionId(counselSessionId)
+            .orElse(AICounselSummary
+                .builder()
+                .counselSession(counselSession)
+                .build());
+
+        aiCounselSummary.setAiCounselSummaryStatus(STT_PROGRESS);
+        aiCounselSummary.setSpeakers(null);
+        aiCounselSummary.setTaResult(null);
+        aiCounselSummary.setSttResult(null);
+        aiCounselSummaryRepository.save(aiCounselSummary);
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Accept", "application/json");
+        headers.put("X-CLOVASPEECH-API-KEY", naverClovaProperties.getApiKey());
+
+        SpeechToTextReq speechToTextReq = SpeechToTextReq
+            .builder()
+            .language("ko-KR")
+            .completion("sync")
+            .diarization(DiarizationDTO.builder()
+                .speakerCountMin(3)
+                .speakerCountMax(6)
+                .build())
+            .wordAlignment(false)
+            .fullText(true)
+            .build();
+
+        tusService.mergeUploadedFile(counselSessionId);
+        String mergedFileName = counselSessionId + ".mp4";
+
+        callNaverClovaAsync(headers, mergedFileName, speechToTextReq)
+            .thenAcceptAsync(
+                speechToTextRes -> {
+                    updateAiCounselSummaryStatus(
+                        aiCounselSummary,
+                        "COMPLETED".equals(speechToTextRes.result()) ? STT_COMPLETE : STT_FAILED,
+                        objectMapper.valueToTree(speechToTextRes));
+                    applicationEventPublisher.publishEvent(
+                        new STTCompleteEvent(counselSessionId));
+                }
+            )
+            .exceptionally(
+                ex -> {
+                    log.error("Speech-to-text processing error", ex);
+                    updateAiCounselSummaryStatus(aiCounselSummary, STT_FAILED, null);
+                    return null;
+                })
+            .whenComplete(
+                (result, throwable) -> {
+                    // ✅ 성공/실패 여부 상관없이 파일 삭제
+                    try {
+                        Files.deleteIfExists(Path.of(sttFileProperties.getOrigin() + mergedFileName));
+                        Files.deleteIfExists(
+                            Path.of(
+                                sttFileProperties.getConvert() + mergedFileName.replace(".webm", ".mp4")));
+                    } catch (IOException e) {
+                        log.warn("Failed to delete temp file: {}", mergedFileName, e);
                     }
                 });
     }
