@@ -234,15 +234,8 @@ public class CounselorService {
             .findActiveByUsername(username)
             .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다"));
 
-        // 이름 업데이트
-        if (updateMyInfoReq.getName() != null && !updateMyInfoReq.getName().trim().isEmpty()) {
-            counselor.setName(updateMyInfoReq.getName());
-        }
-
-        // 전화번호 업데이트
-        if (updateMyInfoReq.getPhoneNumber() != null) {
-            counselor.setPhoneNumber(updateMyInfoReq.getPhoneNumber());
-        }
+        counselor.setName(updateMyInfoReq.getName());
+        counselor.setPhoneNumber(updateMyInfoReq.getPhoneNumber());
 
         Counselor updatedCounselor = counselorRepository.save(counselor);
         log.info("내 정보 업데이트 완료: {}", counselor.getUsername());
@@ -267,10 +260,6 @@ public class CounselorService {
         Counselor counselor = counselorRepository
             .findActiveByUsername(username)
             .orElseThrow(() -> new IllegalArgumentException("사용자 정보를 찾을 수 없습니다"));
-
-        if (counselor.getUsername() == null) {
-            throw new IllegalStateException("사용자명이 없는 상담사입니다");
-        }
 
         try {
             // Keycloak에서 사용자 찾기
@@ -311,20 +300,16 @@ public class CounselorService {
 
         try {
             // Keycloak에서 사용자 찾기 시도
-            if (counselor.getUsername() != null) {
-                List<UserRepresentation> users = keycloakUserService.getUsersByUsername(counselor.getUsername());
-                if (!users.isEmpty()) {
-                    // Keycloak에서 사용자 삭제
-                    keycloakUserService.deleteUser(users.getFirst().getId());
-                    log.info("Keycloak에서 사용자 삭제 완료: {}", counselor.getUsername());
-                }
+            List<UserRepresentation> users = keycloakUserService.getUsersByUsername(username);
+            if (!users.isEmpty()) {
+                // Keycloak에서 사용자 삭제
+                keycloakUserService.deleteUser(users.getFirst().getId());
+                log.info("Keycloak에서 사용자 삭제 완료: {}", username);
             }
         } catch (Exception e) {
             log.error("Keycloak에서 사용자 삭제 중 오류 발생: {}", e.getMessage(), e);
             // Keycloak 삭제 실패해도 DB에서는 삭제 진행
         }
-
-        // DB에서 상담사 삭제 (soft delete)
         counselorRepository.deleteById(counselor.getId());
         log.info("내 계정 탈퇴 완료: {}", counselor.getId());
     }
