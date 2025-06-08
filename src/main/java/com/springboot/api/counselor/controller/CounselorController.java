@@ -1,8 +1,5 @@
 package com.springboot.api.counselor.controller;
 
-import com.springboot.api.common.dto.PageReq;
-import com.springboot.api.common.dto.PageRes;
-import com.springboot.api.counselor.dto.CounselorInfoListRes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,11 +11,16 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.springboot.api.common.annotation.ApiController;
 import com.springboot.api.common.annotation.RoleSecured;
+import com.springboot.api.common.dto.PageReq;
+import com.springboot.api.common.dto.PageRes;
+import com.springboot.api.counselor.dto.ChangePasswordReq;
+import com.springboot.api.counselor.dto.CounselorInfoListRes;
 import com.springboot.api.counselor.dto.CounselorNameListRes;
 import com.springboot.api.counselor.dto.GetCounselorRes;
 import com.springboot.api.counselor.dto.ResetPasswordReq;
 import com.springboot.api.counselor.dto.UpdateCounselorReq;
 import com.springboot.api.counselor.dto.UpdateCounselorRes;
+import com.springboot.api.counselor.dto.UpdateMyInfoReq;
 import com.springboot.api.counselor.dto.UpdateRoleReq;
 import com.springboot.api.counselor.service.CounselorService;
 import com.springboot.enums.RoleType;
@@ -112,5 +114,39 @@ public class CounselorController {
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(counselorService.getCounselorsByPage(PageReq.of(page, size)));
+    }
+
+    @Operation(summary = "내 정보 업데이트", description = "자기 자신의 이름과 전화번호를 업데이트한다.", responses = {
+        @ApiResponse(responseCode = "200", description = "내 정보 업데이트 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_NONE})
+    @PutMapping("/my-info")
+    public ResponseEntity<UpdateCounselorRes> updateMyInfo(
+        @Valid @RequestBody UpdateMyInfoReq updateMyInfoReq) {
+        return ResponseEntity.ok(counselorService.updateMyInfo(updateMyInfoReq));
+    }
+
+    @Operation(summary = "내 비밀번호 변경", description = "자기 자신의 비밀번호를 변경한다. Keycloak에서 비밀번호를 변경한다.", responses = {
+        @ApiResponse(responseCode = "204", description = "비밀번호 변경 성공"),
+        @ApiResponse(responseCode = "400", description = "잘못된 요청")
+    })
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_NONE})
+    @PutMapping("/my-password")
+    public ResponseEntity<Void> changeMyPassword(
+        @Valid @RequestBody ChangePasswordReq changePasswordReq) {
+        counselorService.changeMyPassword(changePasswordReq);
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "내 계정 탈퇴", description = "자기 자신의 계정을 탈퇴한다. Keycloak에서도 해당 사용자를 삭제한다.", responses = {
+        @ApiResponse(responseCode = "204", description = "계정 탈퇴 성공"),
+        @ApiResponse(responseCode = "404", description = "사용자를 찾을 수 없음")
+    })
+    @RoleSecured({RoleType.ROLE_ASSISTANT, RoleType.ROLE_ADMIN, RoleType.ROLE_USER, RoleType.ROLE_NONE})
+    @DeleteMapping("/my-account")
+    public ResponseEntity<Void> deleteMyAccount() {
+        counselorService.deleteMyAccount();
+        return ResponseEntity.noContent().build();
     }
 }
