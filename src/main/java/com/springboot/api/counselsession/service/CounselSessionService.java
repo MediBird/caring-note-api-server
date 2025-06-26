@@ -301,7 +301,7 @@ public class CounselSessionService {
     @Cacheable(value = "sessionStats")
     @Transactional(readOnly = true)
     public CounselSessionStatRes getSessionStats() {
-        long counselHoursThisMonth = (long) calculateCounselHoursForThisMonth();
+        long counselHoursThisMonth = calculateCounselHoursForThisMonth();
         Long counseleeCountForThisMonth = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
         long medicationCounselCountThisYear = calculateMedicationCounselCountThisYear();
         long counselorCountThisYear = calculateCounselorCountThisYear();
@@ -316,29 +316,30 @@ public class CounselSessionService {
 
     private long calculateMedicationCounselCountThisYear() {
         int currentYear = LocalDateTime.now().getYear();
-        return medicationCounselRepository.countByCreatedDateBetween(
-            LocalDateTime.of(currentYear, 1, 1, 0, 0),
-            LocalDateTime.of(currentYear, 12, 31, 23, 59, 59)
+        return medicationCounselRepository.countByCreatedDatetimeBetween(
+            LocalDateTime.of(currentYear, 1, 1, 0, 0, 0),
+            LocalDateTime.of(currentYear + 1, 1, 1, 0, 0, 0)
         );
     }
 
     private long calculateCounselorCountThisYear() {
         int currentYear = LocalDateTime.now().getYear();
-        return counselSessionRepository.countDistinctCounselorsByCompletedSessionsInYear(currentYear);
+        Long count = counselSessionRepository.countDistinctCounselorsByCompletedSessionsInYear(currentYear);
+        return count != null ? count : 0L;
     }
 
-    private double calculateCounselHoursForThisMonth() {
+    private long calculateCounselHoursForThisMonth() {
         int year = LocalDateTime.now().getYear();
         int month = LocalDateTime.now().getMonthValue();
         List<CounselSession> completedSessions = counselSessionRepository
             .findCompletedSessionsByYearAndMonth(year, month);
 
         return completedSessions.stream()
-            .mapToDouble(session -> {
+            .mapToLong(session -> {
                 Duration duration = Duration.between(
                     session.getStartDateTime(),
                     session.getEndDateTime());
-                return duration.toMinutes() / 60.0;
+                return (long) (duration.toMinutes() / 60.0);
             })
             .sum();
     }

@@ -11,5 +11,5 @@ public interface MedicationCounselRepository extends JpaRepository<MedicationCou
 
     Optional<MedicationCounsel> findByCounselSessionId(String counselSessionId);
     
-    long countByCreatedDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+    long countByCreatedDatetimeBetween(LocalDateTime startDate, LocalDateTime endDate);
 }
