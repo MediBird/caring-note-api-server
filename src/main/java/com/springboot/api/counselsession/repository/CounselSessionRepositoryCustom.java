@@ -38,4 +38,6 @@ public interface CounselSessionRepositoryCustom {
     List<CounselSession> findValidCounselSessionsByCounseleeId(String counseleeId);
 
     void bulkUpdateCounselSessionNum(Map<String, Integer> sessionUpdates);
+
+    Long countDistinctCounselorsByCompletedSessionsInYear(int year);
 }

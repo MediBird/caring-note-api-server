@@ -301,21 +301,30 @@ public class CounselSessionService {
     @Cacheable(value = "sessionStats")
     @Transactional(readOnly = true)
     public CounselSessionStatRes getSessionStats() {
-        long totalSessionCount = calculateTotalSessionCount();
-        Long counseleeCount = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
-        long totalCaringMessageCount = counselSessionRepository.count();
-        double counselHours = calculateCounselHoursForThisMonth();
+        long counselHoursThisMonth = (long) calculateCounselHoursForThisMonth();
+        Long counseleeCountForThisMonth = counselSessionRepository.countDistinctCounseleeForCurrentMonth();
+        long medicationCounselCountThisYear = calculateMedicationCounselCountThisYear();
+        long counselorCountThisYear = calculateCounselorCountThisYear();
 
         return CounselSessionStatRes.builder()
-            .totalSessionCount(totalSessionCount)
-            .counseleeCountForThisMonth(counseleeCount)
-            .totalCaringMessageCount(totalCaringMessageCount)
-            .counselHoursForThisMonth((long) counselHours)
+            .counselHoursThisMonth(counselHoursThisMonth)
+            .counseleeCountForThisMonth(counseleeCountForThisMonth)
+            .medicationCounselCountThisYear(medicationCounselCountThisYear)
+            .counselorCountThisYear(counselorCountThisYear)
             .build();
     }
 
-    private long calculateTotalSessionCount() {
-        return counselSessionRepository.countByStatus(ScheduleStatus.COMPLETED);
+    private long calculateMedicationCounselCountThisYear() {
+        int currentYear = LocalDateTime.now().getYear();
+        return medicationCounselRepository.countByCreatedDateBetween(
+            LocalDateTime.of(currentYear, 1, 1, 0, 0),
+            LocalDateTime.of(currentYear, 12, 31, 23, 59, 59)
+        );
+    }
+
+    private long calculateCounselorCountThisYear() {
+        int currentYear = LocalDateTime.now().getYear();
+        return counselSessionRepository.countDistinctCounselorsByCompletedSessionsInYear(currentYear);
     }
 
     private double calculateCounselHoursForThisMonth() {

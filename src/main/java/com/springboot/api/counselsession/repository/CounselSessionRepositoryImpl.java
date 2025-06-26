@@ -267,4 +267,17 @@ public class CounselSessionRepositoryImpl implements CounselSessionRepositoryCus
             .where(counselSession.id.in(sessionUpdates.keySet()))
             .execute();
     }
+
+    @Override
+    public Long countDistinctCounselorsByCompletedSessionsInYear(int year) {
+        return queryFactory
+            .select(counselSession.counselor.countDistinct())
+            .from(counselSession)
+            .where(
+                counselSession.status.eq(ScheduleStatus.COMPLETED),
+                counselSession.startDateTime.year().eq(year),
+                counselSession.counselor.isNotNull(),
+                counselSession.counselor.status.eq(CounselorStatus.ACTIVE))
+            .fetchOne();
+    }
 }
